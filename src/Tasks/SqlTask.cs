@@ -95,6 +95,7 @@ namespace NAnt.Contrib.Tasks
       private string _output;
       private string _statements;
       private bool _batch = true;
+      private bool _expandProps = true;
 
       /// <summary>
       /// Connection string used to access database. 
@@ -135,6 +136,16 @@ namespace NAnt.Contrib.Tasks
       public bool Batch {
          get { return _batch; }
          set { _batch = value; }
+      }
+
+      /// <summary>
+      /// If true, the any nant-style properties on the sql will be
+      /// expanded before execution. Default is true.
+      /// </summary>
+      [ TaskAttribute("expandprops"), BooleanValidator ]
+      public bool ExpandProperties {
+         get { return _expandProps; }
+         set { _expandProps = value; }
       }
 
       /// <summary>
@@ -242,8 +253,7 @@ namespace NAnt.Contrib.Tasks
       /// <param name="writer"></param>
       private void ExecuteStatements(SqlHelper sqlHelper, TextWriter writer)
       {
-         SqlStatementList list = 
-            new SqlStatementList(Delimiter, DelimiterStyle);
+         SqlStatementList list = CreateStatementList();
          if ( Source == null ) {
             list.ParseSql(_statements);
          } else {
@@ -263,8 +273,7 @@ namespace NAnt.Contrib.Tasks
       /// <param name="writer"></param>
       private void ExecuteStatementsInBatch(SqlHelper sqlHelper, TextWriter writer)
       {
-         SqlStatementList list = 
-            new SqlStatementList(Delimiter, DelimiterStyle);
+         SqlStatementList list = CreateStatementList();
          SqlStatementAdapter adapter 
             = new SqlStatementAdapter(list);
          string sql = null;
@@ -315,6 +324,17 @@ namespace NAnt.Contrib.Tasks
          if ( results.RecordsAffected >= 0 ) {
             Log.WriteLine(LogPrefix + "{0} records affected", results.RecordsAffected);
          }
+      }
+
+
+      private SqlStatementList CreateStatementList()
+      {
+         SqlStatementList list = 
+            new SqlStatementList(Delimiter, DelimiterStyle);
+         if ( ExpandProperties ) {
+            list.Properties = Project.Properties;
+         }
+         return list;
       }
 
    } // class SqlTask
