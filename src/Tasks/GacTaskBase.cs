@@ -164,7 +164,7 @@ namespace NAnt.Contrib.Tasks {
 				//allow concrete task to append any arguments
 				AppendProgramArguments(retVal);
 				//append the name of the assembly being operated against
-				retVal.Append(" ").Append(CurrentAssembly);
+				retVal.Append(" \"").Append(CurrentAssembly).Append("\"");
 
 				return retVal.ToString();
 			}
