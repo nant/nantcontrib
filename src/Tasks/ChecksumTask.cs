@@ -99,7 +99,7 @@ namespace NAnt.Contrib.Tasks
       protected override void InitializeTask(System.Xml.XmlNode taskNode) 
       {
          if (FileSet.FileNames.Count == 0) {
-            throw new BuildException("Concat fileset cannot be empty!", Location);
+            throw new BuildException("Checksum fileset cannot be empty!", Location);
          }
 
          if ( FileExtension == null ) {
