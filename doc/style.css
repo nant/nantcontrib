@@ -19,8 +19,8 @@ h4 {
 
 h5 {
     margin-bottom: -.8em;
+    margin-left: 1.0em;    
 }
-
 
 hr {
     color: gray;
@@ -72,9 +72,26 @@ a:hover {
 }
 
 div.table {
-    text-align: center;
+    margin-left: 40px;
     font-family: Verdana, Arial, Helvetica, Geneva, SunSans-Regular, sans-serif;
     font-size: 80%;
+}
+
+div.nested-element {
+	margin-left: 40px;
+	position: relative;
+}
+
+div.nested-element table {
+    font-size: 100%;
+    border-collapse: collapse;
+    width: 710px;
+}
+
+.table table {
+    font-size: 100%;
+    border-collapse: collapse;
+    width: 750px;
 }
 
 .table table {
@@ -132,4 +149,11 @@ span.code {
     background-color: inherit;
     color: #0000AA;
     font-size: 100%;
+}
+
+tr.required {
+}
+
+td.required {
+	font-weight: bolder;
 }
