@@ -370,7 +370,7 @@
       </fileset>
     </delete>
   </target>
-  <target name="build.install" description="Builds the MSI Install" depends="build.nantcontrib, build">
+  <target name="build.install" description="Builds the MSI Install" depends="build.nantcontrib"><!--depends="build.nantcontrib, build"-->
     <echo message="**************************************************" />
     <echo message="*" />
     <echo message="* Building MSI (Windows Installer) File..." />
