@@ -55,7 +55,7 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         private FileInfo _dbPath;
         private string _path;
         private string _password = string.Empty;
-        private string _user = string.Empty;
+        private string _userName = string.Empty;
         private string _version;
 
         #endregion Private Instance Fields
@@ -72,7 +72,8 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         }
         
         /// <summary>
-        /// The source safe project or file path, starting with "$/".
+        /// The Visual SourceSafe project or file path you wish the perform the
+        /// action on (starting with "$/").
         /// </summary>
         [TaskAttribute("path", Required=true)]
         [StringValidator(AllowEmpty=false)]
@@ -91,12 +92,28 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         }
 
         /// <summary>
-        /// The user id to use to login to the SourceSafe database.
+        /// The name of the user needed to access the Visual SourceSafe database.
+        /// When no <see cref="UserName" /> is specified and &quot;Use network
+        /// name for automatic user log in&quot; is enabled for the Visual SourceSafe
+        /// database, then the current Windows username will be used to log in.
         /// </summary>
-        [TaskAttribute("user", Required=true)]
-        public string User { 
-            get { return _user; } 
-            set { _user = value; }
+        [TaskAttribute("username", Required=false)]
+        public string UserName { 
+            get { return _userName; } 
+            set { _userName = value; }
+        }
+
+        /// <summary>
+        /// The name of the user needed to access the Visual SourceSafe database.
+        /// When no <see cref="UserName" /> is specified and &quot;Use network
+        /// name for automatic user log in&quot; is enabled, then the current
+        /// Windows username will be used to log in.
+        /// </summary>
+        [TaskAttribute("user", Required=false)]
+        [Obsolete("Use \"username\" attribute instead.", false)]
+        public string Login { 
+            get { return UserName; } 
+            set { UserName = value; }
         }
 
         /// <summary>
@@ -105,7 +122,7 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         /// If omitted, the latest version is used.
         /// </summary>
         [TaskAttribute("version")]
-        public string Version { 
+        public virtual string Version {
             get { return _version; } 
             set { _version = StringUtils.ConvertEmptyToNull(value); }
         }
@@ -131,7 +148,7 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         protected void Open() {
             try {
                 _database = new VSSDatabase();
-                _database.Open(DBPath.FullName, User, Password);
+                _database.Open(DBPath.FullName, UserName, Password);
             } catch (Exception ex) {
                 throw new BuildException(string.Format(CultureInfo.InvariantCulture,
                     "Failed to open database \"{0}\".", DBPath.FullName),
