@@ -281,13 +281,16 @@ namespace NAnt.Contrib.Tasks
                 throw new BuildException(LogPrefix + "ERROR: " + e);
             }
 
-            XmlDocument schemaDoc = new XmlDocument();
-            schemaDoc.Load(Schema);
+            if (Schema != null)
+            {
+                XmlDocument schemaDoc = new XmlDocument();
+                schemaDoc.Load(Schema);
 
-            ResourceWriter schemaWriter = new ResourceWriter(
-                Path.Combine(OutputDir, Namespace + ".resources"));
-            schemaWriter.AddResource("schema", schemaDoc.DocumentElement.OuterXml);
-            schemaWriter.Close();
+                ResourceWriter schemaWriter = new ResourceWriter(
+                    Path.Combine(OutputDir, Namespace + ".resources"));
+                schemaWriter.AddResource("schema", schemaDoc.DocumentElement.OuterXml);
+                schemaWriter.Close();
+            }
         }
     }
 }
