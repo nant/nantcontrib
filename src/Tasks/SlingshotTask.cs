@@ -159,10 +159,22 @@ namespace NAnt.Contrib.Tasks {
 
             Hashtable convertedOptions = new Hashtable();
 
-            if (options != null) {
-                foreach (OptionValue option in options) {
-                    string name  = option.Name;
-                    string value = option.Value;
+      if (options != null) {
+        foreach (object option in options) {
+          string name;
+          string value;
+          if ( option is OptionValue ) {
+            OptionValue ov = (OptionValue) option;
+            name  = ov.Name;
+            value = ov.Value;
+          } else if ( option is OptionElement ) {
+            OptionElement oe = (OptionElement) option;
+            name  = oe.OptionName;
+            value = oe.Value;
+          } else {
+             throw new BuildException( string.Format( "Invalid Option type {0} in {1} OptionSet", option.GetType(), optionSetName) );
+          }
+          Log.WriteLine( LogPrefix + " -- {0} = {1}", name, value );
 
                     // name must be specified
                     if (name == null) {
