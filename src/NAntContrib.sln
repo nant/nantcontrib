@@ -15,10 +15,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SLiNgshoT", "..\Tools\SLiNg
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NAntAddin", "..\Tools\VSNetAddin\NAntAddin.csproj", "{64B219F9-E3C1-4E9E-ADEF-65E23D289343}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -41,10 +37,6 @@ Global
 		{7B7D512B-FDF9-4F39-9FA2-6986D76F6C13}.Debug.Build.0 = Debug|.NET
 		{7B7D512B-FDF9-4F39-9FA2-6986D76F6C13}.Release.ActiveCfg = Release|.NET
 		{7B7D512B-FDF9-4F39-9FA2-6986D76F6C13}.Release.Build.0 = Release|.NET
-		{64B219F9-E3C1-4E9E-ADEF-65E23D289343}.Debug.ActiveCfg = Debug|.NET
-		{64B219F9-E3C1-4E9E-ADEF-65E23D289343}.Debug.Build.0 = Debug|.NET
-		{64B219F9-E3C1-4E9E-ADEF-65E23D289343}.Release.ActiveCfg = Release|.NET
-		{64B219F9-E3C1-4E9E-ADEF-65E23D289343}.Release.Build.0 = Release|.NET
 	EndGlobalSection
 	GlobalSection(SolutionItems) = postSolution
 		..\Tools\VSNetAddin\Default.build = ..\Tools\VSNetAddin\Default.build
@@ -53,7 +45,6 @@ Global
 		..\nightly.xml = ..\nightly.xml
 		..\Tools\SLiNgshoT\SLiNgshoT.build = ..\Tools\SLiNgshoT\SLiNgshoT.build
 		..\Tools\SLiNgshoT\SLiNgshoTInstall.include = ..\Tools\SLiNgshoT\SLiNgshoTInstall.include
-		..\Tools\VSNetAddin\VSNetAddinInstall.include = ..\Tools\VSNetAddin\VSNetAddinInstall.include
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
