@@ -24,11 +24,9 @@
 <xsl:template match="testsummary">
 	<HTML>
 		<HEAD>
-			<!--LINK REL ="stylesheet" TYPE="text/css" HREF="stylesheet.css" TITLE="Style"/-->
 		<!-- put the style in the html so that we can mail it w/o problem -->
 		<style type="text/css">
 			BODY {
-			/* font:normal 68% verdana,arial,helvetica; */
 			   font: normal 10px verdana, arial, helvetica;
 			   color:#000000;
 			}
