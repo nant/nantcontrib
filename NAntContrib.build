@@ -27,8 +27,8 @@
 		<available property="NAntReleaseExists" resource="${nant.dir}" type="Directory"/>
 		<ifnot propertyexists="NAntReleaseExists" propertytrue="NAntReleaseExists">
 			<echo>
-				Missing '${nant.dir}' Folder!
-				Creating folder and getting file from NAnt Nightly Build (${nant.releasebuild.name})!
+Missing '${nant.dir}' Folder!
+Creating folder and getting file from NAnt Nightly Build (${nant.releasebuild.name})!
 			</echo>
 			<mkdir dir="${nant.dir}"/>
 			<get dest="${nant.releasebuild.name}.zip" src="http://nant.sourceforge.net/builds/${nant.releasebuild.name}.zip"/>
@@ -272,10 +272,6 @@
     <!--*****************************************************************-->    
 	<target name="userdoc" depends="">
 
-		<nant buildfile="${nant.dir}\NAnt.build" target="release userdoc">
-			<property name="build.dir" value="${nant-bin.dir}"/>
-			<property name="build.debug" value="false"/>			
-		</nant>
 		<!-- use ndoc and NDoc.Documenter.NAnt to build user doc -->
         <ndoc>
             <assemblies basedir="${build.dir}">

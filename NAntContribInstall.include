@@ -4,19 +4,17 @@
 <!--*                                                               *-->  
 <!--* Builds the MSI or MSM of the NAntContrib project              *-->
 <!--*****************************************************************-->
-<project name="NAntContribInstall" default="build">
+<project name="NAntContribInstall" >
 
     <!--*****************************************************************-->
     <!--* Create the .msi Windows Installer setup file                  *-->
     <!--*****************************************************************-->
     <target name="msi" description="Build MSI install containing NAnt, NAntContrib, VSNetAddin, and Slingshot">
+        <property name="debug" value="false"/>
 
-        <echo message="** NOTE: NAnt needs to be checked out to the same directory as NAntContrib **" />
         <property name="installsource.dir" value="install" />
 
-        <!--<nant buildfile="${nant.dir}\NAnt.build" target="cleanall release build test userdoc sdkdoc" />-->
         <property name="nantbuild.dir" value="${nant.dir}\bin" />
-        <copy file="${nantbuild.dir}\NDoc.Documenter.NAnt.dll" tofile="${nant.dir}\bin\NDoc.Documenter.NAnt.dll" overwrite="true" failonerror="false" />
         <call target="build" />
         <call target="userdoc" />
 
@@ -50,13 +48,15 @@
                 <includes name="NAnt.NUnitFormatters.dll" />
                 <includes name="nunit.framework.dll" />
                 <includes name="NUnitCore.dll" />
+                <includes name="log4net-net-1.0.dll" />
+                <includes name="ICSharpCode.SharpZipLib.dll" />
+                <includes name="NAnt.NUnitFormatters.dll" />
             </fileset>
         </copy>
         
         <copy todir="${installsource.dir}\NAnt\Tasks" failonerror="false" overwrite="true">
             <fileset basedir="${nantbuild.dir}">
                 <includes name="*Tasks.dll" />
-                <includes name="SharpZipLib.dll" />
             </fileset>
         </copy>
         
@@ -118,12 +118,15 @@
             <features>
                 <feature name="DefaultFeature" title="NAnt Platform" display="1" typical="true">
                     <description>The NAnt build platform. Includes Core, .NET, and Zip Tasks.</description>
+                    <feature name="Log4NetFeature" display="0" typical="true" />
                     <feature name="DotNetTasksFeature" display="0" typical="true" />
+                    <feature name="Win32TasksFeature" display="0" typical="true" />
                     <feature name="ZipTasksFeature" display="0" typical="true">
                         <feature name="SharpZipLibFeature" display="0" typical="true" />
                     </feature>
                     <feature name="NUnit1TasksFeature" display="0" typical="true" />
                     <feature name="NUnit2TasksFeature" display="0" typical="true" />
+                    <feature name="NUnitFormattersFeature" display="0" typical="true" />
                     <feature name="DocsFeature" display="0" typical="true" />
                     <feature name="TaskDocsFeature" display="0" typical="true" />
                     <feature name="SDKDocsFeature" display="1" typical="false" />
@@ -158,14 +161,25 @@
                         <includes name="NAnt.exe.config" />
                         <includes name="NDoc.*.dll" />
                         <includes name="NUnitCore.dll" />
-                        <includes name="NAnt.NUnitFormatters.dll" />
                         <includes name="nunit.framework.dll" />
                   </fileset>
+                </component>
+                <component name="Log4NetFiles" id="{F61AD17F-1CC0-4ce9-9D1B-9BCAE1D1C1D1}" attr="2" directory="NANT_NANTFOLDER" feature="Log4NetFeature">
+                    <key file="log4net-net-1.0.dll" />
+                    <fileset basedir="${installsource.dir}\NAnt">
+                        <includes name="log4net-net-1.0.dll" />
+                    </fileset>
                 </component>
                 <component name="DotNetTasksFiles" id="{781D4954-3BCE-4DA7-988C-9AC135B652E1}" attr="2" directory="NANT_TASKSFOLDER" feature="DotNetTasksFeature">
                     <key file="NAnt.DotNetTasks.dll" />
                     <fileset basedir="${installsource.dir}\NAnt\Tasks">
                         <includes name="NAnt.DotNetTasks.dll" />
+                    </fileset>
+                </component>
+                <component name="Win32TasksFiles" id="{2715D67F-6DF0-435b-A820-D4D47CE06FD8}" attr="2" directory="NANT_TASKSFOLDER" feature="Win32TasksFeature">
+                    <key file="NAnt.Win32Tasks.dll" />
+                    <fileset basedir="${installsource.dir}\NAnt\Tasks">
+                        <includes name="NAnt.Win32Tasks.dll" />
                     </fileset>
                 </component>
                 <component name="NUnit1TasksFiles" id="{D2EDC476-D295-44c1-B7B8-AD9F6B37010C}" attr="2" directory="NANT_TASKSFOLDER" feature="NUnit1TasksFeature">
@@ -178,6 +192,12 @@
                     <key file="NAnt.NUnit2Tasks.dll" />
                     <fileset basedir="${installsource.dir}\NAnt\Tasks">
                         <includes name="NAnt.NUnit2Tasks.dll" />
+                    </fileset>
+                </component>
+                <component name="NUnitFormattersFiles" id="{34EC79C1-DDDC-483d-A550-0FA94D69DACB}" attr="2" directory="NANT_NANTFOLDER" feature="NUnitFormattersFeature">
+                    <key file="NAnt.NUnitFormatters.dll" />
+                    <fileset basedir="${installsource.dir}\NAnt">
+                        <includes name="NAnt.NUnitFormatters.dll" />
                     </fileset>
                 </component>
                 <component name="DocsFiles" id="{7499CA9D-BDAE-4a0c-B844-E64A9BBB77A0}" attr="2" directory="NANT_DOCSFOLDER" feature="DocsFeature">
@@ -211,10 +231,10 @@
                         <includes name="NAnt.ZipTasks.dll" />
                     </fileset>
                 </component>
-                <component name="SharpZipLibFiles" id="{1B2000AE-818A-4A1F-AC29-CA6A321D198E}" attr="2" directory="NANT_TASKSFOLDER" feature="SharpZipLibFeature">
-                    <key file="SharpZipLib.dll" />
-                    <fileset basedir="${installsource.dir}\NAnt\Tasks">
-                        <includes name="SharpZipLib.dll" />
+                <component name="SharpZipLibFiles" id="{1B2000AE-818A-4A1F-AC29-CA6A321D198E}" attr="2" directory="NANT_NANTFOLDER" feature="SharpZipLibFeature">
+                    <key file="ICSharpCode.SharpZipLib.dll" />
+                    <fileset basedir="${installsource.dir}\NAnt">
+                        <includes name="ICSharpCode.SharpZipLib.dll" />
                     </fileset>
                 </component>
             </components>
@@ -281,14 +301,11 @@
     <!--*****************************************************************-->
     <!--* Create the .msm Windows Installer Merge Module of NAnt        *-->
     <!--*****************************************************************-->
-    <target name="NAnt.msm" depends="build,userdoc" description="Build MSM Merge Module of NAnt">
+    <target name="nant.msm" depends="build,userdoc" description="Build MSM Merge Module of NAnt">
         <property name="NAnt.id" value="2D2FB50C_DADF_4813_8932_8EF1E8CB8E80" />
           
-        <echo message="** NOTE: NAnt needs to be checked out to the same directory as NAntContrib **" />
         <property name="installsource.dir" value="install" />
 
-        <nant buildfile="${nant.dir}\NAnt.build" target="cleanall release build test userdoc sdkdoc" />
-        <copy file="${nantbuild.dir}\NDoc.Documenter.NAnt.dll" tofile="${nant.dir}\bin\NDoc.Documenter.NAnt.dll" overwrite="true" failonerror="false" />
         <call target="build" />
         <call target="userdoc" />
 
@@ -309,13 +326,15 @@
                 <includes name="NAnt.NUnitFormatters.dll" />
                 <includes name="nunit.framework.dll" />
                 <includes name="NUnitCore.dll" />
+                <includes name="log4net-net-1.0.dll" />
+                <includes name="ICSharpCode.SharpZipLib.dll" />        
+                <includes name="NAnt.NUnitFormatters.dll" />
             </fileset>
         </copy>
         
         <copy todir="${installsource.dir}\NAnt\Tasks" failonerror="false" overwrite="true">
             <fileset basedir="${nantbuild.dir}">
                 <includes name="*Tasks.dll" />
-                <includes name="SharpZipLib.dll" />
             </fileset>
         </copy>
         
@@ -383,9 +402,14 @@
                         <includes name="NAnt.exe.config" />
                         <includes name="NDoc.*.dll" />
                         <includes name="NUnitCore.dll" />
-                        <includes name="NAnt.NUnitFormatters.dll" />
                         <includes name="nunit.framework.dll" />
                   </fileset>
+                </component>
+                <component name="Log4NetFiles_${NAnt.id}" id="{F61AD17F-1CC0-4ce9-9D1B-9BCAE1D1C1D1}" attr="2" directory="NANT_NANTFOLDER" >
+                    <key file="log4net-net-1.0.dll" />
+                    <fileset basedir="${installsource.dir}\NAnt">
+                        <includes name="log4net-net-1.0.dll" />
+                    </fileset>
                 </component>
                 <component name="DotNetTasksFiles_${NAnt.id}" id="{781D4954-3BCE-4DA7-988C-9AC135B652E1}" attr="2" directory="NANT_TASKSFOLDER">
                     <key file="NAnt.DotNetTasks.dll" />
@@ -393,7 +417,13 @@
                         <includes name="NAnt.DotNetTasks.dll" />
                     </fileset>
                 </component>
-                 <component name="NUnit1TasksFiles_${NAnt.id}" id="{D2EDC476-D295-44c1-B7B8-AD9F6B37010C}" attr="2" directory="NANT_TASKSFOLDER">
+                <component name="Win32TasksFiles_${NAnt.id}" id="{2715D67F-6DF0-435b-A820-D4D47CE06FD8}" attr="2" directory="NANT_TASKSFOLDER" >
+                    <key file="NAnt.Win32Tasks.dll" />
+                    <fileset basedir="${installsource.dir}\NAnt\Tasks">
+                        <includes name="NAnt.Win32Tasks.dll" />
+                    </fileset>
+                </component>
+                <component name="NUnit1TasksFiles_${NAnt.id}" id="{D2EDC476-D295-44c1-B7B8-AD9F6B37010C}" attr="2" directory="NANT_TASKSFOLDER">
                     <key file="NAnt.NUnit1Tasks.dll" />
                     <fileset basedir="${installsource.dir}\NAnt\Tasks">
                         <includes name="NAnt.NUnit1Tasks.dll" />
@@ -403,6 +433,12 @@
                     <key file="NAnt.NUnit2Tasks.dll" />
                     <fileset basedir="${installsource.dir}\NAnt\Tasks">
                         <includes name="NAnt.NUnit2Tasks.dll" />
+                    </fileset>
+                </component>
+                <component name="NUnitFormattersFiles_${NAnt.id}" id="{34EC79C1-DDDC-483d-A550-0FA94D69DACB}" attr="2" directory="NANT_NANTFOLDER" >
+                    <key file="NAnt.NUnitFormatters.dll" />
+                    <fileset basedir="${installsource.dir}\NAnt">
+                        <includes name="NAnt.NUnitFormatters.dll" />
                     </fileset>
                 </component>
                 <component name="DocsFiles_${NAnt.id}" id="{7499CA9D-BDAE-4a0c-B844-E64A9BBB77A0}" attr="2" directory="NANT_DOCSFOLDER">
@@ -436,10 +472,10 @@
                         <includes name="NAnt.ZipTasks.dll" />
                     </fileset>
                 </component>
-                <component name="SharpZipLibFiles_${NAnt.id}" id="{1B2000AE-818A-4A1F-AC29-CA6A321D198E}" attr="2" directory="NANT_TASKSFOLDER">
-                    <key file="SharpZipLib.dll" />
-                    <fileset basedir="${installsource.dir}\NAnt\Tasks">
-                        <includes name="SharpZipLib.dll" />
+                <component name="SharpZipLibFiles_${NAnt.id}" id="{1B2000AE-818A-4A1F-AC29-CA6A321D198E}" attr="2" directory="NANT_NANTFOLDER">
+                    <key file="ICSharpCode.SharpZipLib.dll" />
+                    <fileset basedir="${installsource.dir}\NAnt">
+                        <includes name="ICSharpCode.SharpZipLib.dll" />
                     </fileset>
                 </component>
             </components>

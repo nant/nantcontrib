@@ -2553,9 +2553,9 @@ namespace NAnt.Contrib.Tasks
             {
                 process.Start();
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                Log.WriteLine(LogPrefix + "ERROR: cabarc.exe is not in your path");
+                Log.WriteLine(LogPrefix + "ERROR: cabarc.exe is not in your path! \n" + e.ToString());
                 return false;
             }
 
