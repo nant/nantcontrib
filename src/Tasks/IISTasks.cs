@@ -16,6 +16,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 using System;
+using System.IO;
 using System.DirectoryServices;
 using SourceForge.NAnt;
 using SourceForge.NAnt.Attributes;
@@ -479,8 +480,10 @@ namespace NAnt.Contrib.Tasks
                newVirDir.CommitChanges();
             }
 
+            string fullPath = Path.GetFullPath(_dirpath);
+
             // Set Required Properties
-            newVirDir.Properties["Path"].Value = _dirpath;
+            newVirDir.Properties["Path"].Value = fullPath;
             newVirDir.Properties["AppFriendlyName"].Value = _vdirname;
             newVirDir.Properties["AppRoot"].Value = _apppath + _vdirname;
 
