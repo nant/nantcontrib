@@ -156,10 +156,7 @@
                 <includes name="**/*.cs" />
             </sources>
             <references>
-                <includes name="${nant.dir}/bin/nunit.framework.dll"/>
-                <includes name="${nant.dir}/bin/NAnt.Core.dll"/>
-                <includes name="${nant.dir}/bin/NAnt.Core.Tests.dll"/>
-                <includes name="${build.dir}/bin/${project.FormalName}.Tasks.dll"/>
+                <includes name="${build.dir}/bin/*.dll"/>
             </references>
         </csc>
     </target>
