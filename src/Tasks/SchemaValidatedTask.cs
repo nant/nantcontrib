@@ -125,15 +125,17 @@ namespace NAnt.Contrib.Tasks
                 XmlSchemaCollection schemas = new XmlSchemaCollection();
                 schemas.Add(schema);
 
+				string xmlNamespace = (taskValidator.XmlNamespace != null ? taskValidator.XmlNamespace : GetType().FullName);
+
                 // Create a namespace manager with the schema's namespace
                 NameTable nt = new NameTable();
                 XmlNamespaceManager nsmgr = new XmlNamespaceManager(nt);
-                nsmgr.AddNamespace(String.Empty, GetType().FullName);
+                nsmgr.AddNamespace(String.Empty, xmlNamespace);
 
                 // Create a textreader containing just the Task's Node
                 XmlParserContext ctx = new XmlParserContext(
                     null, nsmgr, null, XmlSpace.None);
-                ((XmlElement)TaskNode).SetAttribute("xmlns", GetType().FullName);
+                ((XmlElement)TaskNode).SetAttribute("xmlns", xmlNamespace);
                 XmlTextReader textReader = new XmlTextReader(
                     ((XmlElement)TaskNode).OuterXml, XmlNodeType.Element, ctx);
 
@@ -181,7 +183,7 @@ namespace NAnt.Contrib.Tasks
 
                 NameTable taskNameTable = new NameTable();
                 XmlNamespaceManager taskNSMgr = new XmlNamespaceManager(taskNameTable);
-                taskNSMgr.AddNamespace("", GetType().FullName);
+                taskNSMgr.AddNamespace("", xmlNamespace);
 
                 XmlParserContext context = new XmlParserContext(
                     null, taskNSMgr, null, XmlSpace.None);
@@ -234,12 +236,18 @@ namespace NAnt.Contrib.Tasks
         /// created by the xsd NAnt task to represent the root node of 
         /// your task.</param>
         /// <remarks>None.</remarks>
-        public SchemaValidatorAttribute(Type schemaType)
-        { 
-            _type = schemaType;
-        }
+		public SchemaValidatorAttribute(Type schemaType)
+		{ 
+			_type = schemaType;
+		}
 
-        /// <summary>
+		public SchemaValidatorAttribute(Type schemaType, String xmlNamespace)
+		{ 
+			_type = schemaType;
+			_namespace = xmlNamespace;
+		}
+
+		/// <summary>
         /// Returns or sets The <see cref="Type"/> of the object 
         /// created by the xsd NAnt task to represent the root node of 
         /// your task.
@@ -260,5 +268,19 @@ namespace NAnt.Contrib.Tasks
                 _type = value;
             }
         }
+
+
+		private string _namespace;
+		public string XmlNamespace
+		{
+			get
+			{
+				return _namespace;
+			}
+			set
+			{
+				_namespace = value;
+			}
+		}
     }
 }
