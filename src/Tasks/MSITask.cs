@@ -140,8 +140,9 @@ namespace NAnt.Contrib.Tasks {
                     File.Copy(source, dest, true);
                     File.SetAttributes(dest, System.IO.FileAttributes.Normal);
                 } catch (IOException ex) {
-                    throw new BuildException("File in use or cannot be copied to" 
-                        + " output.", Location, ex);
+                    throw new BuildException(string.Format(CultureInfo.InvariantCulture, 
+                        "File in use or cannot be copied to output ({0} -> {1}).", 
+                        source, dest), Location, ex);
                 }
 
                 // Open the Output Database.
@@ -409,13 +410,10 @@ namespace NAnt.Contrib.Tasks {
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
             } catch (Exception ex) {
-                CleanOutput(cabFile, tempPath);
-
                 throw new BuildException(string.Format(CultureInfo.InvariantCulture,
                     "Unable to build MSI database '{0}'.", msi.output), 
                     Location, ex);
             } finally {
-                Log(Level.Info, LogPrefix + "Deleting Temporary Files...");
                 CleanOutput(cabFile, tempPath);
             }
         }
