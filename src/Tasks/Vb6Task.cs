@@ -28,9 +28,10 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
 
-using SourceForge.NAnt;
-using SourceForge.NAnt.Tasks;
-using SourceForge.NAnt.Attributes;
+using NAnt.Core;
+using NAnt.Core.Types;
+using NAnt.Core.Tasks;
+using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks {
 
@@ -159,7 +160,7 @@ namespace NAnt.Contrib.Tasks {
 
             FileInfo outputFileInfo = new FileInfo(OutDir != null ? Path.Combine(OutDir, outputFile) : outputFile) ;
             if (!outputFileInfo.Exists) {
-                Log.WriteLineIf(Verbose, LogPrefix + "Output file {0} does not exist, recompiling.", outputFileInfo.FullName);
+                Log(Level.Info, LogPrefix + "Output file {0} does not exist, recompiling.", outputFileInfo.FullName);
                 return true;
             }
 
@@ -169,20 +170,20 @@ namespace NAnt.Contrib.Tasks {
             string fileName;
             fileName = FileSet.FindMoreRecentLastWriteTime(fileset, outputFileInfo.LastWriteTime);
             if (fileName != null) {
-                Log.WriteLineIf(Verbose, LogPrefix + "{0} is out of date, recompiling.", fileName);
+                Log(Level.Info, LogPrefix + "{0} is out of date, recompiling.", fileName);
                 return true;
             }
 
             fileName = FileSet.FindMoreRecentLastWriteTime(sources.FileNames, outputFileInfo.LastWriteTime);
             if (fileName != null) {
-                Log.WriteLineIf(Verbose, LogPrefix + "{0} is out of date, recompiling.", fileName);
+                Log(Level.Info, LogPrefix + "{0} is out of date, recompiling.", fileName);
                 return true;
             }
 
             if (_checkReferences) {
                 fileName = FileSet.FindMoreRecentLastWriteTime(references.FileNames, outputFileInfo.LastWriteTime);
                 if (fileName != null) {
-                    Log.WriteLineIf(Verbose, LogPrefix + "{0} is out of date, recompiling.", fileName);
+                    Log(Level.Info, LogPrefix + "{0} is out of date, recompiling.", fileName);
                     return true;
                 }
             }
@@ -333,7 +334,7 @@ namespace NAnt.Contrib.Tasks {
 
         protected override void ExecuteTask() { 
 
-            Log.WriteLineIf(Verbose, LogPrefix + "Building project {0}", ProjectFile);
+            Log(Level.Info, LogPrefix + "Building project {0}", ProjectFile);
             if (NeedsCompiling()) {
 
                 //Using a stringbuilder vs. StreamWriter since this program will not accept response files.

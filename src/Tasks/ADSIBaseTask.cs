@@ -19,9 +19,9 @@
 // 
 using System;
 using System.DirectoryServices; 
-using SourceForge.NAnt;
-using SourceForge.NAnt.Tasks;
-using SourceForge.NAnt.Attributes;
+using NAnt.Core;
+using NAnt.Core.Tasks;
+using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks {
   /// <summary>

@@ -25,9 +25,9 @@ using System.Xml;
 using System.Text;
 using System.Collections.Specialized;
 
-using SourceForge.NAnt;
-using SourceForge.NAnt.Tasks;
-using SourceForge.NAnt.Attributes;
+using NAnt.Core;
+using NAnt.Core.Tasks;
+using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks
 {

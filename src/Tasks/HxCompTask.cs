@@ -26,9 +26,9 @@ using System.Text;
 using Microsoft.Win32;
 using System.Collections.Specialized;
 
-using SourceForge.NAnt;
-using SourceForge.NAnt.Tasks;
-using SourceForge.NAnt.Attributes;
+using NAnt.Core;
+using NAnt.Core.Tasks;
+using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks
 {
@@ -189,16 +189,16 @@ namespace NAnt.Contrib.Tasks
                 // will cause ExternalProgramBase to display the actual call.
             if ( Output != null ) 
             {
-                Log.WriteLine(LogPrefix + "Compiling HTML Help 2.0 File {0}", Output);
+                Log(Level.Info, LogPrefix + "Compiling HTML Help 2.0 File {0}", Output);
             }
             // Lop thru fileset 
             else if (UncompileFile != null) 
             {    
-                Log.WriteLine(LogPrefix + "Decompiling HTML Help 2.0 File {0}", UncompileFile);
+                Log(Level.Info, LogPrefix + "Decompiling HTML Help 2.0 File {0}", UncompileFile);
             }
             else 
             {
-                Log.WriteLine("ERROR: Must specify file to be compiled or decompiled.");
+                Log(Level.Error, "ERROR: Must specify file to be compiled or decompiled.");
                 return;
             }
 

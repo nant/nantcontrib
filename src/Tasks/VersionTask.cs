@@ -21,8 +21,8 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
-using SourceForge.NAnt;
-using SourceForge.NAnt.Attributes;
+using NAnt.Core;
+using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks {
 
@@ -260,7 +260,7 @@ namespace NAnt.Contrib.Tasks {
     {
       string buildNumber = CalculateVersionNumber();
       Project.Properties[ Prefix + "version" ] = buildNumber;
-      Log.WriteLine( String.Format( "{0} Build number: {1}", LogPrefix, buildNumber ) );
+      Log(Level.Info,  String.Format( "{0} Build number: {1}", LogPrefix, buildNumber ) );
     }
 
 

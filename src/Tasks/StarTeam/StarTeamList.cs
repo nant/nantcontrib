@@ -19,8 +19,8 @@
 
 using System;
 using System.IO;
-using SourceForge.NAnt;
-using SourceForge.NAnt.Attributes;
+using NAnt.Core;
+using NAnt.Core.Attributes;
 using InterOpStarTeam = StarTeam;
 
 namespace NAnt.Contrib.Tasks.StarTeam 
@@ -86,11 +86,11 @@ namespace NAnt.Contrib.Tasks.StarTeam
 			{
 				if (null == _rootLocalFolder)
 				{
-					Log.WriteLine(LogPrefix + "Folder: {0} (Default folder: {1})", starteamFolder.Name, targetFolder);
+					Log(Level.Info, LogPrefix + "Folder: {0} (Default folder: {1})", starteamFolder.Name, targetFolder);
 				}
 				else
 				{
-					Log.WriteLine(LogPrefix + "Folder: {0} (Local folder: {1})", starteamFolder.Name, targetFolder);
+					Log(Level.Info, LogPrefix + "Folder: {0} (Local folder: {1})", starteamFolder.Name, targetFolder);
 				}
 				System.Collections.Hashtable localFiles = listLocalFiles(targetFolder);
 			
@@ -143,7 +143,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 				b.Append(pad(starTeamStatus.Name(reposFile.Status), 12) + " ");
 			}
 			b.Append( pad(getUserName(reposFile.Locker), 20) + " " + reposFile.ModifiedTime.ToShortDateString() + rpad(reposFile.LocalSize.ToString(), 9) + " " + reposFile.Name);		
-			Log.WriteLine(LogPrefix + b.ToString());
+			Log(Level.Info, LogPrefix + b.ToString());
 		}
 
 		private const string blankstr = "                              ";

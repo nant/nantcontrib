@@ -26,9 +26,10 @@ using System.Text;
 using System.Resources;
 using System.Collections.Specialized;
 
-using SourceForge.NAnt;
-using SourceForge.NAnt.Tasks;
-using SourceForge.NAnt.Attributes;
+using NAnt.Core;
+using NAnt.Core.Tasks;
+using NAnt.DotNet.Tasks;
+using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks
 {
@@ -50,7 +51,7 @@ namespace NAnt.Contrib.Tasks
     ///   <code><![CDATA[<xsd xdr="MyOldSchema.xdr" outputdir="build\Schemas" />]]></code>
     /// </example>
     [TaskName("xsd")]
-    public class XsdTask : MsftFXSDKExternalProgramBase
+    public class XsdTask : SdkExternalProgramBase
     {
         private string _args;
         string _schema = null;
@@ -193,7 +194,7 @@ namespace NAnt.Contrib.Tasks
 
             if (Xdr != null)
             {
-                Log.WriteLine(LogPrefix + "Converting {0} to W3C Schema", Xdr);
+                Log(Level.Info, LogPrefix + "Converting {0} to W3C Schema", Xdr);
 
                 arguments.Append(Xdr);
                 
@@ -205,7 +206,7 @@ namespace NAnt.Contrib.Tasks
             }
             else if (XmlDoc != null)
             {
-                Log.WriteLine(LogPrefix + "Generating W3C Schema for XML Document {0}", XmlDoc);
+                Log(Level.Info, LogPrefix + "Generating W3C Schema for XML Document {0}", XmlDoc);
 
                 arguments.Append(XmlDoc);
                 
@@ -217,7 +218,7 @@ namespace NAnt.Contrib.Tasks
             }
             else if (Assembly != null)
             {
-                Log.WriteLine(LogPrefix + "Generating W3C Schema for Assembly {0}", Assembly);
+                Log(Level.Info, LogPrefix + "Generating W3C Schema for Assembly {0}", Assembly);
 
                 arguments.Append(Assembly);
                 
@@ -235,7 +236,7 @@ namespace NAnt.Contrib.Tasks
             }
             else if (Schema != null)
             {
-                Log.WriteLine(LogPrefix + "Compiling Schema {0} into Microsoft.NET {1}", Schema, Target);
+                Log(Level.Info, LogPrefix + "Compiling Schema {0} into Microsoft.NET {1}", Schema, Target);
 
                 arguments.Append(Schema);
                 arguments.Append(" /");

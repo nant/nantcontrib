@@ -22,8 +22,9 @@ using System.Collections;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using SourceForge.NAnt.Attributes;
-using SourceForge.NAnt;
+using NAnt.Core.Attributes;
+using NAnt.Core;
+using NAnt.Core.Types;
 
 namespace NAnt.Contrib.Tasks 
 { 
@@ -82,7 +83,8 @@ namespace NAnt.Contrib.Tasks
       /// </summary>
       [FileSet("fileset")]
       public FileSet FileSet {
-         get { return _fileset; }
+        get { return _fileset; }
+        set { _fileset = value; }
       }
 
 
@@ -153,7 +155,7 @@ namespace NAnt.Contrib.Tasks
             try {
                input = File.OpenRead(file);
             } catch ( IOException e ) {
-               Log.Write("Concat: File {0} could not be read: {1}", file, e.Message);
+               Log(Level.Info, "Concat: File {0} could not be read: {1}", file, e.Message);
                continue;
             }
                

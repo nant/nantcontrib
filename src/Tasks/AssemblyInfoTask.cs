@@ -21,9 +21,10 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 using Microsoft.CSharp;
 using System.Text;
-using SourceForge.NAnt;
-using SourceForge.NAnt.Tasks;
-using SourceForge.NAnt.Attributes;
+using NAnt.Core;
+using NAnt.Core.Types;
+using NAnt.Core.Tasks;
+using NAnt.Core.Attributes;
 
 
 namespace NAnt.Contrib.Tasks {
@@ -60,9 +61,9 @@ namespace NAnt.Contrib.Tasks {
         ///     &lt;/attributes&gt;
         /// &lt;/asminfo&gt;
         /// </example>
-        OptionSet _attributes = new OptionSet();
-        [OptionSet("attributes")]
-        public OptionSet AssemblyAttributes { get { return _attributes; } }
+        OptionCollection _attributes = new OptionCollection();
+        [BuildElementCollection("attributes")]
+        public OptionCollection AssemblyAttributes { get { return _attributes; } }
 
         /// <summary>
         /// Path where the generated assemblyinfo.cs gets stored.
@@ -216,7 +217,7 @@ namespace NAnt.Contrib.Tasks {
             }
             catch (Exception e)
             {
-                throw new SourceForge.NAnt.BuildException(e.Message,e);
+                throw new NAnt.Core.BuildException(e.Message,e);
             }
         }
 

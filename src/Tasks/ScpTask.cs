@@ -20,9 +20,10 @@ using System;
 using System.IO;
 using System.Diagnostics;
 
-using SourceForge.NAnt;
-using SourceForge.NAnt.Attributes;
-using SourceForge.NAnt.Tasks;
+using NAnt.Core;
+using NAnt.Core.Types;
+using NAnt.Core.Attributes;
+using NAnt.Core.Tasks;
 
 namespace NAnt.Contrib.Tasks {
     /// <summary>Copies a file using scp to a remote server.</summary>
@@ -43,8 +44,7 @@ namespace NAnt.Contrib.Tasks {
     public class ScpTask : ExternalProgramBase {
         protected string _program = "scp";
         protected string _commandline = null;
-        protected string _baseDirectory = ".";
-        protected int _timeout = Int32.MaxValue;
+        protected string _baseDirectory = ".";       
         protected string _server = null;
         protected string _file = null;
         protected string _path = "~";
@@ -58,19 +58,14 @@ namespace NAnt.Contrib.Tasks {
                 
         /// <summary>The command line arguments.</summary>
         [TaskAttribute("options")]
-        public string Arguments { set { _commandline = value; } }
+        public string Options { set { _commandline = value; } }
 
         public override string ProgramFileName  { get { return _program; } }                
         public override string ProgramArguments { get { return _commandline; } }
         
         /// <summary>The directory in which the command will be executed.</summary>
         [TaskAttribute("basedir")]
-        public override string BaseDirectory    { get { return Project.GetFullPath(_baseDirectory); } set { _baseDirectory = value; } }
-                
-        /// <summary>Stop the build if the command does not finish within the specified time.  Specified in milliseconds.  Default is no time out.</summary>
-        [TaskAttribute("timeout")]
-        [Int32Validator()]
-        public override int TimeOut { get { return _timeout; } set { _timeout = value; }  }
+        public override string BaseDirectory    { get { return Project.GetFullPath(_baseDirectory); } set { _baseDirectory = value; } }                      
 
         /// <summary> The file to transfer</summary>
         [TaskAttribute("file", Required=true)]
@@ -99,12 +94,12 @@ namespace NAnt.Contrib.Tasks {
         public virtual string ProgramPathSep{ set { _programPathSep = value;} }
 
         protected override void ExecuteTask() {
-	    //scp.exe (cygwin version) requires that the source file *not* be fully qualified.
-	    FileInfo fileInfo = new FileInfo(Path.Combine(BaseDirectory,_file));
-	    BaseDirectory = fileInfo.DirectoryName;
-            Args.Add(fileInfo.Name);
-            Args.Add(string.Format("{0}@{1}:{2}/{3}", _user, _server, _path, fileInfo.Name));
-	    base.ExecuteTask();
+            //scp.exe (cygwin version) requires that the source file *not* be fully qualified.
+            FileInfo fileInfo = new FileInfo(Path.Combine(BaseDirectory,_file));
+            BaseDirectory = fileInfo.DirectoryName;
+                Arguments.Add( new Argument(fileInfo.Name));
+                Arguments.Add( new Argument( string.Format("{0}@{1}:{2}/{3}", _user, _server, _path, fileInfo.Name) ));
+            base.ExecuteTask();
             
         }
     }

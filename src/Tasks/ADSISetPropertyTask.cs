@@ -19,9 +19,10 @@
 // 
 using System;
 using System.DirectoryServices; 
-using SourceForge.NAnt;
-using SourceForge.NAnt.Tasks;
-using SourceForge.NAnt.Attributes;
+using NAnt.Core;
+using NAnt.Core.Types;
+using NAnt.Core.Tasks;
+using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks {
   /// <summary>
@@ -53,7 +54,7 @@ namespace NAnt.Contrib.Tasks {
   {
     public ADSISetPropertyTask()
     {
-      _propertyList = new OptionSet();
+      _propertyList = new OptionCollection();
     }
 
     private string _propName;
@@ -82,9 +83,9 @@ namespace NAnt.Contrib.Tasks {
     /// <summary>
     /// A group of properties to set with this task.
     /// </summary>
-    private OptionSet _propertyList;
-    [OptionSet("properties",Required=false)]
-    public OptionSet PropertyList
+    private OptionCollection _propertyList = new OptionCollection();
+    [BuildElementCollection("properties",Required=false)]
+    public OptionCollection PropertyList
     {
       get { return _propertyList; }
     }
@@ -94,11 +95,11 @@ namespace NAnt.Contrib.Tasks {
     /// </summary>
     protected override void ExecuteTask() 
     {
-	  if ( (this.PropName == null || this.PropValue == null) && this.PropertyList.Count == 0 )
-	  {
+      if ( (this.PropName == null || this.PropValue == null) && this.PropertyList.Count == 0 )
+      {
           throw new BuildException("propname and propvalue attributes or <properties> option set is required");
-	  }
-	  try
+      }
+      try
       {
         // Get the directory entry for the specified path and set the 
         // property.
@@ -112,7 +113,7 @@ namespace NAnt.Contrib.Tasks {
             SetProperty(pathRoot, PropName, PropValue);
           }
           // set the properties named in the child property list.
-          foreach (OptionValue ov in PropertyList)
+          foreach (Option ov in PropertyList)
           {
             SetProperty(pathRoot, ov.Name, ov.Value);
           }
@@ -128,9 +129,9 @@ namespace NAnt.Contrib.Tasks {
       catch (Exception e)
       {
         // log any other exception and wrap it in a BuildException.
-        Log.WriteLine(LogPrefix + "Error setting property {0}: {1}", 
+        Log(Level.Error, LogPrefix + "Error setting property {0}: {1}", 
           PropName,e.Message);
-        throw new SourceForge.NAnt.BuildException(String.Format("Unable to set property {0} to value {1}: {2}",PropName,PropValue,e.Message),e);
+        throw new NAnt.Core.BuildException(String.Format("Unable to set property {0} to value {1}: {2}",PropName,PropValue,e.Message),e);
       }
     }
 
@@ -174,7 +175,7 @@ namespace NAnt.Contrib.Tasks {
         object newValue= Convert(originalValue,propValue);
         entry.Properties[propName][0] = newValue;
       }
-      Log.WriteLine(LogPrefix + "{2}: Property {0} set to {1}", 
+      Log(Level.Info, LogPrefix + "{2}: Property {0} set to {1}", 
         propName, propValue, Path);
     }
     

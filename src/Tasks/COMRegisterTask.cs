@@ -25,8 +25,9 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
-using SourceForge.NAnt.Attributes;
-using SourceForge.NAnt;
+using NAnt.Core.Attributes;
+using NAnt.Core;
+using NAnt.Core.Types;
 
 namespace NAnt.Contrib.Tasks {
     /// <summary>Register COM servers or typelibraries.</summary>
@@ -101,7 +102,10 @@ namespace NAnt.Contrib.Tasks {
         
         /// <summary>the set of files to register..</summary>
         [FileSet("fileset")]
-        public FileSet COMRegisterFileSet { get { return _fileset; } }
+        public FileSet COMRegisterFileSet { 
+            get { return _fileset; } 
+            set { _fileset = value; }
+        }
         
         protected override void ExecuteTask() {
             // add the filename to the file set
@@ -118,14 +122,14 @@ namespace NAnt.Contrib.Tasks {
             StringCollection fileNames = COMRegisterFileSet.FileNames;
           
             // display build log message
-            Log.WriteLine( LogPrefix + "Registering {0} files", fileNames.Count);
+            Log(Level.Info,  LogPrefix + "Registering {0} files", fileNames.Count);
 
             // perform operation
             foreach (string path in fileNames) {
                 if ( ! File.Exists(path) ){
                     throw new BuildException("File : " + path + " does not exist", Location );
                 }
-                Log.WriteLine(LogPrefix + "Registering " + Path.GetFileName(path));
+                Log(Level.Info, LogPrefix + "Registering " + Path.GetFileName(path));
                 switch(Path.GetExtension(path))
                 {
                     case ".tlb" :

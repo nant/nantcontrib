@@ -23,8 +23,9 @@ using System.Collections;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using SourceForge.NAnt.Attributes;
-using SourceForge.NAnt;
+using NAnt.Core.Attributes;
+using NAnt.Core;
+using NAnt.Core.Types;
 
 using NAnt.Contrib.Util;
 
@@ -89,6 +90,7 @@ namespace NAnt.Contrib.Tasks
       [FileSet("fileset")]
       public FileSet FileSet {
          get { return _fileset; }
+         set { _fileset = value; }
       }
 
 
@@ -136,7 +138,7 @@ namespace NAnt.Contrib.Tasks
             writer = new StreamWriter(filename);
             writer.Write(checksum);
          } catch ( Exception e ) {
-            Log.WriteLine("Checksum: Failed to write to {0}: {1}", filename, e.Message);
+            Log(Level.Error, "Checksum: Failed to write to {0}: {1}", filename, e.Message);
          } finally {
             if ( writer != null )
                writer.Close();

@@ -22,8 +22,8 @@ using System.IO;
 using System.Collections.Specialized;
 using System.Text;
 using System.Text.RegularExpressions;
-using SourceForge.NAnt;
-using SourceForge.NAnt.Attributes;
+using NAnt.Core;
+using NAnt.Core.Attributes;
 using InterOpStarTeam = StarTeam;
 
 namespace NAnt.Contrib.Tasks.StarTeam 
@@ -210,7 +210,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 					// force StarTeam to use our folder
 					try 
 					{
-						Log.WriteLine(LogPrefix + "Overriding local folder to {0}",_rootLocalFolder);
+						Log(Level.Info, LogPrefix + "Overriding local folder to {0}",_rootLocalFolder);
 						localrootfolder = new FileInfo(_rootLocalFolder);
 					}
 					catch(Exception e) 
@@ -221,7 +221,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 				
 				// Inspect everything in the root folder and then recursively
 				visit(starTeamRootFolder, localrootfolder);
-				Log.WriteLine(LogPrefix + "{0} Files Affected",_filesAffected.ToString());
+				Log(Level.Info, LogPrefix + "{0} Files Affected",_filesAffected.ToString());
 			}
 			catch (System.Exception e)
 			{
@@ -355,7 +355,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		}
 
 		/// <summary>
-		///     Lifted/Modified from <see cref="SourceForge.NAnt.DirectoryScanner"/> to convert patterns to match filenames to regularexpressions.
+		///     Lifted/Modified from <see cref="NAnt.Core.DirectoryScanner"/> to convert patterns to match filenames to regularexpressions.
 		/// </summary>
 		/// <param name="nantPattern">Search pattern - meant to be just a filename with no path info</param>
 		/// <remarks>The directory seperation code in here most likely is overkill.</remarks>

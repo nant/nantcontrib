@@ -35,9 +35,10 @@ using System.Xml;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 
-using SourceForge.NAnt;
-using SourceForge.NAnt.Tasks;
-using SourceForge.NAnt.Attributes;
+using NAnt.Core;
+using NAnt.Core.Tasks;
+using NAnt.Core.Types;
+using NAnt.Core.Attributes;
 
 using NAnt.Contrib.Schemas.MSI;
 using WindowsInstaller;
@@ -158,11 +159,11 @@ namespace NAnt.Contrib.Tasks
                 catch (Exception e)
                 {
                     CleanOutput(cabFile, tempPath);
-					System.Console.WriteLine(e.ToString());
-					throw new Win32Exception();
+                    System.Console.WriteLine(e.ToString());
+                    throw new Win32Exception();
                 }
 
-                Log.WriteLine(LogPrefix + "Building MSI Database \"" + msi.output + "\".");
+                Log(Level.Info, LogPrefix + "Building MSI Database \"" + msi.output + "\".");
 
                 // Load the Banner Image
                 if (!LoadBanner(d))
@@ -220,21 +221,21 @@ namespace NAnt.Contrib.Tasks
                     throw new BuildException();
                 }        
 
-				try
-				{
-					// Commit the MSI Database
-					d.Commit();
+                try
+                {
+                    // Commit the MSI Database
+                    d.Commit();
 
-					GC.Collect();
-					GC.WaitForPendingFinalizers();
-				}
-				catch (Exception e)
-				{
-					CleanOutput(cabFile, tempPath);
-					System.Console.WriteLine(e.ToString());
-					throw new Win32Exception();
-				}
-				       
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                }
+                catch (Exception e)
+                {
+                    CleanOutput(cabFile, tempPath);
+                    System.Console.WriteLine(e.ToString());
+                    throw new Win32Exception();
+                }
+                       
                 View directoryView, asmView, asmNameView, classView, progIdView;
 
                 // Load Directories
@@ -262,34 +263,34 @@ namespace NAnt.Contrib.Tasks
                     throw new BuildException();
                 }
 
-				try
-				{
-					directoryView.Close();
-					asmView.Close();
-					asmNameView.Close();
-					classView.Close();
-					progIdView.Close();
+                try
+                {
+                    directoryView.Close();
+                    asmView.Close();
+                    asmNameView.Close();
+                    classView.Close();
+                    progIdView.Close();
 
-					directoryView = null;
-					asmView = null;
-					asmNameView = null;
-					classView = null;
-					progIdView = null;
+                    directoryView = null;
+                    asmView = null;
+                    asmNameView = null;
+                    classView = null;
+                    progIdView = null;
 
-					// Commit the MSI Database
-					d.Commit();
+                    // Commit the MSI Database
+                    d.Commit();
 
-					GC.Collect();
-					GC.WaitForPendingFinalizers();
-				}
-				catch (Exception e)
-				{
-					CleanOutput(cabFile, tempPath);
-					System.Console.WriteLine(e.ToString());
-					throw new Win32Exception();
-				}
-				
-				// Load Features
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                }
+                catch (Exception e)
+                {
+                    CleanOutput(cabFile, tempPath);
+                    System.Console.WriteLine(e.ToString());
+                    throw new Win32Exception();
+                }
+                
+                // Load Features
                 if (!LoadFeatures(d, msiType, obj))
                 {
                     CleanOutput(cabFile, tempPath);
@@ -340,25 +341,25 @@ namespace NAnt.Contrib.Tasks
                     throw new BuildException();
                 }
 
-				try
-				{
-					registryView.Close();
-					registryView = null;
+                try
+                {
+                    registryView.Close();
+                    registryView = null;
 
-					// Commit the MSI Database
-					d.Commit();
+                    // Commit the MSI Database
+                    d.Commit();
 
-					GC.Collect();
-					GC.WaitForPendingFinalizers();
-				}
-				catch (Exception e)
-				{
-					CleanOutput(cabFile, tempPath);
-					System.Console.WriteLine(e.ToString());
-					throw new Win32Exception();
-				}
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                }
+                catch (Exception e)
+                {
+                    CleanOutput(cabFile, tempPath);
+                    System.Console.WriteLine(e.ToString());
+                    throw new Win32Exception();
+                }
 
-				// Load Icon Data
+                // Load Icon Data
                 if (!LoadIcon(d, msiType, obj))
                 {
                     CleanOutput(cabFile, tempPath);
@@ -450,7 +451,7 @@ namespace NAnt.Contrib.Tasks
                 {
                     // Commit the MSI Database
                     d.Commit();
-					d = null;
+                    d = null;
 
                     GC.Collect();
                     GC.WaitForPendingFinalizers();
@@ -458,9 +459,9 @@ namespace NAnt.Contrib.Tasks
                 catch (Exception e)
                 {
                     CleanOutput(cabFile, tempPath);
-					System.Console.WriteLine(e.ToString());
-					throw new Win32Exception();
-				}
+                    System.Console.WriteLine(e.ToString());
+                    throw new Win32Exception();
+                }
 
                 // Load Merge Modules
                 if (!LoadMergeModules(dest, tempPath))
@@ -486,11 +487,11 @@ namespace NAnt.Contrib.Tasks
                 catch (Exception e)
                 {
                     CleanOutput(cabFile, tempPath);
-					System.Console.WriteLine(e.ToString());
-					throw new Win32Exception();
-				}
+                    System.Console.WriteLine(e.ToString());
+                    throw new Win32Exception();
+                }
 
-				// Reorder Files
+                // Reorder Files
                 if (!ReorderFiles(d, ref lastSequence))
                 {
                     CleanOutput(cabFile, tempPath);
@@ -511,13 +512,13 @@ namespace NAnt.Contrib.Tasks
                     throw new BuildException();
                 }
 
-                Log.Write(LogPrefix + "Deleting Temporary Files...");
+                Log(Level.Info, LogPrefix + "Deleting Temporary Files...");
                 CleanOutput(cabFile, tempPath);
-                Log.WriteLine("Done.");
+                Log(Level.Info, "Done.");
 
                 try
                 {
-                    Log.Write(LogPrefix + "Saving MSI Database...");
+                    Log(Level.Info, LogPrefix + "Saving MSI Database...");
 
                     // Commit the MSI Database
                     d.Commit();
@@ -529,10 +530,10 @@ namespace NAnt.Contrib.Tasks
                 }
                 catch (Exception e)
                 {
-					System.Console.WriteLine(e.ToString());
-					throw new Win32Exception();
-				}
-                Log.WriteLine("Done.");
+                    System.Console.WriteLine(e.ToString());
+                    throw new Win32Exception();
+                }
+                Log(Level.Info, "Done.");
             }
             catch (Exception e)
             {
@@ -580,7 +581,7 @@ namespace NAnt.Contrib.Tasks
                     Record bannerRecord = bannerView.Fetch();
                     if (Verbose)
                     {
-                        Log.WriteLine(LogPrefix + "Storing Banner:\n\t" + bannerFile);
+                        Log(Level.Info, LogPrefix + "Storing Banner:\n\t" + bannerFile);
                     }
 
                     // Write the Banner file to the MSI database
@@ -591,7 +592,7 @@ namespace NAnt.Contrib.Tasks
                 }
                 else
                 {
-                    Log.WriteLine(LogPrefix + 
+                    Log(Level.Info, LogPrefix + 
                         "ERROR: Unable to open Banner Image:\n\n\t" + 
                         bannerFile + "\n\n");
                     return false;
@@ -618,7 +619,7 @@ namespace NAnt.Contrib.Tasks
                     Record bgRecord = bgView.Fetch();
                     if (Verbose)
                     {
-                        Log.WriteLine(LogPrefix + "Storing Background:\n\t" + bgFile);
+                        Log(Level.Info, LogPrefix + "Storing Background:\n\t" + bgFile);
                     }
 
                     // Write the Background file to the MSI database
@@ -629,7 +630,7 @@ namespace NAnt.Contrib.Tasks
                 }
                 else
                 {
-                    Log.WriteLine(LogPrefix + 
+                    Log(Level.Error, LogPrefix + 
                         "ERROR: Unable to open Background Image:\n\n\t" + 
                         bgFile + "\n\n");
                     return false;
@@ -657,7 +658,7 @@ namespace NAnt.Contrib.Tasks
                     Record licRecord = licView.Fetch();
                     if (Verbose)
                     {
-                        Log.WriteLine(LogPrefix + "Storing License:\n\t" + licFile);
+                        Log(Level.Info, LogPrefix + "Storing License:\n\t" + licFile);
                     }
                     StreamReader licReader = null;
                     try
@@ -668,7 +669,7 @@ namespace NAnt.Contrib.Tasks
                     }
                     catch (IOException)
                     {
-                        Log.WriteLine(LogPrefix + 
+                        Log(Level.Error, LogPrefix + 
                             "ERROR: Unable to open License File:\n\n\t" + 
                             licFile + "\n\n");
                         return false;
@@ -686,7 +687,7 @@ namespace NAnt.Contrib.Tasks
                 }
                 else
                 {
-                    Log.WriteLine(LogPrefix + 
+                    Log(Level.Error, LogPrefix + 
                         "ERROR: Unable to open License File:\n\n\t" + 
                         licFile + "\n\n");
                     return false;
@@ -709,7 +710,7 @@ namespace NAnt.Contrib.Tasks
 
             if (Verbose)
             {
-                Log.WriteLine(LogPrefix + "Adding Properties:");
+                Log(Level.Info, LogPrefix + "Adding Properties:");
             }
 
             // Add properties from Task definition
@@ -727,14 +728,14 @@ namespace NAnt.Contrib.Tasks
 
                 if (name == null || name == "")
                 {
-                    Log.WriteLine(LogPrefix + 
+                    Log(Level.Error, LogPrefix + 
                         "ERROR: Property with no name attribute detected.");
                     return false;
                 }
 
                 if (sValue == null || sValue == "")
                 {
-                    Log.WriteLine(LogPrefix + 
+                    Log(Level.Error, LogPrefix + 
                         "ERROR: Property " + name + 
                         " has no value.");
                     return false;
@@ -746,7 +747,7 @@ namespace NAnt.Contrib.Tasks
 
                 if (Verbose)
                 {
-                    Log.WriteLine("\t" + name);
+                    Log(Level.Info, "\t" + name);
                 }
             }
             propView.Close();
@@ -788,7 +789,7 @@ namespace NAnt.Contrib.Tasks
 
             if (Verbose)
             {
-                Log.WriteLine(LogPrefix + "Add Files:");
+                Log(Level.Info, LogPrefix + "Add Files:");
             }
 
             if (msi.components != null)
@@ -827,7 +828,7 @@ namespace NAnt.Contrib.Tasks
                         string keyFileName = (string)files[component.directory + "|" + component.key.file];
                         if (keyFileName == "KeyIsDotNetAssembly")
                         {
-                            Log.WriteLine(LogPrefix + "ERROR: Cannot specify key '" + component.key.file + 
+                            Log(Level.Error, LogPrefix + "ERROR: Cannot specify key '" + component.key.file + 
                                 "' for component '" + component.name + "'. File has been detected as " + 
                                 "being a COM component or Microsoft.NET assembly and is " + 
                                 "being registered with its own component. Please specify " + 
@@ -842,7 +843,7 @@ namespace NAnt.Contrib.Tasks
                     }
                     else
                     {
-                        Log.WriteLine(
+                        Log(Level.Error, 
                             LogPrefix + "ERROR: KeyFile \"" + component.key.file + 
                             "\" not found in Component \"" + component.name + "\".");
                         return false;
@@ -859,7 +860,7 @@ namespace NAnt.Contrib.Tasks
 
                     if (feature == null)
                     {
-                        Log.WriteLine(LogPrefix + 
+                        Log(Level.Error, LogPrefix + 
                             "ERROR: Component " + component + 
                             " mapped to nonexistent feature.");
                         return false;
@@ -931,7 +932,7 @@ namespace NAnt.Contrib.Tasks
 
             if (Verbose)
             {
-                Log.WriteLine(LogPrefix + "Adding Directories:");
+                Log(Level.Info, LogPrefix + "Adding Directories:");
             }
 
             // Add directories from Task definition
@@ -1007,7 +1008,7 @@ namespace NAnt.Contrib.Tasks
 
             if (Verbose)
             {
-                Log.WriteLine("\t" + 
+                Log(Level.Info, "\t" + 
                     Path.Combine(Project.BaseDirectory, Path.Combine(msi.sourcedir, relativePath.ToString())));
             }
             
@@ -1181,7 +1182,7 @@ namespace NAnt.Contrib.Tasks
 
             if (Verbose)
             {
-                Log.WriteLine(LogPrefix + "Adding Features:");
+                Log(Level.Info, LogPrefix + "Adding Features:");
             }
             
             foreach (MSIFeature feature in msi.features)
@@ -1241,7 +1242,7 @@ namespace NAnt.Contrib.Tasks
 
                 if (!foundComponent)
                 {
-                    Log.WriteLine(
+                    Log(Level.Error, 
                         LogPrefix + "ERROR: Feature " + Feature.name + 
                         " needs to be assigned a component or directory.");
                     return false;
@@ -1277,7 +1278,7 @@ namespace NAnt.Contrib.Tasks
 
             if (Verbose)
             {
-                Log.WriteLine("\t" + Feature.name);
+                Log(Level.Info, "\t" + Feature.name);
             }
 
             if (Feature.feature != null)
@@ -1407,21 +1408,21 @@ namespace NAnt.Contrib.Tasks
                     }
                     catch (Exception)
                     {
-                        Log.WriteLine(LogPrefix + 
+                        Log(Level.Error, LogPrefix + 
                             "ERROR: Could not open file " + filePath);
                         return false;
                     }
                 }
                 else
                 {
-                    Log.WriteLine(LogPrefix + 
+                    Log(Level.Error, LogPrefix + 
                         "ERROR: Could not open file " + filePath);
                     return false;
                 }
 
                 if (Verbose)
                 {
-                    Log.WriteLine("\t" + 
+                    Log(Level.Info, "\t" + 
                         Path.Combine(Project.BaseDirectory, Path.Combine(Path.Combine(msi.sourcedir, 
                         relativePath.ToString()), fileName)));
                 }
@@ -1610,7 +1611,7 @@ namespace NAnt.Contrib.Tasks
                         int regSvr = GetProcAddress(hmod, "DllRegisterServer");
                         if (regSvr != 0)
                         {
-                            Log.WriteLine(LogPrefix + 
+                            Log(Level.Info, LogPrefix + 
                                 "Configuring " + 
                                 Path.GetFileName(filePath) + 
                                 " for COM Self Registration...");
@@ -1684,7 +1685,7 @@ namespace NAnt.Contrib.Tasks
             {
                 if (Verbose)
                 {
-                    Log.WriteLine(LogPrefix + "Adding Registry Values:");
+                    Log(Level.Info, LogPrefix + "Adding Registry Values:");
                 }
 
                 foreach (MSIRegistryKey key in msi.registry)
@@ -1732,7 +1733,7 @@ namespace NAnt.Contrib.Tasks
                         if (Verbose)
                         {
                             string keypath = GetDisplayablePath(key.path);
-                            Log.WriteLine("\t" + keypath + @"#" + value.name);
+                            Log(Level.Info, "\t" + keypath + @"#" + value.name);
                         }
 
                         if (value.value != null && value.value != "")
@@ -1801,7 +1802,7 @@ namespace NAnt.Contrib.Tasks
             {
                 if (Verbose)
                 {
-                    Log.WriteLine(LogPrefix + "Adding Locators:");
+                    Log(Level.Info, LogPrefix + "Adding Locators:");
                 }
 
                 foreach (searchKey key in msi.search)
@@ -1862,7 +1863,7 @@ namespace NAnt.Contrib.Tasks
                                     if (Verbose)
                                     {
                                         string path = GetDisplayablePath(key.path);
-                                        Log.WriteLine("\t" + key.path + @"#" + value.name);
+                                        Log(Level.Info, "\t" + key.path + @"#" + value.name);
                                     }
                                 }
                             }
@@ -1952,7 +1953,7 @@ namespace NAnt.Contrib.Tasks
             {
                 if (Verbose)
                 {
-                    Log.WriteLine(LogPrefix + "Adding Launch Conditions:");
+                    Log(Level.Info, LogPrefix + "Adding Launch Conditions:");
                 }
                 
                 // Open the Launch Condition Table
@@ -1963,7 +1964,7 @@ namespace NAnt.Contrib.Tasks
                 {
                     if (Verbose)
                     {
-                        Log.WriteLine("\t" + launchCondition.name);
+                        Log(Level.Info, "\t" + launchCondition.name);
                     }
 
                     // Insert the icon data
@@ -2003,7 +2004,7 @@ namespace NAnt.Contrib.Tasks
 
                 if (Verbose)
                 {
-                    Log.WriteLine(LogPrefix + "Adding Icon Data:");
+                    Log(Level.Info, LogPrefix + "Adding Icon Data:");
                 }
                 
                 // Add binary data from Task definition
@@ -2011,7 +2012,7 @@ namespace NAnt.Contrib.Tasks
                 {
                     if (Verbose)
                     {
-                        Log.WriteLine("\t" + Path.Combine(Project.BaseDirectory, icon.value));
+                        Log(Level.Info, "\t" + Path.Combine(Project.BaseDirectory, icon.value));
                     }
 
                     if (File.Exists(Path.Combine(Project.BaseDirectory, icon.value)))
@@ -2029,7 +2030,7 @@ namespace NAnt.Contrib.Tasks
                     }
                     else
                     {
-                        Log.WriteLine(LogPrefix + 
+                        Log(Level.Error, LogPrefix + 
                             "ERROR: Unable to open file:\n\n\t" + 
                             Path.Combine(Project.BaseDirectory, icon.value) + "\n\n");
 
@@ -2060,7 +2061,7 @@ namespace NAnt.Contrib.Tasks
             {
                 if (Verbose)
                 {
-                    Log.WriteLine(LogPrefix + "Adding Shortcuts:");
+                    Log(Level.Info, LogPrefix + "Adding Shortcuts:");
                 }
 
                 View shortcutView = Database.OpenView("SELECT * FROM `Shortcut`");
@@ -2069,7 +2070,7 @@ namespace NAnt.Contrib.Tasks
                 {
                     if (Verbose)
                     {
-                        Log.WriteLine("\t" + shortcut.name);
+                        Log(Level.Info, "\t" + shortcut.name);
                     }
 
                     // Insert the record into the table
@@ -2116,14 +2117,14 @@ namespace NAnt.Contrib.Tasks
             {
                 if (Verbose)
                 {
-                    Log.WriteLine(LogPrefix + "Adding Tables:");
+                    Log(Level.Info, LogPrefix + "Adding Tables:");
                 }
 
                 foreach (MSITable table in msi.tables)
                 {
                     if (Verbose)
                     {
-                        Log.WriteLine("\t" + table.name);
+                        Log(Level.Info, "\t" + table.name);
                     }
                                     
                     bool tableExists = true;
@@ -2133,7 +2134,7 @@ namespace NAnt.Contrib.Tasks
                     
                         if (Verbose)
                         {
-                            Log.WriteLine("\t\tTable exists.. skipping");
+                            Log(Level.Info, "\t\tTable exists.. skipping");
                         }
                         tableExists = true;
                         tableView.Close();
@@ -2148,7 +2149,7 @@ namespace NAnt.Contrib.Tasks
                     {
                         if (Verbose)
                         {
-                            Log.Write("\t\tAdding table structure...");
+                            Log(Level.Info, "\t\tAdding table structure...");
                         }
 
                         View validationView = Database.OpenView("SELECT * FROM `_Validation`");
@@ -2353,8 +2354,8 @@ namespace NAnt.Contrib.Tasks
                                     {
                                         if (Verbose)
                                         {
-                                            Log.WriteLine(" ");
-                                            Log.WriteLine(LogPrefix + "Must specify a valid category or type.  Defaulting to category type: s0");
+                                            Log(Level.Info, " ");
+                                            Log(Level.Info, LogPrefix + "Must specify a valid category or type.  Defaulting to category type: s0");
                                         }
                                         tableStructureColumnTypes += "s0";
                                         currentColumn.type = "string";
@@ -2411,14 +2412,14 @@ namespace NAnt.Contrib.Tasks
                         }
                         catch (Exception ae)
                         {
-                            Log.WriteLine(LogPrefix + "ERROR: Temporary table file\n (" + Path.GetFullPath(Path.Combine(Path.Combine(Project.BaseDirectory, msi.sourcedir), tempFileName)) + ") is not valid:\n" + 
+                            Log(Level.Error, LogPrefix + "ERROR: Temporary table file\n (" + Path.GetFullPath(Path.Combine(Path.Combine(Project.BaseDirectory, msi.sourcedir), tempFileName)) + ") is not valid:\n" + 
                                 ae.ToString());
                         }
                         File.Delete(fullTempFileName);
 
                         if (Verbose)
                         {
-                            Log.WriteLine("Done");
+                            Log(Level.Info, "Done");
                         }
 
                         if (table.rows != null)
@@ -2448,7 +2449,7 @@ namespace NAnt.Contrib.Tasks
 
             if (Verbose)
             {
-                Log.Write("\t\tAdding table data...");
+                Log(Level.Info, "\t\tAdding table data...");
             }
             View tableView = Database.OpenView("SELECT * FROM `" + currentTable + "`");
             
@@ -2489,7 +2490,7 @@ namespace NAnt.Contrib.Tasks
                 }
                 catch (Exception)
                 {
-                    Log.WriteLine(LogPrefix + "Incorrect row data format.");
+                    Log(Level.Info, LogPrefix + "Incorrect row data format.");
                 }
             }
             tableView.Close();
@@ -2497,7 +2498,7 @@ namespace NAnt.Contrib.Tasks
             
             if (Verbose)
             {
-                Log.WriteLine("Done");
+                Log(Level.Info, "Done");
             }
             return true;
         }
@@ -2542,7 +2543,7 @@ namespace NAnt.Contrib.Tasks
                         }
                         else
                         {
-                            Log.WriteLine(LogPrefix + "File " + 
+                            Log(Level.Info, LogPrefix + "File " + 
                                 Path.GetFileName(curDirFileName) + 
                                 " not found during reordering.");
 
@@ -2560,7 +2561,7 @@ namespace NAnt.Contrib.Tasks
             catch (Exception e)
             {
                 // There are no files added to the msi.  (Msi containing only merge modules?)
-                Log.WriteLine(LogPrefix + "NOTE: No files found to add to MSI (Does not include MSM files).\n" + e.Message + "\n" + e.StackTrace);
+                Log(Level.Info, LogPrefix + "NOTE: No files found to add to MSI (Does not include MSM files).\n" + e.Message + "\n" + e.StackTrace);
             }
             return true;
         }
@@ -2574,7 +2575,7 @@ namespace NAnt.Contrib.Tasks
         /// <returns>True if successful.</returns>
         private bool CreateCabFile(Database Database, Type InstallerType, Object InstallerObject)
         {
-            Log.Write(LogPrefix + "Compressing Files...");
+            Log(Level.Info, LogPrefix + "Compressing Files...");
 
             // Create the CabFile
             ProcessStartInfo processInfo = new ProcessStartInfo();
@@ -2600,7 +2601,7 @@ namespace NAnt.Contrib.Tasks
             }
             catch (Exception e)
             {
-                Log.WriteLine(LogPrefix + "ERROR: cabarc.exe is not in your path! \n" + e.ToString());
+                Log(Level.Error, LogPrefix + "ERROR: cabarc.exe is not in your path! \n" + e.ToString());
                 return false;
             }
 
@@ -2610,29 +2611,29 @@ namespace NAnt.Contrib.Tasks
             }
             catch (Exception e)
             {
-                Log.WriteLine();
-                Log.WriteLine("Error creating cab file: " + e.Message);
+                Log(Level.Error, "");
+                Log(Level.Error, "Error creating cab file: " + e.Message);
                 return false;
             }
 
             if (process.ExitCode != 0)
             {
-                Log.WriteLine();
-                Log.WriteLine("Error creating cab file, application returned error " + 
+                Log(Level.Error, "");
+                Log(Level.Error, "Error creating cab file, application returned error " + 
                     process.ExitCode + ".");
                 return false;
             }
 
             if (!process.HasExited)
             {
-                Log.WriteLine();
-                Log.WriteLine("Killing the cabarc process.");
+                Log(Level.Info,"" );
+                Log(Level.Info, "Killing the cabarc process.");
                 process.Kill();
             }
             process = null;
             processInfo = null;
 
-            Log.WriteLine("Done.");
+            Log(Level.Info, "Done.");
             
             string cabFile = Path.Combine(Project.BaseDirectory, Path.Combine(msi.sourcedir, 
                 Path.GetFileNameWithoutExtension(msi.output) + @".cab"));
@@ -2642,7 +2643,7 @@ namespace NAnt.Contrib.Tasks
                 View cabView = Database.OpenView("SELECT * FROM `_Streams`");
                 if (Verbose)
                 {
-                    Log.WriteLine(LogPrefix + "Storing Cabinet in MSI Database...");
+                    Log(Level.Info, LogPrefix + "Storing Cabinet in MSI Database...");
                 }
 
                 Record cabRecord = (Record)InstallerType.InvokeMember(
@@ -2661,7 +2662,7 @@ namespace NAnt.Contrib.Tasks
             }
             else
             {
-                Log.WriteLine(LogPrefix + 
+                Log(Level.Error, LogPrefix + 
                     "ERROR: Unable to open Cabinet file:\n\n\t" + 
                     cabFile + "\n\n");
                 return false;
@@ -2711,7 +2712,7 @@ namespace NAnt.Contrib.Tasks
             }
             catch (Exception)
             {
-                Log.WriteLine(LogPrefix + "ERROR: Directory " + 
+                Log(Level.Error, LogPrefix + "ERROR: Directory " + 
                     LongPath + " not found.");
                 return "MsiTaskPathNotFound";
             }
@@ -3163,7 +3164,7 @@ namespace NAnt.Contrib.Tasks
 
                 if (Verbose)
                 {
-                    Log.WriteLine(LogPrefix + "Storing Merge Modules:");
+                    Log(Level.Info, LogPrefix + "Storing Merge Modules:");
                 }
                 
                 if (!Directory.Exists(TempPath))
@@ -3188,7 +3189,7 @@ namespace NAnt.Contrib.Tasks
                     {
                         if (Verbose)
                         {
-                            Log.WriteLine("\t" + Path.GetFileName(mergeModule));
+                            Log(Level.Info, "\t" + Path.GetFileName(mergeModule));
                         }
                         
                         try
@@ -3202,7 +3203,7 @@ namespace NAnt.Contrib.Tasks
                             }
                             catch (FileLoadException fle)
                             {
-                                Log.WriteLine(fle.Message + " " + fle.FileName + " " + fle.StackTrace);
+                                Log(Level.Info, fle.Message + " " + fle.FileName + " " + fle.StackTrace);
                                 return false;
                             }
                             
@@ -3247,9 +3248,9 @@ namespace NAnt.Contrib.Tasks
                                 }
                                 catch (Exception e)
                                 {
-                                    Log.WriteLine();
-                                    Log.WriteLine("Error extracting merge module cab file: " + moduleCab);
-                                    Log.WriteLine("Error was: " + e.Message);
+                                    Log(Level.Info, "" );
+                                    Log(Level.Info, "Error extracting merge module cab file: " + moduleCab);
+                                    Log(Level.Info, "Error was: " + e.Message);
 
                                     File.Delete(moduleCab);
                                     return false;
@@ -3257,9 +3258,9 @@ namespace NAnt.Contrib.Tasks
 
                                 if (process.ExitCode != 0)
                                 {
-                                    Log.WriteLine();
-                                    Log.WriteLine("Error extracting merge module cab file: " + moduleCab);
-                                    Log.WriteLine("Application returned ERROR: " + process.ExitCode);
+                                    Log(Level.Error, "");
+                                    Log(Level.Error, "Error extracting merge module cab file: " + moduleCab);
+                                    Log(Level.Error, "Application returned ERROR: " + process.ExitCode);
 
                                     File.Delete(moduleCab);
                                     return false;
@@ -3270,8 +3271,8 @@ namespace NAnt.Contrib.Tasks
                         }
                         catch (Exception)
                         {
-                            Log.WriteLine(LogPrefix + "ERROR: cabarc.exe is not in your path");
-                            Log.WriteLine(LogPrefix + "or file " + mergeModule + " is not found.");
+                            Log(Level.Error, LogPrefix + "ERROR: cabarc.exe is not in your path");
+                            Log(Level.Error, LogPrefix + "or file " + mergeModule + " is not found.");
                             return false;
                         }
                     }
@@ -3304,7 +3305,7 @@ namespace NAnt.Contrib.Tasks
 
                 if (Verbose)
                 {
-                    Log.WriteLine(LogPrefix + "Adding Binary Data:");
+                    Log(Level.Info, LogPrefix + "Adding Binary Data:");
                 }
                 
                 // Add binary data from Task definition
@@ -3312,13 +3313,13 @@ namespace NAnt.Contrib.Tasks
                 {
                     if (Verbose)
                     {
-                        Log.WriteLine("\t" + Path.Combine(Project.BaseDirectory, binary.value));
+                        Log(Level.Info, "\t" + Path.Combine(Project.BaseDirectory, binary.value));
 
                         int nameColSize = 50;
 
                         if (binary.name.Length > nameColSize)
                         {
-                            Log.WriteLine(LogPrefix + 
+                            Log(Level.Error, LogPrefix + 
                                 "WARNING: Binary key name longer than " + nameColSize + " characters:\n\tName: " + 
                                 binary.name + "\n\tLength: " + binary.name.Length.ToString());
 
@@ -3340,7 +3341,7 @@ namespace NAnt.Contrib.Tasks
                     }
                     else
                     {
-                        Log.WriteLine(LogPrefix + 
+                        Log(Level.Error, LogPrefix + 
                             "ERROR: Unable to open file:\n\n\t" + 
                             Path.Combine(Project.BaseDirectory, binary.value) + "\n\n");
 
@@ -3373,14 +3374,14 @@ namespace NAnt.Contrib.Tasks
 
                 if (Verbose)
                 {
-                    Log.WriteLine(LogPrefix + "Adding Dialogs:");
+                    Log(Level.Info, LogPrefix + "Adding Dialogs:");
                 }
                 
                 foreach (MSIDialog dialog in msi.dialogs)
                 {
                     if (Verbose)
                     {
-                        Log.WriteLine("\t" + dialog.name);
+                        Log(Level.Info, "\t" + dialog.name);
                     }
 
                     // Insert the dialog
@@ -3427,14 +3428,14 @@ namespace NAnt.Contrib.Tasks
 
                 if (Verbose)
                 {
-                    Log.WriteLine(LogPrefix + "Adding Dialog Controls:");
+                    Log(Level.Info, LogPrefix + "Adding Dialog Controls:");
                 }
                 
                 foreach (MSIControl control in msi.controls)
                 {
                     if (Verbose)
                     {
-                        Log.WriteLine("\t" + control.name);
+                        Log(Level.Info, "\t" + control.name);
                     }
 
                     // Insert the control
@@ -3483,14 +3484,14 @@ namespace NAnt.Contrib.Tasks
 
                 if (Verbose)
                 {
-                    Log.WriteLine(LogPrefix + "Adding Dialog Control Conditions For:");
+                    Log(Level.Info, LogPrefix + "Adding Dialog Control Conditions For:");
                 }
                 
                 foreach (MSIControlCondition controlCondition in msi.controlconditions)
                 {
                     if (Verbose)
                     {
-                        Log.WriteLine("\t" + controlCondition.control);
+                        Log(Level.Info, "\t" + controlCondition.control);
                     }
 
                     // Insert the condition
@@ -3527,7 +3528,7 @@ namespace NAnt.Contrib.Tasks
             {
                 if (Verbose)
                 {
-                    Log.WriteLine(LogPrefix + "Modifying Dialog Control Events:");
+                    Log(Level.Info, LogPrefix + "Modifying Dialog Control Events:");
                 }
                 
                 foreach (MSIControlEvent controlEvent in msi.controlevents)
@@ -3537,15 +3538,16 @@ namespace NAnt.Contrib.Tasks
 
                     if (Verbose)
                     {
+                        string action = "";
                         if (controlEvent.remove)
                         {
-                            Log.Write("\tRemoving");
+                           action = "\tRemoving";
                         }
                         else
                         {
-                            Log.Write("\tAdding");
+                            action = "\tAdding";
                         }
-                        Log.WriteLine("\tControl: " + controlEvent.control + "\tEvent: " + controlEvent.name);
+                        Log(Level.Info, action + "\tControl: " + controlEvent.control + "\tEvent: " + controlEvent.name);
                     }
                     if (controlEvent.remove)
                     {
@@ -3560,7 +3562,7 @@ namespace NAnt.Contrib.Tasks
                         }
                         catch (IOException)
                         {
-                            Log.WriteLine(LogPrefix + 
+                            Log(Level.Error, LogPrefix + 
                                 "ERROR: Control Event not found.\n\nSELECT * FROM `ControlEvent` WHERE `Dialog_`='" + controlEvent.dialog + "' AND `Control_`='" + controlEvent.control + "' AND `Event`='" + controlEvent.name + "' AND `Argument`='" + controlEvent.argument + "' AND `Condition`='" + controlEvent.condition + "'");
                             return false;
                         }
@@ -3614,7 +3616,7 @@ namespace NAnt.Contrib.Tasks
             {
                 if (Verbose)
                 {
-                    Log.WriteLine(LogPrefix + "Adding Custom Actions:");
+                    Log(Level.Info, LogPrefix + "Adding Custom Actions:");
                 }
 
                 View customActionView = Database.OpenView("SELECT * FROM `CustomAction`");
@@ -3623,7 +3625,7 @@ namespace NAnt.Contrib.Tasks
                 {
                     if (Verbose)
                     {
-                        Log.WriteLine("\t" + customAction.action);
+                        Log(Level.Info, "\t" + customAction.action);
                     }
 
                     // Insert the record into the table
@@ -3661,7 +3663,7 @@ namespace NAnt.Contrib.Tasks
             {
                 if (Verbose)
                 {
-                    Log.WriteLine(LogPrefix + "Adding Install/Admin Sequences:");
+                    Log(Level.Info, LogPrefix + "Adding Install/Admin Sequences:");
                 }
 
                 // Open the sequence tables
@@ -3676,7 +3678,7 @@ namespace NAnt.Contrib.Tasks
                 {
                     if (Verbose)
                     {
-                        Log.WriteLine("\t" + sequence.action + " to the " + sequence.type.ToString() + "sequence table.");
+                        Log(Level.Info, "\t" + sequence.action + " to the " + sequence.type.ToString() + "sequence table.");
                     }
 
                     // Insert the record to the respective table
@@ -3737,7 +3739,7 @@ namespace NAnt.Contrib.Tasks
             {
                 if (Verbose)
                 {
-                    Log.WriteLine(LogPrefix + "Adding Application Mappings:");
+                    Log(Level.Info, LogPrefix + "Adding Application Mappings:");
                 }
 
                 View appmapView = Database.OpenView("SELECT * FROM `_AppMappings`");
@@ -3746,7 +3748,7 @@ namespace NAnt.Contrib.Tasks
                 {
                     if (Verbose)
                     {
-                        Log.WriteLine("\t" + appmap.directory);
+                        Log(Level.Info, "\t" + appmap.directory);
                     }
 
                     // Insert the record into the table
@@ -3782,7 +3784,7 @@ namespace NAnt.Contrib.Tasks
             {
                 if (Verbose)
                 {
-                    Log.WriteLine(LogPrefix + "Adding URL Properties:");
+                    Log(Level.Info, LogPrefix + "Adding URL Properties:");
                 }
 
                 View urlpropView = Database.OpenView("SELECT * FROM `_UrlToDir`");
@@ -3791,7 +3793,7 @@ namespace NAnt.Contrib.Tasks
                 {
                     if (Verbose)
                     {
-                        Log.WriteLine("\t" + urlprop.name);
+                        Log(Level.Info, "\t" + urlprop.name);
                     }
 
                     // Insert the record into the table
@@ -3825,7 +3827,7 @@ namespace NAnt.Contrib.Tasks
             {
                 if (Verbose)
                 {
-                    Log.WriteLine(LogPrefix + "Adding VDir Properties:");
+                    Log(Level.Info, LogPrefix + "Adding VDir Properties:");
                 }
 
                 View vdirpropView = Database.OpenView("SELECT * FROM `_VDirToUrl`");
@@ -3834,7 +3836,7 @@ namespace NAnt.Contrib.Tasks
                 {
                     if (Verbose)
                     {
-                        Log.WriteLine("\t" + vdirprop.name);
+                        Log(Level.Info, "\t" + vdirprop.name);
                     }
 
                     // Insert the record into the table
@@ -3869,7 +3871,7 @@ namespace NAnt.Contrib.Tasks
             {
                 if (Verbose)
                 {
-                    Log.WriteLine(LogPrefix + "Adding Application Roots:");
+                    Log(Level.Info, LogPrefix + "Adding Application Roots:");
                 }
 
                 View approotView = Database.OpenView("SELECT * FROM `_AppRootCreate`");
@@ -3878,7 +3880,7 @@ namespace NAnt.Contrib.Tasks
                 {
                     if (Verbose)
                     {
-                        Log.WriteLine("\t" + appRoot.urlproperty);
+                        Log(Level.Info, "\t" + appRoot.urlproperty);
                     }
 
                     // Insert the record into the table
@@ -3913,7 +3915,7 @@ namespace NAnt.Contrib.Tasks
             {
                 if (Verbose)
                 {
-                    Log.WriteLine(LogPrefix + "Adding IIS Directory Properties:");
+                    Log(Level.Info, LogPrefix + "Adding IIS Directory Properties:");
                 }
 
                 View iispropView = Database.OpenView("SELECT * FROM `_IISProperties`");
@@ -3924,7 +3926,7 @@ namespace NAnt.Contrib.Tasks
                 {
                     if (Verbose)
                     {
-                        Log.WriteLine("\t" + iisprop.directory);
+                        Log(Level.Info, "\t" + iisprop.directory);
                     }
 
                     // Insert the record into the table
@@ -4020,7 +4022,7 @@ namespace NAnt.Contrib.Tasks
                             {
                                 if (curTypeLibFileName == typeLibFileName)
                                 {
-                                    Log.WriteLine(LogPrefix + "Configuring " + typeLibName + " for COM Interop...");
+                                    Log(Level.Info, LogPrefix + "Configuring " + typeLibName + " for COM Interop...");
 
                                     Record recTypeLib = (Record)InstallerType.InvokeMember(
                                         "CreateRecord", 

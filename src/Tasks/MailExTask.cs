@@ -22,8 +22,9 @@ using System;
 using System.Text;
 using System.Web.Mail;
 using System.IO;
-using SourceForge.NAnt.Attributes;
-using SourceForge.NAnt;
+using NAnt.Core.Attributes;
+using NAnt.Core;
+using NAnt.Core.Types;
 
 namespace NAnt.Contrib.Tasks 
 { 
@@ -225,7 +226,7 @@ namespace NAnt.Contrib.Tasks
                mailMessage.Attachments.Add(attach);
             } catch {
                string msg = "WARNING! File \"" + file + "\" NOT attached to message. File does not exist or cannot be accessed. Check: " + Location.ToString() + "attachments=\"" + Attachments + "\"";
-               Log.WriteLine(LogPrefix + msg);
+               Log(Level.Info, LogPrefix + msg);
             }
          }
 
@@ -258,7 +259,7 @@ namespace NAnt.Contrib.Tasks
             return reader.ReadToEnd();
          } catch {
             string msg = "WARNING! File \"" + filename + "\" NOT added to message body. File does not exist or is not readable. Check: " + Location.ToString() + "files=\"" + Files + "\"";
-            Log.WriteLine(LogPrefix + msg);
+            Log(Level.Warning, LogPrefix + msg);
             return null;
          } finally {
             if ( reader != null )

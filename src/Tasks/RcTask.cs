@@ -28,9 +28,9 @@
 using System;
 using System.IO;
 
-using SourceForge.NAnt;
-using SourceForge.NAnt.Tasks;
-using SourceForge.NAnt.Attributes;
+using NAnt.Core;
+using NAnt.Core.Tasks;
+using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks {
 
@@ -90,11 +90,13 @@ namespace NAnt.Contrib.Tasks {
             }
         }
         protected override void ExecuteTask() {
-            Log.Write(LogPrefix + "Compiling {0}", RcFile);
+            string message = string.Format( "Compiling {0}", RcFile );
+           
+            
             if (Output != null) {
-                Log.Write(" to {0}", Output);
+               message+= string.Format(" to {0}", Output);
             }
-            Log.WriteLine();
+            Log(Level.Info, message);
             base.ExecuteTask();
         }
     }

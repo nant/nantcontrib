@@ -18,8 +18,8 @@
 //
 
 using System;
-using SourceForge.NAnt;
-using SourceForge.NAnt.Attributes;
+using NAnt.Core;
+using NAnt.Core.Attributes;
 using InterOpStarTeam = StarTeam;
 
 namespace NAnt.Contrib.Tasks.StarTeam 
@@ -40,7 +40,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 	/// <author> <a href="mailto:jcyip@thoughtworks.com">Jason Yip</a></author>
 	/// <author> <a href="mailto:stevec@ignitesports.com">Steve Cohen</a></author>
 
-	public abstract class StarTeamTask : SourceForge.NAnt.Task
+	public abstract class StarTeamTask : NAnt.Core.Task
 	{
 		///<summary>
 		///Name of StarTeamServer.

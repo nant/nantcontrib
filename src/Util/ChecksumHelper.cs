@@ -23,8 +23,8 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Security.Cryptography;
-using SourceForge.NAnt.Attributes;
-using SourceForge.NAnt;
+using NAnt.Core.Attributes;
+using NAnt.Core;
 
 namespace NAnt.Contrib.Util
 { 

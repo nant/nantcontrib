@@ -23,11 +23,11 @@
 using System;
 using System.IO;
 
-using SourceForge.NAnt;
-using SourceForge.NAnt.Tasks;
-using SourceForge.NAnt.Attributes;
+using NAnt.Core;
+using NAnt.Core.Tasks;
+using NAnt.Core.Attributes;
 
-namespace NAnt.Contrib.Tasks {
+namespace NAnt.Optional.Tasks {
 
 
 /// <summary>Compiles messages using mc.exe, Microsoft's Win32 message compiler.</summary>
@@ -99,17 +99,17 @@ public class McTask : ExternalProgramBase {
         string header = Path.Combine(HeaderPath, Path.GetFileNameWithoutExtension(McFile)) + ".h";
         string rc = Path.Combine(HeaderPath, Path.GetFileNameWithoutExtension(McFile)) + ".rc";
         if (!NeedsCompiling(header) && !NeedsCompiling(rc)) {
-            Log.WriteLine(LogPrefix + "Target(s) up-to-date, not compiling: {0}", McFile);
+            Log(Level.Info, LogPrefix + "Target(s) up-to-date, not compiling: {0}", McFile);
         }
         else {
-            Log.WriteLine(LogPrefix + "Target out of date compiling {0}", McFile);
+            Log(Level.Info, LogPrefix + "Target out of date compiling {0}", McFile);
             if (HeaderPath != null) {
-                Log.WriteLine(LogPrefix + "Header file to {0}", HeaderPath);
+                Log(Level.Info, LogPrefix + "Header file to {0}", HeaderPath);
             }
             if (RCPath != null) {
-                Log.WriteLine(LogPrefix + "RC file to {0}", RCPath);
+                Log(Level.Info, LogPrefix + "RC file to {0}", RCPath);
             }
-            Log.WriteLine();
+            Log(Level.Info, "");
             base.ExecuteTask();
         }
     }
@@ -129,7 +129,7 @@ public class McTask : ExternalProgramBase {
         }
         else //If it doesn't exist, let the compiler throw the error
         {
-            Log.WriteLineIf(Verbose, LogPrefix + "Source file doesn't exist!  Compiler may whine: {0}", srcInfo.FullName);
+            Log(Level.Info, LogPrefix + "Source file doesn't exist!  Compiler may whine: {0}", srcInfo.FullName);
 
             return(true);
         }

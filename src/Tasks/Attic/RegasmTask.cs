@@ -24,32 +24,33 @@ using System;
 using System.IO;
 using System.Collections.Specialized;
 
-using SourceForge.NAnt;
-using SourceForge.NAnt.Tasks;
-using SourceForge.NAnt.Attributes;
+using NAnt.Core;
+using NAnt.Core.Types;
+using NAnt.Core.Tasks;
+using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks {
-	/// <summary>Register an assembly for  use from COM clients.</summary>
-	/// <remarks>
-	///   <para>Refer to the <a href="ms-help://MS.VSCC/MS.MSDNVS/cptools/html/cpgrfassemblyregistrationtoolregasmexe.htm">Regasm</a> for  more information on the regasm tool</para>
-	/// </remarks>
-	/// <example>
-	///   <para>Register a single assembly.</para>
-	///   <code><![CDATA[<regasm file="myAssembly.dll"/>]]></code>
-	///   <para>Register an assembly while exporting a typelibrary </para>
-	///   <code><![CDATA[<regasm file="myAssembly.dll" typelib="myAssembly.tlb"/>]]></code>
-	///   <para>Register a set of assemblies at once.</para>
-	///   <code>
-	/// <![CDATA[
-	/// <regasm unregister="false" codebase="true" >
-	///     <fileset>
-	///         <includes name="**/*.dll"/>
+    /// <summary>Register an assembly for  use from COM clients.</summary>
+    /// <remarks>
+    ///   <para>Refer to the <a href="ms-help://MS.VSCC/MS.MSDNVS/cptools/html/cpgrfassemblyregistrationtoolregasmexe.htm">Regasm</a> for  more information on the regasm tool</para>
+    /// </remarks>
+    /// <example>
+    ///   <para>Register a single assembly.</para>
+    ///   <code><![CDATA[<regasm file="myAssembly.dll"/>]]></code>
+    ///   <para>Register an assembly while exporting a typelibrary </para>
+    ///   <code><![CDATA[<regasm file="myAssembly.dll" typelib="myAssembly.tlb"/>]]></code>
+    ///   <para>Register a set of assemblies at once.</para>
+    ///   <code>
+    /// <![CDATA[
+    /// <regasm unregister="false" codebase="true" >
+    ///     <fileset>
+    ///         <includes name="**/*.dll"/>
       ///         <excludes name="notanassembly.dll"/>
-	///     </fileset>
-	/// </regasm>
-	/// ]]>
-	///   </code>
-	/// </example>
+    ///     </fileset>
+    /// </regasm>
+    /// ]]>
+    ///   </code>
+    /// </example>
     [TaskName("regasm")]
     public class RegasmTask : ExternalProgramBase {
 
@@ -125,7 +126,10 @@ namespace NAnt.Contrib.Tasks {
                
         /// <summary>the set of files to register..</summary>
         [FileSet("fileset")]
-        public FileSet RegasmFileSet { get { return _fileset; } }
+        public FileSet RegasmFileSet { 
+            get { return _fileset; } 
+            set { _fileset = value; }
+        }
         
         public override string ProgramFileName {
             get {return Name;}
@@ -167,7 +171,7 @@ namespace NAnt.Contrib.Tasks {
             // If the user wants to see the actual command the -verbose flag
             // will cause ExternalProgramBase to display the actual call.
             if ( AssemblyName != null ) {
-                Log.WriteLine(LogPrefix + "{0} {1} for COM Interop", Unregister ? "UnRegistering" : "Registering", AssemblyName);
+                Log(Level.Info, LogPrefix + "{0} {1} for COM Interop", Unregister ? "UnRegistering" : "Registering", AssemblyName);
                 if ( ExportTypelib && TypeLib == null ) {
                     TypeLib = AssemblyName.Replace(Path.GetExtension(AssemblyName), ".tlb");                        
                 }
@@ -180,7 +184,7 @@ namespace NAnt.Contrib.Tasks {
                 StringCollection fileNames = RegasmFileSet.FileNames;
 
                 // display build log message
-                Log.WriteLine(LogPrefix + "Registering {0} files", fileNames.Count);
+                Log(Level.Info, LogPrefix + "Registering {0} files", fileNames.Count);
                 
                 string registryFile = RegistryFile;
 
@@ -196,7 +200,7 @@ namespace NAnt.Contrib.Tasks {
                         TypeLib = typelibFile;
                     }
                     // Ignore certain flags if in multifile mode..                  
-                    Log.WriteLine(LogPrefix + "{0} {1} for COM Interop", Unregister ? "UnRegistering" : "Registering", Path.GetFileName(path));
+                    Log(Level.Info, LogPrefix + "{0} {1} for COM Interop", Unregister ? "UnRegistering" : "Registering", Path.GetFileName(path));
                     base.ExecuteTask();
                 }
 

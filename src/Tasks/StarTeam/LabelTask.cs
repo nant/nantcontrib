@@ -19,8 +19,8 @@
 
 using System;
 using System.IO;
-using SourceForge.NAnt;
-using SourceForge.NAnt.Attributes;
+using NAnt.Core;
+using NAnt.Core.Attributes;
 using InterOpStarTeam = StarTeam;
 
 namespace NAnt.Contrib.Tasks.StarTeam 
@@ -176,7 +176,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 					sLabelType = "Revision";
 				else 
 					sLabelType = (this._isBuildLabel ? "View Build" : "View");
-				Log.WriteLine(LogPrefix + "Created {0} Label: {1}",sLabelType, _labelName);
+				Log(Level.Info, LogPrefix + "Created {0} Label: {1}",sLabelType, _labelName);
 			}
 			catch(Exception e)
 			{

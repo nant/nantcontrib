@@ -27,9 +27,10 @@ using System.Text;
 using System.Web.Mail;
 using System.Xml;
 using System.Xml.Xsl;
-using SourceForge.NAnt.Attributes;
-using SourceForge.NAnt;
-using SourceForge.NAnt.Tasks;
+using NAnt.Core.Attributes;
+using NAnt.Core;
+using NAnt.Core.Types;
+using NAnt.Core.Tasks;
 
 namespace NAnt.Contrib.Tasks {
 
@@ -86,8 +87,8 @@ namespace NAnt.Contrib.Tasks {
       private string _proxy;
       private string _tlb;
       private string _filename;
-      private OptionSet _options = new OptionSet();
-      private OptionSet _defines = new OptionSet();
+      private OptionCollection _options = new OptionCollection();
+      private OptionCollection _defines = new OptionCollection();
       #endregion // Private Variables
 
       /// <summary>
@@ -255,8 +256,8 @@ namespace NAnt.Contrib.Tasks {
       /// <summary>
       /// Additional options to pass to midl.exe.
       /// </summary>
-      [OptionSetAttribute("options")]
-      public OptionSet Options {
+      [BuildElementCollection("options")]
+      public OptionCollection Options {
          get { return _options; }
       }
 
@@ -264,8 +265,8 @@ namespace NAnt.Contrib.Tasks {
       /// Macro definitions to pass to mdil.exe.
       /// Each entry will generate a /D
       /// </summary>
-      [OptionSetAttribute("defines")]
-      public OptionSet Defines {
+      [BuildElementCollection("defines")]
+      public OptionCollection Defines {
          get { return _defines; }
       }
 
@@ -307,9 +308,9 @@ namespace NAnt.Contrib.Tasks {
 
             if (Verbose) {
                // display response file contents
-               Log.WriteLine(LogPrefix + "Contents of " + rspFile);
+               Log(Level.Info, LogPrefix + "Contents of " + rspFile);
                StreamReader reader = File.OpenText(rspFile);
-               Log.WriteLine(reader.ReadToEnd());
+               Log(Level.Info, reader.ReadToEnd());
                reader.Close();
             }
 
@@ -354,7 +355,7 @@ namespace NAnt.Contrib.Tasks {
          sources.Add(Path.GetFullPath(Path.Combine(BaseDirectory, _filename)));
          string fileName = FileSet.FindMoreRecentLastWriteTime(sources, outputFileInfo.LastWriteTime);
          if (fileName != null) {
-            Log.WriteLineIf(Verbose, LogPrefix + "{0} is out of date, recompiling.", fileName);
+            Log(Level.Info, LogPrefix + "{0} is out of date, recompiling.", fileName);
             return true;
          }
          return false;
@@ -391,14 +392,14 @@ namespace NAnt.Contrib.Tasks {
          if ( _proxy != null )
             writer.WriteLine("/proxy " + _proxy);
 
-         foreach ( OptionValue define in _defines ) {
+         foreach ( Option define in _defines ) {
             if ( define.Value == null )
                writer.WriteLine("/D " + define.Name);
             else
                writer.WriteLine("/D " + define.Name + "=" + define.Value);
          }
 
-         foreach ( OptionValue option in _options ) {
+         foreach ( Option option in _options ) {
             if ( option.Value == null )
                writer.WriteLine(option.Name);
             else

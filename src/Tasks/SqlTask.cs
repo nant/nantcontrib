@@ -24,8 +24,8 @@ using System.Data.OleDb;
 using System.IO;
 using System.Text;
 using System.Web.Mail;
-using SourceForge.NAnt.Attributes;
-using SourceForge.NAnt;
+using NAnt.Core.Attributes;
+using NAnt.Core;
 using NAnt.Contrib.Util;
 
 namespace NAnt.Contrib.Tasks
@@ -248,7 +248,7 @@ namespace NAnt.Contrib.Tasks
          message.Append ("Source script file: " + this.Source + Environment.NewLine);
          message.Append ("Output file: " + this.Output + Environment.NewLine);
 
-         Log.WriteLineIf(this.Verbose == true, message.ToString());
+         Log(Level.Info, message.ToString());
 
          if ( this.Verbose ) {
             _outputWriter.WriteLine(message.ToString());
@@ -291,8 +291,8 @@ namespace NAnt.Contrib.Tasks
          foreach ( string statement in list )
          {
 
-            Log.WriteLineIf(this.Verbose, "SQL Statement:");
-            Log.WriteLineIf(this.Verbose, statement);
+            Log(Level.Info, "SQL Statement:");
+            Log(Level.Info, statement);
 
             if ( this.Verbose ) {
                _outputWriter.WriteLine();
@@ -304,8 +304,8 @@ namespace NAnt.Contrib.Tasks
             try {
                results = sqlHelper.Execute(statement, CommandTimeout);
             } catch (Exception error) {
-               Log.WriteLine("SQL Error: " + error.Message);
-               Log.WriteLine("Statement: " + statement);
+               Log(Level.Info, "SQL Error: " + error.Message);
+               Log(Level.Info, "Statement: " + statement);
             } finally {
                ProcessResults(results, _outputWriter);
             }
@@ -330,8 +330,8 @@ namespace NAnt.Contrib.Tasks
             sql = adapter.AdaptSqlFile(Source);
          }
 
-         Log.WriteLineIf(this.Verbose, "SQL Statement:");
-         Log.WriteLineIf(this.Verbose, sql);
+         Log(Level.Info,  "SQL Statement:");
+         Log(Level.Info,  sql);
 
          if ( this.Verbose ) {
             _outputWriter.WriteLine();
@@ -378,7 +378,7 @@ namespace NAnt.Contrib.Tasks
             results.Close();
          }
          if ( results.RecordsAffected >= 0 ) {
-            Log.WriteLine(LogPrefix + "{0} records affected", results.RecordsAffected);
+            Log(Level.Info, LogPrefix + "{0} records affected", results.RecordsAffected);
          }
       }
 
@@ -397,7 +397,7 @@ namespace NAnt.Contrib.Tasks
       private void SqlMessageHandler(object sender, OleDbInfoMessageEventArgs e)
       {
          _outputWriter.WriteLine(e.Message);
-         Log.WriteLineIf(this.Verbose, e.Message);
+         Log(Level.Info,  e.Message);
       }
    } // class SqlTask
 

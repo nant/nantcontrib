@@ -25,9 +25,11 @@ using System.Xml;
 using System.Text;
 using System.Collections.Specialized;
 
-using SourceForge.NAnt;
-using SourceForge.NAnt.Tasks;
-using SourceForge.NAnt.Attributes;
+using NAnt.Core;
+using NAnt.Core.Tasks;
+using NAnt.Core.Types;
+using NAnt.DotNet.Tasks;
+using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks {
     /// <summary>Generates code for web service clients and xml web services 
@@ -39,7 +41,7 @@ namespace NAnt.Contrib.Tasks {
     ///     language="CS" namespace="MyCompany.MyService" outfile="MyService.cs" />]]></code>
     /// </example>
     [TaskName("wsdl")]
-    public class WsdlTask : MsftFXSDKExternalProgramBase {
+    public class WsdlTask : SdkExternalProgramBase {
         private string _args;
         string _path = null;
         bool _nologo = false;

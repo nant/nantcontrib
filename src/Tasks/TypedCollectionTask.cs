@@ -26,8 +26,9 @@ using System;
 using System.Collections.Specialized;
 using System.IO;
 
-using SourceForge.NAnt;
-using SourceForge.NAnt.Attributes;
+using NAnt.Core;
+using NAnt.Core.Types;
+using NAnt.Core.Attributes;
 using CollectionGenerator;
 
 namespace NAnt.Contrib.Tasks {
@@ -73,6 +74,7 @@ namespace NAnt.Contrib.Tasks {
         [FileSet("fileset")]
         public FileSet TypedCollFileSet {
             get { return _fileset; }
+            set { _fileset = value; }
         }
         protected override void ExecuteTask() {
             // add the shortcut filename to the file set
@@ -90,7 +92,7 @@ namespace NAnt.Contrib.Tasks {
             StringCollection fileNames = TypedCollFileSet.FileNames;          
 
             // display build log message
-            Log.WriteLine(LogPrefix + "Building typesafe collection classes for {0} files in the {1} language", fileNames.Count, Language );
+            Log(Level.Info, LogPrefix + "Building typesafe collection classes for {0} files in the {1} language", fileNames.Count, Language );
 
             // perform operation
             foreach (string path in fileNames) {
@@ -106,7 +108,7 @@ namespace NAnt.Contrib.Tasks {
             string langExt = "";
             try {
                 if (File.Exists(path)) {
-                    Log.WriteLineIf(Verbose, LogPrefix + path);
+                    Log(Level.Info, LogPrefix + path);
                     CollectionGenerator.CollectionGenerator generator = null;
                     // load the file
                     switch ( language ) {

@@ -21,8 +21,9 @@
 using System;
 using System.Collections;
 using System.IO;
-using SourceForge.NAnt.Attributes;
-using SourceForge.NAnt;
+using NAnt.Core.Attributes;
+using NAnt.Core;
+using NAnt.Core.Types;
 using System.Xml;
 
 struct FileCodeCountInfo {
@@ -41,7 +42,7 @@ struct FileCodeCountInfo {
     }
 }
 
-namespace Nant.Contrib.Tasks.CodeStatsTask {
+namespace NAnt.Contrib.Tasks.CodeStatsTask {
     /// <summary>
     /// Generates Statistics from Source Code
     /// </summary>
@@ -54,11 +55,11 @@ namespace Nant.Contrib.Tasks.CodeStatsTask {
     /// <para>Output can be saved to an xml file</para>
     /// <code>
     /// <![CDATA[
-    ///		<codestats outputFile="test.xml" verbose="true">
-    ///			<fileset>
-    ///				<includes name="**.cs" />
-    ///			</fileset>
-    ///		</codestats>
+    ///     <codestats outputFile="test.xml" verbose="true">
+    ///         <fileset>
+    ///             <includes name="**.cs" />
+    ///         </fileset>
+    ///     </codestats>
     /// ]]>
     /// </code>
     /// </example>
@@ -84,6 +85,7 @@ namespace Nant.Contrib.Tasks.CodeStatsTask {
         [FileSet("fileset")]
         public FileSet TargetFileSet {
             get { return _fileset; }
+            set { _fileset = value; }
         }
 
         /// <summary>
@@ -140,7 +142,7 @@ namespace Nant.Contrib.Tasks.CodeStatsTask {
                 _fileNames.Add(fileInfo);
             }
             this._fileNames.TrimToSize();
-            Log.WriteLineIf(Verbose, "Totals:\t[T] {0}\t[C] {1}\t[E] {2}", _lineCount, _commentLineCount, _emptyLinesCount);
+            Log(Level.Info,  "Totals:\t[T] {0}\t[C] {1}\t[E] {2}", _lineCount, _commentLineCount, _emptyLinesCount);
         }
         private FileCodeCountInfo countFile(string FileName) {
             int fileLineCount = 0;
@@ -187,7 +189,7 @@ namespace Nant.Contrib.Tasks.CodeStatsTask {
             }
 
             sr.Close();
-            Log.WriteLineIf(Verbose, "{0} Totals:\t[T] {1}\t[C] {2}\t[E] {3}", FileName, fileLineCount, fileCommentLineCount, fileEmptyLineCount);
+            Log(Level.Info,  "{0} Totals:\t[T] {1}\t[C] {2}\t[E] {3}", FileName, fileLineCount, fileCommentLineCount, fileEmptyLineCount);
             return new FileCodeCountInfo(FileName, 
                 FileName,fileLineCount,fileCommentLineCount,fileEmptyLineCount);
         }

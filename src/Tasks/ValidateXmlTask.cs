@@ -26,8 +26,9 @@ using System.Text;
 using System.Xml;
 using System.Xml.Schema;
 
-using SourceForge.NAnt.Attributes;
-using SourceForge.NAnt;
+using NAnt.Core.Attributes;
+using NAnt.Core.Types;
+using NAnt.Core;
 
 using NAnt.Contrib.Util;
 
@@ -77,6 +78,7 @@ namespace NAnt.Contrib.Tasks
       [FileSet("files", Required=true)]
       public FileSet XmlFiles {
          get { return _xmlFiles; }
+         set { _xmlFiles = value; }
       }
 
       [SchemaSetAttribute("schemas", Required=true)]
@@ -108,20 +110,20 @@ namespace NAnt.Contrib.Tasks
       protected override void ExecuteTask() 
       {
          foreach ( string file in XmlFiles.FileNames ) {
-            Log.WriteLine(LogPrefix + "Validating " + file);
-            Log.Indent();
+            Log(Level.Info, LogPrefix + "Validating " + file);
+            //Log(Indent();
             try {
                ValidateFile(file);
             } catch ( XmlException ex ) {
                throw new BuildException("Invalid XML file: " + ex.Message, Location);
             }
-            Log.Unindent();
+            //Log.Unindent();
 
             if ( _numErrors == 0 ) {
-               Log.WriteLine(LogPrefix + "Document is valid");
+               Log(Level.Info, LogPrefix + "Document is valid");
             } else {
                if ( !FailOnError ) {
-                  Log.WriteLine(LogPrefix + _numErrors + " Errors in document");
+                  Log(Level.Info, LogPrefix + _numErrors + " Errors in document");
                } else  {
                   string msg = string.Format("Invalid XML Document '{0}'", file);
                   throw new BuildException(msg, Location);
@@ -150,7 +152,7 @@ namespace NAnt.Contrib.Tasks
       private void OnValidationError(object sender, ValidationEventArgs args)
       {
          _numErrors++;
-         Log.WriteLine(LogPrefix + "Validation Error: {0}", args.Message);
+         Log(Level.Info, LogPrefix + "Validation Error: {0}", args.Message);
       }
 
 

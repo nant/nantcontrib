@@ -27,9 +27,11 @@ using System.IO;
 using System.Text;
 using System.Xml;
 
-using SourceForge.NAnt;
-using SourceForge.NAnt.Tasks;
-using SourceForge.NAnt.Attributes;
+using NAnt.Core;
+using NAnt.DotNet.Tasks;
+using NAnt.Core.Types;
+using NAnt.Core.Tasks;
+using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks {
 
@@ -43,7 +45,7 @@ namespace NAnt.Contrib.Tasks {
     ///   <code><![CDATA[<tlbexp assembly="DotNetAssembly.dll" output="LegacyCOM.dll"/>]]></code>
     /// </example>
     [TaskName("tlbexp")]
-    public class TlbExpTask : ExternalProgramBase {
+    public class TlbExpTask : SdkExternalProgramBase {
         
         string _assembly = null;
         string _output = null;
@@ -67,10 +69,13 @@ namespace NAnt.Contrib.Tasks {
         /// <value></value>
         [TaskAttribute("names")]
         public string Names     { get { return _names; } set { _names = value; } }
-
-        public override string ProgramFileName  { get { return Name; } }
+      
         public override string ProgramArguments { get { return _programArguments; } }
-
+        protected override string ExeName {           
+            get { 
+                return Name;
+            }
+        }
         protected string GetOutputPath() {
             return Path.GetFullPath(Path.Combine(BaseDirectory, Output));
         }
@@ -88,7 +93,7 @@ namespace NAnt.Contrib.Tasks {
             fileset.Add(outputFileInfo.FullName);
             string fileName = FileSet.FindMoreRecentLastWriteTime(fileset, outputFileInfo.LastWriteTime);
             if (fileName != null) {
-                Log.WriteLineIf(Verbose, LogPrefix + "{0} is out of date, recompiling.", fileName);
+                Log(Level.Info, LogPrefix + "{0} is out of date, recompiling.", fileName);
                 return true;
             }
 

@@ -26,9 +26,9 @@ using System.Text;
 using Microsoft.Win32;
 using System.Collections.Specialized;
 
-using SourceForge.NAnt;
-using SourceForge.NAnt.Tasks;
-using SourceForge.NAnt.Attributes;
+using NAnt.Core;
+using NAnt.Core.Tasks;
+using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks
 {
@@ -195,12 +195,12 @@ namespace NAnt.Contrib.Tasks
             // will cause ExternalProgramBase to display the actual call.
             if ( HelpFile != null ) 
             {
-                Log.WriteLine(LogPrefix + "{0} HTML Help 2.0 File {1}", 
+                Log(Level.Info, LogPrefix + "{0} HTML Help 2.0 File {1}", 
                     UnRegister ? "UnRegistering" : "Registering", HelpFile);
             }
             else 
             {
-                Log.WriteLine("ERROR: Must specify file to be registered or unregistered.");
+                Log(Level.Error, "ERROR: Must specify file to be registered or unregistered.");
                 return;
             }
 

@@ -24,9 +24,10 @@
 using System;
 using System.IO;
 
-using SourceForge.NAnt;
-using SourceForge.NAnt.Tasks;
-using SourceForge.NAnt.Attributes;
+using NAnt.Core;
+using NAnt.Core.Types;
+using NAnt.Core.Tasks;
+using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks {
 
@@ -54,8 +55,7 @@ namespace NAnt.Contrib.Tasks {
             uninstall };
 
         ActionTypes _action = ActionTypes.install;
-        string _assemblyName = null;
-        int _timeout = Int32.MaxValue;
+        string _assemblyName = null;        
         FileSet _assemblies = new FileSet();
         bool _silent = false;
 
@@ -72,7 +72,10 @@ namespace NAnt.Contrib.Tasks {
 
         /// <summary>Fileset are used to define multiple assemblies.</summary>
         [FileSet("assemblies")]
-        public FileSet CopyFileSet      { get { return _assemblies; } }
+        public FileSet CopyFileSet      { 
+            get { return _assemblies; } 
+            set { _assemblies = value; }
+        }
 
         /// <summary>Quiet mode.</summary>
         [TaskAttribute("silent")]
@@ -80,15 +83,7 @@ namespace NAnt.Contrib.Tasks {
         public bool Silent {
             get { return _silent; }
             set { _silent = value; }
-        }
-
-        /// <summary>Stop the build if the command does not finish within the specified time.  Specified in milliseconds.  Default is no time out.</summary>
-        [TaskAttribute("timeout")]
-        [Int32Validator()]
-        public override int TimeOut {
-            get { return _timeout; }
-            set { _timeout = value; }
-        }
+        }       
 
         public override string ProgramFileName {
             get { return "gacutil"; }
@@ -119,9 +114,9 @@ namespace NAnt.Contrib.Tasks {
 
         protected override void ExecuteTask() {
             if ( (_assemblyName != null) && (_assemblies.FileNames.Count != 0)) {
-                throw new BuildException("Cannot use both the \"assembly\" attribute and a \"assemblies\" fileset");
+                throw new BuildException("Cannot use both the \"assembly\" attribute and a \"assemblies\" fileset",Location);
             } else if ( (_assemblyName == null) && (_assemblies.FileNames.Count == 0)) {
-                throw new BuildException("Specify either an \"assembly\" attribute or a \"assemblies\" fileset");
+                throw new BuildException("Specify either an \"assembly\" attribute or a \"assemblies\" fileset", Location);
             }
             string msg = "";
             switch (ActionType) {
@@ -137,7 +132,7 @@ namespace NAnt.Contrib.Tasks {
             }
             if (_assemblies.FileNames.Count != 0) {
                 //multiple assemblies
-                Log.WriteLine(LogPrefix + "{0} {1} assemblies", msg, _assemblies.FileNames.Count);
+                Log(Level.Info, LogPrefix + "{0} {1} assemblies", msg, _assemblies.FileNames.Count);
                 foreach (string assemblyName in _assemblies.FileNames) {
                     AssemblyName = assemblyName;
                     base.ExecuteTask();
@@ -146,7 +141,7 @@ namespace NAnt.Contrib.Tasks {
 
                 // If the user wants to see the actual command the -verbose flag
                 // will cause ExternalProgramBase to display the actual call.
-                Log.WriteLine(LogPrefix + "{0} {1}", msg, AssemblyName);
+                Log(Level.Info, LogPrefix + "{0} {1}", msg, AssemblyName);
                 base.ExecuteTask();
             }
         }

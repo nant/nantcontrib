@@ -25,9 +25,9 @@ using System.Text;
 using System.Web.Mail;
 using System.Xml;
 using System.Xml.Xsl;
-using SourceForge.NAnt.Attributes;
-using SourceForge.NAnt;
-using SourceForge.NAnt.Tasks;
+using NAnt.Core.Attributes;
+using NAnt.Core;
+using NAnt.Core.Tasks;
 
 namespace NAnt.Contrib.Tasks 
 { 

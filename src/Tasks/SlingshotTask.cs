@@ -21,8 +21,9 @@ using System;
 using System.Collections;
 using System.IO;
 
-using SourceForge.NAnt;
-using SourceForge.NAnt.Attributes;
+using NAnt.Core;
+using NAnt.Core.Types;
+using NAnt.Core.Attributes;
 
 using SLiNgshoT.Core;
 
@@ -62,8 +63,8 @@ namespace NAnt.Contrib.Tasks {
         string _format = null;
         string _output = null;
 
-        OptionSet _maps = new OptionSet();
-        OptionSet _parameters = new OptionSet();
+        OptionCollection _maps = new OptionCollection();
+        OptionCollection _parameters = new OptionCollection();
 
         /// <summary>The Visual Studio.NET Solution file to convert.</summary>
         [TaskAttribute("solution", Required=true)]
@@ -87,20 +88,20 @@ namespace NAnt.Contrib.Tasks {
         }
 
         /// <summary>Mappings from URI to directories.  These are required for web projects.</summary>
-        [OptionSetAttribute("maps")]
-        public OptionSet Maps {
+        [BuildElementCollection("maps")]
+        public OptionCollection Maps {
            get { return _maps; }
         }
 
         /// <summary>Parameters to pass to SLiNgshoT.  The parameter <c>build.basedir</c> is required.</summary>
-        [OptionSetAttribute("parameters")]
-        public OptionSet Parameters {
+        [BuildElementCollection("parameters")]
+        public OptionCollection Parameters {
            get { return _parameters; }
         }
 
         protected override void ExecuteTask() {
             // display build log message
-            Log.WriteLine(LogPrefix + "Converting {0} to {1} using {2} format", _solution, _output, _format);
+            Log(Level.Info, LogPrefix + "Converting {0} to {1} using {2} format", _solution, _output, _format);
 
             // Get a SLiNgshoT SolutionWriter for the specified format.
             SolutionWriter solutionWriter = CreateSolutionWriter(_format);
@@ -112,7 +113,7 @@ namespace NAnt.Contrib.Tasks {
             } 
 
             // Copy parameters to hashtable.
-            Hashtable parameters = OptionSetToHashtable(_parameters, "parameters"); 
+            Hashtable parameters = OptionCollectionToHashtable(_parameters, "parameters"); 
 
             // The build.basedir parameter is required.
             if (!parameters.ContainsKey("build.basedir")) {
@@ -120,7 +121,7 @@ namespace NAnt.Contrib.Tasks {
             }
 
             // Copy maps to hashtable
-            Hashtable uriMap = OptionSetToHashtable(_maps, "maps"); 
+            Hashtable uriMap = OptionCollectionToHashtable(_maps, "maps"); 
 
             try {
                 // NOTE: The default encoding is used.
@@ -154,8 +155,8 @@ namespace NAnt.Contrib.Tasks {
             return writer;
         }
 
-        /// <summary>Converts an <see cref="OptionSet"/> to a <see cref="Hashtable"/>.</summary>
-        private Hashtable OptionSetToHashtable(OptionSet options, string optionSetName) {
+        /// <summary>Converts an <see cref="OptionCollection"/> to a <see cref="Hashtable"/>.</summary>
+        private Hashtable OptionCollectionToHashtable(OptionCollection options, string optionSetName) {
 
             Hashtable convertedOptions = new Hashtable();
 
@@ -163,18 +164,22 @@ namespace NAnt.Contrib.Tasks {
         foreach (object option in options) {
           string name;
           string value;
-          if ( option is OptionValue ) {
-            OptionValue ov = (OptionValue) option;
+          if ( option is Option ) {
+            Option ov = (Option) option;
             name  = ov.Name;
             value = ov.Value;
-          } else if ( option is OptionElement ) {
-            OptionElement oe = (OptionElement) option;
-            name  = oe.OptionName;
-            value = oe.Value;
-          } else {
-             throw new BuildException( string.Format( "Invalid Option type {0} in {1} OptionSet", option.GetType(), optionSetName) );
+          } 
+              // commenting to get build working - not sure what all this is doing IM )
+//          else if ( option is OptionElement ) {
+//            OptionElement oe = (OptionElement) option;
+//            name  = oe.OptionName;
+//            value = oe.Value;
+//          } 
+          
+          else {
+             throw new BuildException( string.Format( "Invalid Option type {0} in {1} OptionCollection", option.GetType(), optionSetName) );
           }
-          Log.WriteLine( LogPrefix + " -- {0} = {1}", name, value );
+          Log(Level.Info,  LogPrefix + " -- {0} = {1}", name, value );
 
                     // name must be specified
                     if (name == null) {

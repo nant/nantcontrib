@@ -26,8 +26,9 @@ using System.Web.Mail;
 using System.Xml;
 using System.Xml.XPath;
 using System.Xml.Xsl;
-using SourceForge.NAnt.Attributes;
-using SourceForge.NAnt;
+using NAnt.Core.Attributes;
+using NAnt.Core;
+using NAnt.Core.Types;
 
 namespace NAnt.Contrib.Tasks 
 { 
@@ -98,6 +99,7 @@ namespace NAnt.Contrib.Tasks
       [FileSet("fileset")]
       public FileSet XmlFileSet {
          get { return _fileset; }
+         set { _fileset = value; }
       }
 
 

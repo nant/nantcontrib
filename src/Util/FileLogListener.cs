@@ -22,8 +22,8 @@ using System.Collections;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using SourceForge.NAnt.Attributes;
-using SourceForge.NAnt;
+using NAnt.Core.Attributes;
+using NAnt.Core;
 
 namespace NAnt.Contrib.Util
 { 
@@ -40,12 +40,12 @@ namespace NAnt.Contrib.Util
          get; 
       }
 
-      /// <summary>
+     /* /// <summary>
       /// Underlying LogListener instance
       /// </summary>
-      LogListener Listener {
-         get;
-      }
+      //LogListener Listener {
+      //   get;
+      //} */
 
       /// <summary>Start Recording</summary>
       void Start();
@@ -92,10 +92,10 @@ namespace NAnt.Contrib.Util
    /// Implementation of LogListener that
    /// writes information to a file.
    /// </summary>
-   internal class FileLogListener : LogListener, IRecorder
+   internal class FileLogListener : IRecorder //LogListener, 
    {
       private StreamWriter _writer;
-      private bool _stopped;
+      private bool _stopped = false;
       private string _name;
 
 
@@ -115,9 +115,9 @@ namespace NAnt.Contrib.Util
       public string Name {
          get { return _name; }
       }
-      public LogListener Listener {
-         get { return this; }
-      }
+      //public LogListener Listener {
+      //   get { return this; }
+      //}
       public void Start()
       {
          _stopped = false;
@@ -137,7 +137,8 @@ namespace NAnt.Contrib.Util
 
       #region LogListener Implementation
 
-      public override void Write(string message)
+      // commented to get building. Needs investigation to see what this was doing
+      /*   public override void Write(string message)
       {
          if ( _writer == null )
             throw new BuildException("Tried to write to an invalid FileLogListener instance!");
@@ -159,7 +160,7 @@ namespace NAnt.Contrib.Util
             throw new BuildException("Tried to flush an invalid FileLogListener instance!");
          _writer.Flush();
       }
-
+*/
       #endregion // LogListener Implementation
 
    } // class FileLogListener

@@ -22,8 +22,8 @@ using System.Collections;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using SourceForge.NAnt.Attributes;
-using SourceForge.NAnt;
+using NAnt.Core.Attributes;
+using NAnt.Core;
 
 using NAnt.Contrib.Util;
 
@@ -117,7 +117,7 @@ namespace NAnt.Contrib.Tasks
             if ( recorder == null ) {
                recorder = new FileLogListener(LogName);
                _recorders.AddRecorder(recorder);
-               Log.Listeners.Add(recorder);
+               //Log.Listeners.Add(recorder);
             }
             recorder.Start();
             break;
@@ -130,7 +130,7 @@ namespace NAnt.Contrib.Tasks
             if ( recorder == null )
                throw new BuildException("Tried to close non-existent recorder");
             recorder.Close();
-            Log.Listeners.Remove(recorder);
+            //Log.Listeners.Remove(recorder);
             _recorders.RemoveRecorder(recorder.Name);
             break;
          }

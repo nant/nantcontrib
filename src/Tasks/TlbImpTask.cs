@@ -29,9 +29,10 @@ using System.IO;
 using System.Text;
 using System.Xml;
 
-using SourceForge.NAnt;
-using SourceForge.NAnt.Tasks;
-using SourceForge.NAnt.Attributes;
+using NAnt.Core;
+using NAnt.Core.Types;
+using NAnt.Core.Tasks;
+using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks {
 
@@ -117,7 +118,10 @@ namespace NAnt.Contrib.Tasks {
         /// <remarks><a href="ms-help://MS.NETFrameworkSDK/cptools/html/cpgrftypelibraryimportertlbimpexe.htm">See the Microsoft.NET Framework SDK documentation for details.</a></remarks>
         /// <value></value>
         [FileSet("references")]
-        public FileSet References   { get { return _references; } }
+        public FileSet References   { 
+            get { return _references; } 
+            set { _references = value; }
+        }
 
         /// <summary>Specifies the <b>/strictref</b> option that gets passed to the type library importer.</summary>
         /// <remarks><a href="ms-help://MS.NETFrameworkSDK/cptools/html/cpgrftypelibraryimportertlbimpexe.htm">See the Microsoft.NET Framework SDK documentation for details.</a></remarks>
@@ -166,13 +170,13 @@ namespace NAnt.Contrib.Tasks {
             fileset.Add(outputFileInfo.FullName);
             string fileName = FileSet.FindMoreRecentLastWriteTime(fileset, outputFileInfo.LastWriteTime);
             if (fileName != null) {
-                Log.WriteLineIf(Verbose, LogPrefix + "{0} is out of date, recompiling.", fileName);
+                Log(Level.Info, LogPrefix + "{0} is out of date, recompiling.", fileName);
                 return true;
             }
 
             fileName = FileSet.FindMoreRecentLastWriteTime(References.FileNames, outputFileInfo.LastWriteTime);
             if (fileName != null) {
-                Log.WriteLineIf(Verbose, LogPrefix + "{0} is out of date, recompiling.", fileName);
+                Log(Level.Info, LogPrefix + "{0} is out of date, recompiling.", fileName);
                 return true;
             }
 
