@@ -54,7 +54,7 @@
         <!-- make sure permissions are set right -->
         <exec program="ssh">
             <arg value="${sf.net.ssh.server}" />
-            <arg value="chmod 755 ${sf.net.build.path}/builds/${execfilename}" />
+            <arg value="chmod 755 ${sf.net.web.path}/builds/${execfilename}" />
         </exec>
     </target>
     <target name="nightly-msi" depends="msi" />
