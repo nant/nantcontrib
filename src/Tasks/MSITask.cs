@@ -16,6 +16,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+// 8/23/2002 - RegLocator/AppSearch Added (jgeurts@sourceforge.net)
+//
 
 using System;
 using System.IO;
@@ -139,6 +142,7 @@ namespace NAnt.Contrib.Tasks
 		XmlNodeList _keyNodes;
         XmlNodeList _mergeModules;
         XmlNodeList _envVariables;
+        XmlNodeList _searchNodes;
 
 		Hashtable directories = new Hashtable();
 		Hashtable files = new Hashtable();
@@ -282,6 +286,9 @@ namespace NAnt.Contrib.Tasks
 			_propertyNodes = TaskNode.Clone().SelectNodes("properties/property");
 			ExpandPropertiesInNodes(_propertyNodes);
 
+            _searchNodes = TaskNode.Clone().SelectNodes("search/key");
+            ExpandPropertiesInNodes(_searchNodes);
+
 			_directoryNodes = TaskNode.Clone().SelectNodes("directories/directory");
 			ExpandPropertiesInNodes(_directoryNodes);
 
@@ -336,220 +343,244 @@ namespace NAnt.Contrib.Tasks
                 Path.Combine(SourceDirectory, 
                 Path.GetFileNameWithoutExtension(Output) + @".cab"));
 
-            // Open the Output Database.
-            Database d = null;
             try
             {
-                d = (Database)msiType.InvokeMember(
-                    "OpenDatabase", 
-                    BindingFlags.InvokeMethod, 
-                    null, obj, 
-                    new Object[]
-                    {
-                        dest, 
-                        MsiOpenDatabaseMode.msiOpenDatabaseModeDirect
-                    });
-
-                if (Debug == "true")
+                // Open the Output Database.
+                Database d = null;
+                try
                 {
-                    // If Debug is true, transform the error strings in
-                    d.ApplyTransform(errors, MsiTransformError.msiTransformErrorNone);
-                }
-            }
-            catch (Exception e)
-            {
-                Log.WriteLine(LogPrefix + "Error: " + e.Message);
-                CleanOutput(cabFile, tempPath);
+                    d = (Database)msiType.InvokeMember(
+                        "OpenDatabase", 
+                        BindingFlags.InvokeMethod, 
+                        null, obj, 
+                        new Object[]
+                        {
+                            dest, 
+                            MsiOpenDatabaseMode.msiOpenDatabaseModeDirect
+                        });
 
-                return;
-            }
-
-            Log.WriteLine(LogPrefix + "Building MSI Database \"" + Output + "\".");
-
-            // Load the Banner Image
-            if (!LoadBanner(d))
-            {
-                CleanOutput(cabFile, tempPath);
-                return;
-            }
-
-            // Load the Background Image
-            if (!LoadBackground(d))
-            {
-                CleanOutput(cabFile, tempPath);
-                return;
-            }
-
-            // Load the License File
-            if (!LoadLicense(d))
-            {
-                CleanOutput(cabFile, tempPath);
-                return;
-            }
-
-            // Load Properties
-            if (!LoadProperties(d, msiType, obj))
-            {
-                CleanOutput(cabFile, tempPath);
-                return;
-            }
-
-            // Load Directories
-            if (!LoadDirectories(d, msiType, obj))
-            {
-                CleanOutput(cabFile, tempPath);
-                return;
-            }
-
-            View asmView, asmNameView, classView, progIdView;
-
-            // Load Assemblies
-            if (!LoadAssemblies(d, msiType, obj, out asmView, 
-                out asmNameView, out classView, out progIdView))
-            {
-                CleanOutput(cabFile, tempPath);
-                return;
-            }
-
-            int lastSequence = 0;
-
-            // Load Components
-            if (!LoadComponents(d, msiType, obj, ref lastSequence, 
-                asmView, asmNameView, classView, progIdView))
-            {
-                CleanOutput(cabFile, tempPath);
-                return;
-            }
-
-            // Load Features
-            if (!LoadFeatures(d, msiType, obj))
-            {
-                CleanOutput(cabFile, tempPath);
-                return;
-            }
-
-            View registryView;
-
-            // Load the Registry
-            if (!LoadRegistry(d, msiType, obj, out registryView))
-            {
-                CleanOutput(cabFile, tempPath);
-                return;
-            }
-
-            // Load TypeLibs
-            if (!LoadTypeLibs(d, msiType, obj, registryView))
-            {
-                CleanOutput(cabFile, tempPath);
-                return;
-            }
-
-            // Load Summary Information
-            if (!LoadSummaryInfo(d))
-            {
-                CleanOutput(cabFile, tempPath);
-                return;
-            }
-
-            // Load Environment Variables
-            if (!LoadEnvironment(d, msiType, obj))
-            {
-                CleanOutput(cabFile, tempPath);
-                return;
-            }
-
-            try
-            {
-                registryView.Close();
-                asmView.Close();
-                asmNameView.Close();
-                classView.Close();
-                progIdView.Close();
-
-                registryView = null;
-                asmView = null;
-                asmNameView = null;
-                classView = null;
-                progIdView = null;
-
-                // Commit the MSI Database
-                d.Commit();
-
-                d = null;
-
-                GC.Collect();
-            }
-            catch (Exception e)
-            {
-                Log.WriteLine(LogPrefix + "Error: " + e.Message);
-                CleanOutput(cabFile, tempPath);
-                return;
-            }
-
-            // Load Merge Modules
-            if (!LoadMergeModules(dest, tempPath))
-            {
-                CleanOutput(cabFile, tempPath);
-                return;
-            }
-
-            try
-            {
-                d = (Database)msiType.InvokeMember(
-                    "OpenDatabase", 
-                    BindingFlags.InvokeMethod, 
-                    null, obj, 
-                    new Object[]
+                    if (Debug == "true")
                     {
-                        dest, 
-                        MsiOpenDatabaseMode.msiOpenDatabaseModeDirect
-                    });
+                        // If Debug is true, transform the error strings in
+                        d.ApplyTransform(errors, MsiTransformError.msiTransformErrorNone);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.WriteLine(LogPrefix + "Error: " + e.Message);
+                    CleanOutput(cabFile, tempPath);
+
+                    return;
+                }
+
+                Log.WriteLine(LogPrefix + "Building MSI Database \"" + Output + "\".");
+
+                // Load the Banner Image
+                if (!LoadBanner(d))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    return;
+                }
+
+                // Load the Background Image
+                if (!LoadBackground(d))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    return;
+                }
+
+                // Load the License File
+                if (!LoadLicense(d))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    return;
+                }
+
+                // Load Properties
+                if (!LoadProperties(d, msiType, obj))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    return;
+                }
+
+                // Load Registry Locators
+                if (!LoadRegLocator(d, msiType, obj))
+                {
+                    return;
+                }
+
+                // Load Application Search
+                if (!LoadAppSearch(d, msiType, obj))
+                {
+                    return;
+                }
+
+                View directoryView, asmView, asmNameView, classView, progIdView;
+
+                // Load Directories
+                if (!LoadDirectories(d, msiType, obj, out directoryView))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    return;
+                }
+
+                // Load Assemblies
+                if (!LoadAssemblies(d, msiType, obj, out asmView, 
+                    out asmNameView, out classView, out progIdView))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    return;
+                }
+
+                int lastSequence = 0;
+
+                // Load Components
+                if (!LoadComponents(d, msiType, obj, ref lastSequence, 
+                    asmView, asmNameView, directoryView, classView, progIdView))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    return;
+                }
+
+                // Load Features
+                if (!LoadFeatures(d, msiType, obj))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    return;
+                }
+
+                View registryView;
+
+                // Load the Registry
+                if (!LoadRegistry(d, msiType, obj, out registryView))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    return;
+                }
+
+                // Load TypeLibs
+                if (!LoadTypeLibs(d, msiType, obj, registryView))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    return;
+                }
+
+                // Load Summary Information
+                if (!LoadSummaryInfo(d))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    return;
+                }
+
+                // Load Environment Variables
+                if (!LoadEnvironment(d, msiType, obj))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    return;
+                }
+
+                try
+                {
+                    directoryView.Close();
+                    registryView.Close();
+                    asmView.Close();
+                    asmNameView.Close();
+                    classView.Close();
+                    progIdView.Close();
+
+                    directoryView = null;
+                    registryView = null;
+                    asmView = null;
+                    asmNameView = null;
+                    classView = null;
+                    progIdView = null;
+
+                    // Commit the MSI Database
+                    d.Commit();
+
+                    d = null;
+
+                    GC.Collect();
+                }
+                catch (Exception e)
+                {
+                    Log.WriteLine(LogPrefix + "Error: " + e.Message);
+                    CleanOutput(cabFile, tempPath);
+                    return;
+                }
+
+                // Load Merge Modules
+                if (!LoadMergeModules(dest, tempPath))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    return;
+                }
+
+                try
+                {
+                    d = (Database)msiType.InvokeMember(
+                        "OpenDatabase", 
+                        BindingFlags.InvokeMethod, 
+                        null, obj, 
+                        new Object[]
+                        {
+                            dest, 
+                            MsiOpenDatabaseMode.msiOpenDatabaseModeDirect
+                        });
+                }
+                catch (Exception e)
+                {
+                    Log.WriteLine(LogPrefix + "Error: " + e.Message);
+                    CleanOutput(cabFile, tempPath);
+                    return;
+                }
+
+                // Reorder Files
+                if (!ReorderFiles(d, ref lastSequence))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    return;
+                }
+
+                // Load Media
+                if (!LoadMedia(d, msiType, obj, lastSequence))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    return;
+                }
+
+                // Compress Files
+                if (!CreateCabFile(d, msiType, obj))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    return;
+                }
+
+                Log.Write(LogPrefix + "Deleting Temporary Files...");
+                CleanOutput(cabFile, tempPath);
+                Log.WriteLine("Done.");
+
+                try
+                {
+                    Log.Write(LogPrefix + "Saving MSI Database...");
+
+                    // Commit the MSI Database
+                    d.Commit();
+                }
+                catch (Exception e)
+                {
+                    Log.WriteLine(LogPrefix + "Error: " + e.Message);
+                    return;
+                }
+                Log.WriteLine("Done.");
             }
             catch (Exception e)
             {
-                Log.WriteLine(LogPrefix + "Error: " + e.Message);
                 CleanOutput(cabFile, tempPath);
-                return;
+                Log.WriteLine(LogPrefix + "ERROR: " + 
+                    e.GetType().FullName + " thrown:\n" + 
+                    e.Message + "\n" + e.StackTrace);
             }
-
-            // Reorder Files
-            if (!ReorderFiles(d, ref lastSequence))
-            {
-                CleanOutput(cabFile, tempPath);
-                return;
-            }
-
-            // Load Media
-            if (!LoadMedia(d, msiType, obj, lastSequence))
-            {
-                CleanOutput(cabFile, tempPath);
-                return;
-            }
-
-            // Compress Files
-            if (!CreateCabFile(d, msiType, obj))
-            {
-                CleanOutput(cabFile, tempPath);
-                return;
-            }
-
-            Log.Write(LogPrefix + "Deleting Temporary Files...");
-            CleanOutput(cabFile, tempPath);
-            Log.WriteLine("Done.");
-
-            try
-            {
-                Log.Write(LogPrefix + "Saving MSI Database...");
-
-                // Commit the MSI Database
-                d.Commit();
-            }
-            catch (Exception e)
-            {
-                Log.WriteLine(LogPrefix + "Error: " + e.Message);
-                return;
-            }
-            Log.WriteLine("Done.");
 		}
 
         /// <summary>
@@ -759,12 +790,13 @@ namespace NAnt.Contrib.Tasks
 		/// <param name="LastSequence">The sequence number of the last file in the .cab</param>
 		/// <param name="MsiAssemblyView">View containing the MsiAssembly table.</param>
 		/// <param name="MsiAssemblyNameView">View containing the MsiAssemblyName table.</param>
+		/// <param name="DirectoryView">The MSI database view.</param>
 		/// <param name="ClassView">View containing the Class table.</param>
 		/// <param name="ProgIdView">View containing the ProgId table.</param>
 		/// <returns>True if successful.</returns>
 		private bool LoadComponents(Database Database, Type InstallerType, Object InstallerObject, 
 			ref int LastSequence, View MsiAssemblyView, View MsiAssemblyNameView, 
-			View ClassView, View ProgIdView)
+			View DirectoryView, View ClassView, View ProgIdView)
 		{
 			// Open the "Component" Table
 			View compView = Database.OpenView("SELECT * FROM `Component`");
@@ -865,7 +897,8 @@ namespace NAnt.Contrib.Tasks
 
 				componentIndex++;
 
-				bool success = AddFiles(compElem, fileView, InstallerType, InstallerObject, 
+				bool success = AddFiles(Database, DirectoryView, compElem, 
+                    fileView, InstallerType, InstallerObject, 
 					directory, name, ref componentIndex, 
 					ref LastSequence, MsiAssemblyView, MsiAssemblyNameView, 
 					compView, featCompView, ClassView, ProgIdView, selfRegView);
@@ -950,11 +983,13 @@ namespace NAnt.Contrib.Tasks
 		/// <param name="Database">The MSI database.</param>
 		/// <param name="InstallerType">The MSI Installer type.</param>
 		/// <param name="InstallerObject">The MSI Installer object.</param>
+		/// <param name="DirectoryView">The MSI database view.</param>
 		/// <returns>True if successful.</returns>
-		private bool LoadDirectories(Database Database, Type InstallerType, Object InstallerObject)
+		private bool LoadDirectories(Database Database, Type InstallerType, Object InstallerObject, 
+            out View DirectoryView)
 		{
 			// Open the "Directory" Table
-			View dirView = Database.OpenView("SELECT * FROM `Directory`");
+			DirectoryView = Database.OpenView("SELECT * FROM `Directory`");
 
 			directories.Add("TARGETDIR", new object[] { null, "SourceDir" });
 
@@ -972,7 +1007,7 @@ namespace NAnt.Contrib.Tasks
 				bool result = CacheDirectory(null, directoryElem);
 				if (!result)
 				{
-                    dirView.Close();
+                    DirectoryView.Close();
 					return result;
 				}
 			}
@@ -984,18 +1019,16 @@ namespace NAnt.Contrib.Tasks
 			{
 				XmlElement dirElem = (XmlElement)directoryNode;
 				
-				bool result = AddDirectory(
-					dirView, null, InstallerType, 
+				bool result = AddDirectory(Database, 
+					DirectoryView, null, InstallerType, 
 					InstallerObject, dirElem, depth);
 
 				if (!result)
 				{
-                    dirView.Close();
+                    DirectoryView.Close();
 					return result;
 				}
 			}
-
-            dirView.Close();
 
 			return true;
 		}
@@ -1056,6 +1089,7 @@ namespace NAnt.Contrib.Tasks
 		/// <summary>
 		/// Adds a directory record to the directories table.
 		/// </summary>
+		/// <param name="Database">The MSI database.</param>
 		/// <param name="DirectoryView">The MSI database view.</param>
 		/// <param name="ParentDirectory">The parent directory.</param>
 		/// <param name="InstallerType">The MSI Installer type.</param>
@@ -1063,7 +1097,8 @@ namespace NAnt.Contrib.Tasks
 		/// <param name="DirectoryElement">This directory's XML element.</param>
 		/// <param name="Depth">The tree depth of this directory.</param>
 		/// <returns></returns>
-		private bool AddDirectory(View DirectoryView, string ParentDirectory, 
+		private bool AddDirectory(Database Database, View DirectoryView, 
+            string ParentDirectory, 
 			Type InstallerType, object InstallerObject, 
 			XmlElement DirectoryElement, int Depth)
 		{
@@ -1091,7 +1126,8 @@ namespace NAnt.Contrib.Tasks
 			recDir.set_StringData(2, newParent);
 			
 			StringBuilder relativePath = new StringBuilder();
-			GetRelativePath(name, ParentDirectory, sDefault, relativePath);
+			GetRelativePath(Database, InstallerType, InstallerObject, 
+                name, ParentDirectory, sDefault, relativePath, DirectoryView);
 
 			string basePath = Path.Combine(Project.BaseDirectory, _sourceDir);
 			string fullPath = Path.Combine(basePath, relativePath.ToString());
@@ -1114,7 +1150,7 @@ namespace NAnt.Contrib.Tasks
 
 				foreach (XmlNode childNode in childNodes)
 				{
-					bool result = AddDirectory(DirectoryView, name, InstallerType, 
+					bool result = AddDirectory(Database, DirectoryView, name, InstallerType, 
 						InstallerObject, (XmlElement)childNode, newDepth);
 
 					if (!result)
@@ -1397,6 +1433,8 @@ namespace NAnt.Contrib.Tasks
 		/// <summary>
 		/// Adds a file record to the Files table.
 		/// </summary>
+		/// <param name="Database">The MSI database.</param>
+		/// <param name="DirectoryView">The MSI database view.</param>
 		/// <param name="ComponentElem">The Component's XML Element.</param>
 		/// <param name="FileView">The MSI database view.</param>
 		/// <param name="InstallerType">The MSI Installer type.</param>
@@ -1413,7 +1451,8 @@ namespace NAnt.Contrib.Tasks
 		/// <param name="ProgIdView">View containing the ProgId table.</param>
 		/// <param name="SelfRegView">View containing the SelfReg table.</param>
 		/// <returns>True if successful.</returns>
-		private bool AddFiles(XmlElement ComponentElem, View FileView, Type InstallerType, Object InstallerObject, 
+		private bool AddFiles(Database Database, View DirectoryView, XmlElement ComponentElem, 
+            View FileView, Type InstallerType, Object InstallerObject, 
 			string ComponentDirectory, string ComponentName, ref int ComponentCount, 
 			ref int Sequence, View MsiAssemblyView, View MsiAssemblyNameView, 
 			View ComponentView, View FeatureComponentView, View ClassView, View ProgIdView, 
@@ -1435,10 +1474,12 @@ namespace NAnt.Contrib.Tasks
 			object[] componentDirInfo = (object[])directories[ComponentDirectory];
 			
 			StringBuilder relativePath = new StringBuilder();
-			GetRelativePath(ComponentDirectory, 
+			GetRelativePath(Database, InstallerType, 
+                InstallerObject, 
+                ComponentDirectory, 
 				(string)componentDirInfo[0], 
 				(string)componentDirInfo[1], 
-				relativePath);
+				relativePath, DirectoryView);
 
 			string basePath = Path.Combine(Project.BaseDirectory, _sourceDir);
 			string fullPath = Path.Combine(basePath, relativePath.ToString());
@@ -1868,6 +1909,219 @@ namespace NAnt.Contrib.Tasks
 			return true;
 		}
 
+        /// <summary>
+        /// Loads records for the RegLocator table
+        /// </summary>
+        /// <param name="Database">The MSI database.</param>
+        /// <param name="InstallerType">The MSI Installer type.</param>
+        /// <param name="InstallerObject">The MSI Installer object.</param>
+        /// <returns>True if successful.</returns>
+        private bool LoadRegLocator(Database Database, Type InstallerType, 
+            Object InstallerObject)
+        {
+            // Add properties from Task definition
+            foreach (XmlNode keyNode in _searchNodes)
+            {
+                XmlElement keyElem = (XmlElement)keyNode;
+
+                string type = keyElem.GetAttribute("type");
+
+                if (type == null || type == "")
+                {
+                    Log.WriteLine(LogPrefix + 
+                        "Error: Search key with no type attribute detected.");
+                    return false;
+                }
+                switch (type)
+                {
+                    case "registry":
+                    {
+
+                        // Select the "RegLocator" Table
+                        View regLocatorView = Database.OpenView("SELECT * FROM `RegLocator`");
+                        string root = keyElem.GetAttribute("root");
+                        string path = keyElem.GetAttribute("path");
+
+                        int rootKey = -1;
+                        switch (root)
+                        {
+                            case "classes":
+                            {
+                                rootKey = 0;
+                                break;
+                            }
+                            case "user":
+                            {
+                                rootKey = 1;
+                                break;
+                            }
+                            case "machine":
+                            {
+                                rootKey = 2;
+                                break;
+                            }
+                            case "users":
+                            {
+                                rootKey = 3;
+                                break;
+                            }
+                        }
+
+                        if (path == null || path == "")
+                        {
+                            Log.WriteLine(LogPrefix + 
+                                "Error: Search key with no path attribute detected.");
+                            return false;
+                        }
+
+                        XmlNodeList values = keyNode.SelectNodes("value");
+                        if (values != null)
+                        {
+                            foreach (XmlNode valueNode in values)
+                            {
+                                XmlElement valueElem = (XmlElement)valueNode;
+
+                                string propRef = null;
+                                XmlNode propNode = valueElem.SelectSingleNode("@ref");
+                                if (propNode != null)
+                                {
+                                    propRef = propNode.Value;
+                                }
+
+                                if (propRef == null || propRef == "")
+                                {
+                                    Log.WriteLine(LogPrefix + 
+                                        "Error: Search key with no ref attribute detected.");
+                                    return false;
+                                }
+                                string signature = "SIG_" + propRef;
+                                string name = valueElem.GetAttribute("name");
+                                if (name == null || name == "")
+                                {
+                                    Log.WriteLine(LogPrefix + 
+                                        "Error: Search key with no name attribute detected.");
+                                    return false;
+                                }
+
+
+                                // Insert the signature to the RegLocator Table
+                                Record recRegLoc = (Record)InstallerType.InvokeMember(
+                                    "CreateRecord", 
+                                    BindingFlags.InvokeMethod, 
+                                    null, InstallerObject, 
+                                    new object[] { 5 });
+
+                                recRegLoc.set_StringData(1, signature);
+                                recRegLoc.set_StringData(2, rootKey.ToString());
+                                recRegLoc.set_StringData(3, path);
+                                recRegLoc.set_StringData(4, name);
+                                recRegLoc.set_StringData(5, "msidbLocatorTypeRawValue");
+
+                                regLocatorView.Modify(MsiViewModify.msiViewModifyInsert, recRegLoc);
+
+                                if (Verbose)
+                                {
+                                    Log.WriteLine(LogPrefix + "Setting Registry Location: " + signature);
+                                }
+                            }
+                        }
+                        regLocatorView.Close();
+
+                        break;
+                    }
+                    case "file":
+                    {
+                        break;
+                    }
+                }
+
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Loads records for the RegLocator table
+        /// </summary>
+        /// <param name="Database">The MSI database.</param>
+        /// <param name="InstallerType">The MSI Installer type.</param>
+        /// <param name="InstallerObject">The MSI Installer object.</param>
+        /// <returns>True if successful.</returns>
+        private bool LoadAppSearch(Database Database, Type InstallerType, 
+            Object InstallerObject)
+        {
+            // Add properties from Task definition
+            foreach (XmlNode keyNode in _searchNodes)
+            {
+                XmlElement keyElem = (XmlElement)keyNode;
+
+                string type = keyElem.GetAttribute("type");
+
+                if (type == null || type == "")
+                {
+                    Log.WriteLine(LogPrefix + 
+                        "Error: Search key with no type attribute detected.");
+                    return false;
+                }
+                switch (type)
+                {
+                    case "registry":
+                    {
+
+                        // Select the "AppSearch" Table
+                        View appSearchView = Database.OpenView("SELECT * FROM `AppSearch`");
+                        XmlNodeList values = keyNode.SelectNodes("value");
+                        if (values != null)
+                        {
+                            foreach (XmlNode valueNode in values)
+                            {
+                                XmlElement valueElem = (XmlElement)valueNode;
+
+                                string propRef = null;
+                                XmlNode propNode = valueElem.SelectSingleNode("@ref");
+                                if (propNode != null)
+                                {
+                                    propRef = propNode.Value;
+                                }
+
+                                if (propRef == null || propRef == "")
+                                {
+                                    Log.WriteLine(LogPrefix + 
+                                        "Error: Search key with no ref attribute detected.");
+                                    return false;
+                                }
+                                string signature = "SIG_" + propRef;
+
+                                // Insert the Property/Signature into AppSearch Table
+                                Record recAppSearch = (Record)InstallerType.InvokeMember(
+                                    "CreateRecord", 
+                                    BindingFlags.InvokeMethod, 
+                                    null, InstallerObject, 
+                                    new object[] { 2 });
+
+                                recAppSearch.set_StringData(1, propRef);
+                                recAppSearch.set_StringData(2, signature);
+
+                                appSearchView.Modify(MsiViewModify.msiViewModifyInsert, recAppSearch);
+
+                                if (Verbose)
+                                {
+                                    Log.WriteLine(LogPrefix + "Setting App Search: " + propRef);
+                                }
+                            }
+                        }
+                        appSearchView.Close();
+
+                        break;
+                    }
+                    case "file":
+                    {
+                        break;
+                    }
+                }
+            }
+            return true;
+        }
+
 		/// <summary>
 		/// Sets the sequence number of files to match their 
 		/// storage order in the cabinet file, after some 
@@ -2061,15 +2315,23 @@ namespace NAnt.Contrib.Tasks
 		/// the component it belongs to and its entry in 
 		/// the MSI directory table.
 		/// </summary>
+        /// <param name="Database">The MSI database.</param>
+        /// <param name="InstallerType">The MSI Installer type.</param>
+        /// <param name="InstallerObject">The MSI Installer object.</param>
 		/// <param name="Name">The Name of the Folder</param>
 		/// <param name="Parent">The Parent of the Folder</param>
 		/// <param name="Default">The Relative Filesystem Path of the Folder</param>
 		/// <param name="Path">The Path to the Folder from previous calls.</param>
+		/// <param name="DirectoryView">The MSI database view.</param>
 		private void GetRelativePath(
+            Database Database, 
+            Type InstallerType, 
+            Object InstallerObject,
 			string Name, 
 			string Parent, 
 			string Default, 
-			StringBuilder Path)
+			StringBuilder Path, 
+            View DirectoryView)
 		{
 			if (Name == "TARGETDIR")
 			{
@@ -2084,17 +2346,57 @@ namespace NAnt.Contrib.Tasks
 				}
 			}
 
+            IEnumerator keyEnumerator = properties.Keys.GetEnumerator();
+            while (keyEnumerator.MoveNext())
+            {
+                if (Name == (string)keyEnumerator.Current)
+                {
+                    if (directories[Name] == null)
+                    {
+                        directories.Add(Name, new object[] { "TARGETDIR", "." });
+                    }
+                    return;
+                }
+            }
+
 			if (Path.Length > 0)
 			{
 				Path.Insert(0, @"\");
 			}
 
 			Path.Insert(0, Default);
-
 			if (Parent != null)
 			{
 				object[] PathInfo = (object[])directories[Parent];
-				GetRelativePath(Parent, (string)PathInfo[0], (string)PathInfo[1], Path);
+                if (PathInfo == null)
+                {
+                    keyEnumerator.Reset();
+                    while (keyEnumerator.MoveNext())
+                    {
+                        if (Parent == (string)keyEnumerator.Current)
+                        {
+                            directories.Add(Parent, new object[] { "TARGETDIR", "." });
+
+                            // Insert the Directory that is a Property
+                            Record recDir = (Record)InstallerType.InvokeMember(
+                                "CreateRecord", 
+                                BindingFlags.InvokeMethod, 
+                                null, InstallerObject, new object[] { 3 });
+
+                            recDir.set_StringData(1, Parent);
+                            recDir.set_StringData(2, "TARGETDIR");
+                            recDir.set_StringData(3, ".");
+
+                            DirectoryView.Modify(MsiViewModify.msiViewModifyInsert, recDir);
+
+                            PathInfo = (object[])directories[Parent];
+                            break;
+                        }
+                    }
+                }
+
+				GetRelativePath(Database, InstallerType, InstallerObject, 
+                    Parent, (string)PathInfo[0], (string)PathInfo[1], Path, DirectoryView);
 			}
 		}
 
