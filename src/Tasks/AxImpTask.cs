@@ -1,6 +1,6 @@
 //
 // NAntContrib
-// Copyright (C) 2001-2002 Gerry Shaw
+// Copyright (C) 2001-2004 Gerry Shaw
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,196 +16,199 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-
 // Jayme C. Edwards (jedwards@wi.rr.com)
+// Gert Driesen (gert.driesen@ardatis.com)
 
 using System;
+using System.Globalization;
 using System.IO;
-using System.Xml;
-using System.Text;
-using System.Collections.Specialized;
 
 using NAnt.Core;
-using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
+using NAnt.Core.Tasks;
+using NAnt.Core.Types;
+using NAnt.Core.Util;
 
-namespace NAnt.Optional.Tasks
-{
-    /// <summary>Generates a Windows Forms Control that wraps
-    /// ActiveX Controls defined in an OCX.</summary>
+namespace NAnt.Optional.Tasks {
+    /// <summary>
+    /// Generates a Windows Forms Control that wraps ActiveX Controls defined 
+    /// in an OCX.
+    /// </summary>
     /// <example>
-    ///   <code><![CDATA[<aximp ocx="MyControl.ocx" out="MyFormsControl.dll" />]]></code>
+    ///   <code>
+    ///     <![CDATA[
+    /// <aximp ocx="MyControl.ocx" output="MyFormsControl.dll" />
+    ///     ]]>
+    ///   </code>
     /// </example>
     [TaskName("aximp")]
     [ProgramLocation(LocationType.FrameworkSdkDir)]
-    public class AxImpTask : ExternalProgramBase
-    {
-        private string _args;
-        string _ocx = null;
-        string _out = null;
-        string _publickeyfile = null;
-        string _keyfile = null;
-        string _keycontainer = null;
-        bool _delaysign = false;
-        bool _generatesource = false;
-        bool _nologo = true;
-        bool _silent = false;
+    public class AxImpTask : ExternalProgramBase {
+        #region Private Instance Fields
 
-        /// <summary>Filename of the .ocx file.</summary>
-        [TaskAttribute("ocx", Required=true)]
-        public string Ocx {
-            get { return _ocx; }
-            set { _ocx = value; }
-        }
+        private FileInfo _ocxFile;
+        private FileInfo _outputFile;
+        private FileInfo _publicKeyFile;
+        private FileInfo _keyFile;
+        private string _keyContainer;
+        private bool _delaySign;
+        private bool _generateSource;
 
-        /// <summary>Filename of the generated assembly.</summary>
-        [TaskAttribute("out")]
-        public string Out
-        {
-            get { return _out; }
-            set { _out = value; }
-        }
+        #endregion Private Instance Fields
 
-        /// <summary>File containing strong name public key.</summary>
-        [TaskAttribute("publickeyfile")]
-        public string PublicKeyFile
-        {
-            get { return _publickeyfile; }
-            set { _publickeyfile = value; }
-        }
-
-        /// <summary>File containing strong name key pair.</summary>
-        [TaskAttribute("keyfile")]
-        public string KeyFile {
-            get { return _keyfile; }
-            set { _keyfile = value; }
-        }
-
-        /// <summary>File of key container holding strong name key pair.</summary>
-        [TaskAttribute("keycontainer")]
-        public string KeyContainer
-        {
-            get { return _keycontainer; }
-            set { _keycontainer = value; }
-        }
-
-        /// <summary>Force strong name delay signing .</summary>
-        [TaskAttribute("delaysign")]
-        [BooleanValidator()]
-        public bool DelaySign
-        {
-            get { return _delaysign; }
-            set { _delaysign = value; }
-        }
-
-        /// <summary>If C# source code for the Windows
-        /// Form wrapper should be generated.</summary>
-        [TaskAttribute("generatesource")]
-        [BooleanValidator()]
-        public bool GenerateSource
-        {
-            get { return _generatesource; }
-            set { _generatesource = value; }
-        }
-
-        /// <summary>Suppresses the banner.</summary>
-        [TaskAttribute("nologo")]
-        [BooleanValidator()]
-        public bool NoLogo
-        {
-            get { return _nologo; }
-            set { _nologo = value; }
-        }
-
-        /// <summary>Prevents AxImp from displaying success message.</summary>
-        [TaskAttribute("silent")]
-        [BooleanValidator()]
-        public bool Silent
-        {
-            get { return _silent; }
-            set { _silent = value; }
-        }
-
+        #region Public Instance Properties
 
         /// <summary>
-        /// Arguments of program to execute
+        /// Filename of the .ocx file.
         /// </summary>
-        public override string ProgramArguments
-        {
-            get
-            {
-                return _args;
-            }
+        [TaskAttribute("ocx", Required=true)]
+        public FileInfo OcxFile {
+            get { return _ocxFile; }
+            set { _ocxFile = value; }
         }
 
-        ///<summary>
-        ///Initializes task and ensures the supplied attributes are valid.
-        ///</summary>
-        ///<param name="taskNode">Xml node used to define this task instance.</param>
-        protected override void InitializeTask(System.Xml.XmlNode taskNode)
-        {
+        /// <summary>
+        /// Filename of the generated assembly.
+        /// </summary>
+        [TaskAttribute("output")]
+        public FileInfo OutputFile {
+            get { return _outputFile; }
+            set { _outputFile = value; }
         }
 
-        protected override void ExecuteTask()
-        {
-            StringBuilder arguments = new StringBuilder();
+        /// <summary>
+        /// Specifies the file containing the public key to use to sign the 
+        /// resulting assembly.
+        /// </summary>
+        /// <value>
+        /// The file containing the public key to use to sign the resulting
+        /// assembly.
+        /// </value>
+        [TaskAttribute("publickey")]
+        public FileInfo PublicKeyFile {
+            get { return _publicKeyFile; }
+            set { _publicKeyFile = value; }
+        }
 
-            arguments.Append(Ocx);
+        /// <summary>
+        /// Specifies the publisher's official public/private key pair with which 
+        /// the resulting assembly should be signed with a strong name.
+        /// </summary>
+        /// <value>
+        /// The keyfile to use to sign the resulting assembly with a strong name.
+        /// </value>
+        /// <remarks><a href="ms-help://MS.NETFrameworkSDK/cptools/html/cpgrftypelibraryimportertlbimpexe.htm">See the Microsoft.NET Framework SDK documentation for details.</a></remarks>
+        [TaskAttribute("keyfile")]
+        public FileInfo KeyFile {
+            get { return _keyFile; }
+            set { _keyFile = value; }
+        }
 
-            if (DelaySign)
-            {
-                arguments.Append(" /delaysign ");
+        /// <summary>
+        /// Specifies the key container in which the public/private key pair 
+        /// should be found that should be used to sign the resulting assembly
+        /// with a strong name.
+        /// </summary>
+        /// <value>
+        /// The key container containing a public/private key pair that should
+        /// be used to sign the resulting assembly.
+        /// </value>
+        [TaskAttribute("keycontainer")]
+        public string KeyContainer {
+            get { return _keyContainer; }
+            set { _keyContainer = StringUtils.ConvertEmptyToNull(value); }
+        }
+
+        /// <summary>
+        /// Specifies to sign the resulting control using delayed signing.
+        /// </summary>
+        [TaskAttribute("delaysign")]
+        [BooleanValidator()]
+        public bool DelaySign {
+            get { return _delaySign; }
+            set { _delaySign = value; }
+        }
+
+        /// <summary>
+        /// Determines whether C# source code for the Windows Form wrapper should 
+        /// be generated. The default is <see langword="false" />.
+        /// </summary>
+        [TaskAttribute("generatesource")]
+        [BooleanValidator()]
+        public bool GenerateSource {
+            get { return _generateSource; }
+            set { _generateSource = value; }
+        }
+
+        #endregion Public Instance Properties
+
+        #region Override implementation of ExternalProgramBase
+
+        /// <summary>
+        /// Gets the command-line arguments for the external program.
+        /// </summary>
+        /// <value>
+        /// The command-line arguments for the external program.
+        /// </value>
+        public override string ProgramArguments {
+            get { return ""; }
+        }
+
+        /// <summary>
+        /// Import the ActiveX control.
+        /// </summary>
+        protected override void ExecuteTask() {
+            Log(Level.Info, LogPrefix + "Generating Windows Forms Control wrapping '{0}'.",
+                OcxFile.FullName);
+
+            Arguments.Add(new Argument(OcxFile.FullName));
+
+            if (DelaySign) {
+                Arguments.Add(new Argument("/delaysign"));
             }
 
-            if (GenerateSource)
-            {
-                arguments.Append(" /source ");
+            if (GenerateSource) {
+                Arguments.Add(new Argument("/source"));
             }
 
-            if (NoLogo)
-            {
-                arguments.Append(" /nologo ");
+            if (Verbose) {
+                Arguments.Add(new Argument("/verbose"));
+            } else {
+                Arguments.Add(new Argument("/silent"));
             }
 
-            if (Silent)
-            {
-                arguments.Append(" /silent ");
+            if (OutputFile != null) {
+                Arguments.Add(new Argument(string.Format(CultureInfo.InvariantCulture, 
+                    "/out:\"{0}\"", OutputFile.FullName)));
             }
 
-            if (Out != null)
-            {
-                arguments.Append(" /out:");
-                arguments.Append(Out);
+            if (PublicKeyFile != null) {
+                Arguments.Add(new Argument(string.Format(CultureInfo.InvariantCulture, 
+                    "/publickey:\"{0}\"", PublicKeyFile.FullName)));
             }
 
-            if (PublicKeyFile != null)
-            {
-                arguments.Append(" /publickey:");
-                arguments.Append(PublicKeyFile);
+            if (KeyFile != null) {
+                Arguments.Add(new Argument(string.Format(CultureInfo.InvariantCulture, 
+                    "/keyfile:\"{0}\"", KeyFile.FullName)));
             }
 
-            if (KeyFile != null)
-            {
-                arguments.Append(" /keyfile:");
-                arguments.Append(KeyFile);
+            if (KeyContainer != null) {
+                Arguments.Add(new Argument(string.Format(CultureInfo.InvariantCulture, 
+                    "/keycontainer:\"{0}\"", KeyContainer)));
             }
 
-            if (KeyContainer != null)
-            {
-                arguments.Append(" /keycontainer:");
-                arguments.Append(KeyContainer);
-            }
-
-            try
-            {
-                _args = arguments.ToString();
-
+            // suppresses display of the sign-on banner
+            Arguments.Add(new Argument("/nologo"));
+            
+            try {
                 base.ExecuteTask();
-            }
-            catch (Exception e)
-            {
-                throw new BuildException(LogPrefix + "ERROR: " + e);
+            } catch (Exception ex) {
+                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                    "Error importing ActiveX control from '{0}'.", OcxFile.FullName), 
+                    Location, ex);
             }
         }
+
+        #endregion Override implementation of ExternalProgramBase
     }
 }
