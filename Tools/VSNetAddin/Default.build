@@ -29,7 +29,7 @@
   and Microsoft Help 2.0 SDK installed to.
   -->
   <property name="dotnet.dir" value="C:\Program Files\Microsoft.NET" />
-  <property name="vsnet.dir" value="C:\Development\Microsoft Visual Studio .NET" />
+  <property name="vsnet.dir" value="C:\Program Files\Microsoft Visual Studio .NET" />
   <property name="helpsdk.dir" value="C:\Program Files\Microsoft Help 2.0 SDK" />
   <!--*******************************************************************-->
   <property name="product.name" value="NAntAddin" />
