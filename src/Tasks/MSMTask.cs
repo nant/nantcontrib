@@ -709,7 +709,7 @@ namespace NAnt.Contrib.Tasks
                 recModSig.set_StringData(1, id);
                 recModSig.set_IntegerData(2, language);
                 recModSig.set_StringData(3, version);
-                modsigView.Modify(MsiViewModify.msiViewModifyInsert, recModSig);
+                modsigView.Modify(MsiViewModify.msiViewModifyMerge, recModSig);
 
                 modsigView.Close();
                 modsigView = null;
@@ -766,7 +766,7 @@ namespace NAnt.Contrib.Tasks
                     recModDep.set_IntegerData(4, requiredLang);
                     recModDep.set_StringData(5, requiredVersion);
 
-                    modDepView.Modify(MsiViewModify.msiViewModifyInsert, recModDep);
+                    modDepView.Modify(MsiViewModify.msiViewModifyMerge, recModDep);
 
                     if (Verbose)
                     {
@@ -831,7 +831,7 @@ namespace NAnt.Contrib.Tasks
                     recModEx.set_StringData(5, excludedMinVersion);
                     recModEx.set_StringData(6, excludedMaxVersion);
 
-                    modExView.Modify(MsiViewModify.msiViewModifyInsert, recModEx);
+                    modExView.Modify(MsiViewModify.msiViewModifyMerge, recModEx);
 
                     if (Verbose)
                     {
@@ -894,19 +894,19 @@ namespace NAnt.Contrib.Tasks
                     switch(sequence.type.ToString())
                     {
                         case "installexecute":
-                            installExecuteView.Modify(MsiViewModify.msiViewModifyInsert, recSequence);
+                            installExecuteView.Modify(MsiViewModify.msiViewModifyMerge, recSequence);
                             break;
                         case "installui":
-                            installUIView.Modify(MsiViewModify.msiViewModifyInsert, recSequence);
+                            installUIView.Modify(MsiViewModify.msiViewModifyMerge, recSequence);
                             break;
                         case "adminexecute":
-                            adminExecuteView.Modify(MsiViewModify.msiViewModifyInsert, recSequence);
+                            adminExecuteView.Modify(MsiViewModify.msiViewModifyMerge, recSequence);
                             break;
                         case "adminui":
-                            adminUIView.Modify(MsiViewModify.msiViewModifyInsert, recSequence);
+                            adminUIView.Modify(MsiViewModify.msiViewModifyMerge, recSequence);
                             break;
                         case "advtexecute":
-                            advtExecuteView.Modify(MsiViewModify.msiViewModifyInsert, recSequence);
+                            advtExecuteView.Modify(MsiViewModify.msiViewModifyMerge, recSequence);
                             break;
                     }
                 }
@@ -964,7 +964,7 @@ namespace NAnt.Contrib.Tasks
 
                     recModIgnoreTable.set_StringData(1, tableName);
 
-                    modIgnoreTableView.Modify(MsiViewModify.msiViewModifyInsert, recModIgnoreTable);
+                    modIgnoreTableView.Modify(MsiViewModify.msiViewModifyMerge, recModIgnoreTable);
 
                     if (Verbose)
                     {
@@ -1024,7 +1024,7 @@ namespace NAnt.Contrib.Tasks
                     recModSubstitutionTable.set_StringData(3, column);
                     recModSubstitutionTable.set_StringData(4, newValue);
 
-                    modSubstitutionView.Modify(MsiViewModify.msiViewModifyInsert, recModSubstitutionTable);
+                    modSubstitutionView.Modify(MsiViewModify.msiViewModifyMerge, recModSubstitutionTable);
 
                     if (Verbose)
                     {
@@ -1115,7 +1115,7 @@ namespace NAnt.Contrib.Tasks
                     recModConfigurationTable.set_StringData(9, helpLocation);
                     recModConfigurationTable.set_StringData(10, helpKeyword);
 
-                    modConfigurationView.Modify(MsiViewModify.msiViewModifyInsert, recModConfigurationTable);
+                    modConfigurationView.Modify(MsiViewModify.msiViewModifyMerge, recModConfigurationTable);
 
                     if (Verbose)
                     {
@@ -1179,7 +1179,7 @@ namespace NAnt.Contrib.Tasks
 
                 recProp.set_StringData(1, name);
                 recProp.set_StringData(2, sValue);
-                propView.Modify(MsiViewModify.msiViewModifyInsert, recProp);
+                propView.Modify(MsiViewModify.msiViewModifyMerge, recProp);
 
                 if (Verbose)
                 {
@@ -1261,7 +1261,7 @@ namespace NAnt.Contrib.Tasks
                     recModComp.set_StringData(1, component.name);
                     recModComp.set_StringData(2, msm.id);
                     recModComp.set_IntegerData(3, Convert.ToInt32(msm.language));
-                    modComponentView.Modify(MsiViewModify.msiViewModifyInsert, recModComp);
+                    modComponentView.Modify(MsiViewModify.msiViewModifyMerge, recModComp);
 
                     componentIndex++;
 
@@ -1291,7 +1291,7 @@ namespace NAnt.Contrib.Tasks
                         else
                         {
                             recComp.set_StringData(6, keyFileName);
-                            compView.Modify(MsiViewModify.msiViewModifyInsert, recComp);
+                            compView.Modify(MsiViewModify.msiViewModifyMerge, recComp);
                         }
                     }
                     else
@@ -1320,7 +1320,7 @@ namespace NAnt.Contrib.Tasks
 
                     recFeatComps.set_StringData(1, feature);
                     recFeatComps.set_StringData(2, component);
-                    featCompView.Modify(MsiViewModify.msiViewModifyInsert, recFeatComps);
+                    featCompView.Modify(MsiViewModify.msiViewModifyMerge, recFeatComps);
                 }
 
             }
@@ -1464,7 +1464,7 @@ namespace NAnt.Contrib.Tasks
             
             recDir.set_StringData(3, path);
 
-            DirectoryView.Modify(MsiViewModify.msiViewModifyInsert, recDir);
+            DirectoryView.Modify(MsiViewModify.msiViewModifyMerge, recDir);
 
             if (Directory.directory != null)
             {
@@ -1573,7 +1573,7 @@ namespace NAnt.Contrib.Tasks
 
                     recVar.set_StringData(4, variable.component);
 
-                    envView.Modify(MsiViewModify.msiViewModifyInsert, recVar);
+                    envView.Modify(MsiViewModify.msiViewModifyMerge, recVar);
                 }
             }
             envView.Close();
@@ -1750,7 +1750,7 @@ namespace NAnt.Contrib.Tasks
                         recComp.set_StringData(4, "2");
                         recComp.set_StringData(5, null);
                         recComp.set_StringData(6, fileId);
-                        ComponentView.Modify(MsiViewModify.msiViewModifyInsert, recComp);
+                        ComponentView.Modify(MsiViewModify.msiViewModifyMerge, recComp);
 
                         // Map the new Component to the existing one's Feature
                         Record featComp = (Record)InstallerType.InvokeMember(
@@ -1761,7 +1761,7 @@ namespace NAnt.Contrib.Tasks
 
                         featComp.set_StringData(1, (string)featureComponents[ComponentName]);
                         featComp.set_StringData(2, asmCompName);
-                        FeatureComponentView.Modify(MsiViewModify.msiViewModifyInsert, featComp);
+                        FeatureComponentView.Modify(MsiViewModify.msiViewModifyMerge, featComp);
 
                         // Add the new component to the modulecomponents table
                         Record recModComp = (Record)InstallerType.InvokeMember(
@@ -1773,7 +1773,7 @@ namespace NAnt.Contrib.Tasks
                         recModComp.set_StringData(1, asmCompName);
                         recModComp.set_StringData(2, msm.id);
                         recModComp.set_IntegerData(3, Convert.ToInt32(msm.language));
-                        modComponentView.Modify(MsiViewModify.msiViewModifyInsert, recModComp);
+                        modComponentView.Modify(MsiViewModify.msiViewModifyMerge, recModComp);
                     }
 
                     if (isAssembly)
@@ -1790,7 +1790,7 @@ namespace NAnt.Contrib.Tasks
                         recAsm.set_StringData(3, fileId);
                         recAsm.set_StringData(4, fileId);
                         recAsm.set_IntegerData(5, 0);
-                        MsiAssemblyView.Modify(MsiViewModify.msiViewModifyInsert, recAsm);
+                        MsiAssemblyView.Modify(MsiViewModify.msiViewModifyMerge, recAsm);
 
                         //
                         // Add records for the Assembly Manifest
@@ -1829,7 +1829,7 @@ namespace NAnt.Contrib.Tasks
                             recAsmName.set_StringData(1, asmCompName);
                             recAsmName.set_StringData(2, "Name");
                             recAsmName.set_StringData(3, name);
-                            MsiAssemblyNameView.Modify(MsiViewModify.msiViewModifyInsert, recAsmName);
+                            MsiAssemblyNameView.Modify(MsiViewModify.msiViewModifyMerge, recAsmName);
                         }
 
                         if (version != null && version != "")
@@ -1842,7 +1842,7 @@ namespace NAnt.Contrib.Tasks
                             recAsmVersion.set_StringData(1, asmCompName);
                             recAsmVersion.set_StringData(2, "Version");
                             recAsmVersion.set_StringData(3, version);
-                            MsiAssemblyNameView.Modify(MsiViewModify.msiViewModifyInsert, recAsmVersion);
+                            MsiAssemblyNameView.Modify(MsiViewModify.msiViewModifyMerge, recAsmVersion);
                         }
 
                         if (culture != null && culture != "")
@@ -1856,7 +1856,7 @@ namespace NAnt.Contrib.Tasks
                             recAsmLocale.set_StringData(1, asmCompName);
                             recAsmLocale.set_StringData(2, "Culture");
                             recAsmLocale.set_StringData(3, culture);
-                            MsiAssemblyNameView.Modify(MsiViewModify.msiViewModifyInsert, recAsmLocale);
+                            MsiAssemblyNameView.Modify(MsiViewModify.msiViewModifyMerge, recAsmLocale);
                         }
 
                         if (publicKey != null && publicKey != "")
@@ -1870,7 +1870,7 @@ namespace NAnt.Contrib.Tasks
                             recPublicKey.set_StringData(1, asmCompName);
                             recPublicKey.set_StringData(2, "PublicKeyToken");
                             recPublicKey.set_StringData(3, publicKey);
-                            MsiAssemblyNameView.Modify(MsiViewModify.msiViewModifyInsert, recPublicKey);
+                            MsiAssemblyNameView.Modify(MsiViewModify.msiViewModifyMerge, recPublicKey);
                         }
 
                         bool success = CheckAssemblyForCOMInterop(
@@ -1919,7 +1919,7 @@ namespace NAnt.Contrib.Tasks
                                 new object[] { 2 });
 
                             recSelfReg.set_StringData(1, fileId);
-                            SelfRegView.Modify(MsiViewModify.msiViewModifyInsert, recSelfReg);
+                            SelfRegView.Modify(MsiViewModify.msiViewModifyMerge, recSelfReg);
                         }
                         FreeLibrary(hmod);
                     }
@@ -1957,7 +1957,7 @@ namespace NAnt.Contrib.Tasks
                 Sequence++;
                 
                 recFile.set_StringData(8, Sequence.ToString());
-                FileView.Modify(MsiViewModify.msiViewModifyInsert, recFile);
+                FileView.Modify(MsiViewModify.msiViewModifyMerge, recFile);
             }
             return true;
         }
@@ -2050,7 +2050,7 @@ namespace NAnt.Contrib.Tasks
                         }
 
                         recVal.set_StringData(6, key.component);
-                        RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recVal);
+                        RegistryView.Modify(MsiViewModify.msiViewModifyMerge, recVal);
                     }
                 }
             }
@@ -2154,7 +2154,7 @@ namespace NAnt.Contrib.Tasks
                                     // 2 represents msidbLocatorTypeRawValue
                                     recRegLoc.set_IntegerData(5, 2);
 
-                                    regLocatorView.Modify(MsiViewModify.msiViewModifyInsert, recRegLoc);
+                                    regLocatorView.Modify(MsiViewModify.msiViewModifyMerge, recRegLoc);
 
                                     if (Verbose)
                                     {
@@ -2216,7 +2216,7 @@ namespace NAnt.Contrib.Tasks
                                     recAppSearch.set_StringData(1, value.setproperty);
                                     recAppSearch.set_StringData(2, signature);
 
-                                    appSearchView.Modify(MsiViewModify.msiViewModifyInsert, recAppSearch);
+                                    appSearchView.Modify(MsiViewModify.msiViewModifyMerge, recAppSearch);
                                 }
                             }
                             appSearchView.Close();
@@ -2274,7 +2274,7 @@ namespace NAnt.Contrib.Tasks
 
                         recIcon.set_StringData(1, icon.name);
                         recIcon.SetStream(2, Path.Combine(Project.BaseDirectory, icon.value));
-                        iconView.Modify(MsiViewModify.msiViewModifyInsert, recIcon);
+                        iconView.Modify(MsiViewModify.msiViewModifyMerge, recIcon);
 
                     }
                     else
@@ -2342,7 +2342,7 @@ namespace NAnt.Contrib.Tasks
                     shortcutRec.set_IntegerData(11, shortcut.showcmd);
                     shortcutRec.set_StringData(12, shortcut.wkdir);
 
-                    shortcutView.Modify(MsiViewModify.msiViewModifyInsert, shortcutRec);
+                    shortcutView.Modify(MsiViewModify.msiViewModifyMerge, shortcutRec);
 
                 }
                 shortcutView.Close();
@@ -2629,7 +2629,7 @@ namespace NAnt.Contrib.Tasks
                             if (column.key)
                                 tableStructureKeys += "\t" + column.name;                            
 
-                            validationView.Modify(MsiViewModify.msiViewModifyInsert, recValidation);
+                            validationView.Modify(MsiViewModify.msiViewModifyMerge, recValidation);
                     
                             columnList.Add(currentColumn);
 
@@ -2740,7 +2740,7 @@ namespace NAnt.Contrib.Tasks
                             }
                         }
                     }                
-                    tableView.Modify(MsiViewModify.msiViewModifyInsert, newRec);
+                    tableView.Modify(MsiViewModify.msiViewModifyMerge, newRec);
                 }
                 catch (Exception)
                 {
@@ -2901,7 +2901,7 @@ namespace NAnt.Contrib.Tasks
                 cabRecord.set_StringData(1, Path.GetFileName(cabFile));
                 cabRecord.SetStream(2, cabFile);
 
-                cabView.Modify(MsiViewModify.msiViewModifyInsert, cabRecord);
+                cabView.Modify(MsiViewModify.msiViewModifyMerge, cabRecord);
                 cabView.Close();
                 cabView = null;
 
@@ -3081,7 +3081,7 @@ namespace NAnt.Contrib.Tasks
                                 recDir.set_StringData(2, "TARGETDIR");
                                 recDir.set_StringData(3, ".");
 
-                                DirectoryView.Modify(MsiViewModify.msiViewModifyInsert, recDir);
+                                DirectoryView.Modify(MsiViewModify.msiViewModifyMerge, recDir);
 
                                 PathInfo = directory;
 
@@ -3210,7 +3210,7 @@ namespace NAnt.Contrib.Tasks
                         
                         typeLib.ReleaseTLibAttr(pTypeLibAttr);
 
-                        typeLibView.Modify(MsiViewModify.msiViewModifyInsert, recTypeLib);
+                        typeLibView.Modify(MsiViewModify.msiViewModifyMerge, recTypeLib);
 
                         // If a .NET type library wrapper for an assembly
                         if (tlbRecord.AssemblyName != null)
@@ -3265,25 +3265,25 @@ namespace NAnt.Contrib.Tasks
                                                     recRegTlbRec.set_StringData(4, "Class");
                                                     recRegTlbRec.set_StringData(5, className);
                                                     recRegTlbRec.set_StringData(6, tlbRecord.AssemblyComponent);
-                                                    RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+                                                    RegistryView.Modify(MsiViewModify.msiViewModifyMerge, recRegTlbRec);
 
                                                     recRegTlbRec.set_StringData(1, 
                                                         "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
                                                     recRegTlbRec.set_StringData(4, "ThreadingModel");
                                                     recRegTlbRec.set_StringData(5, "Both");
-                                                    RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+                                                    RegistryView.Modify(MsiViewModify.msiViewModifyMerge, recRegTlbRec);
 
                                                     recRegTlbRec.set_StringData(1, 
                                                         "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
                                                     recRegTlbRec.set_StringData(4, "RuntimeVersion");
                                                     recRegTlbRec.set_StringData(5, System.Environment.Version.ToString(3));
-                                                    RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+                                                    RegistryView.Modify(MsiViewModify.msiViewModifyMerge, recRegTlbRec);
 
                                                     recRegTlbRec.set_StringData(1, 
                                                         "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
                                                     recRegTlbRec.set_StringData(4, "Assembly");
                                                     recRegTlbRec.set_StringData(5, tlbRecord.AssemblyName.FullName);
-                                                    RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+                                                    RegistryView.Modify(MsiViewModify.msiViewModifyMerge, recRegTlbRec);
 
                                                     recRegTlbRec.set_StringData(1, 
                                                         "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
@@ -3292,7 +3292,7 @@ namespace NAnt.Contrib.Tasks
                                                         @"\Implemented Categories");
                                                     recRegTlbRec.set_StringData(4, "+");
                                                     recRegTlbRec.set_StringData(5, null);
-                                                    RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+                                                    RegistryView.Modify(MsiViewModify.msiViewModifyMerge, recRegTlbRec);
 
                                                     recRegTlbRec.set_StringData(1, 
                                                         "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
@@ -3301,7 +3301,7 @@ namespace NAnt.Contrib.Tasks
                                                         @"\Implemented Categories\{62C8FE65-4EBB-45e7-B440-6E39B2CDBF29}");
                                                     recRegTlbRec.set_StringData(4, "+");
                                                     recRegTlbRec.set_StringData(5, null);
-                                                    RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+                                                    RegistryView.Modify(MsiViewModify.msiViewModifyMerge, recRegTlbRec);
                                                 }
                                             }
                                         }
@@ -3347,7 +3347,7 @@ namespace NAnt.Contrib.Tasks
                                                     recRegTlbRec.set_StringData(4, null);
                                                     recRegTlbRec.set_StringData(5, typeName);
                                                     recRegTlbRec.set_StringData(6, typeLibComponent);
-                                                    RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+                                                    RegistryView.Modify(MsiViewModify.msiViewModifyMerge, recRegTlbRec);
 
                                                     recRegTlbRec.set_StringData(1, 
                                                         "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
@@ -3355,13 +3355,13 @@ namespace NAnt.Contrib.Tasks
                                                         @"Interface\" + iid + @"\TypeLib");
                                                     recRegTlbRec.set_StringData(4, "Version");
                                                     recRegTlbRec.set_StringData(5, "1.0");
-                                                    RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+                                                    RegistryView.Modify(MsiViewModify.msiViewModifyMerge, recRegTlbRec);
 
                                                     recRegTlbRec.set_StringData(1, 
                                                         "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
                                                     recRegTlbRec.set_StringData(4, null);
                                                     recRegTlbRec.set_StringData(5, "{"+typeLibAttr.guid.ToString().ToUpper()+"}");
-                                                    RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+                                                    RegistryView.Modify(MsiViewModify.msiViewModifyMerge, recRegTlbRec);
 
                                                     recRegTlbRec.set_StringData(1, 
                                                         "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
@@ -3369,7 +3369,7 @@ namespace NAnt.Contrib.Tasks
                                                         @"Interface\" + iid + @"\ProxyStubClsid32");
                                                     recRegTlbRec.set_StringData(4, null);
                                                     recRegTlbRec.set_StringData(5, "{00020424-0000-0000-C000-000000000046}");
-                                                    RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+                                                    RegistryView.Modify(MsiViewModify.msiViewModifyMerge, recRegTlbRec);
 
                                                     recRegTlbRec.set_StringData(1, 
                                                         "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
@@ -3377,7 +3377,7 @@ namespace NAnt.Contrib.Tasks
                                                         @"Interface\" + iid + @"\ProxyStubClsid");
                                                     recRegTlbRec.set_StringData(4, null);
                                                     recRegTlbRec.set_StringData(5, "{00020424-0000-0000-C000-000000000046}");
-                                                    RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+                                                    RegistryView.Modify(MsiViewModify.msiViewModifyMerge, recRegTlbRec);
                                                 }
                                             }
                                         }
@@ -3447,8 +3447,7 @@ namespace NAnt.Contrib.Tasks
 
                         recBinary.set_StringData(1, binary.name);
                         recBinary.SetStream(2, Path.Combine(Project.BaseDirectory, binary.value));
-                        binaryView.Modify(MsiViewModify.msiViewModifyInsert, recBinary);
-
+                        binaryView.Modify(MsiViewModify.msiViewModifyMerge, recBinary);
                     }
                     else
                     {
@@ -3513,8 +3512,7 @@ namespace NAnt.Contrib.Tasks
                     recDialog.set_StringData(9, dialog.defaultcontrol);
                     recDialog.set_StringData(10, dialog.cancelcontrol);
                     
-                    dialogView.Modify(MsiViewModify.msiViewModifyInsert, recDialog);
-
+                    dialogView.Modify(MsiViewModify.msiViewModifyMerge, recDialog);
                 }
 
                 dialogView.Close();
@@ -3570,8 +3568,7 @@ namespace NAnt.Contrib.Tasks
                     recControl.set_StringData(11, control.nextcontrol);
                     recControl.set_StringData(12, control.help);
                     
-                    controlView.Modify(MsiViewModify.msiViewModifyInsert, recControl);
-
+                    controlView.Modify(MsiViewModify.msiViewModifyMerge, recControl);
                 }
 
                 controlView.Close();
@@ -3619,8 +3616,7 @@ namespace NAnt.Contrib.Tasks
                     recControlCondition.set_StringData(3, controlCondition.action);
                     recControlCondition.set_StringData(4, controlCondition.condition);
                     
-                    controlConditionView.Modify(MsiViewModify.msiViewModifyInsert, recControlCondition);
-
+                    controlConditionView.Modify(MsiViewModify.msiViewModifyMerge, recControlCondition);
                 }
 
                 controlConditionView.Close();
@@ -3703,11 +3699,9 @@ namespace NAnt.Contrib.Tasks
                         recControlEvent.set_StringData(5, controlEvent.condition);
                         recControlEvent.set_IntegerData(6, controlEvent.order);
                     
-                        controlEventView.Modify(MsiViewModify.msiViewModifyInsert, recControlEvent);
+                        controlEventView.Modify(MsiViewModify.msiViewModifyMerge, recControlEvent);
                         controlEventView.Close();
                         controlEventView = null;
-
-
                     }
                 }
 
@@ -3753,8 +3747,7 @@ namespace NAnt.Contrib.Tasks
                     recCustomAction.set_StringData(3, customAction.source);
                     recCustomAction.set_StringData(4, customAction.target);
                     
-                    customActionView.Modify(MsiViewModify.msiViewModifyInsert, recCustomAction);
-
+                    customActionView.Modify(MsiViewModify.msiViewModifyMerge, recCustomAction);
                 }
                 customActionView.Close();
                 customActionView = null;
@@ -3808,19 +3801,19 @@ namespace NAnt.Contrib.Tasks
                     switch(sequence.type.ToString())
                     {
                         case "installexecute":
-                            installExecuteView.Modify(MsiViewModify.msiViewModifyInsert, recSequence);
+                            installExecuteView.Modify(MsiViewModify.msiViewModifyMerge, recSequence);
                             break;
                         case "installui":
-                            installUIView.Modify(MsiViewModify.msiViewModifyInsert, recSequence);
+                            installUIView.Modify(MsiViewModify.msiViewModifyMerge, recSequence);
                             break;
                         case "adminexecute":
-                            adminExecuteView.Modify(MsiViewModify.msiViewModifyInsert, recSequence);
+                            adminExecuteView.Modify(MsiViewModify.msiViewModifyMerge, recSequence);
                             break;
                         case "adminui":
-                            adminUIView.Modify(MsiViewModify.msiViewModifyInsert, recSequence);
+                            adminUIView.Modify(MsiViewModify.msiViewModifyMerge, recSequence);
                             break;
                         case "advtexecute":
-                            advtExecuteView.Modify(MsiViewModify.msiViewModifyInsert, recSequence);
+                            advtExecuteView.Modify(MsiViewModify.msiViewModifyMerge, recSequence);
                             break;
 
                     }
@@ -3877,7 +3870,7 @@ namespace NAnt.Contrib.Tasks
                     recAppMap.set_StringData(3, appmap.exepath);
                     recAppMap.set_StringData(4, appmap.verbs);
                     
-                    appmapView.Modify(MsiViewModify.msiViewModifyInsert, recAppMap);
+                    appmapView.Modify(MsiViewModify.msiViewModifyMerge, recAppMap);
 
                 }
                 appmapView.Close();
@@ -3921,7 +3914,7 @@ namespace NAnt.Contrib.Tasks
                     recURLProp.set_StringData(1, urlprop.name);
                     recURLProp.set_StringData(2, urlprop.property);
                     
-                    urlpropView.Modify(MsiViewModify.msiViewModifyInsert, recURLProp);
+                    urlpropView.Modify(MsiViewModify.msiViewModifyMerge, recURLProp);
 
                 }
                 urlpropView.Close();
@@ -3966,8 +3959,7 @@ namespace NAnt.Contrib.Tasks
                     recVDirProp.set_StringData(2, vdirprop.portproperty);
                     recVDirProp.set_StringData(3, vdirprop.urlproperty);
 
-                    vdirpropView.Modify(MsiViewModify.msiViewModifyInsert, recVDirProp);
-
+                    vdirpropView.Modify(MsiViewModify.msiViewModifyMerge, recVDirProp);
                 }
                 vdirpropView.Close();
                 vdirpropView = null;
@@ -4011,8 +4003,7 @@ namespace NAnt.Contrib.Tasks
                     recAppRootProp.set_StringData(2, appRoot.urlproperty);
                     recAppRootProp.set_IntegerData(3, appRoot.inprocflag);
 
-                    approotView.Modify(MsiViewModify.msiViewModifyInsert, recAppRootProp);
-
+                    approotView.Modify(MsiViewModify.msiViewModifyMerge, recAppRootProp);
                 }
                 approotView.Close();
                 approotView = null;
@@ -4058,8 +4049,7 @@ namespace NAnt.Contrib.Tasks
                     recIISProp.set_IntegerData(2, iisprop.attr);
                     recIISProp.set_StringData(3, iisprop.defaultdoc);
                     
-                    iispropView.Modify(MsiViewModify.msiViewModifyInsert, recIISProp);
-
+                    iispropView.Modify(MsiViewModify.msiViewModifyMerge, recIISProp);
                 }
                 iispropView.Close();
                 iispropView = null;
@@ -4294,7 +4284,7 @@ namespace NAnt.Contrib.Tasks
                                         recProgId.set_StringData(3, clsid);
                                         recProgId.set_StringData(4, className);
                                         recProgId.set_IntegerData(6, 0);
-                                        ProgIdView.Modify(MsiViewModify.msiViewModifyInsert, recProgId);
+                                        ProgIdView.Modify(MsiViewModify.msiViewModifyMerge, recProgId);
 
                                         Record recClass = (Record)InstallerType.InvokeMember(
                                             "CreateRecord", 
@@ -4311,7 +4301,7 @@ namespace NAnt.Contrib.Tasks
                                         recClass.set_IntegerData(9, 0);
                                         recClass.set_StringData(12, featureName);
                                         recClass.set_IntegerData(13, 0);
-                                        ClassView.Modify(MsiViewModify.msiViewModifyInsert, recClass);
+                                        ClassView.Modify(MsiViewModify.msiViewModifyMerge, recClass);
                                     }
                                     progIdKey.Close();
                                     progIdKey = null;

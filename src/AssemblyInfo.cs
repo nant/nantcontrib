@@ -21,7 +21,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 
 [assembly: AssemblyTitle("NAnt.Contrib")]
-[assembly: AssemblyDescription("Additional NAnt Tasks")]
+[assembly: AssemblyDescription("Additional NAnt Tasks (based on NAnt 0.8.2)")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("")]
@@ -29,7 +29,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]		
 
-[assembly: AssemblyVersion("0.1.5.0")]
+[assembly: AssemblyVersion("0.1.0.0")]
 
 [assembly: AssemblyDelaySign(false)]
 //[assembly: AssemblyKeyFile(@"")]

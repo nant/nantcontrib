@@ -40,13 +40,12 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionItems) = postSolution
 		Item:1 = ..\Tools\VSNetAddin\Default.build
-		Item:2 = ..\NAntRelease\NAnt.build
-		Item:3 = ..\NAntContrib.build
-		Item:4 = ..\NAntContribInstall.include
-		Item:5 = ..\nightly.xml
-		Item:6 = ..\Tools\SLiNgshoT\SLiNgshoT.build
-		Item:7 = ..\Tools\SLiNgshoT\SLiNgshoTInstall.include
-		Item:8 = ..\Tools\VSNetAddin\VSNetAddinInstall.include
+		Item:2 = ..\NAntContrib.build
+		Item:3 = ..\NAntContribInstall.include
+		Item:4 = ..\nightly.xml
+		Item:5 = ..\Tools\SLiNgshoT\SLiNgshoT.build
+		Item:6 = ..\Tools\SLiNgshoT\SLiNgshoTInstall.include
+		Item:7 = ..\Tools\VSNetAddin\VSNetAddinInstall.include
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
