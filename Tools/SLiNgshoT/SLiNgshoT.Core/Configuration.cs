@@ -93,45 +93,41 @@ namespace SLiNgshoT.Core
 		{
 			get
 			{
-        string defineConstants = "";
+				string defineConstants = "";
 
 				defineConstants = (string)_Navigator.Evaluate("string(@DefineConstants)");
 
+				// if current project is a VisualBasic project, add support
+				// for DefineTrace and DefineDebug
+				XPathNodeIterator nodes = _Navigator.Select("/VisualStudioProject/VisualBasic");
 
-        // if current project is a VisualBasic project, add support
-        // for DefineTrace and DefineDebug
-        XPathNodeIterator nodes
-          = _Navigator.Select("/VisualStudioProject/VisualBasic");
-        if (nodes.MoveNext()) 
-        {
-          if (defineConstants.Length > 0) { defineConstants+=","; }
+				if (nodes.MoveNext()) 
+				{
+					if (defineConstants.Length > 0) { defineConstants += ","; }
 
-          if ((bool)_Navigator.Evaluate("boolean(@DefineTrace='true')") == true) 
-          {
-            defineConstants+="TRACE=1";
-          }
-          else 
-          {
-            defineConstants+="TRACE=0";  
-          }
+					if ((bool)_Navigator.Evaluate("boolean(@DefineTrace='true')") == true) 
+					{
+						defineConstants += "TRACE=1";
+					}
+					else 
+					{
+						defineConstants += "TRACE=0";  
+					}
 
-          if (defineConstants.Length > 0) { defineConstants+=","; }
+					if (defineConstants.Length > 0) { defineConstants += ","; }
 
-          if ((bool)_Navigator.Evaluate("boolean(@DefineDebug='true')") == true) 
-          {
-            defineConstants+="DEBUG=1";
-          }
-          else 
-          {
-            defineConstants+="DEBUG=0";  
-          }
-        
-        }
+					if ((bool)_Navigator.Evaluate("boolean(@DefineDebug='true')") == true) 
+					{
+						defineConstants += "DEBUG=1";
+					}
+					else 
+					{
+						defineConstants += "DEBUG=0";  
+					}
+				}
 
-        return defineConstants;
-
-      }
+				return defineConstants;
+			}
 		}
-
 	}
 }

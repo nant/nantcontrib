@@ -131,8 +131,8 @@ namespace SLiNgshoT.Core
 
 				if (project.ProjectType == "C# Local" ||
 					project.ProjectType == "C# Web" ||
-          project.ProjectType == "VB Local" ||
-          project.ProjectType == "VB Web")
+					project.ProjectType == "VB Local" ||
+					project.ProjectType == "VB Web")
 				{
 					_Projects.Add(project.ID, project);
 				}
