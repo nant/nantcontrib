@@ -6,8 +6,8 @@ using System.Runtime.CompilerServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
-[assembly: AssemblyTitle("SLiNshoT")]
-[assembly: AssemblyDescription("SLiNshoT")]
+[assembly: AssemblyTitle("SLiNgshoT")]
+[assembly: AssemblyDescription("SLiNgshoT")]
 
 [assembly: AssemblyDelaySign(false)]
 [assembly: AssemblyKeyFile("")]
