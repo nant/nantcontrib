@@ -20,6 +20,7 @@
 
 // Aaron A. Anderson (aaron@skypoint.com | aaron.anderson@farmcreditbank.com)
 // Kevin Dente (kevin_d@mindspring.com)
+// Hani Atassi (haniatassi@users.sourceforge.com)
 
 using System;
 using System.Collections.Specialized; 
@@ -306,6 +307,66 @@ namespace NAnt.Contrib.Tasks {
         #region Private Instance Methods
 
         /// <summary>
+        /// VB6 uses a special algorithm to search for the typelib file. It doesn't 
+        /// rely on the API function QueryPathOfRegTypeLib, because VB could use a newer
+        /// version of the TLB.
+        /// 
+        /// The algorithm used by VB is not perfect and has some flaws, which you could
+        /// get a newer version even if your requested version is installed. This is because
+        /// the algorithm iterates the registry beneath the Guid - entry by entry - from the 
+        /// beginning and returns the first TLB version that is higher or equal to the 
+        /// requested version.
+        /// 
+        /// pseudo code:
+        /// 1. open the key HKEY_CLASSES_ROOT\TypeLib\{Guid}
+        /// 2. If the key exists:
+        ///     3. Foreach version under the key that has the requested culture entry:
+        ///         4. If the version higher or equal to the requested version:
+        ///             5. Get the TLB filename and returns it
+        /// </summary>
+        /// <param name="guid">The guid of the tlb to look for</param>
+        /// <param name="major">The major version number of the tlb</param>
+        /// <param name="minor16">The minor version number of the tlb. If you parse minor from a string, treat the string as hex value.</param>
+        /// <param name="lcid">The culture id</param>
+        /// <returns>null if couldn't find a match, otherwise it returns the file.</returns>
+        private string VB6GetTypeLibFile(Guid guid, ushort major, ushort minor16, uint lcid) {
+            string tlbFile = null;
+
+            Microsoft.Win32.RegistryKey regKey;
+            regKey = Microsoft.Win32.Registry.ClassesRoot.OpenSubKey(string.Format("TypeLib\\{{{0}}}", guid));
+            if (regKey != null) {
+                foreach (string ver in regKey.GetSubKeyNames()) {
+                    Microsoft.Win32.RegistryKey regKeyCulture = regKey.OpenSubKey(string.Format("{0}\\{1}", ver, lcid));
+                    if (regKeyCulture == null)
+                        continue;
+
+                    ushort tmpMajor = 0;
+                    ushort tmpMinor16 = 0;
+                    string [] parts = ver.Split('.');
+                    if (parts.Length > 0) {
+                        tmpMajor = (ushort) double.Parse(parts[0], CultureInfo.InvariantCulture);
+                        if (parts.Length > 1) {
+                            tmpMinor16 = Convert.ToUInt16(parts[1], 16);  // Treat minor as hex
+                        }
+                    }       
+
+                    if (major < tmpMajor  || (major == tmpMajor && minor16 <= tmpMinor16)) {
+                        // Found it..
+                        Microsoft.Win32.RegistryKey regKeyWin32 = regKeyCulture.OpenSubKey("win32");
+                        if (regKeyWin32 != null) {
+                            tlbFile = (string)regKeyWin32.GetValue("");
+                            regKeyWin32.Close();
+                            break;
+                        }
+                    }
+                }
+                regKey.Close();
+            }       
+ 
+            return tlbFile;
+        }
+
+        /// <summary>
         /// Parses a VB project file and extracts the source files, reference files, and 
         /// the name of the compiled file for the project.
         /// </summary>
@@ -339,7 +400,7 @@ namespace NAnt.Contrib.Tasks {
             Regex codeRegEx = new Regex(@"(Class|Module)\s*=\s*\w*;\s*(?<filename>.*($^\.)*)\s*$");
 
             // Regexp that extracts reference entries from the VBP (Reference=)
-            Regex referenceRegEx = new Regex(@"(Object|Reference)\s*=\s*({|\*\\G{)(?<tlbguid>[0-9\-A-Fa-f]*($^\.)*)}\#(?<majorver>[0-9($^\.)*]*)\.(?<minorver>[0-9]($^\.)*)\#(?<lcid>[0-9]($^\.)*)(;|\#)(?<tlbname>.*)");
+            Regex referenceRegEx = new Regex(@"(Object|Reference)\s*=\s*({|\*\\G{)(?<tlbguid>[0-9\-A-Fa-f]*($^\.)*)}\#(?<majorver>[0-9($^\.)]*)\.(?<minorver>[0-9a-fA-F($^\.)]*)\#(?<lcid>[0-9]($^\.)*)(;|\#)(?<tlbname>.*)");
             
             string key = String.Empty;
             string keyValue = String.Empty;
@@ -384,8 +445,10 @@ namespace NAnt.Contrib.Tasks {
                                     string temp = match.Groups["majorver"].Value;
                                     ushort majorVer = (ushort) double.Parse(temp, CultureInfo.InvariantCulture);
                                     
+                                    // Minor is considered a hex value
                                     temp = match.Groups["minorver"].Value;
-                                    ushort minorVer = (ushort) double.Parse(temp, CultureInfo.InvariantCulture);
+                                    ushort minorVer16 = Convert.ToUInt16(temp, 16);
+
                                     temp = match.Groups["lcid"].Value;
                                     uint lcid = 0;
                                     
@@ -395,15 +458,18 @@ namespace NAnt.Contrib.Tasks {
                                     
                                     string tlbGuid = match.Groups["tlbguid"].Value;
                                     Guid guid = new Guid(tlbGuid);
-                                    try {
-                                        QueryPathOfRegTypeLib(ref guid, majorVer, minorVer, lcid, out tlbName);
-                                        tlbName = tlbName.Trim('\0');
-                                        if (File.Exists(tlbName)) {
-                                            references.Includes.Add(tlbName);
+
+                                    // Find the tlb file 
+                                    tlbName = VB6GetTypeLibFile(guid, majorVer, minorVer16, lcid);
+                                    if (File.Exists(tlbName)) {
+                                        references.Includes.Add(tlbName);
+                                    } else {
+                                        // Show a warning if we couldn't find the reference. Don't rely on VB.
+                                        if (tlbName == null) {
+                                            Log(Level.Warning, "Couldn't find the tlb file for '{0}' ver.{1}.{2:x}.", guid, majorVer, minorVer16);
+                                        } else {
+                                            Log(Level.Warning, "Couldn't find the file '{0}'.", tlbName);
                                         }
-                                    } catch (COMException) {
-                                        //Typelib wasn't found - vb6 will barf
-                                        //when the compile happens, but we won't worry about it.
                                     }
                                 }
                             }
@@ -445,15 +511,6 @@ namespace NAnt.Contrib.Tasks {
         #endregion Protected Instance Methods
 
         #region Private Static Methods
-
-        [DllImport("oleaut32.dll", PreserveSig=false)]
-        private static extern void QueryPathOfRegTypeLib(
-            ref Guid guid, 
-            ushort majorVer, 
-            ushort minorVer, 
-            uint lcid, 
-            [MarshalAs(UnmanagedType.BStr)] out string path
-            );
 
         #endregion Private Static Methods
     }
