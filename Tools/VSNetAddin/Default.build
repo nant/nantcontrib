@@ -184,11 +184,11 @@
   <target name="build" description="Builds the NAnt Addin" depends="assemblies.deploy" />
   <target name="build.nant" description="Compiles NAnt" depends="prepare">
     <property name="nant.dir" value="..\..\..\NAnt" />
-    <property name="nantbuild.dir" value="${nant.dir}\build" />
+    <property name="nantbuild.dir" value="${nant.dir}\bin" />
     <nant buildfile="${nant.dir}\NAnt.build" target="build" basedir="${nant.dir}" />
-    <copy file="${nantbuild.dir}\CollectionGen.dll" todir="${dest.dir}" />
     <copy file="${nantbuild.dir}\NAnt.Core.dll" todir="${dest.dir}" />
-    <copy file="${nantbuild.dir}\NAnt.Documenter.dll" todir="${dest.dir}" />
+    <copy file="${nantbuild.dir}\NAnt.DotNetTasks.dll" todir="${dest.dir}" />
+    <copy file="${nantbuild.dir}\NAnt.ZipTasks.dll" todir="${dest.dir}" />
     <copy file="${nantbuild.dir}\NDoc.Core.dll" todir="${dest.dir}" />
     <copy file="${nantbuild.dir}\NDoc.Documenter.Msdn.dll" todir="${dest.dir}" />
     <copy file="${nantbuild.dir}\NUnitCore.dll" todir="${dest.dir}" />
