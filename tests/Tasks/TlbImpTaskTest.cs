@@ -24,9 +24,9 @@ using System.Text;
 using System.Xml;
 
 using NUnit.Framework;
+using SourceForge.NAnt.Tests;
 
 namespace SourceForge.NAnt.Contrib.Tests {
-/*
     public class TlbImpTaskTest : BuildTestBase {
 
         TlbImpTaskTest(string name) : base(name)
@@ -54,5 +54,4 @@ namespace SourceForge.NAnt.Contrib.Tests {
             Assertion.Assert("Type library '" + fileName + "' was not created.", File.Exists(fileName));
         }
     }
-*/
 }

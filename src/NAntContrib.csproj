@@ -91,11 +91,6 @@
                     HintPath = "..\..\nant\bin\NAnt.Core.dll"
                 />
                 <Reference
-                    Name = "NAnt.Documenter"
-                    AssemblyName = "NAnt.Documenter"
-                    HintPath = "..\..\nant\bin\NAnt.Documenter.dll"
-                />
-                <Reference
                     Name = "System.XML"
                     AssemblyName = "System.Xml"
                     HintPath = "G:\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.XML.dll"
@@ -110,12 +105,42 @@
                     AssemblyName = "Interop.StarTeam"
                     HintPath = "..\bin\Interop.StarTeam.dll"
                 />
+                <Reference
+                    Name = "NDoc.Documenter.Msdn"
+                    AssemblyName = "NDoc.Documenter.Msdn"
+                    HintPath = "..\..\nant\bin\NDoc.Documenter.Msdn.dll"
+                />
+                <Reference
+                    Name = "NAnt.DotNetTasks"
+                    AssemblyName = "NAnt.DotNetTasks"
+                    HintPath = "..\..\nant\bin\NAnt.DotNetTasks.dll"
+                />
             </References>
         </Build>
         <Files>
             <Include>
                 <File
                     RelPath = "AssemblyInfo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\ADSIBaseTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\ADSIGetPropertyTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\ADSISetPropertyTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\AxImpTask.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -135,7 +160,27 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Tasks\DiscoTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Tasks\GacTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\HxCompTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\HxRegTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\IISTasks.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -160,6 +205,19 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Tasks\MSITask.xsd"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Tasks\NAnt.xsd"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Tasks\NGenTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Tasks\NUnitReportTask.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -180,12 +238,17 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Tasks\ResGenTask.cs"
+                    RelPath = "Tasks\SchemaValidatedTask.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Tasks\ScpTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\SlingshotTask.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -215,7 +278,32 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Tasks\ValidateXmlTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Tasks\Vb6Task.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\WsdlTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\XsdTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\StarTeam\LabelTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\StarTeam\StarTeamAutoLabel.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

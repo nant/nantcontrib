@@ -39,7 +39,7 @@ namespace NAnt.Contrib.Tasks {
     ///     language="CS" namespace="MyCompany.MyService" outfile="MyService.cs" />]]></code>
     /// </example>
     [TaskName("wsdl")]
-    public class WsdlTask : ExternalProgramBase {
+    public class WsdlTask : MsftFXSDKExternalProgramBase {
         private string _args;
         string _path = null;
         bool _nologo = false;
@@ -186,10 +186,6 @@ namespace NAnt.Contrib.Tasks {
         public string BaseUrl {
             get { return _baseurl; }
             set { _baseurl = value; }
-        }
-        
-        public override string ProgramFileName {
-            get { return "wsdl.exe"; }
         }
 
         /// <summary>

@@ -128,7 +128,7 @@ namespace NAnt.Contrib.Tasks
         {
             get
             {
-                return "ngen.exe";
+                return MsftFXCompilerBase.ProgramFilepath(this);
             }
         }
 

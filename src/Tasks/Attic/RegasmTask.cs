@@ -128,7 +128,7 @@ namespace NAnt.Contrib.Tasks {
         public FileSet RegasmFileSet { get { return _fileset; } }
         
         public override string ProgramFileName {
-            get { return "regasm"; }
+            get { return MsftFXCompilerBase.ProgramFilepath(this); }
         }
 
         public override string ProgramArguments {

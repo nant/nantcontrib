@@ -50,7 +50,7 @@ namespace NAnt.Contrib.Tasks
     ///   <code><![CDATA[<xsd xdr="MyOldSchema.xdr" outputdir="build\Schemas" />]]></code>
     /// </example>
     [TaskName("xsd")]
-    public class XsdTask : ExternalProgramBase
+    public class XsdTask : MsftFXSDKExternalProgramBase
     {
         private string _args;
         string _schema = null;
@@ -161,14 +161,6 @@ namespace NAnt.Contrib.Tasks
         {
             get { return _xdr; }
             set { _xdr = value; }
-        }
-        
-        public override string ProgramFileName
-        {
-            get
-            {
-                return "xsd.exe";
-            }
         }
 
         /// <summary>
