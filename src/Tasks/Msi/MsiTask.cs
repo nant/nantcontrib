@@ -37,7 +37,11 @@ namespace NAnt.Contrib.Tasks.Msi {
     /// Requires <c>cabarc.exe</c> in the path.  This tool is part of the 
     /// <see href="http://msdn.microsoft.com/library/en-us/dncabsdk/html/cabdl.asp">Microsoft Cabinet SDK</see>.
     /// </para>
-    /// <para>
+	/// <para>
+	/// Requires <c>mergemod.dll</c> version 2.0 or greater.  This dll is part of the 
+	/// <see href="http://www.microsoft.com/msdownload/platformsdk/instmsi.htm">Microsoft Platform SDK</see>.
+	/// </para>
+	/// <para>
     /// See the <see href="http://msdn.microsoft.com/library/en-us/msi/setup/roadmap_to_windows_installer_documentation.asp?frame=true" >Roadmap to Windows Installer Documentation</see> 
     /// at Microsoft's MSDN website for more information.
     /// </para>
