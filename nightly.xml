@@ -14,9 +14,8 @@
     <property name="sf.net.ssh.server" value="shell1.sf.net"/>
     <property name="sf.net.build.path" value="/home/groups/n/na/nantcontrib/htdocs/builds"/>
     
+    <property name="debug" value="false" readonly="true"/>
     <include buildfile="nantcontrib.build"/>
-    <!-- do a release build -->
-    <property name="debug" value="false"/>
     
     <target name="nightly" depends="build doc" description="Perform a 'nightly' package, and updates the version of NAnt that is executing.">
         <property name="project.zip-path" value="${nant.project.basedir}/build/${project.name}-${project.version}.zip" />
@@ -28,7 +27,7 @@
                 <excludes name="**/cache/**"/>
                 <excludes name="**/_*/**"/>
                 <excludes name="**/Schemas/**"/>
-                <excludes name="**/docs/**"/>
+                <excludes name="**/doc/MSDN/**"/>
             </fileset>
         </zip>
 

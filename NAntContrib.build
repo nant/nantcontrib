@@ -309,8 +309,11 @@ Creating folder and getting file from NAnt Nightly Build (${nant.releasebuild.na
                  </documenter>             
             </documenters> 
         </ndoc>
-        <copy file="${build.dir}/docs/MSDN/NAntContrib.chm" todir="${build.dir}"/>
-        <delete directory="${build.dir}/doc/MSDN" failonerror="false" verbose="true"/>
+        <copy todir="${build.dir}">
+			<fileset basedir="${build.dir}/doc/MSDN" failonempty="true">
+				<includes name="*.chm"/>
+			</fileset>
+		</copy>
         <echo message="Preview task references: file://${build.dir}/doc/help/tasks/index.html"/>
     </target>
 
