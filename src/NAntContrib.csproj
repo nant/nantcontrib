@@ -1,5 +1,9 @@
 <VisualStudioProject>
-    <CSHARP ProjectType="Local" ProductVersion="7.0.9466" SchemaVersion="1.0" ProjectGuid="{CFBA0DE3-2B01-4C75-B615-4ACBA502F71C}">
+    <CSHARP 
+        ProjectType="Local" 
+        ProductVersion="7.0.9466" 
+        SchemaVersion="1.0" 
+        ProjectGuid="{CFBA0DE3-2B01-4C75-B615-4ACBA502F71C}">
         <Build>
             <Settings 
                 ApplicationIcon="" 
@@ -122,33 +126,81 @@
         </Build>
         <Files>
             <Include>
-                <File RelPath="AssemblyInfo.cs" SubType="Code" BuildAction="Compile" />
+                <File
+                    RelPath="AssemblyInfo.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
                 <File
                     RelPath = "CommonAssemblyInfo.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
-                <File 
-                    RelPath="Tasks\ADSIBaseTask.cs" 
-                    SubType="Code" 
-                    BuildAction="Compile" 
+                <File
+                    RelPath="Tasks\ADSIBaseTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
                 />
-                <File 
-                    RelPath="Tasks\ADSIGetPropertyTask.cs" 
-                    SubType="Code" 
-                    BuildAction="Compile" 
+                <File
+                    RelPath="Tasks\ADSIGetPropertyTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
                  />
-                <File RelPath="Tasks\ADSISetPropertyTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\AxImpTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\ChecksumTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\CodeStatsTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\COMRegisterTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\ConcatTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\DiscoTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\GacTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\HxCompTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\HxRegTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\IISTasks.cs" SubType="Code" BuildAction="Compile" />
+                <File
+                    RelPath="Tasks\ADSISetPropertyTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\AxImpTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\ChecksumTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\CodeStatsTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\COMRegisterTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\ConcatTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\DiscoTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\GacTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\HxCompTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\HxRegTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\IISTasks.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
                 <File RelPath="Tasks\MgmtClassGenTask.cs" SubType="Code" BuildAction="Compile" />
                 <File RelPath="Tasks\NAnt.xsd" BuildAction="Content" />
                 <File RelPath="Tasks\NGenTask.cs" SubType="Code" BuildAction="Compile" />
@@ -165,6 +217,31 @@
                 <File RelPath="Tasks\VersionTask.cs" SubType="Code" BuildAction="Compile" />
                 <File RelPath="Tasks\WsdlTask.cs" SubType="Code" BuildAction="Compile" />
                 <File RelPath="Tasks\XsdTask.cs" SubType="Code" BuildAction="Compile" />
+                <File
+                    RelPath = "Tasks\Grep\GrepTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Grep\LineCounter.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Grep\Match.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Grep\MatchCollection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Grep\Pattern.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
                 <File
                     RelPath = "Tasks\Msi\InstallerCreationCommand.cs"
                     SubType = "Code"
@@ -224,6 +301,41 @@
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
+                <File
+                    RelPath="Tasks\SourceSafe\AddTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\SourceSafe\BaseTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\SourceSafe\CheckinTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\SourceSafe\CheckoutTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\SourceSafe\GetTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\SourceSafe\LabelTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\SourceSafe\UndoCheckoutTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
                 <File RelPath="Tasks\StarTeam\LabelTask.cs" SubType="Code" BuildAction="Compile" />
                 <File RelPath="Tasks\StarTeam\StarTeamAutoLabel.cs" SubType="Code" BuildAction="Compile" />
                 <File RelPath="Tasks\StarTeam\StarTeamCheckin.cs" SubType="Code" BuildAction="Compile" />
@@ -232,13 +344,6 @@
                 <File RelPath="Tasks\StarTeam\StarTeamList.cs" SubType="Code" BuildAction="Compile" />
                 <File RelPath="Tasks\StarTeam\StarTeamTask.cs" SubType="Code" BuildAction="Compile" />
                 <File RelPath="Tasks\StarTeam\TreeBasedTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\VSS\AddTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\VSS\BaseTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\VSS\CheckinTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\VSS\CheckoutTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\VSS\GetTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\VSS\LabelTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\VSS\UndoCheckoutTask.cs" SubType="Code" BuildAction="Compile" />
                 <File RelPath="Types\XmlSchemaReference.cs" SubType="Code" BuildAction="Compile" />
                 <File RelPath="Types\XmlSchemaReferenceCollection.cs" SubType="Code" BuildAction="Compile" />
                 <File RelPath="Util\ChecksumHelper.cs" SubType="Code" BuildAction="Compile" />
