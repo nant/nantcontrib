@@ -28,12 +28,12 @@ using NAnt.Core.Tasks;
 using NAnt.Core.Types;
 using NAnt.Core.Util;
 
-namespace NAnt.SourceControl.Tasks {
+namespace NAnt.Contrib.Tasks.Svn {
     /// <summary>
     /// Executes the svn command specified by the command attribute.
     /// </summary>
     /// <example>
-    ///   <para>Checkout NAnt.</para>
+    ///   <para>Checkout Gentle.NET.</para>
     ///   <code>
     ///     <![CDATA[
     /// <svn command="checkout" 
@@ -57,6 +57,7 @@ namespace NAnt.SourceControl.Tasks {
         /// The svn command to execute.
         /// </summary>
         [TaskAttribute("command", Required=true)]
+        [StringValidator(AllowEmpty=false)]
         public override string CommandName {
             get { return this._commandName; }
             set { this._commandName = value; }

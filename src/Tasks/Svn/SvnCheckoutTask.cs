@@ -18,10 +18,11 @@
 // Clayton Harbour (claytonharbour@sporadicism.com)
 
 using System;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.IO;
-using System.Diagnostics;
 
 using NAnt.Core;
 using NAnt.Core.Attributes;
@@ -29,66 +30,74 @@ using NAnt.Core.Tasks;
 using NAnt.Core.Types;
 using NAnt.Core.Util;
 
-namespace NAnt.SourceControl.Tasks {
+namespace NAnt.Contrib.Tasks.Svn {
     /// <summary>
     /// Executes the svn checkout command.
     /// </summary>
     /// <example>
-    ///   <para>Checkout Gentle .Net.</para>
+    ///   <para>Checkout Gentle.NET.</para>
     ///   <code>
     ///     <![CDATA[
-    /// <svn-update     destination="c:/dev/src/gentle.net" 
-    ///                 uri="http://www.mertner.com/svn/repos/projects/gentle" 
-    ///                 recursive="true"
-    ///                 quiet="true"
-    ///                 username="anonymoose"
-    ///                 password="Canada" 
-    ///                 revision="HEAD"
-    ///                 cache-auth="false"
-    ///                 config-dir="c:\home"
-    ///                 />
+    /// <svn-update
+    ///     destination="c:/dev/src/gentle.net" 
+    ///     uri="http://www.mertner.com/svn/repos/projects/gentle" 
+    ///     recursive="true"
+    ///     quiet="true"
+    ///     username="anonymoose"
+    ///     password="Canada" 
+    ///     revision="HEAD"
+    ///     cache-auth="false"
+    ///     config-dir="c:\home"
+    /// />
     ///     ]]>
     ///   </code>
     /// </example>
     [TaskName("svn-checkout")]
     public class SvnCheckoutTask : AbstractSvnTask {
-
         #region Private Instance Fields
+
         private string COMMAND_NAME = "checkout";
-        #endregion
+
+        #endregion Private Instance Fields
 
         #region Public Instance Constructors
+
         /// <summary>
         /// Initialize the task, and set the default parameters.
         /// </summary>
         public SvnCheckoutTask () {
             this.Quiet = true;
         }
-        #endregion
+
+        #endregion Public Instance Constructors
+
         #region Public Instance Properties
+
         /// <summary>
-        /// The svn command to execute.  This value is defined in a constant and
-        ///     is equal to the value <code>checkout</code>.
+        /// Gets the svn command to execute.
         /// </summary>
+        /// <value>
+        /// The svn command to execute. The default value is "checkout".
+        /// </value>
         public override string CommandName {
-            get {return this.COMMAND_NAME;}
-            set {this.COMMAND_NAME = value;}
+            get { return this.COMMAND_NAME; }
+            set { this.COMMAND_NAME = value; }
         }
 
         /// <summary>
-        /// <code>true</code> if the output should be minimized.  Defaults to 
-        ///     <code>true</code>.
+        /// Determines if the output should be minimized. The default is
+        /// <see langword="true" />.
         /// </summary>
         [TaskAttribute("quiet", Required=false)]
         [BooleanValidator()]
         public bool Quiet {
-            get {return ((Option)this.CommandOptions["quiet"]).IfDefined;}
-            set {this.SetCommandOption("quiet", "quiet", value);}
+            get { return ((Option)this.CommandOptions["quiet"]).IfDefined; }
+            set { this.SetCommandOption("quiet", "quiet", value); }
         }
 
         /// <summary>
-        /// <code>true</code> if the command should be executed recursively.
-        ///     The default is <code>true</code>.
+        /// <see langword="true" /> if the command should be executed recursively.
+        /// The default is <see langword="true" />.
         /// </summary>
         [TaskAttribute("recursive", Required=false)]
         [BooleanValidator()]
@@ -99,17 +108,17 @@ namespace NAnt.SourceControl.Tasks {
 
         /// <summary>
         /// The revision to checkout.  If no revision is specified then subversion
-        ///     will return the <code>HEAD</code>.
-        ///     
-        ///        A revision argument can be one of:
+        /// will return the <code>HEAD</code>.
+        /// </summary>
+        /// <remarks>
+        /// A revision argument can be one of:
         ///        NUMBER       revision number
         ///        "{" DATE "}" revision at start of the date
         ///        "HEAD"       latest in repository
         ///        "BASE"       base rev of item's working copy
         ///        "COMMITTED"  last commit at or before BASE
         ///        "PREV"       revision just before COMMITTED
-        ///   
-        /// </summary>
+        /// </remarks>
         [TaskAttribute("revision", Required=false)]
         public string Revision {
             get {return ((Option)this.CommandOptions["revision"]).Value;}
@@ -123,15 +132,15 @@ namespace NAnt.SourceControl.Tasks {
                     ((new Regex(magic_ref_regex)).IsMatch(value))) {
                     this.SetCommandOption("revision", String.Format("revision={0}", value), true);
                 } else {
-                    throw new BuildException (
-                        String.Format("Invalid argument specified: {0}.", value));
+                    throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                        "Invalid argument specified: {0}.", value), Location);
                 }
             }
         }
 
         /// <summary>
-        /// <code>true</code> if the authentiction token should be cached
-        ///     locally.
+        /// <see langword="true" /> if the authentiction token should be cached
+        /// locally.
         /// </summary>
         [TaskAttribute("cache-auth", Required=false)]
         [BooleanValidator()]
@@ -151,7 +160,6 @@ namespace NAnt.SourceControl.Tasks {
             }
         }
 
-		#endregion
-
-	}
+        #endregion
+    }
 }

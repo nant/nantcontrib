@@ -28,14 +28,14 @@ using NAnt.Core.Tasks;
 using NAnt.Core.Types;
 using NAnt.Core.Util;
 
-namespace NAnt.SourceControl.Tasks {
+using NAnt.SourceControl.Tasks;
+
+namespace NAnt.Contrib.Tasks.Svn {
     /// <summary>
     /// A base class for creating tasks for executing CVS client commands on a 
     /// CVS repository.
     /// </summary>
     public abstract class AbstractSvnTask : AbstractSourceControlTask {
-        #region Private Instance Fields
-        #endregion
         #region Protected Static Fields
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace NAnt.SourceControl.Tasks {
         }
 
         /// <summary>
-        /// The user performing the checkout.  
+        /// The user performing the checkout.
         /// </summary>
         [TaskAttribute("username", Required=false)]
         public string UserName {
@@ -164,7 +164,7 @@ namespace NAnt.SourceControl.Tasks {
         }
 
         /// <summary>
-        /// The user performing the checkout.  
+        /// The pasword to use to login to svn.
         /// </summary>
         [TaskAttribute("password", Required=false)]
         public override string Password {
@@ -173,15 +173,14 @@ namespace NAnt.SourceControl.Tasks {
         }
 
         /// <summary>
-        /// Indicatae whether the task should be interactive or not.  This is
-        ///     set to <code>false</code> by default, and I don't see a reason
-        ///     to expose this to the nant task.
+        /// Indicates whether the task should be interactive or not.  This is
+        /// set to <see langword="false" /> by default, and I don't see a reason
+        /// to expose this to the NAnt task.
         /// </summary>
         public bool Interactive {
             get {return ((Option)this.CommandOptions["interactive"]).IfDefined;}
             set {this.SetCommandOption("interactive", "non-interactive", !value);}
         }
-
 
         /// <summary>
         /// The executable to use for ssh communication.
@@ -193,7 +192,7 @@ namespace NAnt.SourceControl.Tasks {
         }
 
         /// <summary>
-        /// The executable to use for ssh communication.
+        /// The command to execute.
         /// </summary>
         [TaskAttribute("command", Required=false)]
         public override string CommandName {

@@ -28,44 +28,49 @@ using NAnt.Core.Tasks;
 using NAnt.Core.Types;
 using NAnt.Core.Util;
 
-namespace NAnt.SourceControl.Tasks {
+namespace NAnt.Contrib.Tasks.Svn {
     /// <summary>
     /// Executes the svn update specified by the command attribute.
     /// </summary>
     /// <example>
-    ///   <para>Checkout Gentle .Net.</para>
+    ///   <para>Update Gentle.NET.</para>
     ///   <code>
     ///     <![CDATA[
-    /// <svn-update     destination="c:\dev\src\gentle.net" 
-    ///                 uri="http://www.mertner.com/svn/repos/projects/gentle" 
-    ///                 recursive="true"
-    ///                 quiet="true"
-    ///                 username="anonymoose"
-    ///                 password="Canada" 
-    ///                 revision="HEAD"
-    ///                 cach-auth="false"
-    ///                 config-dir="c:\home"
-    ///                 />
+    /// <svn-update
+    ///     destination="c:\dev\src\gentle.net" 
+    ///     uri="http://www.mertner.com/svn/repos/projects/gentle" 
+    ///     recursive="true"
+    ///     quiet="true"
+    ///     username="anonymoose"
+    ///     password="Canada" 
+    ///     revision="HEAD"
+    ///     cach-auth="false"
+    ///     config-dir="c:\home"
+    /// />
     ///     ]]>
     ///   </code>
     /// </example>
     [TaskName("svn-update")]
     public class SvnUpdateTask : AbstractSvnTask {
+        #region Private Instance Fields
 
-		#region Private Instance Fields
         private string COMMAND_NAME = "update";
-		#endregion
 
-		#region Public Instance Properties
+        #endregion Private Instance Fields
+
+        #region Public Instance Properties
+
         /// <summary>
-        /// The svn command to execute.
+        /// Gets the svn command to execute.
         /// </summary>
+        /// <value>
+        /// The svn command to execute. The default value is "update".
+        /// </value>
         public override string CommandName {
-            get {return this.COMMAND_NAME;}
-            set {this.COMMAND_NAME = value;}
+            get { return this.COMMAND_NAME; }
+            set { this.COMMAND_NAME = value; }
         }
 
-		#endregion
-
-	}
+        #endregion Public Instance Properties
+    }
 }
