@@ -19,8 +19,9 @@ How to build.
 	- change to the NAntContrib directory
 	- build using the command
 
-		nant -D:nant.dir=h:\cvs\nant\build\nant-0.8.4-debug -f:NAntContrib.build
+		nant -D:nant.dir=H:\cvs\nant\build\net-1.1.win32\nant-0.85-debug -f:NAntContrib.build
 
-	NOTE: nant.dir should point to the build directory from step 1, just above bin.
+	NOTE: nant.dir should point to the build directory from step 1, just above bin. This will obviously 
+	be different on your installation.
 
 
