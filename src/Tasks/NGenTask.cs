@@ -16,18 +16,17 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-
 // Jayme C. Edwards (jedwards@wi.rr.com)
 
 using System;
-using System.IO;
-using System.Xml;
-using System.Text;
 using System.Collections.Specialized;
+using System.IO;
+using System.Text;
+using System.Xml;
 
 using NAnt.Core;
-using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
+using NAnt.Core.Tasks;
 
 namespace NAnt.Contrib.Tasks {
     /// <summary>
@@ -44,15 +43,19 @@ namespace NAnt.Contrib.Tasks {
     [TaskName("ngen")]
     [ProgramLocation(LocationType.FrameworkDir)]
     public class NGenTask : ExternalProgramBase {
+        #region Private Instance Fields
+
         private string _args;
-        string _assembly = null;
-        bool _show = false;
-        bool _delete = false;
-        bool _debug = false;
-        bool _debugoptimized = false;
-        bool _profiled = false;
-        bool _nologo = false;
-        bool _silent = false;
+        private string _assembly = null;
+        private bool _show = false;
+        private bool _delete = false;
+        private bool _debug = false;
+        private bool _debugoptimized = false;
+        private bool _profiled = false;
+        private bool _nologo = false;
+        private bool _silent = false;
+
+        #endregion Private Instance Fields
 
         /// <summary>Assembly path or display name.</summary>
         [TaskAttribute("assembly", Required=true)]
