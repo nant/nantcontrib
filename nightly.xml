@@ -1,6 +1,13 @@
 <?xml version="1.0"?>
 <project name="nant" default="nightly">
     
+    <target name="nightly">
+		<call target="nightly-tasks"/>
+		<call target="nightly-web"/>
+		<call target="nightly-msi"/>
+		<call target="sf.net-updateperms" failonerror="false"/>
+    </target>
+    
     <script language="C#">
         <code>
 			<![CDATA[
@@ -12,13 +19,14 @@
     </script>
     
     <property name="sf.net.ssh.server" value="shell1.sf.net"/>
-    <property name="sf.net.build.path" value="/home/groups/n/na/nantcontrib/htdocs/builds"/>
+    <property name="sf.net.web.path" value="/home/groups/n/na/nantcontrib/htdocs"/>
     
+    <!-- all our builds are release builds -->
     <property name="debug" value="false" readonly="true"/>
     <include buildfile="nantcontrib.build"/>
     
-    <target name="nightly" depends="build doc" description="Perform a 'nightly' package, and updates the version of NAnt that is executing.">
-        <property name="project.zip-path" value="${nant.project.basedir}/build/${project.name}-${project.version}.zip" />
+    <target name="nightly-tasks" depends="build doc" description="Updates SF.Net site with new release build of tasks">
+        <property name="project.zip-path" value="${nant.project.basedir}/build/${project.name}.Tasks-${project.version}.zip" />
 
         <zip zipfile="${project.zip-path}">
             <fileset basedir="${build.dir}">
@@ -33,14 +41,32 @@
 
 		
 		<!-- copy the build up to sourceforge -->
-		<scp file="${project.zip-path}" server="${sf.net.ssh.server}" path="${sf.net.build.path}"/>
-		<echo message="Copied nightly build over to SF.Net"/>		
-		
+		<scp file="${project.zip-path}" server="${sf.net.ssh.server}" path="${sf.net.web.path}/builds"/>
+		<echo message="Copied nightly build over to SF.Net"/>
 		<!-- make sure files are readable -->
 		<exec program="ssh" failonerror="false">
 			<arg value="${sf.net.ssh.server}"/>
-			<arg value="chmod -R 755 ${sf.net.build.path}/*"/>
-		</exec>
+			<arg value="chmod -R 755 ${sf.net.web.path}/builds/*"/>
+		</exec>		
+		
+    </target>
+
+	<target name="nightly-msi" depends="msi">
+		
+	</target>
+    
+    <target name="nightly-web" depends="doc">
+		<!-- copy docs -->
+		<scp file="${build.dir}/doc/help" server="${sf.net.ssh.server}" path="${sf.net.web.path}/doc">
+			<arg value="-r"/>
+		</scp>		
+		<!-- make sure files are readable -->
+		<exec program="ssh" failonerror="false">
+			<arg value="${sf.net.ssh.server}"/>
+			<arg value="chmod -R 755 ${sf.net.web.path}/doc/*"/>
+		</exec>		
     </target>
     
+    <target name="sf.net-updateperms">
+    </target>
 </project>

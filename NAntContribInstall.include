@@ -9,14 +9,12 @@
     <!--*****************************************************************-->
     <!--* Create the .msi Windows Installer setup file                  *-->
     <!--*****************************************************************-->
-    <target name="msi" description="Build MSI install containing NAnt, NAntContrib, VSNetAddin, and Slingshot">
+    <target name="msi" depends="build doc" description="Build MSI install containing NAnt, NAntContrib, VSNetAddin, and Slingshot">
         <property name="debug" value="false"/>
 
         <property name="installsource.dir" value="install" />
 
         <property name="nantbuild.dir" value="${nant.dir}\bin" />
-        <call target="build" />
-        <call target="doc" />
 
         <loadtasks assembly="${build.dir}\NAnt.Contrib.Tasks.dll" />
         
