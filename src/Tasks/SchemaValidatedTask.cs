@@ -46,7 +46,6 @@ namespace NAnt.Contrib.Tasks {
         private object _schemaObject;
         private bool _validated = true;
         private ArrayList _validationExceptions = new ArrayList();
-        private XmlNode _xmlNode;
 
         #endregion Private Instance Fields
 
@@ -63,14 +62,6 @@ namespace NAnt.Contrib.Tasks {
 
         #endregion Public Instance Properties
 
-        #region Protected Instance Properties
-
-        protected override XmlNode XmlNode {
-            get { return _xmlNode; }
-        }
-
-        #endregion Protected Instance Properties
-
         #region Override implementation of Task
 
         /// <summary>
@@ -78,7 +69,6 @@ namespace NAnt.Contrib.Tasks {
         /// </summary>
         /// <param name="TaskNode">Node that contains the XML fragment used to define this task instance.</param>
         protected override void InitializeTask(XmlNode TaskNode) {
-            _xmlNode = TaskNode;
             XmlNode taskNode = TaskNode.Clone();
 
             // Expand all properties in the task and its child elements
