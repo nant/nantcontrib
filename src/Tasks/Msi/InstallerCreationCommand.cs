@@ -37,6 +37,7 @@ using WindowsInstaller;
 using NAnt.Core;
 using NAnt.Core.Tasks;
 using NAnt.Core.Types;
+using NAnt.Core.Util;
 
 using NAnt.Contrib.Schemas.Msi;
 
@@ -206,26 +207,28 @@ namespace NAnt.Contrib.Tasks.Msi {
         protected void ReorderFiles(InstallerDatabase database, ref int LastSequence) {
             string curPath = Path.Combine(Project.BaseDirectory, msi.sourcedir);
             string curTempPath = Path.Combine(curPath, "Temp");
+            
+            if (Directory.Exists(curTempPath)) {
+                string[] curFileNames = Directory.GetFiles(curTempPath, "*.*");
 
-            string[] curFileNames = Directory.GetFiles(curTempPath, "*.*");
+                LastSequence = 1;
 
-            LastSequence = 1;
+                foreach (string curDirFileName in curFileNames) {
 
-            foreach (string curDirFileName in curFileNames) {
+                    using (InstallerRecordReader reader = database.FindRecords("File", 
+                            new InstallerSearchClause("File", Comparison.Equals, Path.GetFileName(curDirFileName)))) {
 
-                using (InstallerRecordReader reader = database.FindRecords("File", 
-                           new InstallerSearchClause("File", Comparison.Equals, Path.GetFileName(curDirFileName)))) {
+                        if (reader.Read()) {
+                            reader.SetValue(7, LastSequence.ToString());
+                            reader.Commit();
 
-                    if (reader.Read()) {
-                        reader.SetValue(7, LastSequence.ToString());
-                        reader.Commit();
-
-                        LastSequence++;
-                    }
-                    else {
-                        throw new BuildException("File " +
-                            Path.GetFileName(curDirFileName) +
-                            " not found during reordering.");
+                            LastSequence++;
+                        }
+                        else {
+                            throw new BuildException("File " +
+                                Path.GetFileName(curDirFileName) +
+                                " not found during reordering.");
+                        }
                     }
                 }
             }
@@ -271,52 +274,54 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// </summary>
         /// <param name="database">The MSI database.</param>
         private void LoadProperties(InstallerDatabase database) {
-            // Select the "Property" Table
-            using (InstallerTable propertyTable = database.OpenTable("Property")) {
-                Log(Level.Verbose, "Adding Properties:");
+            if (msi.properties != null) {
+                // Select the "Property" Table
+                using (InstallerTable propertyTable = database.OpenTable("Property")) {
+                    Log(Level.Verbose, "Adding Properties:");
 
-                property productName = null;
-                property productCode = null;
-                property productVersion = null;
-                property manufacturer = null;
+                    property productName = null;
+                    property productCode = null;
+                    property productVersion = null;
+                    property manufacturer = null;
 
-                // Add properties from Task definition
-                foreach (property property in msi.properties) {
-                    // Insert the Property
-                    string name = property.name;
-                    string sValue = property.value;
+                    // Add properties from Task definition
+                    foreach (property property in msi.properties) {
+                        // Insert the Property
+                        string name = property.name;
+                        string sValue = property.value;
 
-                    if (name == "ProductName") {
-                        productName = property;
-                    } else if (name == "ProductCode") {
-                        productCode = property;
-                    } else if (name == "ProductVersion") {
-                        productVersion = property;
-                    } else if (name == "Manufacturer") {
-                        manufacturer = property;
+                        if (name == "ProductName") {
+                            productName = property;
+                        } else if (name == "ProductCode") {
+                            productCode = property;
+                        } else if (name == "ProductVersion") {
+                            productVersion = property;
+                        } else if (name == "Manufacturer") {
+                            manufacturer = property;
+                        }
+
+                        if (name == null || name == "") {
+                            throw new BuildException("Property with no name attribute detected.", Location);
+                        }
+
+                        if (sValue == null || sValue == "") {
+                            throw new BuildException(String.Format(CultureInfo.InvariantCulture, "Property {0} has no value.", name), Location);
+                        }
+
+                        propertyTable.InsertRecord(name, sValue);
+
+                        Log(Level.Verbose, "\t" + name);
                     }
 
-                    if (name == null || name == "") {
-                        throw new BuildException("Property with no name attribute detected.", Location);
-                    }
-
-                    if (sValue == null || sValue == "") {
-                        throw new BuildException(String.Format(CultureInfo.InvariantCulture, "Property {0} has no value.", name), Location);
-                    }
-
-                    propertyTable.InsertRecord(name, sValue);
-
-                    Log(Level.Verbose, "\t" + name);
-                }
-
-                if ((productName == null) && (this is MsiCreationCommand))
-                    throw new BuildException("ProductName property must be specified.  For more information please visit: http://msdn.microsoft.com/library/en-us/msi/setup/productname_property.asp");
-                if ((productCode == null) && (this is MsiCreationCommand))
-                    throw new BuildException("ProductCode property must be specified.  For more information please visit: http://msdn.microsoft.com/library/en-us/msi/setup/productcode_property.asp");
-                if ((productVersion == null) && (this is MsiCreationCommand))
-                    throw new BuildException("ProductVersion property must be specified.  For more information please visit: http://msdn.microsoft.com/library/en-us/msi/setup/productversion_property.asp");
-                if ((manufacturer == null) && (this is MsiCreationCommand))
-                    throw new BuildException("Manufacturer property must be specified.  For more information please visit: http://msdn.microsoft.com/library/en-us/msi/setup/manufacturer_property.asp");
+                    if ((productName == null) && (this is MsiCreationCommand))
+                        throw new BuildException("ProductName property must be specified.  For more information please visit: http://msdn.microsoft.com/library/en-us/msi/setup/productname_property.asp");
+                    if ((productCode == null) && (this is MsiCreationCommand))
+                        throw new BuildException("ProductCode property must be specified.  For more information please visit: http://msdn.microsoft.com/library/en-us/msi/setup/productcode_property.asp");
+                    if ((productVersion == null) && (this is MsiCreationCommand))
+                        throw new BuildException("ProductVersion property must be specified.  For more information please visit: http://msdn.microsoft.com/library/en-us/msi/setup/productversion_property.asp");
+                    if ((manufacturer == null) && (this is MsiCreationCommand))
+                        throw new BuildException("Manufacturer property must be specified.  For more information please visit: http://msdn.microsoft.com/library/en-us/msi/setup/manufacturer_property.asp");
+                }        
             }
         }
 
@@ -470,27 +475,28 @@ namespace NAnt.Contrib.Tasks.Msi {
                     directoryList.Add(directory);
                 }
 
-                foreach (property property in msi.properties) {
-                    if (Name == property.name) {
-                        MSIDirectory directory = FindDirectory(Name);
-                        if (directory == null) {
-                            MSIRootDirectory propDirectory = new MSIRootDirectory();
-                            propDirectory.name = Name;
-                            propDirectory.root = "TARGETDIR";
-                            propDirectory.foldername = ".";
+                if (msi.properties != null) {
+                    foreach (property property in msi.properties) {
+                        if (Name == property.name) {
+                            MSIDirectory directory = FindDirectory(Name);
+                            if (directory == null) {
+                                MSIRootDirectory propDirectory = new MSIRootDirectory();
+                                propDirectory.name = Name;
+                                propDirectory.root = "TARGETDIR";
+                                propDirectory.foldername = ".";
 
-                            directoryList.Add(propDirectory);
+                                directoryList.Add(propDirectory);
 
-                            MSIRootDirectory[] rootDirs = new MSIRootDirectory[directoryList.Count];
-                            directoryList.CopyTo(rootDirs);
+                                MSIRootDirectory[] rootDirs = new MSIRootDirectory[directoryList.Count];
+                                directoryList.CopyTo(rootDirs);
 
-                            msi.directories = rootDirs;
+                                msi.directories = rootDirs;
+                            }
+
+                            return;
                         }
-
-                        return;
                     }
                 }
-
                 if (Path.Length > 0) {
                     Path.Insert(0, @"\");
                 }
@@ -499,7 +505,7 @@ namespace NAnt.Contrib.Tasks.Msi {
                 if (Parent != null) {
                     MSIDirectory PathInfo = FindDirectory(Parent);
 
-                    if (PathInfo == null) {
+                    if (PathInfo == null && msi.properties != null) {
                         foreach (property property in msi.properties) {
                             if (Parent == property.name) {
                                 MSIRootDirectory directory = new MSIRootDirectory();
@@ -1899,43 +1905,86 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// </summary>
         /// <param name="database">The MSI database.</param>
         private void LoadSummaryInformation(InstallerDatabase database) {
-            property productName = null;
-            property manufacturer = null;
-            property keywords = null;
-            property comments = null;
+            string title = "";
+            string subject = "";
+            string author = "";
+            string keywords = "";
+            string comments = ""; 
+            string template = "";
+            string revisionNumber = CreateRegistryGuid();
+            string creatingApplication = "NAnt";
 
-            foreach (property prop in msi.properties) {
-                if (prop.name == "ProductName") {
-                    productName = prop;
-                } else if (prop.name == "Manufacturer") {
-                    manufacturer = prop;
-                } else if (prop.name == "Keywords") {
-                    keywords = prop;
-                } else if (prop.name == "Comments") {
-                    comments = prop;
+            // First try to get the values from the specified properties
+            if (msi.properties != null) {
+                foreach (property prop in msi.properties) {
+                    if (prop.name == "ProductName") {
+                        title = subject = prop.value;
+                    } else if (prop.name == "Manufacturer") {
+                        author = prop.value;
+                    } else if (prop.name == "Keywords") {
+                        keywords = prop.value;
+                    } else if (prop.name == "Comments") {
+                        comments = prop.value;
+                    }
+                }
+            }
+
+            // Now attempt to get the values from the <summaryinformation> element
+            if (msi.summaryinformation != null) {
+                if (msi.summaryinformation.title != null) {
+                    title = msi.summaryinformation.title;
+                }
+                if (msi.summaryinformation.subject != null) {
+                    subject = msi.summaryinformation.subject;
+                }
+                if (msi.summaryinformation.author != null) {
+                    author = msi.summaryinformation.author;
+                }
+                if (msi.summaryinformation.keywords != null) {
+                    keywords = msi.summaryinformation.keywords;
+                }
+                if (msi.summaryinformation.comments != null) {
+                    comments = msi.summaryinformation.comments;
+                }
+                if (msi.summaryinformation.template != null) {
+                    template = msi.summaryinformation.template;
+                }
+                if (msi.summaryinformation.revisionnumber != null) {
+                    revisionNumber = msi.summaryinformation.revisionnumber;
+                }
+                if (msi.summaryinformation.creatingapplication != null) {
+                    creatingApplication = msi.summaryinformation.creatingapplication;
                 }
             }
 
             SummaryInfo summaryInfo = database.GetSummaryInformation();
-            if (productName != null) {
-                summaryInfo.set_Property(2, productName.value);
-                summaryInfo.set_Property(3, productName.value);
+            if (!StringUtils.IsNullOrEmpty(title)) {
+                summaryInfo.set_Property(2, title);
             }
-            if (manufacturer != null) {
-                summaryInfo.set_Property(4, manufacturer.value);
+            if (!StringUtils.IsNullOrEmpty(subject)) {
+                summaryInfo.set_Property(3, subject);
+            }
+            if (!StringUtils.IsNullOrEmpty(author)) {
+                summaryInfo.set_Property(4, author);
+            }
+            if (!StringUtils.IsNullOrEmpty(keywords)) {
+                summaryInfo.set_Property(5, keywords);
+            }
+            if (!StringUtils.IsNullOrEmpty(comments)) {
+                summaryInfo.set_Property(6, comments);
+            }
+            if (!StringUtils.IsNullOrEmpty(template)) {
+                summaryInfo.set_Property(7, template);
             }
 
-            if (keywords != null) {
-                summaryInfo.set_Property(5, keywords.value);
-            }
-            if (comments != null) {
-                summaryInfo.set_Property(6, comments.value);
-            }
-
-            summaryInfo.set_Property(9, CreateRegistryGuid());
+            summaryInfo.set_Property(9, revisionNumber);
 
             summaryInfo.set_Property(14, 200);
             summaryInfo.set_Property(15, 2);
+
+            if (!StringUtils.IsNullOrEmpty(creatingApplication)) {
+                summaryInfo.set_Property(18, creatingApplication);
+            }
 
             summaryInfo.Persist();
         }
@@ -2001,7 +2050,7 @@ namespace NAnt.Contrib.Tasks.Msi {
             }
 
             if (File.Exists(cabFilePath)) {
-                Log(Level.Verbose, "Storing Cabinet in MSI Database...");
+                Log(Level.Verbose, "Storing Cabinet in Installer Database...");
 
                 using (InstallerTable cabTable = database.OpenTable("_Streams")) {
                     cabTable.InsertRecord(Path.GetFileName(cabFilePath), 
@@ -2565,7 +2614,7 @@ namespace NAnt.Contrib.Tasks.Msi {
                 // Copy the template MSI file
                 CopyFile(source, dest);
 
-                Log(Level.Info, "Building MSI Database '{0}'.", msi.output);
+                Log(Level.Info, "Building Installer Database '{0}'.", msi.output);
 
                 // Open the Output Database.
                 InstallerDatabase database = new InstallerDatabase(dest);
@@ -2585,13 +2634,13 @@ namespace NAnt.Contrib.Tasks.Msi {
                 // Compress Files
                 CreateCabFile(database);
 
-                Log(Level.Info, "Saving MSI Database...");
+                Log(Level.Info, "Saving Installer Database...");
 
                 // Commit the MSI Database
                 database.Close();
             } catch (Exception ex) {
                 throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                    "Unable to build MSI database '{0}'.", msi.output), 
+                    "Unable to build Installer database '{0}'.", msi.output), 
                     Location, ex);
             } finally {
                 CleanOutput(cabFilePath, TempFolderPath);

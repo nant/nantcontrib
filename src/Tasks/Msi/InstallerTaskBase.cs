@@ -97,6 +97,95 @@ namespace NAnt.Contrib.Tasks.Msi {
 
         /// <summary>
         /// <para>
+        /// Sets various properties in the SummaryInformation stream 
+        /// (http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/summary_information_stream.asp)
+        /// </para>
+        /// <para>
+        ///    All of the sub-elements are optional.
+        /// </para>
+        /// <h3>Nested Elements:</h3>
+        /// <h4>&lt;title&gt;</h4>
+        /// <ul>
+        /// Briefly describes the type of installer package. Phrases such as "Installation Database" or 
+        /// "Transform" or "Patch" may be used for this property.
+        /// <br />Default value: Value of the <c>ProductName</c> property, if defined.
+        /// </ul>
+        /// <h4>&lt;/title&gt;</h4>
+        /// <h4>&lt;subject&gt;</h4>
+        /// <ul>
+        /// A short description of the product to be installed.  This value is typically set from the installer 
+        /// property <c>ProductName</c>
+        /// <br />Default value: Value of the <c>ProductName</c> property, if defined.
+        /// </ul>
+        /// <h4>&lt;/subject&gt;</h4>
+        /// <h4>&lt;author&gt;</h4>
+        /// <ul>
+        /// The manufacturer of the installation database. This value is typically set from the installer 
+        /// property <c>Manufacturer</c>.
+        /// <br />Default value: Value of the <c>Manufacturer</c> property, if defined.
+        /// </ul>
+        /// <h4>&lt;/author&gt;</h4>
+        /// <h4>&lt;keywords&gt;</h4>
+        /// <ul>
+        /// Used by file browsers to hold keywords that permit the database file to be found in a keyword search. 
+        /// The set of keywords typically includes "Installer" as well as product-specific keywords, and may be 
+        /// localized.
+        /// <br />Default value: Value of the <c>Keywords</c> property, if defined.
+        /// </ul>
+        /// <h4>&lt;/keywords&gt;</h4>
+        /// <h4>&lt;comments&gt;</h4>
+        /// <ul>
+        /// A general description/purpose of the installer database.
+        /// <br />Default value: Value of the <c>Comments</c> property, if defined.
+        /// </ul>
+        /// <h4>&lt;/comments&gt;</h4>
+        /// <h4>&lt;template&gt;</h4>
+        /// <ul>
+        /// <para>
+        /// Indicates the platform and language versions that are supported by the database. The Template Summary 
+        /// Property of a patch package is a semicolon-delimited list of the product codes that can accept the 
+        /// patch.
+        /// </para>
+        /// <para>
+        ///    See http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/template_summary_property.asp for more information.
+        /// </para>
+        /// </ul>
+        /// <h4>&lt;/template&gt;</h4>
+        /// <h4>&lt;revisionnumber&gt;</h4>
+        /// <ul>
+        /// Contains the package code (GUID) for the installer package. The package code is a unique identifier 
+        /// of the installer package.  Note: Default behavior - a new GUID is generated every time
+        /// </ul>
+        /// <h4>&lt;/revisionnumber&gt;</h4>
+        /// <h4>&lt;creatingapplication&gt;</h4>
+        /// <ul>
+        /// The name of the application used to author the database.  Note: Default value is NAnt.
+        /// </ul>
+        /// <h4>&lt;/creatingapplication&gt;</h4>
+        /// <h3>Examples</h3>
+        /// <example>
+        ///     <para>Define specific summary information.</para>
+        ///     <code>
+        /// &lt;summaryinformation&gt;
+        ///     &lt;title&gt;Installation Database&lt;/title&gt;
+        ///     &lt;subject&gt;${install.productname}&lt;/subject&gt;
+        ///     &lt;author&gt;${install.manufacturer}&lt;/author&gt;
+        ///     &lt;keywords&gt;MSI, database, NAnt, Installer&lt;/keywords&gt;
+        ///     &lt;comments&gt;This installer database contains the logic and data required to install NAnt&lt;/comments&gt;
+        ///     &lt;template&gt;;1033&lt;/template&gt;
+        ///     &lt;creatingapplication&gt;NAnt - http://nant.sf.net &lt;/creatingapplication&gt;
+        /// &lt;/summaryinformation&gt; 
+        ///     </code>
+        /// </example>
+        /// </summary>
+        [BuildElement("summaryinformation", ProcessXml=false)]
+        public SchemaElement[] InstallerSummaryInformationElement {
+            get { return null; }
+            set {}
+        }     
+        
+        /// <summary>
+        /// <para>
         /// Name/value pairs which will be set in the PROPERTY table of the 
         /// installer database.
         /// </para>

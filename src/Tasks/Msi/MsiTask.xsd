@@ -22,7 +22,8 @@
     xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="qualified">
     <xsd:complexType name="MSIBase">
         <xsd:sequence>
-            <xsd:element ref="msi:properties" minOccurs="1" maxOccurs="1" />
+            <xsd:element ref="msi:summaryinformation" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="msi:properties" minOccurs="0" maxOccurs="1" />
             <xsd:element ref="msi:search" minOccurs="0" maxOccurs="1" />
             <xsd:element ref="msi:tables" minOccurs="0" maxOccurs="1" />
             <xsd:element ref="msi:directories" minOccurs="0" maxOccurs="1" />
@@ -132,6 +133,22 @@
             <xsd:field xpath="@name" />
         </xsd:unique>
 -->
+
+    <!-- msi/summaryinformation -->
+    <xsd:element name="summaryinformation">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="title" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                <xsd:element name="subject" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                <xsd:element name="author" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                <xsd:element name="keywords" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                <xsd:element name="comments" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                <xsd:element name="template" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                <xsd:element name="revisionnumber" type="xsd:string" minOccurs="0" maxOccurs="1" />
+                <xsd:element name="creatingapplication" type="xsd:string" minOccurs="0" maxOccurs="1" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
     <!-- msi/properties -->
     <xsd:element name="properties">
         <xsd:complexType>
@@ -151,6 +168,7 @@
     <xsd:element name="search">
         <xsd:complexType>
             <xsd:sequence>
+				<!-- *********  Depreciated :: Start  ********* -->
                 <xsd:element name="key" minOccurs="1" maxOccurs="unbounded">
                     <xsd:complexType>
                         <xsd:sequence>
@@ -166,6 +184,7 @@
                         <xsd:attribute name="root" type="msi:MSIRegistryKeyRoot" use="required" />
                     </xsd:complexType>
                 </xsd:element>
+				<!-- *********  Depreciated :: End  ********* -->
             </xsd:sequence>
         </xsd:complexType>
     </xsd:element>
