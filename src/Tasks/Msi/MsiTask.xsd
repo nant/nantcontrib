@@ -383,6 +383,7 @@
         <xsd:attribute name="fileattr" type="xsd:int" use="optional" default="512" />
         <xsd:attribute name="checkinterop" type="xsd:boolean" use="optional" default="false" />
         <xsd:attribute name="installassembliestogac" type="xsd:boolean" use="optional" default="false" />
+		<xsd:attribute name="keepsubdirs" type="xsd:boolean" use="optional" default="false" />
     </xsd:complexType>
     <!-- msi/components/component/key -->
     <xsd:complexType name="MSIKeyFile">

@@ -881,6 +881,14 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///         also be installed to the directory specified.</term>
         ///         <term>False</term>
         ///     </item>
+        ///     <item>
+        ///         <term>keepsubdirs</term>
+        ///         <term>bool</term>
+        ///         <term>Used to determine if directories in the fileset should be built.
+        ///         If <c>true</c>, all subdirectories of the fileset basedir will be built. If <c>false</c> the directories structure will be
+        ///         flattened.  The default is <c>false</c>.</term>
+        ///         <term>False</term>
+        ///     </item>
         /// </list>
         /// <h3>Nested Elements:</h3>
         /// <h4>&lt;keyfile&gt;</h4>

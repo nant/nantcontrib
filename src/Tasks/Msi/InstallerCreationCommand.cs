@@ -2090,9 +2090,76 @@ namespace NAnt.Contrib.Tasks.Msi {
             if (componentFiles.BaseDirectory == null)
                 componentFiles.BaseDirectory = new DirectoryInfo(Project.BaseDirectory);
 
+            string basePath = componentFiles.BaseDirectory.FullName;
+            Hashtable dirMap = new Hashtable();
+            Hashtable componentMap = new Hashtable();
+
             foreach (string filePath in componentFiles.FileNames) {
                 // Insert the File
                 string fileName = Path.GetFileName(filePath);
+                string dirPath = Path.GetDirectoryName(filePath);
+
+#region Build the subdirectory structure -- Component.keepsubdirs == true
+                if (Component.keepsubdirs) {
+                    // foreach file, add intermediate directory records as needed
+                    //    foreach directory record added that has at least one file
+                    //       add a component record
+                    //       hook the component record up to the feature
+                    // add the file
+                    string tmpDirPath = dirPath;
+
+                    // Add intermediate directory records to the directory table
+                    ArrayList subdirList = new ArrayList();
+                    while (tmpDirPath != basePath) {
+                        subdirList.Insert(0, Path.GetFileName(tmpDirPath));
+                        tmpDirPath = Path.GetDirectoryName(tmpDirPath);
+                    }
+
+                    tmpDirPath = basePath;
+                    string parentDir = Component.directory;
+                    foreach (string folderName in subdirList) {
+                        tmpDirPath = Path.Combine(tmpDirPath, folderName);
+
+                        if (!dirMap.ContainsKey(tmpDirPath)) {
+                            // Add entry to directory table
+                            string id = "D_" + CreateIdentityGuid();
+                            dirMap[tmpDirPath] = id;
+
+                            string path = GetShortPath(tmpDirPath) + "|" + folderName;
+                        
+                            // Insert the directory record
+                            directoryTable.InsertRecord(id, parentDir, path);
+                            parentDir = id;
+                        } else {
+                            parentDir = (string)dirMap[tmpDirPath];
+                        }
+                    }
+
+                    tmpDirPath = dirPath;
+
+                    if (tmpDirPath != basePath && !componentMap.ContainsKey(tmpDirPath)) {
+                        // Create a component for this path.
+
+                        string name = "C_" + CreateIdentityGuid();
+                        componentMap[tmpDirPath] = name;
+                        string newCompId = CreateRegistryGuid();
+                        string directoryRef = (string)dirMap[tmpDirPath];
+
+                        // Add a record for a new Component
+                        componentTable.InsertRecord(name, newCompId, directoryRef, Component.attr, Component.condition, null);
+
+                        // The null GUID is authored into any field of a msm database that references a feature.  It gets replaced
+                        // with the guid of the feature assigned to the merge module.
+                        string feature = "00000000-0000-0000-0000-000000000000";
+                        if (featureComponents[ComponentName] != null) {
+                            feature = (string)featureComponents[ComponentName];
+                        }
+
+                        // Map the new Component to the existing one's Feature (FeatureComponents is only used in MSI databases)
+                        featureComponentTable.InsertRecord(feature, name);                        
+                    }
+                }
+#endregion
 
                 MSIFileOverride fileOverride = null;
 
@@ -2113,8 +2180,15 @@ namespace NAnt.Contrib.Tasks.Msi {
                 // fileattr assigned to the component.
                 int fileAttr = ((fileOverride == null) || (fileOverride.attr == 0)) ? Component.fileattr : fileOverride.attr;
 
-                // Used to determine the keyfile
-                files.Add(Component.directory + "|" + fileName, fileId);
+                if (Component.keepsubdirs && dirMap.ContainsKey(dirPath)) {
+                    // The file is down a subdirectory path
+                    string dirValue = (string)dirMap[dirPath];
+                    files.Add(dirValue + "|" + fileName, fileId);
+                }
+                else {
+                    // Used to determine the keyfile
+                    files.Add(Component.directory + "|" + fileName, fileId);
+                }
 
                 string fileSize;
 
@@ -2249,6 +2323,11 @@ namespace NAnt.Contrib.Tasks.Msi {
                 string language = GetLanguage(isAssembly, fileAssembly, filePath);
 
                 Sequence++;
+
+                if (Component.keepsubdirs && componentMap.ContainsKey(dirPath)) {
+                    // Use the component for the file's path
+                    componentFieldValue = (string)componentMap[dirPath];
+                }
 
                 fileTable.InsertRecord(fileId, componentFieldValue, GetShortFile(filePath) + "|" + fileName, 
                     fileSize, fileVersion, language, fileAttr, Sequence.ToString());
