@@ -23,39 +23,42 @@
 
 using System;
 
-namespace NAnt.Contrib.Tasks
-{
-	/// <summary>
-	/// Defines possible reference counting scheme types for the <see cref="GacTask">GAC</see> tasks.
-	/// </summary>
-	public enum SchemeType
-	{
-		/// <summary>
-		/// Specifies that no reference counting scheme will be used when performing the GAC task.
-		/// </summary>
-		None,
-		/// <summary>
-		/// Specifies that registry-related reference counting will be used when performing the GAC task.
-		/// </summary>
-		/// <remarks>
-		/// When the scheme type is set to <c>UninstallKey</c>, the related scheme ID should be set to the name of the application
-		/// set in the <c>HKLM\Software\Microsoft\Windows\CurrentVersion</c> registry key.
-		/// </remarks>
-		UninstallKey,
-		/// <summary>
-		/// Specifies that file-based reference counting will be used when performing the GAC task.
-		/// </summary>
-		/// <remarks>
-		/// When the scheme type is set to <c>FilePath</c>, the related scheme ID should be set to the full path to the executable
-		/// file that installs the assembly.
-		/// </remarks>
-		FilePath,
-		/// <summary>
-		/// Specifies that custom information will be supplied to accommodate reference counting.
-		/// </summary>
-		/// <remarks>
-		/// When the scheme type is set to <c>Opaque</c>, the related scheme ID can be set to any custom piece of information.
-		/// </remarks>
-		Opaque
-	}
+namespace NAnt.Contrib.Tasks {
+    /// <summary>
+    /// Defines possible reference counting scheme types for the <see cref="GacTask">GAC</see> tasks.
+    /// </summary>
+    public enum SchemeType {
+        /// <summary>
+        /// Specifies that no reference counting scheme will be used when performing the GAC task.
+        /// </summary>
+        None,
+
+        /// <summary>
+        /// Specifies that registry-related reference counting will be used when performing the GAC task.
+        /// </summary>
+        /// <remarks>
+        /// When the scheme type is set to <c>UninstallKey</c>, the related scheme ID should be set to the name of the application
+        /// set in the <c>HKLM\Software\Microsoft\Windows\CurrentVersion</c> registry key.
+        /// </remarks>
+        /// 
+        UninstallKey,
+
+        /// <summary>
+        /// Specifies that file-based reference counting will be used when performing the GAC task.
+        /// </summary>
+        /// <remarks>
+        /// When the scheme type is set to <c>FilePath</c>, the related scheme ID should be set to the full path to the executable
+        /// file that installs the assembly.
+        /// </remarks>
+        /// 
+        FilePath,
+
+        /// <summary>
+        /// Specifies that custom information will be supplied to accommodate reference counting.
+        /// </summary>
+        /// <remarks>
+        /// When the scheme type is set to <c>Opaque</c>, the related scheme ID can be set to any custom piece of information.
+        /// </remarks>
+        Opaque
+    }
 }
