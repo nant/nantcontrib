@@ -41,6 +41,7 @@ namespace NAnt.Contrib.Tests.Util
       const string STATEMENT_1 = "select * from tables";
       const string STATEMENT_2 = "insert into tables values(1,2,3)";
       const string STATEMENT_3 = "drop tables";
+      const string STATEMENT_GOTO = "goto error_handling";
       const string DELIMITER = ";";
 
       public SqlStatementListTests(string name) : base(name)
@@ -177,6 +178,17 @@ namespace NAnt.Contrib.Tests.Util
          Assertion.AssertEquals(expectedStatements, list[0]);
       }
 
-   } // class SqlStatementListTests
+      public void TestGoSeparatorMustNotSplitGoto()
+      {
+         string goDelimiter = "go";
 
+         string statements = STATEMENT_1 + Environment.NewLine + STATEMENT_GOTO + Environment.NewLine;
+
+         SqlStatementList list = new SqlStatementList(goDelimiter, DelimiterStyle.Line);
+         list.ParseSql(statements);
+
+         Assertion.AssertEquals(1, list.Count);
+         Assertion.AssertEquals(statements, list[0]);
+      }
+   } // class SqlStatementListTests
 } // namespace NAnt.Contrib.Tests.Util

@@ -53,7 +53,6 @@ namespace NAnt.Contrib.Util
       private StringCollection _statements;
       private string _delimiter;
       private DelimiterStyle _style;
-      private Regex _regex;
       private PropertyDictionary _properties;
 
       /// <summary>
@@ -85,16 +84,9 @@ namespace NAnt.Contrib.Util
       public SqlStatementList(string delimiter, DelimiterStyle style)
       {
          _statements = new StringCollection();
-		_style = style;
 
-         if ( style == DelimiterStyle.Line ) {
-            _delimiter = delimiter;
-            //_delimiter = "[\n\r]+" + delimiter + "[\n\r]+";
-            _regex = new Regex(_delimiter, RegexOptions.Multiline);
-         } else {
-            _delimiter = delimiter;
-            _regex = new Regex(_delimiter);
-         }
+		_style     = style;
+        _delimiter = delimiter;
       }
 
       /// <summary>
@@ -133,8 +125,8 @@ namespace NAnt.Contrib.Util
 			 }
 			 // DelimiterStyle.Line
 			 else 
-			 {				 
-				 if (line.Trim().ToUpper().StartsWith(_delimiter.ToUpper()))
+			 {
+				 if (line.Trim().ToUpper().Equals(_delimiter.ToUpper()))
 				 {
 					 if (sqlStatement.ToString().Trim().Length > 0)
 						_statements.Add(sqlStatement.ToString());
@@ -144,7 +136,6 @@ namespace NAnt.Contrib.Util
 				 }
 
 				sqlStatement.Append(line + Environment.NewLine);
-			 
 			 }
 
          }
