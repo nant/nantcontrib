@@ -191,8 +191,6 @@ namespace NAnt.Contrib.Tasks
 
         protected override void ExecuteTask()
         {
-            bool firstArg = true;
-
             StringBuilder arguments = new StringBuilder();
 
             if (NoLogo)
