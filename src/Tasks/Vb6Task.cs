@@ -60,6 +60,7 @@ namespace NAnt.Contrib.Tasks {
         private string _programArguments = null;
         private FileInfo _errorFile;
         private bool _checkReferences = true;
+        private string _conditionals = null;
 
         #endregion Private Instance Fields
 
@@ -109,6 +110,16 @@ namespace NAnt.Contrib.Tasks {
             set { _errorFile = value; }
         }
 
+        /// <summary>
+        /// Tells Visual Basic which values to use for conditional compilation
+        /// constants.
+        /// </summary>
+        [TaskAttribute("conditionals")]
+        public string Conditionals {
+            get { return _conditionals; }
+            set { _conditionals = value; }
+        }
+
         #endregion Public Instance Properties
 
         #region Override implementation of ExternalProgramBase
@@ -148,6 +159,10 @@ namespace NAnt.Contrib.Tasks {
                 // make sure the output directory exists
                 if (!OutDir.Exists) {
                     OutDir.Create();
+                }
+
+                if (Conditionals != null) {
+                    writer.AppendFormat(" /d \"{0}\"", _conditionals);
                 }
 
                 writer.AppendFormat(" /outdir \"{0}\"", OutDir.FullName);
