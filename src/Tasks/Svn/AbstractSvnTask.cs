@@ -175,7 +175,7 @@ namespace NAnt.SourceControl.Tasks {
 			if (null == this.Arguments || 0 == this.Arguments.Count) {
 				this.AppendGlobalOptions();
 				this.Arguments.Add(new Argument(this.CommandName));
-				if (!this.CommandName.Equals("cleanup")) {
+				if (IsRootUsed) {
 					this.Arguments.Add(new Argument(this.Root));
 				}
 
@@ -208,6 +208,21 @@ namespace NAnt.SourceControl.Tasks {
 		#endregion
 
         #region Private Instance Methods
+
+		/// <summary>
+		/// Determines if the root is used for the command based on 
+		///		the command name.  Returns <code>true</code> if the root
+		///		is used, otherwise returns <code>false</code>.
+		/// </summary>
+		private bool IsRootUsed {
+			get {
+				if (this.CommandName.IndexOf("co") > -1 ||
+					this.CommandName.IndexOf("checkout") > -1) {
+					return true;
+				}
+				return false;
+			}
+		}
 
 		private void AppendGlobalOptions () {
 			foreach (Option option in this.GlobalOptions) {
