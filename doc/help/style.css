@@ -17,11 +17,6 @@ h4 {
     margin-bottom: 0.5em;
 }
 
-h5 {
-    margin-bottom: -.8em;
-    margin-left: 1.0em;    
-}
-
 hr {
     color: gray;
     background-color: inherit;
@@ -40,7 +35,6 @@ a:visited {
     color: purple;
     background-color: inherit;
 }
-
 
 a:active {
     color: #cc0000;
@@ -114,12 +108,6 @@ div.nested-element table {
 .table table {
     font-size: 100%;
     border-collapse: collapse;
-    width: 750px;
-}
-
-.table table {
-    font-size: 100%;
-    border-collapse: collapse;
     width: 93%;
 }
 
@@ -135,6 +123,13 @@ div.nested-element table {
 .table td {
     border: 1px solid #999999;
     padding: 5px;
+}
+
+.table td.section {
+    border: 1px solid #999999;
+    background-color: #f0f0e0;
+    padding: 5px;
+    font-weight: bold;
 }
 
 .N {
@@ -164,13 +159,32 @@ pre.code {
     background-color: inherit;
     color: #0000AA;
     font-size: 100%;
-    margin-left: 0px;
+}
+
+pre.syntax {
+    background-color: #cccccc;
+    padding: 4px 8px;
+    cursor: text;
+    margin-top: 1em;
+    margin-bottom: 1em; 
+    color: #000000;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #999999;
 }
 
 span.code {
     font-family: Monospace, Courier New, Courier;
     background-color: inherit;
     color: #0000AA;
+    font-size: 100%;
+}
+
+span.expression {
+    font-family: Monospace, Courier New, Courier;
+    background-color: inherit;
+    color: #0000AA;
+    font-weight: bold;
     font-size: 100%;
 }
 
@@ -192,4 +206,8 @@ span.parameter {
 p.topicstatus {
     display: block;
     color: red;
+}
+
+ul.examples {
+	list-style-type: lower-roman;
 }
