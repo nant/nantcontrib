@@ -204,6 +204,7 @@
                 <include name="${build.dir}/bin/Interop.MsmMergeTypeLib.dll" />
                 <include name="${build.dir}/bin/SLiNgshoT.Core.dll" />
                 <include name="${build.dir}/bin/NAnt.Contrib.Schemas.dll" />
+                <include name="System.DirectoryServices.dll"/>
             </references>
             <resources>
                 <include name="${src.dir}/xsl/**" />
