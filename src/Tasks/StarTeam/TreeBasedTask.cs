@@ -158,8 +158,30 @@ namespace NAnt.Contrib.Tasks.StarTeam
 			get { return _forced; }
 			set { _forced = value;}
 		}
-	
-	
+	    	
+		/// <summary> 
+		/// Label used for checkout. If no label is set latest state of repository is checked out.
+		/// </summary>
+		/// <remarks>
+		/// The label must exist in starteam or an exception will be thrown. 
+		/// </remarks>
+		[TaskAttribute("label", Required=false)]
+		public virtual string label
+		{
+			get { return _label; }			
+			set 
+			{	//trim up label
+				if (null != value)
+				{
+					value = value.Trim();
+					if (value.Length > 0)
+					{
+						_label = value;
+					}
+				}
+			}			
+		}
+
 		///////////////////////////////////////////////////////////////
 		// default values for attributes.
 		///////////////////////////////////////////////////////////////
@@ -189,7 +211,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		//private string excludes;
 	
 		/// <value> StarTeam label on which to perform task.</value>
-		private string _label = null;
+		protected string _label = null;
 	
 		/// <value> Set recursion to false to check out files in only the given folder and not in its subfolders.</value>
 		private bool _recursive = true;
@@ -199,22 +221,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		/// to the one being processed. </value>
 		private bool _forced = false;
 	                    	
-		/// <summary>
-		/// method to set the label of the repository users will work with.
-		/// </summary>
-		/// <param name="label">name of the StarTeam label to be set</param>
-		protected internal virtual void  _setLabel(string label)
-		{
-			if (null != label)
-			{
-				label = label.Trim();
-				if (label.Length > 0)
-				{
-					_label = label;
-				}
-			}
-		}
-	
+
 	
 		///////////////////////////////////////////////////////////////
 		// INCLUDE-EXCLUDE processing
@@ -263,28 +270,40 @@ namespace NAnt.Contrib.Tasks.StarTeam
 				testPreconditions();
 			
 				InterOpStarTeam.StView snapshot = openView();
-			
-				// find the starteam folder specified to be the root of the operation.  Throw if it can't be found.
 				InterOpStarTeam.StStarTeamFinderStatics starTeamFinder = new InterOpStarTeam.StStarTeamFinderStatics();
 				InterOpStarTeam.StFolder starTeamRootFolder = starTeamFinder.findFolder(snapshot.RootFolder, _rootStarTeamFolder);
-			
+			    
+				// set the local folder.
+				FileInfo localrootfolder;
+
 				if (null == starTeamRootFolder)
 				{
 					throw new BuildException("Unable to find root folder in repository.");
 				}
-			
-				// set the local folder.
-				FileInfo localrootfolder;
 				if (null == _rootLocalFolder)
 				{
 					// use Star Team's default
-					localrootfolder = new FileInfo(starTeamRootFolder.Path);
+					try 
+					{
+						localrootfolder = new FileInfo(starTeamRootFolder.Path);
+					}
+					catch(Exception e) 
+					{
+						throw new BuildException(string.Format("Could not get handle to root folder ({0}) found.",starTeamRootFolder.Path),e);
+					}
 				}
 				else
 				{
 					// force StarTeam to use our folder
-					localrootfolder = new FileInfo(_rootLocalFolder);
-					//log("overriding local folder to " + localrootfolder);
+					try 
+					{
+						Log.WriteLine("Overriding local folder to {0}",_rootLocalFolder);
+						localrootfolder = new FileInfo(_rootLocalFolder);
+					}
+					catch(Exception e) 
+					{
+						throw new BuildException(string.Format("Could not get handle to root folder ({0}) found.",starTeamRootFolder.Path),e);
+					}
 				}
 				
 				// Inspect everything in the root folder and then recursively
@@ -301,20 +320,21 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		/// Helper method calls on the StarTeam API to retrieve an ID number for the specified view, corresponding to this.label.
 		/// </summary>
 		/// <returns>The Label identifier or <c>-1</c> if no label was provided.</returns>
-		protected internal virtual int getLabelID(InterOpStarTeam.StView stView)
+		protected internal virtual InterOpStarTeam.IStLabel getLabelID(InterOpStarTeam.StView stView)
 		{
 			if (null != _label)
 			{
-				foreach(InterOpStarTeam.StLabel stLabel in stView.Labels) 
+				foreach(InterOpStarTeam.IStLabel stLabel in stView.Labels) 
 				{
+					System.Diagnostics.Trace.WriteLine(stLabel.Name);
 					if (stLabel.Name == _label)
 					{
-						return stLabel.ID;
+						return stLabel;
 					}
 				}
 				throw new BuildException("Error: label " + _label + " does not exist in view");
 			}
-			return - 1;
+			return null;
 		}
 	
 		/// <summary> Derived classes must override this class to define actual processing to be performed on each folder in the tree defined for the task</summary>
@@ -375,5 +395,6 @@ namespace NAnt.Contrib.Tasks.StarTeam
 			string key = thisfile.ToString();
 			localFiles.Remove(key);
 		}
+
 	}
 }

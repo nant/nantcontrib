@@ -115,6 +115,8 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		/// <value> holder for the add Uncontrolled attribute.  If true, all local files not in StarTeam will be added to the repository.</value>
 		private bool _addUncontrolled = false;
 				
+		private InterOpStarTeam.IStLabel _stLabel = null;
+
 		/// <value> This attribute tells whether unlocked files on checkin (so that other users may access them) checkout or to 
 		/// leave the checkout status alone (default).
 		/// </value>
@@ -128,9 +130,15 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		/// <returns>the snapshot <code>View</code> appropriately configured.</returns>
 		protected internal override InterOpStarTeam.StView createSnapshotView(InterOpStarTeam.StView raw)
 		{
+			InterOpStarTeam.StView snapshot;
 			InterOpStarTeam.StViewConfigurationStaticsClass starTeamViewConfiguration = new InterOpStarTeam.StViewConfigurationStaticsClass();
 			InterOpStarTeam.StViewFactory starTeamViewFactory = new InterOpStarTeam.StViewFactory();
-			return starTeamViewFactory.Create(raw, starTeamViewConfiguration.createTip());
+			snapshot = starTeamViewFactory.Create(raw, starTeamViewConfiguration.createTip());
+			if(_label != string.Empty) 
+			{
+				_stLabel = this.getLabelID(snapshot);
+			}
+			return snapshot;
 		}
 		
 		/// <summary> Implements base-class abstract function to define tests for any preconditons required by the task</summary>
@@ -147,6 +155,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		/// <param name="targetFolder">local folder from which files will be checked in</param>
 		protected internal override void  visit(InterOpStarTeam.StFolder starteamFolder, FileInfo targetFolder)
 		{
+			int notProcessed = 0;
 			try
 			{
 				System.Collections.Hashtable localFiles = listLocalFiles(targetFolder);
@@ -184,15 +193,37 @@ namespace NAnt.Contrib.Tasks.StarTeam
 						}
 						if (fileStatus == starTeamStatusStatics.CURRENT)
 						{
-							Log.WriteLine("Not processing {0} as it is current.",stFile.toString());
+							//count files not processed so we can inform later
+							notProcessed++;
+							//Log.WriteLine("Not processing {0} as it is current.",stFile.toString());
 							continue;
 						}
 					}
 					
-					// Check in anything else.					
+					//may want to offer this to be surpressed but usually it is a good idea to have
+					//in the build log what changed for that build.
 					Log.WriteLine("Checking In: {0}", localFile.ToString());
+
+					//check in anything else
 					stFile.checkinFrom(localFile.FullName, _comment, _lockStatus, true, true, true);
+					
+					//if user defined a label attach the item checked to that label
+					if(_stLabel != null) 
+					{
+						_stLabel.moveLabelToItem((InterOpStarTeam.StItem)stFile);
+						_stLabel.update();
+					}
+
+					//track files affected for non-verbose output
+					_filesAffected++;
 				}
+
+				//if we are being verbose emit count of files not processed 
+				if(this.Verbose && notProcessed > 0)
+				{
+					Log.WriteLine("{0} : {1} files not processed because they were current.",targetFolder.FullName,notProcessed.ToString());
+				}
+
 				
 				// Now we recursively call this method on all sub folders in this
 				// folder unless recursive attribute is off.
@@ -270,6 +301,13 @@ namespace NAnt.Contrib.Tasks.StarTeam
 				Log.WriteLine("Adding new file to repository: {0}",file.FullName);
 				InterOpStarTeam.StFile newFile = starteamFileFactory.Create(parentFolder);
 				newFile.Add(file.FullName, file.Name, null, _comment, starTeamLockTypeStatics.UNLOCKED, true, true);
+				
+				//if user defined a label attach the item checked to that label
+				if(_stLabel != null) 
+				{
+					_stLabel.moveLabelToItem((InterOpStarTeam.StItem)newFile);
+				}
+
 			}
 
 			return true;

@@ -46,22 +46,6 @@ namespace NAnt.Contrib.Tasks.StarTeam
 	[TaskName("stlist")]
 	public class StarTeamList : TreeBasedTask
 	{
-		public StarTeamList()
-		{
-		}
-
-		/// <summary>
-		/// Specify a label to base list. If not specified, the most recent version of each file will be listed. 
-		/// </summary>
-		/// <remarks>
-		/// The label must exist in starteam or an exception will be thrown.  
-		/// </remarks>
-		[TaskAttribute("label", Required=false)]
-		public virtual string Label
-		{
-			set { _setLabel(value); }                      		
-		}
-	
 		/// <summary>
 		/// Override of base-class abstract function creates an appropriately configured view for checkoutlists. 
 		/// The current view or a view of the label specified <see cref="Label" />.
@@ -72,13 +56,13 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		{
 			InterOpStarTeam.StViewConfigurationStaticsClass starTeamViewConfiguration = new InterOpStarTeam.StViewConfigurationStaticsClass();
 			InterOpStarTeam.StViewFactory starTeamViewFactory = new InterOpStarTeam.StViewFactory();
-			int labelID = getLabelID(raw);
+			InterOpStarTeam.IStLabel stLabel = getLabelID(raw);
 		
 			// if a label has been supplied, use it to configure the view
 			// otherwise use current view
-			if (labelID >= 0)
+			if (stLabel != null)
 			{
-				return starTeamViewFactory.Create(raw, starTeamViewConfiguration.createFromLabel(labelID));
+				return starTeamViewFactory.Create(raw, starTeamViewConfiguration.createFromLabel(stLabel.ID));
 			}
 			else
 			{

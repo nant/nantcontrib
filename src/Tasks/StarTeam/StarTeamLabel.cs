@@ -46,109 +46,14 @@ namespace NAnt.Contrib.Tasks.StarTeam
 	///   ]]></code>
 	/// </example>
 	[TaskName("stlabel")]
-	public class StarTeamLabel:StarTeamTask
+	public class StarTeamLabel:LabelTask
 	{
-		/// <summary> 
-		/// The name to be given to the label; required.
-		/// </summary>
-		[TaskAttribute("label", Required=true)]
-		public virtual string Label
-		{
-			set { _labelName = value; }			
-		}
-
-		/// <summary> Should label be marked build : default is true</summary>
-		[TaskAttribute("buildlabel", Required=false)]
-		[BooleanValidator]         
-		public virtual bool BuildLabel
-		{
-			set { _isBuildLabel = value; }			
-		}
-				
-		/// <summary> Optional description of the label to be stored in the StarTeam project.</summary>
-		[TaskAttribute("description", Required=false)]
-		public virtual string Description
-		{
-			set { _description = value; }			
-		}
-		
-		/// <summary> 
-		/// Optional: If this property is set the label will be created as of the datetime specified. 
-		/// Please provide a datetime format that can be parsed via <see cref="System.DateTime.Parse"/>.
-		/// </summary>
-		[TaskAttribute("timestamp", Required=false)]
-		public virtual string LastBuild
-		{
-			set 
-			{
-				try
-				{
-					_labelAsOfDate = System.DateTime.Parse(value);
-					_isAsOfDateSet = true;					
-				}
-				catch (System.FormatException e)
-				{
-					throw new BuildException(string.Format("Unable to parse the date {0} : {1}", value ,e.Message),e);
-				}
-			}
-			
-		}
-		
-		/// <summary> The name of the label to be set in Starteam.</summary>
-		private string _labelName = null;
-		
-		/// <summary> The label description to be set in Starteam.</summary>
-		private string _description = null;
-
-		/// <summary> Is the label being created a build label.</summary>
-		private bool _isBuildLabel = true;
-                                                                                            
-		/// <summary> If set the datetime to set the label as of.</summary>
-		private DateTime _labelAsOfDate;
-		
-		/// <summary> Kludgy flag to keep track if date has been set. 
-		/// Please kill this if you can. Here based on experiences I have had with VB.NET</summary>
-		private bool _isAsOfDateSet = false;
 
 		/// <summary> This method does the work of creating the new view and checking it into Starteam.</summary>
 		protected override void  ExecuteTask()
-		{                         			
-			InterOpStarTeam.StLabel newLabel;
+		{   
 			InterOpStarTeam.StView snapshot = openView();
-			InterOpStarTeam.StLabelFactoryClass starTeamLabelFactory = new InterOpStarTeam.StLabelFactoryClass();
-			// Create the new label and update the repository
-			try 
-			{
-				newLabel = starTeamLabelFactory.CreateViewLabel(snapshot,_labelName, _description, _labelAsOfDate, _isBuildLabel);
-				newLabel.update();
-				Log.WriteLine("Created Label: {0}",_labelName);
-			}
-			catch(Exception e)
-			{
-				throw new BuildException(string.Format("Creating label {0} failed : {1}",_labelName,e.Message));
-		    }
-		}
-		
-		/// <summary> 
-		/// Override of base-class abstract function creates an appropriately configured view.  
-		/// For labels this a view configured as of this.lastBuild.
-		/// </summary>
-		/// <param name="raw">the unconfigured <code>View</code></param>
-		/// <returns>the snapshot <code>View</code> appropriately configured.</returns>
-		protected internal override InterOpStarTeam.StView createSnapshotView(InterOpStarTeam.StView raw)
-		{
-			InterOpStarTeam.StView starTeamView;
-			InterOpStarTeam.StViewFactory starTeamViewFactory = new InterOpStarTeam.StViewFactory();
-			InterOpStarTeam.StViewConfigurationStaticsClass starTeamViewConfiguration = new InterOpStarTeam.StViewConfigurationStaticsClass();
-			if(_isAsOfDateSet)				
-			{
-				starTeamView = starTeamViewFactory.Create(raw, starTeamViewConfiguration.createFromTime(_labelAsOfDate));
-			}
-			else 
-			{
-				starTeamView = starTeamViewFactory.Create(raw, starTeamViewConfiguration.createTip());
-			}
-			return starTeamView;
+			createLabel(snapshot);
 		}
 	}
 }

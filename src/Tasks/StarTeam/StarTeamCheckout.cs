@@ -77,19 +77,6 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		}
 		
 		/// <summary> 
-		/// Label used for checkout. If no label is set latest state of repository is checked out.
-		/// </summary>
-		/// <remarks>
-		/// The label must exist in starteam or an exception will be thrown. 
-		/// </remarks>
-		[TaskAttribute("label", Required=false)]
-		[BooleanValidator]         
-		public virtual string label
-		{
-			set { _setLabel(value); }			
-		}
-
-		/// <summary> 
 		/// What type of lock to apply to files checked out. 
 		/// <list type="bullet">
 		/// 	<listheader>
@@ -152,13 +139,13 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		{
 			InterOpStarTeam.StViewConfigurationStaticsClass starTeamViewConfiguration = new InterOpStarTeam.StViewConfigurationStaticsClass();
 			InterOpStarTeam.StViewFactory starTeamViewFactory = new InterOpStarTeam.StViewFactory();
-			int labelID = getLabelID(raw);
+			InterOpStarTeam.IStLabel stLabel = getLabelID(raw);
 		
 			// if a label has been supplied, use it to configure the view
 			// otherwise use current view
-			if (labelID >= 0)
+			if (stLabel != null)
 			{
-				return starTeamViewFactory.Create(raw, starTeamViewConfiguration.createFromLabel(labelID));
+				return starTeamViewFactory.Create(raw, starTeamViewConfiguration.createFromLabel(stLabel.ID));
 			}
 			else
 			{
@@ -236,13 +223,16 @@ namespace NAnt.Contrib.Tasks.StarTeam
 						}
 						if (fileStatus == starTeamStatusStatics.CURRENT)
 						{
-							//count files not processed so we can 
+							//count files not processed so we can inform later
 							notProcessed++;
 							//Log.WriteLine("Not processing {0} as it is current.", stFile.toString());
 							continue;
 						}
+						//TODO merged files get processed. We may want to provide a flag to allow merges to be skipped as well
+						//this would help prevent accidental overwrites 
 					}
 					
+					// <wisdom source="from the Ant">
 					// Check out anything else.
 					// Just a note: StarTeam has a status for NEW which implies
 					// that there is an item  on your local machine that is not
@@ -254,15 +244,22 @@ namespace NAnt.Contrib.Tasks.StarTeam
 					// actually see  anything with a status of NEW. That is why
 					// we can just check out  everything here without worrying
 					// about losing anything.
+					// </wisdom>
 					
-					if(this.Verbose) 
-					{
-						Log.WriteLine("Checking Out: " + (localFile.ToString()));
-					}
+					//may want to offer this to be surpressed but usually it is a good idea to have
+					//in the build log what changed for that build.
+					
+					//debug to skip build files- remove this after include/exclude is added
+					if(localFile.FullName.IndexOf(".build") > 0)
+						continue;
+
+					Log.WriteLine("Checking Out: " + (localFile.ToString()));
+
 					stFile.checkoutTo(localFile.FullName, _lockStatus, true, true, true);
 					_filesAffected++;
 				}
 				
+				//if we are being verbose emit count of files not processed 
 				if(this.Verbose && notProcessed > 0)
 				{
 					Log.WriteLine("{0} : {1} files not processed because they were current.",targetFolder.FullName,notProcessed.ToString());
