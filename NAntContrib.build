@@ -168,6 +168,7 @@
             <fileset basedir="${nant.dir}" failonempty="true">
                 <includes name="bin/NAnt.Core.dll" />
                 <includes name="bin/NAnt.DotNetTasks.dll" />
+                <includes name="bin/NAnt.Win32Tasks.dll" />
                 <includes name="bin/lib/${framework::get-family(framework::get-target-framework())}/${framework::get-version(framework::get-target-framework())}/nunit.framework.dll" />
                 <includes name="bin/lib/${framework::get-family(framework::get-target-framework())}/${framework::get-version(framework::get-target-framework())}/log4net.dll" />
             </fileset>
@@ -217,6 +218,7 @@
             <fileset basedir="${build.dir}/bin">
                 <includes name="NAnt.Core.dll" />
                 <includes name="NAnt.DotNetTasks.dll" />
+                <includes name="NAnt.Win32Tasks.dll" />
                 <includes name="nunit.framework.dll" />                
                 <includes name="log4net.dll" />
             </fileset>
