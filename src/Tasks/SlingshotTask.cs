@@ -19,19 +19,25 @@
 
 using System;
 using System.Collections;
+using System.Globalization;
 using System.IO;
+
+using SLiNgshoT.Core;
 
 using NAnt.Core;
 using NAnt.Core.Types;
 using NAnt.Core.Attributes;
-
-using SLiNgshoT.Core;
+using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks {
-
-    /// <summary>Converts a Visual Studio.NET Solution to a NAnt build file or nmake file.</summary>
+    /// <summary>
+    /// Converts a Visual Studio.NET Solution to a NAnt build file or nmake file.
+    /// </summary>
     /// <example>
-    ///   <para>Convert the Solution <c>MySolution.sln</c> to the NAnt build file <c>MySolution.build</c> and call the new build file.</para>
+    ///   <para>
+    ///   Convert the solution <c>MySolution.sln</c> to the NAnt build file 
+    ///   <c>MySolution.build</c> and call the new build file.
+    ///   </para>
     ///   <code>
     /// <![CDATA[
     /// <slingshot solution="MySolution.sln" format="nant" output="MySolution.build"> 
@@ -42,7 +48,13 @@ namespace NAnt.Contrib.Tasks {
     /// <nant buildfile="MySolution.build"/>
     /// ]]>
     ///   </code>
-    ///   <para>Convert the Solution <c>MySolution.sln</c> to the NAnt build file <c>MySolution.build</c>.  Since the Solution contains one or more web projects, one or more maps needs to be specified.</para>
+    /// </example>
+    /// <example>
+    ///   <para>
+    ///   Convert the solution <c>MySolution.sln</c> to the NAnt build file 
+    ///   <c>MySolution.build</c>.  As the solution contains one or more web 
+    ///   projects, one or more maps needs to be specified.
+    ///   </para>
     ///   <code>
     /// <![CDATA[
     /// <slingshot solution="MySolution.sln" format="nant" output="MySolution.build">
@@ -58,89 +70,119 @@ namespace NAnt.Contrib.Tasks {
     /// </example>
     [TaskName("slingshot")]
     public class SlingshotTask : Task {
+        #region Private Instance Fields
 
-        string _solution = null;
-        string _format = null;
-        string _output = null;
+        private string _solution;
+        private string _format;
+        private string _output;
+        private OptionCollection _maps = new OptionCollection();
+        private OptionCollection _parameters = new OptionCollection();
 
-        OptionCollection _maps = new OptionCollection();
-        OptionCollection _parameters = new OptionCollection();
+        #endregion Private Instance Fields
 
-        /// <summary>The Visual Studio.NET Solution file to convert.</summary>
+        #region Public Instance Properties
+
+        /// <summary>
+        /// The Visual Studio.NET solution file to convert.
+        /// </summary>
         [TaskAttribute("solution", Required=true)]
+        [StringValidator(AllowEmpty=false)]
         public string Solution {
-            get { return _solution; }
-            set { _solution = value; }
+            get { return (_solution != null) ? Project.GetFullPath(_solution) : null; }
+            set { _solution = StringUtils.ConvertEmptyToNull(value); }
         }
 
-        /// <summary>The output file format, <c>nant</c> or <c>nmake</c>.</summary>
+        /// <summary>
+        /// The output file format - either <c>nant</c> or <c>nmake</c>.
+        /// </summary>
         [TaskAttribute("format", Required=true)]
+        [StringValidator(AllowEmpty=false)]
         public string Format {
             get { return _format; }
             set { _format = value; }
         }
 
-        /// <summary>The output file name.</summary>
+        /// <summary>
+        /// The output file name.
+        /// </summary>
         [TaskAttribute("output", Required=true)]
+        [StringValidator(AllowEmpty=false)]
         public string Output {
-            get { return _output; }
-            set { _output = value; }
+            get { return (_output != null) ? Project.GetFullPath(_output) : null; }
+            set { _output = StringUtils.ConvertEmptyToNull(value); }
         }
 
-        /// <summary>Mappings from URI to directories.  These are required for web projects.</summary>
+        /// <summary>
+        /// Mappings from URI to directories.  These are required for web projects.
+        /// </summary>
         [BuildElementCollection("maps", "option", typeof(Option))]
         public OptionCollection Maps {
-           get { return _maps; }
+            get { return _maps; }
         }
 
-        /// <summary>Parameters to pass to SLiNgshoT.  The parameter <c>build.basedir</c> is required.</summary>
-        [BuildElementCollection("parameters","option", typeof(Option))]
+        /// <summary>
+        /// Parameters to pass to SLiNgshoT.  The parameter <c>build.basedir</c> is required.
+        /// </summary>
+        [BuildElementCollection("parameters", "option", typeof(Option))]
         public OptionCollection Parameters {
-           get { return _parameters; }
+            get { return _parameters; }
         }
+
+        #endregion Public Instance Properties
+
+        #region Override implementation of Task
 
         protected override void ExecuteTask() {
             // display build log message
-            Log(Level.Info, LogPrefix + "Converting {0} to {1} using {2} format", _solution, _output, _format);
+            Log(Level.Info, LogPrefix + "Converting '{0}' to '{1}' using {2} format", Solution, Output, Format);
 
-            // Get a SLiNgshoT SolutionWriter for the specified format.
-            SolutionWriter solutionWriter = CreateSolutionWriter(_format);
+            // get a SLiNgshoT SolutionWriter for the specified format.
+            SolutionWriter solutionWriter = CreateSolutionWriter(Format);
 
-            // If the format was invalid
+            // make sure the specified format is supported
             if (solutionWriter == null) {
-                string msg = String.Format("'{0}' is an unsupported format", _format);
-                throw new BuildException(msg);
+                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                    "'{0}' is an unsupported format.", _format), Location);
             } 
 
-            // Copy parameters to hashtable.
-            Hashtable parameters = OptionCollectionToHashtable(_parameters, "parameters"); 
+            // copy parameters to hashtable.
+            Hashtable parameters = OptionCollectionToHashtable(Parameters, "parameters"); 
 
-            // The build.basedir parameter is required.
+            // make sure a build.basedir parameter was specified
             if (!parameters.ContainsKey("build.basedir")) {
-                throw new BuildException("The <parameters> option 'build.basedir' is required.");
+                throw new BuildException("The <parameters> option 'build.basedir' is required.", Location);
             }
 
-            // Copy maps to hashtable
-            Hashtable uriMap = OptionCollectionToHashtable(_maps, "maps"); 
+            // copy maps to hashtable
+            Hashtable uriMap = OptionCollectionToHashtable(Maps, "maps"); 
 
             try {
                 // NOTE: The default encoding is used.
-                StreamWriter outputWriter = new StreamWriter(_output);
+                StreamWriter outputWriter = new StreamWriter(Output);
 
-                // Convert the solution.
-                Driver.WriteSolution(solutionWriter, outputWriter, _solution, parameters, uriMap);
+                // convert the solution
+                Driver.WriteSolution(solutionWriter, outputWriter, Solution, parameters, uriMap);
 
+                // close the output file
                 outputWriter.Close();
-            } catch (Exception e) {
-                string msg = String.Format("Could not convert solution.", _solution);
-                throw new BuildException(msg, Location, e);
+            } catch (Exception ex) {
+                throw new BuildException(string.Format(CultureInfo.InvariantCulture, 
+                    "Could not convert solution '{0}'.", Solution), Location, ex);
             }
         }
 
-        /// <summary>Creates and returns the SolutionWriter for the specified format. Returns <c>null</c> if an unknown format was specified.</summary>
-        // TODO: This may belong in SLiNgshoT.Core (eg Driver.cs)
-        private SolutionWriter CreateSolutionWriter(string format) {
+        #endregion Override implementation of Task
 
+        #region Private Instance Methods
+
+        /// <summary>
+        /// Creates the <see cref="SolutionWriter" /> for the specified format.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="SolutionWriter" /> for the specified format, or 
+        /// <see langword="null" /> if an unknown format was specified.
+        /// </returns>
+        private SolutionWriter CreateSolutionWriter(string format) {
             SolutionWriter writer = null;
 
             switch (format) {
@@ -155,40 +197,31 @@ namespace NAnt.Contrib.Tasks {
             return writer;
         }
 
-        /// <summary>Converts an <see cref="OptionCollection"/> to a <see cref="Hashtable"/>.</summary>
+        /// <summary>
+        /// Converts an <see cref="OptionCollection"/> to a <see cref="Hashtable"/>.
+        /// </summary>
         private Hashtable OptionCollectionToHashtable(OptionCollection options, string optionSetName) {
-
             Hashtable convertedOptions = new Hashtable();
 
-      if (options != null) {
-        foreach (object option in options) {
-          string name;
-          string value;
-          if ( option is Option ) {
-            Option ov = (Option) option;
-            name  = ov.Name;
-            value = ov.Value;
-          } 
-              // commenting to get build working - not sure what all this is doing IM )
-//          else if ( option is OptionElement ) {
-//            OptionElement oe = (OptionElement) option;
-//            name  = oe.OptionName;
-//            value = oe.Value;
-//          } 
-          
-          else {
-             throw new BuildException( string.Format( "Invalid Option type {0} in {1} OptionCollection", option.GetType(), optionSetName) );
-          }
-          Log(Level.Info,  LogPrefix + " -- {0} = {1}", name, value );
+            if (options != null) {
+                foreach (object option in options) {
+                    string name;
+                    string value;
 
-                    // name must be specified
+                    Option ov = (Option) option;
+                    name  = ov.OptionName;
+                    value = ov.Value;
+
+                    Log(Level.Verbose, LogPrefix + " -- {0} = {1}", name, value);
+
                     if (name == null) {
-                        string msg = String.Format("Unspecified name for <{0}> option '{1}'", optionSetName, name);
-                        throw new BuildException(msg);
-                    // value must be specified
+                        throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                            "Unspecified name for <{0}> option '{1}'.", optionSetName, name), 
+                            Location);
                     } else if (value == null) {
-                        string msg = String.Format("Unspecified value for <{0}> option '{1}'", optionSetName, name);
-                        throw new BuildException(msg);
+                        throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                            "Unspecified value for <{0}> option '{1}'.", optionSetName, name), 
+                            Location);
                     } else {
                         convertedOptions.Add(name, value);
                     }
@@ -198,5 +231,6 @@ namespace NAnt.Contrib.Tasks {
             return convertedOptions;
         }
 
+        #endregion Private Instance Methods
     }
 }
