@@ -607,6 +607,11 @@ namespace NAnt.Contrib.Tasks.Msi {
             return null;
         }
 
+        /// <summary>
+        /// If the specified path is longer than 40 characters, 37 are returned plus ...
+        /// </summary>
+        /// <param name="path">A shortened path</param>
+        /// <returns></returns>
         private string GetDisplayablePath(string path) {
             if (path.Length > 40) {
                 return "..." + path.Substring(path.Length-37, 37);
@@ -926,24 +931,7 @@ namespace NAnt.Contrib.Tasks.Msi {
                 // Open the "Registry" Table
                 using (InstallerTable registryTable = database.OpenTable("Registry")) {
                     foreach (MSIRegistryKey key in msi.registry) {
-                        int rootKey = -1;
-                        switch (key.root.ToString()) {
-                            case "dependent":
-                                rootKey = -1;
-                                break;
-                            case "classes":
-                                rootKey = 0;
-                                break;
-                            case "user":
-                                rootKey = 1;
-                                break;
-                            case "machine":
-                                rootKey = 2;
-                                break;
-                            case "users":
-                                rootKey = 3;
-                                break;
-                        }
+                        int rootKey = GetRegistryRootByName(key.root.ToString());
 
                         foreach (MSIRegistryKeyValue value in key.value) {
                             if ((value.name == null || value.name == String.Empty) && (value.value == null || value.value == String.Empty) && (value.Value == null))
@@ -974,57 +962,189 @@ namespace NAnt.Contrib.Tasks.Msi {
                 }
             }
         }
-
+        
         /// <summary>
         /// Loads records for the RegLocator table
         /// </summary>
         /// <param name="database">The MSI database.</param>
         private void LoadRegistryLocators(InstallerDatabase database) {
-            // Add properties from Task definition
             if (msi.search != null) {
-                Log(Level.Verbose, "Adding Locators:");
+                if (msi.search.registry != null) {
+                    Log(Level.Verbose, "Adding Registry Search Locators:");
 
-                foreach (searchKey key in msi.search) {
-                    switch (key.type.ToString()) {
-                        case "registry": {
-                            AddRegistryLocaterEntry(database, key);
-                            break;
+                    foreach (searchRegistry regKey in msi.search.registry) {
+                        int rootKey = GetRegistryRootByName(regKey.root.ToString());
+
+                        if (regKey.value != null) {
+                            foreach (searchRegistryValue value in regKey.value) {
+                                string signature = "SIG_" + value.setproperty;
+                                int msidbLocatorTypeRawValue = 1;
+                                switch (regKey.type) {
+                                    case MSILocatorTypeDirFileReg64.directory:
+                                        msidbLocatorTypeRawValue = 0;
+                                        break;
+                                    case MSILocatorTypeDirFileReg64.file:
+                                        msidbLocatorTypeRawValue = 1;
+                                        break;
+                                    case MSILocatorTypeDirFileReg64.registry:
+                                        msidbLocatorTypeRawValue = 2;
+                                        break;
+                                    case MSILocatorTypeDirFileReg64.Item64bit:
+                                        msidbLocatorTypeRawValue = 16;
+                                        break;
+                                 }
+
+                                // Select the "RegLocator" Table
+                                using (InstallerTable regLocatorTable = database.OpenTable("RegLocator")) {
+                                // Insert the signature to the RegLocator Table
+                                    regLocatorTable.InsertRecord(signature, rootKey.ToString(), regKey.path,
+                                        value.name, msidbLocatorTypeRawValue);
+
+                                    Log(Level.Verbose, "\t" + GetDisplayablePath(regKey.path.Replace("}", "}}").Replace("{", "{{")) + @"#" + value.name.Replace("}", "}}").Replace("{", "{{"));
+                                }
+                            }
+                        }                        
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Loads records for the CompLocator table
+        /// </summary>
+        /// <param name="database">The MSI database.</param>
+        private void LoadAppLocators(InstallerDatabase database) {
+            if (msi.search != null) {
+                if (msi.search.app != null) {
+                    Log(Level.Verbose, "Adding Application Search Locators:");
+
+                    foreach (searchApp appKey in msi.search.app) {
+                        int rootKey = 0;
+                            
+                        switch (appKey.type) {
+                            case MSILocatorTypeDirFile.directory:
+                                rootKey = 0;
+                                break;
+                            case MSILocatorTypeDirFile.file:
+                                rootKey = 1;
+                                break;
                         }
-                        case "file": {
-                            break;
+                        string signature = "SIG_" + appKey.setproperty;
+
+                        // Select the "CompLocator" Table
+                        using (InstallerTable compLocatorTable = database.OpenTable("CompLocator")) {
+                            // Insert the signature to the compLocator Table
+                            compLocatorTable.InsertRecord(signature, appKey.componentid, rootKey);
+                            Log(Level.Verbose, "\t" + signature);
+                        }                        
+                    }
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Loads records for the IniLocator table
+        /// </summary>
+        /// <param name="database">The MSI database.</param>
+        private void LoadIniLocators(InstallerDatabase database) {
+            if (msi.search != null) {
+                if (msi.search.ini != null) {
+                    Log(Level.Verbose, "Adding Ini Search Locators:");
+
+                    foreach (searchIni iniKey in msi.search.ini) {
+                        int rootKey = 0;
+                            
+                        switch (iniKey.type) {
+                            case MSILocatorTypeDirFileRaw.directory:
+                                rootKey = 0;
+                                break;
+                            case MSILocatorTypeDirFileRaw.file:
+                                rootKey = 1;
+                                break;
+                            case MSILocatorTypeDirFileRaw.raw:
+                                rootKey = 2;
+                                break;
+                        }
+                        string signature = "SIG_" + iniKey.setproperty;
+
+                        // Select the "IniLocator" Table
+                        using (InstallerTable iniLocatorTable = database.OpenTable("IniLocator")) {
+                            // Insert the signature to the IniLocator Table
+                            iniLocatorTable.InsertRecord(signature, iniKey.filename, iniKey.section, iniKey.key, iniKey.field, rootKey);
+                            Log(Level.Verbose, "\t" + iniKey.filename);
+                        }                        
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Loads records for the DrLocator table
+        /// </summary>
+        /// <param name="database">The MSI database.</param>
+        private void LoadDirFileLocators(InstallerDatabase database) {
+            if (msi.search != null) {
+                if (msi.search.dirfile != null) {
+                    Log(Level.Verbose, "Adding Directory/File Search Locators:");
+
+                    foreach (searchDirfile dirfileKey in msi.search.dirfile) {
+                        string signature = "SIG_" + dirfileKey.setproperty;
+
+                        // Select the "DrLocator" Table
+                        using (InstallerTable drLocatorTable = database.OpenTable("DrLocator")) {
+                            // Insert the signature to the DrLocator Table
+                            drLocatorTable.InsertRecord(signature, dirfileKey.parent, dirfileKey.path, dirfileKey.depth);
+                        }
+                        if (dirfileKey.file != null) {
+                            using (InstallerTable signatureTable = database.OpenTable("Signature")) {
+                                signatureTable.InsertRecord(signature, dirfileKey.file.name, dirfileKey.file.minversion, dirfileKey.file.maxversion, dirfileKey.file.minsize, dirfileKey.file.maxsize, dirfileKey.file.mindate, dirfileKey.file.maxdate, dirfileKey.file.languages);
+                            }
+                            Log(Level.Verbose, "\t" + GetDisplayablePath(dirfileKey.file.name));
+                        }
+                        else {
+                            if (dirfileKey.path != null) {
+                                Log(Level.Verbose, "\t" + GetDisplayablePath(dirfileKey.path));
+                            }
+                            else if (dirfileKey.parent != null) {
+                                Log(Level.Verbose, "\t" + GetDisplayablePath(dirfileKey.parent));
+                            }
                         }
                     }
                 }
             }
         }
 
+        #region Depreciated Locator Methods
+
+        /// <summary>
+        /// Loads records for the RegLocator table
+        /// </summary>
+        /// <param name="database">The MSI database.</param>
+        [Obsolete("This syntax is depreciated.  Please use new syntax for searches.", false)]
+        private void LoadDepreciatedLocators(InstallerDatabase database) {
+            // Add properties from Task definition
+            if (msi.search != null) {
+                if (msi.search.key != null) {
+                    Log(Level.Verbose, "Adding Depreciated Locators:");
+                    Log(Level.Info, "* /search/key is depreciated.  Please use /search/app, /search/registry, /search/ini, or /search/dirfile syntax instead.");
+
+                    foreach (searchKey key in msi.search.key) {
+                        switch (key.type.ToString()) {
+                            case "registry": 
+                                AddRegistryLocaterEntry(database, key);
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+
+        [Obsolete("Depreciated", false)]
         private void AddRegistryLocaterEntry(InstallerDatabase database, searchKey key) {
             // Select the "RegLocator" Table
             using (InstallerTable regLocatorTable = database.OpenTable("RegLocator")) {
 
-                int rootKey = -1;
-                switch (key.root.ToString()) {
-                    case "dependent": {
-                        rootKey = -1;
-                        break;
-                    }
-                    case "classes": {
-                        rootKey = 0;
-                        break;
-                    }
-                    case "user": {
-                        rootKey = 1;
-                        break;
-                    }
-                    case "machine": {
-                        rootKey = 2;
-                        break;
-                    }
-                    case "users": {
-                        rootKey = 3;
-                        break;
-                    }
-                }
+                int rootKey = GetRegistryRootByName(key.root.ToString());
 
                 if (key.value != null) {
                     foreach (searchKeyValue value in key.value) {
@@ -1041,6 +1161,35 @@ namespace NAnt.Contrib.Tasks.Msi {
             }
         }
 
+        #endregion
+
+        /// <summary>
+        /// Gets the name of the registry root id by it's name.
+        /// </summary>
+        /// <param name="root">Name of the registry root</param>
+        /// <returns></returns>
+        private int GetRegistryRootByName(string root) {
+            int rootKey = -1;
+            switch (root) {
+                case "dependent":
+                    rootKey = -1;
+                    break;
+                case "classes":
+                    rootKey = 0;
+                    break;
+                case "user":
+                    rootKey = 1;
+                    break;
+                case "machine":
+                    rootKey = 2;
+                    break;
+                case "users":
+                    rootKey = 3;
+                    break;
+            }        
+            return rootKey;
+        }
+
         /// <summary>
         /// Loads records for the AppSearch table
         /// </summary>
@@ -1049,21 +1198,57 @@ namespace NAnt.Contrib.Tasks.Msi {
             // Add properties from Task definition
             if (msi.search != null) {
 
-                using (InstallerTable appSearchTable = database.OpenTable("AppSearch")) {
-                    foreach (searchKey key in msi.search) {
+                ArrayList properties = new ArrayList();                
+                // TODO: Remove - Depreciated ----------------------
+                if (msi.search.key != null) {
+                    foreach (searchKey key in msi.search.key) {
                         switch (key.type.ToString()) {
-                            case "registry": {
+                            case "registry": 
                                 if (key.value != null) {
                                     foreach (searchKeyValue value in key.value) {
-                                        appSearchTable.InsertRecord(value.setproperty, "SIG_" + value.setproperty);
+                                        properties.Add(value.setproperty);
                                     }
                                 }
                                 break;
-                            }
-                            case "file": {
-                                break;
+                        }
+                    }
+                }
+                // -----------------------------
+                if (msi.search.registry != null) {
+                    foreach (searchRegistry regKey in msi.search.registry) {
+                        if (regKey.value != null) {
+                            foreach (searchRegistryValue value in regKey.value) {
+                                if (!properties.Contains(value.setproperty)) {
+                                    properties.Add(value.setproperty);
+                                }
                             }
                         }
+                    }
+                }
+                if (msi.search.app != null) {
+                    foreach (searchApp appKey in msi.search.app) {
+                        if (!properties.Contains(appKey.setproperty)) {
+                            properties.Add(appKey.setproperty);
+                        }
+                    }
+                }
+                if (msi.search.ini != null) {
+                    foreach (searchIni iniKey in msi.search.ini) {
+                        if (!properties.Contains(iniKey.setproperty)) {
+                            properties.Add(iniKey.setproperty);
+                        }
+                    }
+                }
+                if (msi.search.dirfile != null) {
+                    foreach (searchDirfile drKey in msi.search.dirfile) {
+                        if (!properties.Contains(drKey.setproperty)) {
+                            properties.Add(drKey.setproperty);
+                        }
+                    }
+                }
+                using (InstallerTable appSearchTable = database.OpenTable("AppSearch")) {
+                    foreach (string property in properties) {
+                        appSearchTable.InsertRecord(property, "SIG_" + property);
                     }
                 }
             }
@@ -2649,7 +2834,12 @@ namespace NAnt.Contrib.Tasks.Msi {
 
         private void LoadCommonDataFromTask(InstallerDatabase database, ref int fileSequenceNumber) {
             LoadProperties(database);
+            // Remove this next line
+            LoadDepreciatedLocators(database);
             LoadRegistryLocators(database);
+            LoadAppLocators(database);
+            LoadIniLocators(database);
+            LoadDirFileLocators(database);
             LoadApplicationSearch(database);
             LoadUserDefinedTables(database);
             LoadDirectories(database);

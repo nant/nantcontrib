@@ -168,8 +168,14 @@
     <xsd:element name="search">
         <xsd:complexType>
             <xsd:sequence>
-				<!-- *********  Depreciated :: Start  ********* -->
-                <xsd:element name="key" minOccurs="1" maxOccurs="unbounded">
+                <xsd:element name="app" minOccurs="0" maxOccurs="unbounded">
+                    <xsd:complexType>
+                        <xsd:attribute name="componentid" type="xsd:string" use="required" />
+                        <xsd:attribute name="type" type="msi:MSILocatorTypeDirFile" use="required" />
+                        <xsd:attribute name="setproperty" type="xsd:string" use="required" />
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="registry" minOccurs="0" maxOccurs="unbounded">
                     <xsd:complexType>
                         <xsd:sequence>
                             <xsd:element name="value" minOccurs="1" maxOccurs="unbounded">
@@ -179,20 +185,82 @@
                                 </xsd:complexType>
                             </xsd:element>
                         </xsd:sequence>
-                        <xsd:attribute name="type" type="msi:MSISearchKeyType" use="required" />
+                        <xsd:attribute name="type" type="msi:MSILocatorTypeDirFileReg64" use="required" />
                         <xsd:attribute name="path" type="xsd:string" use="required" />
                         <xsd:attribute name="root" type="msi:MSIRegistryKeyRoot" use="required" />
                     </xsd:complexType>
                 </xsd:element>
-				<!-- *********  Depreciated :: End  ********* -->
+                <xsd:element name="ini" minOccurs="0" maxOccurs="unbounded">
+                    <xsd:complexType>
+                        <xsd:attribute name="filename" type="xsd:string" use="required" />
+                        <xsd:attribute name="section" type="xsd:string" use="required" />
+                        <xsd:attribute name="key" type="xsd:string" use="required" />
+                        <xsd:attribute name="field" type="msi:nonNegativeInt" use="optional" default="0" />
+                        <xsd:attribute name="type" type="msi:MSILocatorTypeDirFileRaw" use="required" />
+                        <xsd:attribute name="setproperty" type="xsd:string" use="required" />
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="dirfile" minOccurs="0" maxOccurs="unbounded">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="file" minOccurs="0" maxOccurs="1">
+                                <xsd:complexType>
+                                    <xsd:attribute name="name" type="xsd:string" use="required" />
+                                    <xsd:attribute name="minversion" type="xsd:string" use="optional" />
+                                    <xsd:attribute name="maxversion" type="xsd:string" use="optional" />
+                                    <xsd:attribute name="minsize" type="msi:nonNegativeInt" use="optional" />
+                                    <xsd:attribute name="maxsize" type="msi:nonNegativeInt" use="optional" />
+                                    <xsd:attribute name="mindate" type="msi:nonNegativeInt" use="optional" />
+                                    <xsd:attribute name="maxdate" type="msi:nonNegativeInt" use="optional" />
+                                    <xsd:attribute name="languages" type="xsd:string" use="optional" />
+                                </xsd:complexType>
+                            </xsd:element>
+                        </xsd:sequence>
+                        <xsd:attribute name="parent" type="xsd:string" use="required" />
+                        <xsd:attribute name="path" type="xsd:string" use="optional" />
+                        <xsd:attribute name="depth" type="msi:nonNegativeInt" use="optional" default="0" />
+                        <xsd:attribute name="setproperty" type="xsd:string" use="required" />
+                    </xsd:complexType>
+                </xsd:element>
+                <!-- *********  Depreciated :: Start  ********* -->
+                <xsd:element name="key" minOccurs="0" maxOccurs="unbounded">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="value" minOccurs="1" maxOccurs="unbounded">
+                                <xsd:complexType>
+                                    <xsd:attribute name="name" type="xsd:string" use="optional" />
+                                    <xsd:attribute name="setproperty" type="xsd:string" use="required" />
+                                </xsd:complexType>
+                            </xsd:element>
+                        </xsd:sequence>
+                        <xsd:attribute name="type" type="msi:MSILocatorTypeDirFileReg64" use="required" />
+                        <xsd:attribute name="path" type="xsd:string" use="required" />
+                        <xsd:attribute name="root" type="msi:MSIRegistryKeyRoot" use="required" />
+                    </xsd:complexType>
+                </xsd:element>
+                <!-- *********  Depreciated :: End  ********* -->
             </xsd:sequence>
         </xsd:complexType>
     </xsd:element>
-    <!-- msi/search/key/@type -->
-    <xsd:simpleType name="MSISearchKeyType">
+    <xsd:simpleType name="MSILocatorTypeDirFile">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="directory" />
+            <xsd:enumeration value="file" />
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="MSILocatorTypeDirFileReg64">
         <xsd:restriction base="xsd:string">
             <xsd:enumeration value="registry" />
             <xsd:enumeration value="file" />
+            <xsd:enumeration value="directory" />
+            <xsd:enumeration value="64bit" />
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="MSILocatorTypeDirFileRaw">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="directory" />
+            <xsd:enumeration value="file" />
+            <xsd:enumeration value="raw" />
         </xsd:restriction>
     </xsd:simpleType>
     <!-- msi/launchconditions -->
@@ -402,7 +470,7 @@
         <xsd:attribute name="fileattr" type="xsd:int" use="optional" default="512" />
         <xsd:attribute name="checkinterop" type="xsd:boolean" use="optional" default="false" />
         <xsd:attribute name="installassembliestogac" type="xsd:boolean" use="optional" default="false" />
-		<xsd:attribute name="keepsubdirs" type="xsd:boolean" use="optional" default="false" />
+        <xsd:attribute name="keepsubdirs" type="xsd:boolean" use="optional" default="false" />
     </xsd:complexType>
     <!-- msi/components/component/key -->
     <xsd:complexType name="MSIKeyFile">

@@ -183,10 +183,22 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// Drops empty tables.
         /// </summary>
         public void DropEmptyTables() {
+            DropEmptyTables(false);
+        }
+
+        /// <summary>
+        /// Drops the empty tables.
+        /// </summary>
+        /// <param name="isMergeModule">Determines if this is a merge module or not</param>
+        /// <remarks>If it is a merge module, the FeatureComponents table should not be dropped.</remarks>
+        public void DropEmptyTables(bool isMergeModule) {
             // Go through each table listed in _Tables
             using (InstallerRecordReader reader = FindRecords("_Tables")) {
                 while (reader.Read()) {
                     string tableName = reader.GetString(0);
+
+                    if (isMergeModule && tableName == "FeatureComponents")
+                        continue;
 
                     if (VerifyTableEmpty(tableName)) {
                         // Drop the table

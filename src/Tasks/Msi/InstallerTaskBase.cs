@@ -241,12 +241,46 @@ namespace NAnt.Contrib.Tasks.Msi {
 
         /// <summary>
         /// <para>
-        /// Contains within it one to any number of key elements. Key elements 
-        /// are used to search for an existing filesystem directory, file, or 
+        /// Contains within it one to any number of app, registry, ini, or dirfile elements. 
+        /// These elements are used to search for an existing filesystem directory, file, or 
         /// Windows Registry setting.  A property in the installer database is 
-        /// then set with the value obtained from that registry value.
+        /// then set with the value obtained from the search.
         /// </para>
-        /// <h3>Parameters</h3>
+        /// <h3>&lt;app&gt;</h3>
+        /// <para>
+        /// More information on these attributes can be found at: http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/complocator_table.asp
+        /// </para>
+        /// <list type="table">
+        ///     <listheader>
+        ///         <term>Attribute</term>
+        ///         <term>Type</term>
+        ///         <term>Description</term>
+        ///         <term>Required</term>
+        ///     </listheader>
+        ///     <item>
+        ///         <term>componentid</term>
+        ///         <term>string</term>
+        ///         <term>The component ID of the component whose key path is to be used for the search.</term>
+        ///         <term>True</term>
+        ///     </item>
+        ///     <item>
+        ///         <term>type</term>
+        ///         <term>msi:MSILocatorTypeDirFile</term>
+        ///         <term>Valid input: <c>file</c> or <c>directory</c></term>
+        ///         <term>True</term>
+        ///     </item>
+        ///     <item>
+        ///         <term>setproperty</term>
+        ///         <term>string</term>
+        ///         <term>A name used to refer to the property within the Msi database.  Set at install time.</term>
+        ///         <term>True</term>
+        ///     </item>
+        /// </list>
+        /// <h3>&lt;/app&gt;</h3>
+        /// <h3>&lt;registry&gt;</h3>
+        /// <para>
+        /// More information on these attributes can be found at: http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/reglocator_table.asp
+        /// </para>
         /// <list type="table">
         ///     <listheader>
         ///         <term>Attribute</term>
@@ -256,8 +290,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </listheader>
         ///     <item>
         ///         <term>type</term>
-        ///         <term>msi:MSISearchKeyType</term>
-        ///         <term>Valid input: <c>registry</c> or <c>file</c></term>
+        ///         <term>msi:MSILocatorTypeDirFileReg64</term>
+        ///         <term>Valid input: <c>registry</c>, <c>file</c>, <c>directory</c>, <c>64bit</c></term>
         ///         <term>True</term>
         ///     </item>
         ///     <item>
@@ -285,10 +319,10 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///         </term>
         ///         <term>True</term>
         ///     </item>
-        ///    </list>
-        ///    <h3>Nested Elements:</h3>
-        ///    <h4>&lt;value&gt;</h4>
-        ///    <ul>
+        /// </list>
+        /// <ul>
+        /// <h3>Nested Elements:</h3>
+        /// <h4>&lt;value&gt;</h4>
         /// <h3>Parameters</h3>
         /// <list type="table">
         ///     <listheader>
@@ -315,19 +349,196 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///         <term>True</term>
         ///     </item>
         /// </list>
-        /// </ul>
         /// <h4>&lt;/value&gt;</h4>
+        /// </ul>
+        /// <h3>&lt;/registry&gt;</h3>
+        /// <h3>&lt;ini&gt;</h3>
+        /// <para>
+        /// More information on these attributes can be found at: http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/inilocator_table.asp
+        /// </para>
+        /// <list type="table">
+        ///     <listheader>
+        ///         <term>Attribute</term>
+        ///         <term>Type</term>
+        ///         <term>Description</term>
+        ///         <term>Required</term>
+        ///     </listheader>
+        ///     <item>
+        ///         <term>filename</term>
+        ///         <term>string</term>
+        ///         <term>The .ini file name. (The .ini file must be present in the default Microsoft Windows directory.)
+        ///         </term>
+        ///         <term>True</term>
+        ///     </item>
+        ///     <item>
+        ///         <term>section</term>
+        ///         <term>string</term>
+        ///         <term>Section name within the .ini file.
+        ///         </term>
+        ///         <term>True</term>
+        ///     </item>
+        ///     <item>
+        ///         <term>key</term>
+        ///         <term>string</term>
+        ///         <term>Key value within the section.
+        ///         </term>
+        ///         <term>True</term>
+        ///     </item>
+        ///     <item>
+        ///         <term>field</term>
+        ///         <term>msi:nonNegativeInt</term>
+        ///         <term>The field in the .ini line. If Field is Null or 0, then the entire line is read. 
+        ///         This must be a non-negative number.
+        ///         </term>
+        ///         <term>False</term>
+        ///     </item>
+        ///     <item>
+        ///         <term>type</term>
+        ///         <term>msi:MSILocatorTypeDirFileRaw</term>
+        ///         <term>Valid input: <c>file</c> ,<c>directory</c>, or <c>raw</c></term>
+        ///         <term>True</term>
+        ///     </item>
+        ///     <item>
+        ///         <term>setproperty</term>
+        ///         <term>string</term>
+        ///         <term>A name used to refer to the property within the Msi database.  Set at install time.</term>
+        ///         <term>True</term>
+        ///     </item>
+        /// </list>
+        /// <h3>&lt;/ini&gt;</h3>
+        /// <h3>&lt;dirfile&gt;</h3>
+        /// <para>
+        /// More information on these attributes can be found at: 
+        /// http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/drlocator_table.asp
+        /// and
+        /// http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/signature_table.asp
+        /// </para>
+        /// <list type="table">
+        ///     <listheader>
+        ///         <term>Attribute</term>
+        ///         <term>Type</term>
+        ///         <term>Description</term>
+        ///         <term>Required</term>
+        ///     </listheader>
+        ///     <item>
+        ///         <term>parent</term>
+        ///         <term>string</term>
+        ///         <term>An identifier to RegLocator, IniLocator, or CompLocator tables.  
+        ///         If it does not expand to a full path, then all the fixed drives of the user's system are searched by using the Path.
+        ///         <br/>In order to determine what the key is for a table, prefix the property name assigned
+        ///         to that locator with SIG_
+        ///         </term>
+        ///         <term>False</term>
+        ///     </item>
+        ///     <item>
+        ///         <term>path</term>
+        ///         <term>string</term>
+        ///         <term>the path on the user's system. This is a either a full path or a relative subpath 
+        ///         below the directory specified in the Parent column.
+        ///         </term>
+        ///         <term>False</term>
+        ///     </item>
+        ///     <item>
+        ///         <term>depth</term>
+        ///         <term>msi:nonNegativeInt</term>
+        ///         <term>The depth below the path that the installer searches for the file or directory.
+        ///         </term>
+        ///         <term>False</term>
+        ///     </item>
+        ///     <item>
+        ///         <term>setproperty</term>
+        ///         <term>string</term>
+        ///         <term>A name used to refer to the property within the Msi database.  Set at install time.</term>
+        ///         <term>True</term>
+        ///     </item>
+        /// </list>
+        /// <ul>
+        /// <h3>Nested Elements:</h3>
+        /// <h4>&lt;file&gt;</h4>
+        /// <h3>Parameters</h3>
+        /// <list type="table">
+        ///     <listheader>
+        ///         <term>Attribute</term>
+        ///         <term>Type</term>
+        ///         <term>Description</term>
+        ///         <term>Required</term>
+        ///     </listheader>
+        ///     <item>
+        ///         <term>name</term>
+        ///         <term>string</term>
+        ///         <term>The name of the file.</term>
+        ///         <term>True</term>
+        ///     </item>
+        ///     <item>
+        ///         <term>minversion</term>
+        ///         <term>string</term>
+        ///         <term>The minimum version of the file, with a language comparison. If this field is 
+        ///         specified, then the file must have a version that is at least equal to MinVersion. 
+        ///         If the file has an equal version to the MinVersion field value but the language 
+        ///         specified in the Languages column differs, the file does not satisfy the signature 
+        ///         filter criteria.</term>
+        ///         <term>False</term>
+        ///     </item>
+        ///     <item>
+        ///         <term>maxversion</term>
+        ///         <term>string</term>
+        ///         <term>The maximum version of the file. If this field is specified, then the file 
+        ///         must have a version that is at most equal to MaxVersion.</term>
+        ///         <term>False</term>
+        ///     </item>
+        ///     <item>
+        ///         <term>minsize</term>
+        ///         <term>msi:nonNegativeInt</term>
+        ///         <term>The minimum size of the file. If this field is specified, then the file 
+        ///         under inspection must have a size that is at least equal to MinSize. This must 
+        ///         be a non-negative number.</term>
+        ///         <term>False</term>
+        ///     </item>
+        ///     <item>
+        ///         <term>maxsize</term>
+        ///         <term>msi:nonNegativeInt</term>
+        ///         <term>The maximum size of the file. If this field is specified, then the file 
+        ///         under inspection must have a size that is at most equal to MaxSize. This must 
+        ///         be a non-negative number.</term>
+        ///         <term>False</term>
+        ///     </item>
+        ///     <item>
+        ///         <term>mindate</term>
+        ///         <term>msi:nonNegativeInt</term>
+        ///         <term>The minimum modification date and time of the file. If this field is 
+        ///         specified, then the file under inspection must have a modification date and time 
+        ///         that is at least equal to MinDate. This must be a non-negative number.</term>
+        ///         <term>False</term>
+        ///     </item>
+        ///     <item>
+        ///         <term>maxdate</term>
+        ///         <term>msi:nonNegativeInt</term>
+        ///         <term>The maximum creation date of the file. If this field is specified, then the 
+        ///         file under inspection must have a creation date that is at most equal to MaxDate. 
+        ///         This must be a non-negative number.</term>
+        ///         <term>False</term>
+        ///     </item>
+        ///     <item>
+        ///         <term>languages</term>
+        ///         <term>string</term>
+        ///         <term>The languages supported by the file.</term>
+        ///         <term>False</term>
+        ///     </item>
+        /// </list>
+        /// <h4>&lt;/file&gt;</h4>
+        /// </ul>
+        /// <h3>&lt;/dirfile&gt;</h3>
         /// <h3>Examples</h3>
         /// <example>
         ///     <para>Get the path of the web directory and the version of IIS.  Create new properties in the Msi file with those values.</para>
         ///     <code>
         /// &lt;search&gt;
-        ///     &lt;key type="registry" path="Software\Microsoft\InetStp" root="machine" &gt;
+        ///     &lt;registry path="Software\Microsoft\InetStp" root="machine" &gt;
         ///         &lt;value name="PathWWWRoot" setproperty="IISWWWROOT" /&gt;
-        ///     &lt;/key&gt;
-        ///     &lt;key type="registry" path="SYSTEM\CurrentControlSet\Services\W3SVC\Parameters" root="machine" &gt;
+        ///     &lt;/registry&gt;
+        ///     &lt;registry path="SYSTEM\CurrentControlSet\Services\W3SVC\Parameters" root="machine" &gt;
         ///             &lt;value name="MajorVersion" setproperty="IISVERSION" /&gt;
-        ///     &lt;/key&gt;
+        ///     &lt;/registry&gt;
         /// &lt;/search&gt; 
         ///     </code>
         /// </example>

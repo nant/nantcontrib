@@ -68,7 +68,7 @@ namespace NAnt.Contrib.Tasks.Msi {
 
             // Delete unused tables
             Log(Level.Verbose, "Dropping unused tables");
-            database.DropEmptyTables();
+            database.DropEmptyTables(true);
         }
 
         /// <summary>
