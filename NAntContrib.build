@@ -108,11 +108,25 @@
             </fileset>
         </zip>
     </target>
+    
     <!-- skot -->
-    <target name="use" depends="build" description="Copies built assemblies to nant-bin/tasks folder.">
-		<mkdir dir="${nant.extra-tasks.dir}"/>
-		<copy file="${build.dir}\${project.FormalName}.Tasks.dll" todir="${nant.extra-tasks.dir}">
-		</copy>
+    <target name="taskdef.build" description="build taskdef assembly">
+		<property name="taskDefAssembly" value="${build.dir}\taskdef.Tasks.dll" />
+		
+		<!-- compile NAnt.Contrib.Tasks.dll -->
+        <csc target="library" output="${taskDefAssembly}" debug="${debug}">
+            <sources basedir="${src.dir}">
+                <includes name="Tasks/TaskDefTask.cs"/>
+            </sources>
+            <references>
+                <includes name="${nant-bin.dir}\NAnt.Core.dll"/>
+            </references>
+            <arg value="/nowarn:1591"/>
+        </csc>		
     </target>
     
+    <target name="use" depends="taskdef.build" description="Copies taskdef assemblies to nant-bin/tasks folder.">
+		<mkdir dir="${nant.extra-tasks.dir}"/>
+		<copy file="${taskDefAssembly}" todir="${nant.extra-tasks.dir}" />
+    </target>
 </project>
