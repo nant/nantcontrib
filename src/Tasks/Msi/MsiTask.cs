@@ -27,7 +27,7 @@ using NAnt.Contrib.Schemas.Msi;
 
 namespace NAnt.Contrib.Tasks.Msi {
     /// <summary>
-    /// Builds a Windows Installer (MSI) File.
+    /// Builds a Windows Installer (MSI) database.
     /// </summary>
     /// <remarks>
     /// Requires <c>cabarc.exe</c> in the path.  This tool is included in the 
@@ -36,26 +36,32 @@ namespace NAnt.Contrib.Tasks.Msi {
     [TaskName("msi")]
     [SchemaValidator(typeof(msi))]
     public class MsiTask : SchemaValidatedTask {
-        MsiCreationCommand taskCommand;
+        #region Private Instance Fields
+
+        private MsiCreationCommand _taskCommand;
+
+        #endregion Private Instance Fields
+
+        #region Override implementation of SchemaValidatedTask
 
         /// <summary>
-        /// Initialize taks and verify parameters.
+        /// Initializes task and verifies parameters.
         /// </summary>
-        /// <param name="TaskNode">Node that contains the XML fragment
-        /// used to define this task instance.</param>
-        /// <remarks>None.</remarks>
+        /// <param name="TaskNode">Node that contains the XML fragment used to define this task instance.</param>
         protected override void InitializeTask(XmlNode TaskNode) {
             base.InitializeTask(TaskNode);
 
-            taskCommand = new MsiCreationCommand((msi)SchemaObject, this, this.Location, this._xmlNode);
+            _taskCommand = new MsiCreationCommand((msi) SchemaObject, this, 
+                this.Location, this.XmlNode);
         }
 
         /// <summary>
-        /// Executes the Task.
+        /// Executes the task.
         /// </summary>
-        /// <remarks>None.</remarks>
         protected override void ExecuteTask() {
-            taskCommand.Execute();
+            _taskCommand.Execute();
         }
+
+        #endregion Override implementation of SchemaValidatedTask
     }
 }

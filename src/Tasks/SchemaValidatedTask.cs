@@ -35,66 +35,58 @@ using NAnt.Core;
 using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
 
-namespace NAnt.Contrib.Tasks
-{
+namespace NAnt.Contrib.Tasks {
     /// <summary>
-    /// Abstract Task that Validates inheriting classes 
-    /// against an XML Schema of the same name.
+    /// Abstract Task that validates inheriting classes against an XML Schema of 
+    /// the same name.
     /// </summary>
-    /// <remarks>None.</remarks>
-    public abstract class SchemaValidatedTask : Task
-    {
+    public abstract class SchemaValidatedTask : Task {
+        #region Private Instance Fields
+
         private object _schemaObject;
         private bool _validated = true;
         private ArrayList _validationExceptions = new ArrayList();
-        protected XmlNode _xmlNode;
+        private XmlNode _xmlNode;
+        private string _namespace;
+
+        #endregion Private Instance Fields
+
+        #region Public Instance Properties
 
         /// <summary>
         /// Returns the object from the Schema wrapper after 
         /// <see cref="InitializeTask"/> is called.
         /// </summary>
-        /// <value>The object from the Schema wrapper after 
-        /// <see cref="InitializeTask"/> is called.</value>
-        /// <remarks>None.</remarks>
-        public Object SchemaObject
-        {
-            get
-            {
-                return _schemaObject;
-            }
+        /// <value>The object from the Schema wrapper after <see cref="InitializeTask"/> is called.</value>
+        public Object SchemaObject {
+            get { return _schemaObject; }
         }
 
-        /// <summary>
-        /// Occurs when a validation error is raised.
-        /// </summary>
-        /// <param name="sender">The object that sent the event.</param>
-        /// <param name="args">Validation arguments passed in.</param>
-        private void Task_OnSchemaValidate(object sender, ValidationEventArgs args)
-        {
-            _validated = false;
-            _validationExceptions.Add(
-                new BuildException("Validation Error: " + args.Message));
+        #endregion Public Instance Properties
+
+        #region Protected Instance Properties
+
+        protected override XmlNode XmlNode {
+            get { return _xmlNode; }
         }
+
+        #endregion Protected Instance Properties
+
+        #region Override implementation of Task
 
         /// <summary>
         /// Initializes the task and verifies parameters.
         /// </summary>
-        /// <param name="TaskNode">Node that contains the 
-        /// XML fragment used to define this task instance.</param>
-        /// <remarks>None.</remarks>
-        protected override void InitializeTask(XmlNode TaskNode)
-        {
+        /// <param name="TaskNode">Node that contains the XML fragment used to define this task instance.</param>
+        protected override void InitializeTask(XmlNode TaskNode) {
             _xmlNode = TaskNode;
             XmlNode taskNode = TaskNode.Clone();
 
             // Expand all properties in the task and its child elements
-            if (taskNode.ChildNodes != null)
-            {
+            if (taskNode.ChildNodes != null) {
                 ExpandPropertiesInNodes(taskNode.ChildNodes);
-                if (taskNode.Attributes != null)
-                {
-                    foreach (XmlAttribute attr in taskNode.Attributes) 
-                    {
+                if (taskNode.Attributes != null) {
+                    foreach (XmlAttribute attr in taskNode.Attributes) {
                         attr.Value = Properties.ExpandProperties(attr.Value, Location);
                     }
                 }
@@ -105,8 +97,7 @@ namespace NAnt.Contrib.Tasks
                 (SchemaValidatorAttribute[])GetType().GetCustomAttributes(
                 typeof(SchemaValidatorAttribute), true);
 
-            if (taskValidators.Length > 0)
-            {
+            if (taskValidators.Length > 0) {
                 SchemaValidatorAttribute taskValidator = taskValidators[0];
                 XmlSerializer taskSerializer = new XmlSerializer(taskValidator.ValidatorType);
 
@@ -125,7 +116,7 @@ namespace NAnt.Contrib.Tasks
                 XmlSchemaCollection schemas = new XmlSchemaCollection();
                 schemas.Add(schema);
 
-				string xmlNamespace = (taskValidator.XmlNamespace != null ? taskValidator.XmlNamespace : GetType().FullName);
+                string xmlNamespace = (taskValidator.XmlNamespace != null ? taskValidator.XmlNamespace : GetType().FullName);
 
                 // Create a namespace manager with the schema's namespace
                 NameTable nt = new NameTable();
@@ -140,7 +131,7 @@ namespace NAnt.Contrib.Tasks
                     ((XmlElement)TaskNode).OuterXml, XmlNodeType.Element, ctx);
 
                 // Copy the node from the TextReader and indent it (for error
-                // reporting, since NAnt does not retain formatting during a load).
+                // reporting, since NAnt does not retain formatting during a load)
                 StringWriter stringWriter = new StringWriter();
                 XmlTextWriter textWriter = new XmlTextWriter(stringWriter);
                 textWriter.Formatting = Formatting.Indented;
@@ -164,14 +155,11 @@ namespace NAnt.Contrib.Tasks
                 }
                 validatingReader.Close();
 
-                if (!_validated)
-                {
+                if (!_validated) {
                     // Log any validation errors that have ocurred
-                    for (int i = 0; i < _validationExceptions.Count; i++)
-                    {
-                        BuildException ve = (BuildException)_validationExceptions[i];
-                        if (i == _validationExceptions.Count - 1)
-                        {
+                    for (int i = 0; i < _validationExceptions.Count; i++) {
+                        BuildException ve = (BuildException) _validationExceptions[i];
+                        if (i == _validationExceptions.Count - 1) {
                             // If this is the last validation error, throw it
                             throw ve;
                         }
@@ -179,8 +167,6 @@ namespace NAnt.Contrib.Tasks
                     }
                 }
             
-            
-
                 NameTable taskNameTable = new NameTable();
                 XmlNamespaceManager taskNSMgr = new XmlNamespaceManager(taskNameTable);
                 taskNSMgr.AddNamespace("", xmlNamespace);
@@ -196,28 +182,40 @@ namespace NAnt.Contrib.Tasks
             }
         }
 
+        #endregion Override implementation of Task
+
+        #region Private Instance Methods
+
+        /// <summary>
+        /// Occurs when a validation error is raised.
+        /// </summary>
+        /// <param name="sender">The object that sent the event.</param>
+        /// <param name="args">Validation arguments passed in.</param>
+        private void Task_OnSchemaValidate(object sender, ValidationEventArgs args) {
+            _validated = false;
+            _validationExceptions.Add(
+                new BuildException("Validation Error: " + args.Message));
+        }
+
         /// <summary>
         /// Recursively expands properties of all attributes of 
         /// a nodelist and their children.
         /// </summary>
         /// <param name="Nodes">The nodes to recurse.</param>
-        private void ExpandPropertiesInNodes(XmlNodeList Nodes) 
-        {
-            foreach (XmlNode node in Nodes)
-            {
-                if (node.ChildNodes != null)
-                {
+        private void ExpandPropertiesInNodes(XmlNodeList Nodes) {
+            foreach (XmlNode node in Nodes) {
+                if (node.ChildNodes != null) {
                     ExpandPropertiesInNodes(node.ChildNodes);
-                    if (node.Attributes != null)
-                    {
-                        foreach (XmlAttribute attr in node.Attributes) 
-                        {
+                    if (node.Attributes != null) {
+                        foreach (XmlAttribute attr in node.Attributes) {
                             attr.Value = Properties.ExpandProperties(attr.Value, Location);
                         }
                     }
                 }
             }
         }
+
+        #endregion Private Instance Methods
     }
 
     /// <summary>
@@ -225,62 +223,57 @@ namespace NAnt.Contrib.Tasks
     /// </summary>
     /// <remarks>None.</remarks>
     [AttributeUsage(AttributeTargets.Class, Inherited=false, AllowMultiple=false)]
-    public class SchemaValidatorAttribute : Attribute
-    {
+    public class SchemaValidatorAttribute : Attribute {
+        #region Private Instance Fields
+
         private Type _type;
+        private string _namespace;
+
+        #endregion Private Instance Fields
+
+        #region Public Instance Constructors
 
         /// <summary>
-        /// Creates a new <see cref="SchemaValidatorAttribute"/>.
+        /// Initializes a new instance of the <see cref="SchemaValidatorAttribute"/>
+        /// class.
         /// </summary>
-        /// <param name="schemaType">The <see cref="Type"/> of the object 
-        /// created by the xsd NAnt task to represent the root node of 
-        /// your task.</param>
-        /// <remarks>None.</remarks>
-		public SchemaValidatorAttribute(Type schemaType)
-		{ 
-			_type = schemaType;
-		}
-
-		public SchemaValidatorAttribute(Type schemaType, String xmlNamespace)
-		{ 
-			_type = schemaType;
-			_namespace = xmlNamespace;
-		}
-
-		/// <summary>
-        /// Returns or sets The <see cref="Type"/> of the object 
-        /// created by the xsd NAnt task to represent the root node of 
-        /// your task.
-        /// </summary>
-        /// <value>The <see cref="Type"/> of the object 
-        /// created by the xsd NAnt task to represent the root node of 
-        /// your task.</value>
-        /// <remarks>None.</remarks>
-        public Type ValidatorType
-        {
-            get
-            {
-                return _type;
-            }
-
-            set
-            {
-                _type = value;
-            }
+        /// <param name="schemaType">The <see cref="Type"/> of the object created by <see cref="XsdTask" /> to represent the root node of your task.</param>
+        public SchemaValidatorAttribute(Type schemaType) { 
+            _type = schemaType;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SchemaValidatorAttribute"/>
+        /// class.
+        /// </summary>
+        /// <param name="schemaType">The <see cref="Type"/> of the object created by <see cref="XsdTask" /> to represent the root node of your task.</param>
+        public SchemaValidatorAttribute(Type schemaType, string xmlNamespace) { 
+            _type = schemaType;
+            _namespace = xmlNamespace;
+        }
 
-		private string _namespace;
-		public string XmlNamespace
-		{
-			get
-			{
-				return _namespace;
-			}
-			set
-			{
-				_namespace = value;
-			}
-		}
+        #endregion Public Instance Constructors
+
+        #region Public Instance Properties
+
+        /// <summary>
+        /// Gets or sets the <see cref="Type"/> of the object created by 
+        /// <see cref="XsdTask" /> to represent the root node of your task.
+        /// </summary>
+        /// <value>
+        /// The <see cref="Type"/> of the object created by <see cref="XsdTask" />
+        /// to represent the root node of your task.
+        /// </value>
+        public Type ValidatorType {
+            get { return _type; }
+            set { _type = value; }
+        }
+
+        public string XmlNamespace {
+            get { return _namespace; }
+            set { _namespace = value; }
+        }
+
+        #endregion Public Instance Properties
     }
 }
