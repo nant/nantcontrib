@@ -15,7 +15,7 @@
     <target name="build-release-self" depends="deploy-sf" description="Perform a 'release' package and uploads to sf.net" />
     <!-- perform a 'release' package and upload to sf.net -->
     <target name="build-release" depends="set-net-1.0-framework-configuration" description="Perform a 'release' package and uploads to sf.net">
-        <if test="${not(file::exists(nant.dir + '/bin/nant.exe')}">
+        <if test="${not(file::exists(nant.dir + '/bin/nant.exe'))}">
             <fail message="Please pass a valid NAnt installation directory on the commandline using a nant.dir property." />
         </if>
         <exec program="${nant.dir + '/bin/nant.exe'}">
