@@ -32,9 +32,19 @@ namespace NAnt.Contrib.Tasks
    /// For a list of optional parameters see <a href="ms-help://MS.VSCC/MS.MSDNVS/iisref/html/psdk/asp/aore8v5e.htm">IIsWebVirtualDir</a>.
    /// </remarks>
    /// <example>
-   ///   <para>Creates a Temp IIS Virtual Directory pointing to c:\temp.</para>
+   ///   <para>Creates a Temp IIS Virtual Directory pointing to <c>c:\temp</c> on the local machine.</para>
    ///   <code><![CDATA[
    ///      <mkiisdir 
+   ///         dirpath="c:\temp"
+   ///         vdirname="TEMP"
+   ///      />
+   ///   ]]></code>
+   /// </example>
+   /// <example>
+   ///   <para>Creates a Temp IIS Virtual Directory pointing to <c>c:\temp</c> on the machine <c>staging</c>.</para>
+   ///   <code><![CDATA[
+   ///      <mkiisdir 
+   ///         iisserver="staging"
    ///         dirpath="c:\temp"
    ///         vdirname="TEMP"
    ///      />
@@ -43,7 +53,7 @@ namespace NAnt.Contrib.Tasks
    [TaskName("mkiisdir")]
    public class MkIISDirTask : Task{
 
-      private const string _iispath = "IIS://localhost/W3SVC/1/Root";
+      private string _iisserver = "localhost";
       private const string _apppath = "/LM/W3SVC/1/Root/";
       private string _dirpath = null;
       private string _vdirname = null;
@@ -120,6 +130,13 @@ namespace NAnt.Contrib.Tasks
       }
 
       // Optional
+      /// <summary>The IIS server.  Defaults to localhost.</summary>
+      [TaskAttribute("iisserver")]
+      public string iisserver{
+         get { return _iisserver; }
+         set { _iisserver = value; }
+      }
+
       [TaskAttribute("accessexecute")]
       public bool accessexecute{
          get { return _accessexecute; }
@@ -462,10 +479,14 @@ namespace NAnt.Contrib.Tasks
          set { _defaultdoc = value; }
       }
 
+      private string iispath {
+        get { return "IIS://" + iisserver + "/W3SVC/1/Root" ;}
+      }
+
       protected override void ExecuteTask()
       {
          try{
-            DirectoryEntry folderRoot = new DirectoryEntry(_iispath);
+            DirectoryEntry folderRoot = new DirectoryEntry(iispath);
             folderRoot.RefreshCache();
             DirectoryEntry newVirDir;
 
