@@ -457,6 +457,8 @@
                 <include name="license.txt" />
                 <include name="bin/**/*" />
                 <include name="doc/**/*" />
+                <!-- exclude SDK docs -->
+                <exclude name="doc/sdk/**" />
             </fileset>
         </zip>
         <echo message="Created a '${project.config}' binary package at file://${project.zip-path.bin}" />
@@ -475,13 +477,13 @@
         <property name="nant.settings.currentframework" value="net-1.0" />
         <property name="current.build.defines" value="${build.defines}NET,NET_1_0" />
         <property name="link.sdkdoc.version" value="SDK_v1_0" />
-        <property name="link.sdkdoc.web" value="false" />
+        <property name="link.sdkdoc.web" value="true" />
     </target>
     <target name="set-net-1.1-framework-configuration">
         <property name="nant.settings.currentframework" value="net-1.1" />
         <property name="current.build.defines" value="${build.defines}NET,NET_1_1" />
         <property name="link.sdkdoc.version" value="SDK_v1_1" />
-        <property name="link.sdkdoc.web" value="false" />
+        <property name="link.sdkdoc.web" value="true" />
     </target>
     <target name="set-net-2.0-framework-configuration">
         <property name="nant.settings.currentframework" value="net-2.0" />
@@ -493,7 +495,7 @@
         <property name="nant.settings.currentframework" value="netcf-1.0" />
         <property name="current.build.defines" value="${build.defines}NETCF,NETCF_1_0" />
         <property name="link.sdkdoc.version" value="SDK_v1_1" />
-        <property name="link.sdkdoc.web" value="false" />
+        <property name="link.sdkdoc.web" value="true" />
     </target>
     <target name="set-mono-1.0-framework-configuration">
         <property name="nant.settings.currentframework" value="mono-1.0" />
