@@ -17,16 +17,20 @@
 // Scott Hernandez(ScottHernandez@hotmail.com)
 
 using System;
-using System.IO;
 using System.Diagnostics;
+using System.Globalization;
+using System.IO;
 
 using NAnt.Core;
-using NAnt.Core.Types;
 using NAnt.Core.Attributes;
 using NAnt.Core.Tasks;
+using NAnt.Core.Types;
+using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks {
-    /// <summary>Copies a file using scp to a remote server.</summary>
+    /// <summary>
+    /// Copies a file to a remote server using scp.
+    /// </summary>
     /// <remarks>
     ///   <para>Copies a file using scp to a remote server.</para>
     ///   <para>The Username Environment variable is used.</para>
@@ -34,73 +38,156 @@ namespace NAnt.Contrib.Tasks {
     /// <example>
     ///   <para>Copy a single file to a remote server and path.</para>
     ///   <code>
-    /// <![CDATA[
-    ///   <scp file="myfile.zip" server="myServer" path="~" />
-    /// ]]>
-    ///   <para>This basically turns into "scp myfile.zip user@mySerer:~/myfile.zip".</para>
+    ///     <![CDATA[
+    /// <scp file="myfile.zip" server="myServer" path="~" />
+    ///     ]]>
     ///   </code>
     /// </example>
     [TaskName("scp")]
     public class ScpTask : ExternalProgramBase {
-        protected string _program = "scp";
-        protected string _commandline = null;
-        protected string _baseDirectory = ".";       
-        protected string _server = null;
-        protected string _file = null;
-        protected string _path = "~";
-        protected string _programPathSep = "/";
-        //TODO: put this assignment in constructor, possible exception case.
-        protected string _user = Environment.GetEnvironmentVariable("USERNAME");
+        private string _program = "scp";
+        private string _commandline;
+        private DirectoryInfo _baseDirectory;
+        private string _server = null;
+        private string _file = null;
+        private string _remotePath = "~";
+        private string _programPathSep = "/";
+        private string _user;
 
-        /// <summary>The program to execute, default is "scp".</summary>
+        #region Public Instance Constructor
+
+        public ScpTask() {
+            _user = Environment.GetEnvironmentVariable("USERNAME");
+        }
+
+        #endregion Public Instance Constructor
+
+        #region Public Instance Properties
+
+        /// <summary>
+        /// The program to execute. The default is "scp".
+        /// </summary>
         [TaskAttribute("program")]
-        public string ProgramName  { set { _program = value; } }                
+        [StringValidator(AllowEmpty=false)]
+        public string ProgramName {
+            get { return _program; }
+            set { _program = value; }
+        }
                 
-        /// <summary>The command line arguments.</summary>
+        /// <summary>
+        /// The command line arguments.
+        /// </summary>
         [TaskAttribute("options")]
-        public string Options { set { _commandline = value; } }
+        public string Options {
+            get { return _commandline; }
+            set { _commandline = value; }
+        }
 
-        public override string ProgramFileName  { get { return _program; } }                
-        public override string ProgramArguments { get { return _commandline; } }
-        
-        /// <summary>The directory in which the command will be executed.</summary>
-        [TaskAttribute("basedir")]
-        public override string BaseDirectory    { get { return Project.GetFullPath(_baseDirectory); } set { _baseDirectory = value; } }                      
-
-        /// <summary> The file to transfer</summary>
+        /// <summary>
+        /// The file to transfer.
+        /// </summary>
         [TaskAttribute("file", Required=true)]
-        public virtual string FileName { set { _file = value;} }
+        [StringValidator(AllowEmpty=false)]
+        public virtual string FileName {
+            get { return _file; }
+            set { _file = StringUtils.ConvertEmptyToNull(value); }
+        }
 
-        /// <summary> The server to send the file to.</summary>
+        /// <summary>
+        /// The server to send the file to.
+        /// </summary>
         [TaskAttribute("server", Required=true)]
-        public virtual string ServerName { set { _server = value;} }
+        [StringValidator(AllowEmpty=false)]
+        public virtual string ServerName {
+            get { return _server; }
+            set { _server = StringUtils.ConvertEmptyToNull(value); }
+        }
 
-        /// <summary> The path on the remote server.
-        /// <para>Defaults to "~".</para>
+        /// <summary>
+        /// The path on the remote server. The default is "~".
         /// </summary>
         [TaskAttribute("path")]
-        public virtual string RemotePath { set { _path= value;} }
+        [StringValidator(AllowEmpty=false)]
+        public virtual string RemotePath {
+            get { return _remotePath; }
+            set { _remotePath = StringUtils.ConvertEmptyToNull(value); }
+        }
 
-        /// <summary> The username to connect as.
-        /// <para>Defaults to USERNAME environment var.</para>
+        /// <summary>
+        /// The username to connect as.  The default is the value of the 
+        /// <c>USERNAME</c> environment variable.
         /// </summary>
         [TaskAttribute("user")]
-        public virtual string Username{ set { _user = value;} }
+        [StringValidator(AllowEmpty=false)]
+        public virtual string UserName {
+            get { return _user; }
+            set { _user = StringUtils.ConvertEmptyToNull(value); }
+        }
 
-        /// <summary> The Path Seperator used by the program.
-        /// <para>Defaults to "/"</para>
+        /// <summary>
+        /// The path separator used by the program. The default is "/".
         /// </summary>
         [TaskAttribute("program-path-sep")]
-        public virtual string ProgramPathSep{ set { _programPathSep = value;} }
+        [StringValidator(AllowEmpty=false)]
+        public virtual string ProgramPathSep {
+            get { return _programPathSep; }
+            set { _programPathSep = value; }
+        }
+
+        #endregion Public Instance Properties
+
+        #region Override implemenation of ExternalProgramBase
+
+        /// <summary>
+        /// Gets the filename of the external program to start.
+        /// </summary>
+        /// <value>
+        /// The filename of the external program.
+        /// </value>
+        public override string ProgramFileName {
+            get { return ProgramName; }
+        }
+
+        /// <summary>
+        /// Gets the command-line arguments for the external program.
+        /// </summary>
+        /// <value>
+        /// The command-line arguments for the external program.
+        /// </value>
+        public override string ProgramArguments {
+            get { return Options; }
+        }
+        
+        /// <summary>
+        /// The directory in which the command will be executed.
+        /// </summary>
+        [TaskAttribute("basedir")]
+        public override DirectoryInfo BaseDirectory {
+            get {
+                if (_baseDirectory == null) {
+                    return base.BaseDirectory;
+                }
+                return _baseDirectory;
+            }
+            set { _baseDirectory = value; }
+        }
 
         protected override void ExecuteTask() {
-            //scp.exe (cygwin version) requires that the source file *not* be fully qualified.
-            FileInfo fileInfo = new FileInfo(Path.Combine(BaseDirectory,_file));
-            BaseDirectory = fileInfo.DirectoryName;
-                Arguments.Add( new Argument(fileInfo.Name));
-                Arguments.Add( new Argument( string.Format("{0}@{1}:{2}/{3}", _user, _server, _path, fileInfo.Name) ));
+            // scp.exe (cygwin version) requires that the source file *not* be fully qualified.
+            FileInfo fileInfo = new FileInfo(Path.Combine(
+                BaseDirectory.FullName, FileName));
+            // use the directory in which the file is located as working directory
+            BaseDirectory = fileInfo.Directory;
+            // pass the file to copy
+            Arguments.Add(new Argument(fileInfo.Name));
+            // pass credentials and remote filename
+            Arguments.Add(new Argument(string.Format(CultureInfo.InvariantCulture, 
+                "{0}@{1}:{2}{3}{4}", UserName, ServerName, RemotePath, ProgramPathSep, 
+                fileInfo.Name)));
+            // launch the scp executable with the given arguments
             base.ExecuteTask();
-            
         }
+
+        #endregion Override implemenation of ExternalProgramBase
     }
 }

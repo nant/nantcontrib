@@ -55,10 +55,10 @@ namespace NAnt.Contrib.Tasks {
     public class Vb6Task : ExternalProgramBase {
         #region Private Instance Fields
 
-        private string _projectFile = null;
-        private string _outdir = null;
+        private FileInfo _projectFile;
+        private DirectoryInfo _outDir;
         private string _programArguments = null;
-        private string _errorFile = null;
+        private FileInfo _errorFile;
         private bool _checkReferences = true;
 
         #endregion Private Instance Fields
@@ -66,31 +66,35 @@ namespace NAnt.Contrib.Tasks {
         #region Public Instance Properties
         
         /// <summary>
-        /// Output directory for the compilation target.  
+        /// Output directory for the compilation target.
         /// </summary>
         [TaskAttribute("outdir")]
-        public string OutDir {
-            get { return Project.GetFullPath(_outdir); }
-            set { _outdir = StringUtils.ConvertEmptyToNull(value); }
-        } 
+        public DirectoryInfo OutDir {
+            get {
+                if (_outDir == null) {
+                    return new DirectoryInfo(Project.BaseDirectory);
+                }
+                return _outDir;
+            }
+            set { _outDir = value; }
+        }
 
         /// <summary>
         /// Visual Basic project or group file.
         /// </summary>
         [TaskAttribute("project", Required=true)]
-        [StringValidator(AllowEmpty=false)]
-        public string ProjectFile {
-            get { return (_projectFile != null) ? Project.GetFullPath(_projectFile) : null; }
-            set { _projectFile = StringUtils.ConvertEmptyToNull(value); }
-        } 
+        public FileInfo ProjectFile {
+            get { return _projectFile; }
+            set { _projectFile = value; }
+        }
 
         /// <summary>
         /// Determines whether project references are checked when deciding 
-        /// whether the project needs to be recompiled.  The default is 
+        /// whether the project needs to be recompiled. The default is 
         /// <see langword="true" />.
         /// </summary>
-        [BooleanValidator()]
         [TaskAttribute("checkreferences")]
+        [BooleanValidator()]
         public bool CheckReferences {
             get { return _checkReferences; }
             set { _checkReferences = value; }
@@ -100,10 +104,10 @@ namespace NAnt.Contrib.Tasks {
         /// The file to which the Visual Basic compiler should log errors.
         /// </summary>
         [TaskAttribute("errorfile")]
-        public string ErrorFile {
-            get { return (_errorFile != null) ? Project.GetFullPath(_errorFile) : null; }
-            set { _errorFile = StringUtils.ConvertEmptyToNull(value); }
-        } 
+        public FileInfo ErrorFile {
+            get { return _errorFile; }
+            set { _errorFile = value; }
+        }
 
         #endregion Public Instance Properties
 
@@ -115,7 +119,7 @@ namespace NAnt.Contrib.Tasks {
         /// <value>
         /// The filename of the external program.
         /// </value>
-        public override string ProgramFileName  {
+        public override string ProgramFileName {
             get { return Name; }
         }
 
@@ -133,23 +137,23 @@ namespace NAnt.Contrib.Tasks {
         /// Compiles the Visual Basic project or project group.
         /// </summary>
         protected override void ExecuteTask() { 
-            Log(Level.Info, LogPrefix + "Building project {0}.", ProjectFile);
+            Log(Level.Info, LogPrefix + "Building project '{0}'.", ProjectFile.FullName);
             if (NeedsCompiling()) {
                 //Using a stringbuilder vs. StreamWriter since this program will 
                 // not accept response files.
                 StringBuilder writer = new StringBuilder();
 
-                writer.AppendFormat(" /make \"{0}\"", ProjectFile);
+                writer.AppendFormat(" /make \"{0}\"", ProjectFile.FullName);
 
                 // make sure the output directory exists
-                if (!Directory.Exists(OutDir)) {
-                    Directory.CreateDirectory(OutDir);
+                if (!OutDir.Exists) {
+                    OutDir.Create();
                 }
 
-                writer.AppendFormat(" /outdir \"{0}\"", OutDir);
+                writer.AppendFormat(" /outdir \"{0}\"", OutDir.FullName);
 
                 if (ErrorFile != null) {
-                    writer.AppendFormat(" /out \"{0}\"", ErrorFile);
+                    writer.AppendFormat(" /out \"{0}\"", ErrorFile.FullName);
                 }
 
                 _programArguments = writer.ToString();
@@ -166,8 +170,8 @@ namespace NAnt.Contrib.Tasks {
         protected virtual bool NeedsCompiling() {
             // return true as soon as we know we need to compile
 
-            if (string.Compare(Path.GetExtension(ProjectFile), ".VBG", true, CultureInfo.InvariantCulture) == 0) {
-                // The project file is a Visual Basic group file (VBG). 
+            if (string.Compare(ProjectFile.Extension, ".VBG", true, CultureInfo.InvariantCulture) == 0) {
+                // The project file is a Visual Basic group file (VBG).
                 // We need to check each subproject in the group
                 StringCollection projectFiles = ParseGroupFile(ProjectFile);
                 foreach (string projectFile in projectFiles) {
@@ -177,7 +181,7 @@ namespace NAnt.Contrib.Tasks {
                 }
             } else {
                 // The project file is a Visual Basic project file (VBP)
-                return ProjectNeedsCompiling(ProjectFile);
+                return ProjectNeedsCompiling(ProjectFile.FullName);
             }
 
             return false;
@@ -191,13 +195,13 @@ namespace NAnt.Contrib.Tasks {
         /// <returns>
         /// A string collection containing the list of sub-projects in the group.
         /// </returns>
-        protected StringCollection ParseGroupFile(string groupFile) {
+        protected StringCollection ParseGroupFile(FileInfo groupFile) {
             StringCollection projectFiles = new StringCollection();
 
-            if (!File.Exists(Project.GetFullPath(groupFile))) {
+            if (!groupFile.Exists) {
                 throw new BuildException(string.Format(CultureInfo.InvariantCulture, 
-                    "Visual Basic group file '{0}' does not exist.", groupFile),
-                    Location);
+                    "Visual Basic group file '{0}' does not exist.", 
+                    groupFile.FullName), Location);
             }
 
             string fileLine = null;
@@ -205,11 +209,11 @@ namespace NAnt.Contrib.Tasks {
             // Regexp that extracts INI-style "key=value" entries used in the VBP
             Regex keyValueRegEx = new Regex(@"(?<key>\w+)\s*=\s*(?<value>.*)\s*$");
 
-            string key = String.Empty;
-            string keyValue = String.Empty;
+            string key = string.Empty;
+            string keyValue = string.Empty;
             
             Match match = null;
-            using (StreamReader reader = new StreamReader(Project.GetFullPath(groupFile), Encoding.ASCII)) {
+            using (StreamReader reader = new StreamReader(groupFile.FullName, Encoding.ASCII)) {
                 while ((fileLine = reader.ReadLine()) != null) {
                     match = keyValueRegEx.Match(fileLine);
                     if (match.Success) {
@@ -236,19 +240,22 @@ namespace NAnt.Contrib.Tasks {
         /// the project's files and references to the timestamp of the last built version.
         /// </summary>
         /// <param name="projectFile">The file name of the project file.</param>
-        /// <returns>true if the project should be compiled, false otherwise</returns>
+        /// <returns>
+        /// <see langword="true" /> if the project should be compiled; otherwise,
+        /// <see langword="false" />.
+        /// </returns>
         protected bool ProjectNeedsCompiling(string projectFile) {
             // return true as soon as we know we need to compile
         
             FileSet sources = new FileSet();
-            sources.BaseDirectory = BaseDirectory;
+            sources.BaseDirectory = BaseDirectory.FullName;
             
             FileSet references = new FileSet();
-            references.BaseDirectory = BaseDirectory;
+            references.BaseDirectory = BaseDirectory.FullName;
 
             string outputFile = ParseProjectFile(projectFile, sources, references);
 
-            FileInfo outputFileInfo = new FileInfo(OutDir != null ? Path.Combine(OutDir, outputFile) : outputFile) ;
+            FileInfo outputFileInfo = new FileInfo(OutDir != null ? Path.Combine(OutDir.FullName, outputFile) : outputFile);
             if (!outputFileInfo.Exists) {
                 Log(Level.Info, LogPrefix + "Output file {0} does not exist, recompiling.", outputFileInfo.FullName);
                 return true;
