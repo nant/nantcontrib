@@ -29,21 +29,19 @@ using SourceForge.NAnt;
 using SourceForge.NAnt.Tasks;
 using SourceForge.NAnt.Attributes;
 
-namespace NAnt.Contrib.Tasks
-{
-	/// <summary>Generates code for web service clients and xml web services 
-	/// using ASP.NET from WSDL contract files, XSD Schemas and .discomap 
-	/// discovery documents. Can be used in conjunction with .disco files.</summary>
-	/// <example>
+namespace NAnt.Contrib.Tasks {
+    /// <summary>Generates code for web service clients and xml web services 
+    /// using ASP.NET from WSDL contract files, XSD Schemas and .discomap 
+    /// discovery documents. Can be used in conjunction with .disco files.</summary>
+    /// <example>
     ///   <para>Generate a proxy class for a web service.</para>
     ///   <code><![CDATA[<wsdl path="http://www.somewhere.com/myservice.wsdl" 
     ///     language="CS" namespace="MyCompany.MyService" outfile="MyService.cs" />]]></code>
-	/// </example>
-	[TaskName("wsdl")]
-	public class WsdlTask : ExternalProgramBase
-	{
-		private string _args;
-		string _path = null;
+    /// </example>
+    [TaskName("wsdl")]
+    public class WsdlTask : ExternalProgramBase {
+        private string _args;
+        string _path = null;
         bool _nologo = false;
         string _language = null;
         bool _forserver = false;
@@ -60,8 +58,8 @@ namespace NAnt.Contrib.Tasks
         string _urlkey = null;
         string _baseurl = null;
 
-		/// <summary>URL or Path to a WSDL, XSD, or .discomap document.</summary>
-       	[TaskAttribute("path")]
+        /// <summary>URL or Path to a WSDL, XSD, or .discomap document.</summary>
+        [TaskAttribute("path")]
         public string Path {
             get { return _path; }
             set { _path = value; } 
@@ -70,8 +68,7 @@ namespace NAnt.Contrib.Tasks
         /// <summary>Suppresses the banner.</summary>
         [TaskAttribute("nologo")]        
         [BooleanValidator()]
-        public bool NoLogo
-        {
+        public bool NoLogo {
             get { return _nologo; }
             set { _nologo = value; }
         }
@@ -80,8 +77,7 @@ namespace NAnt.Contrib.Tasks
         /// or the fully-qualified name of a class implementing 
         /// System.CodeDom.Compiler.CodeDomCompiler. </summary>
         [TaskAttribute("language")]       
-        public string Language 
-        {
+        public string Language {
             get { return _language; }
             set { _language = value; }
         }
@@ -91,24 +87,21 @@ namespace NAnt.Contrib.Tasks
         /// create client side proxy classes. </summary>
         [TaskAttribute("forserver")]       
         [BooleanValidator()]
-        public bool ForServer
-        {
+        public bool ForServer {
             get { return _forserver; }
             set { _forserver = value; }
         }
 
         /// <summary>Microsoft.NET namespace of generated classes.</summary>
         [TaskAttribute("namespace")]        
-        public string Namespace 
-        {
+        public string Namespace {
             get { return _namespace; }
             set { _namespace = value; }
         }
 
         /// <summary>Output filename of the created proxy. Default name is derived from the service name.</summary>
         [TaskAttribute("outfile")]        
-        public string OutFile
-        {
+        public string OutFile {
             get { return _outfile; }
             set { _outfile = value; }
         }
@@ -117,8 +110,7 @@ namespace NAnt.Contrib.Tasks
         /// 'HttpGet', 'HttpPost', or a custom protocol as specified in the 
         /// configuration file.</summary>
         [TaskAttribute("protocol")]        
-        public string Protocol
-        {
+        public string Protocol {
             get { return _protocol; }
             set { _protocol = value; }
         }
@@ -126,8 +118,7 @@ namespace NAnt.Contrib.Tasks
         /// <summary>Username of an account with credentials to access a 
         /// server that requires authentication.</summary>
         [TaskAttribute("username")]        
-        public string Username
-        {
+        public string Username {
             get { return _username; }
             set { _username = value; }
         }
@@ -135,8 +126,7 @@ namespace NAnt.Contrib.Tasks
         /// <summary>Password of an account with credentials to access a 
         /// server that requires authentication.</summary>
         [TaskAttribute("password")]        
-        public string Password
-        {
+        public string Password {
             get { return _password; }
             set { _password = value; }
         }
@@ -144,8 +134,7 @@ namespace NAnt.Contrib.Tasks
         /// <summary>Domain of an account with credentials to access a 
         /// server that requires authentication.</summary>
         [TaskAttribute("domain")]        
-        public string Domain
-        {
+        public string Domain {
             get { return _domain; }
             set { _domain = value; }
         }
@@ -153,8 +142,7 @@ namespace NAnt.Contrib.Tasks
         /// <summary>URL of a proxy server to use for HTTP requests. 
         /// The default is to use the system proxy setting.</summary>
         [TaskAttribute("proxy")]        
-        public string Proxy
-        {
+        public string Proxy {
             get { return _proxy; }
             set { _proxy = value; }
         }
@@ -162,8 +150,7 @@ namespace NAnt.Contrib.Tasks
         /// <summary>Username of an account with credentials to access a 
         /// proxy that requires authentication.</summary>
         [TaskAttribute("proxyusername")]        
-        public string ProxyUsername
-        {
+        public string ProxyUsername {
             get { return _proxyusername; }
             set { _proxyusername = value; }
         }
@@ -171,8 +158,7 @@ namespace NAnt.Contrib.Tasks
         /// <summary>Password of an account with credentials to access a 
         /// proxy that requires authentication.</summary>
         [TaskAttribute("proxypassword")]        
-        public string ProxyPassword
-        {
+        public string ProxyPassword {
             get { return _proxypassword; }
             set { _proxypassword = value; }
         }
@@ -180,8 +166,7 @@ namespace NAnt.Contrib.Tasks
         /// <summary>Domain of an account with credentials to access a 
         /// proxy that requires authentication.</summary>
         [TaskAttribute("proxydomain")]        
-        public string ProxyDomain
-        {
+        public string ProxyDomain {
             get { return _proxydomain; }
             set { _proxydomain = value; }
         }
@@ -190,8 +175,7 @@ namespace NAnt.Contrib.Tasks
         /// read the default value for the Url property. The default is 
         /// not to read from the config file.</summary>
         [TaskAttribute("urlkey")]        
-        public string UrlKey
-        {
+        public string UrlKey {
             get { return _urlkey; }
             set { _urlkey = value; }
         }
@@ -199,129 +183,101 @@ namespace NAnt.Contrib.Tasks
         /// <summary>Base Url to use when calculating the Url fragment. 
         /// The UrlKey attribute must also be specified. </summary>
         [TaskAttribute("baseurl")]        
-        public string BaseUrl
-        {
+        public string BaseUrl {
             get { return _baseurl; }
             set { _baseurl = value; }
         }
         
-        public override string ProgramFileName
-        {
-            get
-            {
-                return "wsdl.exe";
-            }
+        public override string ProgramFileName {
+            get { return "wsdl.exe"; }
         }
 
         /// <summary>
         /// Arguments of program to execute
         /// </summary>
-        public override string ProgramArguments 
-        {
-            get
-            {
-                return _args;
-            }
+        public override string ProgramArguments {
+            get { return _args; }
         }
 
         ///<summary>
         ///Initializes task and ensures the supplied attributes are valid.
         ///</summary>
         ///<param name="taskNode">Xml node used to define this task instance.</param>
-        protected override void InitializeTask(System.Xml.XmlNode taskNode) 
-        {
+        protected override void InitializeTask(System.Xml.XmlNode taskNode) {
         }
 
-        protected override void ExecuteTask()
-        {
+        protected override void ExecuteTask() {
             StringBuilder arguments = new StringBuilder();
 
-            if (NoLogo)
-            {
+            if (NoLogo) {
                 arguments.Append("/nologo ");
             }
 
-            if (ForServer)
-            {
+            if (ForServer) {
                 arguments.Append("/server ");
             }
 
-            if (Language != null)
-            {
+            if (Language != null) {
                 arguments.Append(" /l:");
                 arguments.Append(Language);
             }
-            if (Namespace != null)
-            {
+            if (Namespace != null) {
                 arguments.Append(" /n:");
                 arguments.Append(Namespace);
             }
-            if (OutFile != null)
-            {
+            if (OutFile != null) {
                 arguments.Append(" /o:");
                 arguments.Append(OutFile);
             }
-            if (Protocol != null)
-            {
+            if (Protocol != null) {
                 arguments.Append(" /protocol:");
                 arguments.Append(Protocol);
             }
-            if (Username != null)
-            {
+            if (Username != null) {
                 arguments.Append(" /username:");
                 arguments.Append(Username);
             }
-            if (Password != null)
-            {
+            if (Password != null) {
                 arguments.Append(" /password:");
                 arguments.Append(Password);
             }
-            if (Domain != null)
-            {
+            if (Domain != null) {
                 arguments.Append(" /domain:");
                 arguments.Append(Domain);
             }
-            if (Proxy != null)
-            {
+            if (Proxy != null) {
                 arguments.Append(" /proxy:");
                 arguments.Append(Proxy);
             }
-            if (ProxyUsername != null)
-            {
+            if (ProxyUsername != null) {
                 arguments.Append(" /proxyusername:");
                 arguments.Append(ProxyUsername);
             }
-            if (ProxyPassword != null)
-            {
+            if (ProxyPassword != null) {
                 arguments.Append(" /proxypassword:");
                 arguments.Append(ProxyPassword);
             }
-            if (ProxyDomain != null)
-            {
+            if (ProxyDomain != null) {
                 arguments.Append(" /proxydomain:");
                 arguments.Append(ProxyDomain);
             }
-            if (UrlKey != null)
-            {
+            if (UrlKey != null) {
                 arguments.Append(" /appsettingurlkey:");
                 arguments.Append(UrlKey);
             }
-            if (BaseUrl != null)
-            {
+            if (BaseUrl != null)            {
                 arguments.Append(" /appsettingbaseurl:");
                 arguments.Append(BaseUrl);
             }
 
             arguments.Append(Path);
 
-            try
-            {
+            try {
                 _args = arguments.ToString();
 
                 base.ExecuteTask();
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 throw new BuildException(LogPrefix + "ERROR: " + e);
             }
         }

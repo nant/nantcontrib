@@ -32,20 +32,20 @@ using SourceForge.NAnt.Attributes;
 
 namespace NAnt.Contrib.Tasks
 {
-	/// <summary>Registers a Microsoft HTML Help 2.0 Collection.</summary>
-	/// <example>
-	///   <para>Register a help namespace.</para>
-	///   <code><![CDATA[<hxreg namespace="MyProduct.MyHelp" title="MyProductHelp" collection="MyHelp.HxC" helpfile="MyHelp.HxS"/>]]></code>
-	/// </example>
-	[TaskName("hxreg")]
-	public class HxRegTask : ExternalProgramBase
-	{
-		private string _args;
-		string _namespace = null;
-		string _title = null;
-		string _collection = null;
-		string _description = null;
-		string _helpfile = null;
+    /// <summary>Registers a Microsoft HTML Help 2.0 Collection.</summary>
+    /// <example>
+    ///   <para>Register a help namespace.</para>
+    ///   <code><![CDATA[<hxreg namespace="MyProduct.MyHelp" title="MyProductHelp" collection="MyHelp.HxC" helpfile="MyHelp.HxS"/>]]></code>
+    /// </example>
+    [TaskName("hxreg")]
+    public class HxRegTask : ExternalProgramBase
+    {
+        private string _args;
+        string _namespace = null;
+        string _title = null;
+        string _collection = null;
+        string _description = null;
+        string _helpfile = null;
         string _index = null;
         string _searchfile = null;
         string _attrindex = null;
@@ -54,8 +54,8 @@ namespace NAnt.Contrib.Tasks
         string _commandfile = null;
         bool _unregister = false;
 
-		/// <summary>Help collection namespace.</summary>
-       	[TaskAttribute("namespace")]
+        /// <summary>Help collection namespace.</summary>
+        [TaskAttribute("namespace")]
         public string Namespace {
             get { return _namespace; }
             set { _namespace = value; } 

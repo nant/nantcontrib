@@ -31,16 +31,16 @@ using SourceForge.NAnt.Attributes;
 
 namespace NAnt.Contrib.Tasks
 {
-	/// <summary>Generates a Windows Forms Control that wraps 
-	/// ActiveX Controls defined in an OCX.</summary>
-	/// <example>
-	///   <code><![CDATA[<aximp ocx="MyControl.ocx" out="MyFormsControl.dll" />]]></code>
-	/// </example>
-	[TaskName("aximp")]
-	public class AxImpTask : ExternalProgramBase
-	{
-		private string _args;
-		string _ocx = null;
+    /// <summary>Generates a Windows Forms Control that wraps 
+    /// ActiveX Controls defined in an OCX.</summary>
+    /// <example>
+    ///   <code><![CDATA[<aximp ocx="MyControl.ocx" out="MyFormsControl.dll" />]]></code>
+    /// </example>
+    [TaskName("aximp")]
+    public class AxImpTask : ExternalProgramBase
+    {
+        private string _args;
+        string _ocx = null;
         string _out = null;
         string _publickeyfile = null;
         string _keyfile = null;
@@ -50,8 +50,8 @@ namespace NAnt.Contrib.Tasks
         bool _nologo = false;
         bool _silent = false;
         
-		/// <summary>Filename of the .ocx file.</summary>
-       	[TaskAttribute("ocx", Required=true)]
+        /// <summary>Filename of the .ocx file.</summary>
+        [TaskAttribute("ocx", Required=true)]
         public string Ocx {
             get { return _ocx; }
             set { _ocx = value; } 

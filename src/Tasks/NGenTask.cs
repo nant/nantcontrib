@@ -31,17 +31,17 @@ using SourceForge.NAnt.Attributes;
 
 namespace NAnt.Contrib.Tasks
 {
-	/// <summary>Pre-translates native code for an 
-	/// assembly containing IL (Intermediary Language 
-	/// bytecode) on the Windows platform.</summary>
-	/// <example>
-	///   <code><![CDATA[<ngen assembly="MyAssembly.dll" />]]></code>
-	/// </example>
-	[TaskName("ngen")]
-	public class NGenTask : ExternalProgramBase
-	{
-		private string _args;
-		string _assembly = null;
+    /// <summary>Pre-translates native code for an 
+    /// assembly containing IL (Intermediary Language 
+    /// bytecode) on the Windows platform.</summary>
+    /// <example>
+    ///   <code><![CDATA[<ngen assembly="MyAssembly.dll" />]]></code>
+    /// </example>
+    [TaskName("ngen")]
+    public class NGenTask : ExternalProgramBase
+    {
+        private string _args;
+        string _assembly = null;
         bool _show = false;
         bool _delete = false;
         bool _debug = false;
@@ -50,8 +50,8 @@ namespace NAnt.Contrib.Tasks
         bool _nologo = false;
         bool _silent = false;
         
-		/// <summary>Assembly path or display name.</summary>
-       	[TaskAttribute("assembly", Required=true)]
+        /// <summary>Assembly path or display name.</summary>
+        [TaskAttribute("assembly", Required=true)]
         public string Assembly {
             get { return _assembly; }
             set { _assembly = value; } 

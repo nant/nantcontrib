@@ -31,21 +31,21 @@ using SourceForge.NAnt.Attributes;
 
 namespace NAnt.Contrib.Tasks
 {
-	/// <summary>Discovers the URLs of XML web services on a web server and saves documents 
-	/// related to them to the local disk. The resulting .discomap, .wsdl, and .xsd files 
-	/// can be used with the <see cref="WsdlTask"/> to produce web service clients and 
-	/// and abstract web service servers using ASP.NET.</summary>
-	/// <example>
+    /// <summary>Discovers the URLs of XML web services on a web server and saves documents 
+    /// related to them to the local disk. The resulting .discomap, .wsdl, and .xsd files 
+    /// can be used with the <see cref="WsdlTask"/> to produce web service clients and 
+    /// and abstract web service servers using ASP.NET.</summary>
+    /// <example>
     ///   <para>Generate a proxy class for a web service.</para>
     ///   <code><![CDATA[<disco path="http://www.somewhere.com/myservice.wsdl" 
     ///     language="CS" namespace="MyCompany.MyService" outfile="MyService.cs" />]]></code>
-	/// </example>
-	[TaskName("disco")]
-	public class DicsoTask : ExternalProgramBase
-	{
-		private string _args;
+    /// </example>
+    [TaskName("disco")]
+    public class DicsoTask : ExternalProgramBase
+    {
+        private string _args;
         private string _path;
-		private bool _nologo;
+        private bool _nologo;
         private bool _nosave;
         private string _outputdir;
         private string _username;

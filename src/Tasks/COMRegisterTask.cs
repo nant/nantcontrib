@@ -29,32 +29,32 @@ using SourceForge.NAnt.Attributes;
 using SourceForge.NAnt;
 
 namespace NAnt.Contrib.Tasks {
-	/// <summary>Register COM servers or typelibraries.</summary>
-	/// <remarks>
-	///     <para>COM register task will try and register any type of COM related file that needs registering. .exe files will be registered as exe servers, .tlb files registered with RegisterTypeLib and for all other filetypes it will attempt to register them as dll servers.</para>
-	/// </remarks>
-	/// <example>
-	///   <para>Register a single dll server.</para>
-	///   <code><![CDATA[<comregister file="myComServer.dll"/>]]></code>
-	///   <para>Register a single exe server </para>
-	///   <code><![CDATA[<comregister file="myComServer.exe"/>]]></code>
-	///   <para>Register a set of COM files at once.</para>
-	///   <code>
-	/// <![CDATA[
-	/// <comregister unregister="false">
-	///     <fileset>         
-	///         <includes name="an_ExeServer.exe"/>
-	///         <includes name="a_TypeLibrary.tlb"/>
+    /// <summary>Register COM servers or typelibraries.</summary>
+    /// <remarks>
+    ///     <para>COM register task will try and register any type of COM related file that needs registering. .exe files will be registered as exe servers, .tlb files registered with RegisterTypeLib and for all other filetypes it will attempt to register them as dll servers.</para>
+    /// </remarks>
+    /// <example>
+    ///   <para>Register a single dll server.</para>
+    ///   <code><![CDATA[<comregister file="myComServer.dll"/>]]></code>
+    ///   <para>Register a single exe server </para>
+    ///   <code><![CDATA[<comregister file="myComServer.exe"/>]]></code>
+    ///   <para>Register a set of COM files at once.</para>
+    ///   <code>
+    /// <![CDATA[
+    /// <comregister unregister="false">
+    ///     <fileset>         
+    ///         <includes name="an_ExeServer.exe"/>
+    ///         <includes name="a_TypeLibrary.tlb"/>
     ///         <includes name="a_DllServer.dll"/>
     ///         <includes name="an_OcxServer.ocx"/>
-	///     </fileset>
-	/// </comregister>
-	/// ]]>
-	///   </code>
-	/// </example>
+    ///     </fileset>
+    /// </comregister>
+    /// ]]>
+    ///   </code>
+    /// </example>
     [TaskName("comregister")]
-	public class COMRegisterTask : Task {
-		//-----------------------------------------------------------------------------
+    public class COMRegisterTask : Task {
+        //-----------------------------------------------------------------------------
         // Typelib Imports
         //-----------------------------------------------------------------------------
         [ DllImport("oleaut32.dll", EntryPoint = "LoadTypeLib",     
@@ -319,5 +319,5 @@ namespace NAnt.Contrib.Tasks {
                 return mi.Invoke(null, parameterValues);
             }
         }
-	}        
+    }        
 }
