@@ -14,9 +14,6 @@
     <property name="src.dir" value="src"/>
     <property name="tests.dir" value="Tests"/>
 
-    <!-- Used to build against. This directory must exist or it will be created. -->
-    <property name="nant.dir" value="NAntRelease" overwrite="false" />
-
     <!-- named project configurations (used by self-test and self-doc tasks) -->
     <target name="debug" description="Perform a 'debug' build">
         <property name="project.config" value="debug" />
@@ -33,10 +30,13 @@
     <!-- build tasks -->
     <target name="init" description="Initializes build properties">
         <call target="${project.config}" />
-        <call target="UpdateNAntReleaseFiles"/>
-
-        <property name="nant-bin.dir" value="${nant.dir}/bin"/>
-        <property name="nant-doc.dir" value="${nant.dir}/doc" />
+        <ifnot propertyexists="nant.dir">
+            <fail message="Please pass the folder containing the NAnt build on the commandline as a property." />
+        </ifnot>        
+        <available property="NAntReleaseExists" resource="${nant.dir}" type="Directory"/>
+        <ifnot propertyexists="NAntReleaseExists" propertytrue="NAntReleaseExists">
+            <fail message="The specified folder containing the NAnt build (${nant.dir}) does not exist." />
+        </ifnot>
         <echo message="Using nant files from ${nant.dir}"/>
     </target>
 
@@ -65,19 +65,18 @@
     <!--* Prepare directories and build settings                        *-->
     <!--*****************************************************************-->
     <target name="prepare" depends="init">
-
-      <mkdir dir="${build.dir}"/>
-      <copy todir="${build.dir}">
+      <mkdir dir="${build.dir}/bin"/>
+      <copy todir="${build.dir}/bin">
             <fileset basedir="bin">
-                <includes name="CollectionGen.dll"/>
-                <includes name="SourceSafe.Interop.dll"/>
-                <includes name="Interop.StarTeam.dll"/>
-                <includes name="Interop.WindowsInstaller.dll"/>
-                <includes name="Interop.MsmMergeTypeLib.dll"/>
-                <includes name="MSITaskErrors.mst"/>
-                <includes name="MSITaskTemplate.msi"/>
-                <includes name="MSMTaskErrors.mst"/>
-                <includes name="MSMTaskTemplate.msm"/>
+                <includes name="CollectionGen.dll" />
+                <includes name="SourceSafe.Interop.dll" />
+                <includes name="Interop.StarTeam.dll" />
+                <includes name="Interop.WindowsInstaller.dll" />
+                <includes name="Interop.MsmMergeTypeLib.dll" />
+                <includes name="MSITaskErrors.mst" />
+                <includes name="MSITaskTemplate.msi" />
+                <includes name="MSMTaskErrors.mst" />
+                <includes name="MSMTaskTemplate.msm" />
             </fileset>
       </copy>
     </target>
@@ -86,15 +85,15 @@
     <!--* Bootstrap the Xsd Task                                        *-->
     <!--*****************************************************************-->
     <target name="compile.schematask" depends="init" description="compiles the Xsd task">
-        <csc target="library" output="${build.dir}\NAnt.Xsd.Tasks.dll" doc="${build.dir}\NAnt.Xsd.Tasks.xml" >
+        <csc target="library" output="${build.dir}/bin/NAnt.Xsd.Tasks.dll" doc="${build.dir}/bin/NAnt.Xsd.Tasks.xml">
             <sources basedir="${src.dir}">
-                <includes name="Tasks/XsdTask.cs"/>
+                <includes name="Tasks/XsdTask.cs" />
             </sources>
             <references>
-                <includes name="${nant-bin.dir}\NAnt.Core.dll"/>
-                <includes name="${nant-bin.dir}\NAnt.DotNetTasks.dll"/>
+                <includes name="${nant.dir}/bin/NAnt.Core.dll" />
+                <includes name="${nant.dir}/bin/NAnt.DotNetTasks.dll" />
             </references>
-            <arg value="/nowarn:1591"/>
+            <arg value="/nowarn:1591" />
         </csc>
     </target>
 
@@ -102,36 +101,26 @@
     <!--* Bootstrap XML Schemas into assemblies for task validation     *-->
     <!--*****************************************************************-->
     <target name="compile.schemas" depends="compile.schematask" description="compiles Task XML Schemas into assemblies">
-
-        <loadtasks assembly="${build.dir}\NAnt.Xsd.Tasks.dll"/>
-
-        <if uptodate="${src.dir}\Tasks\MSITask.xsd">
-            <comparefiles basedir="${build.dir}\Schemas\MSI">
-                <includes name="*"/>
+        <loadtasks assembly="${build.dir}/bin/NAnt.Xsd.Tasks.dll"/>
+        <if uptodate="${src.dir}/Tasks/MSITask.xsd">
+            <comparefiles basedir="${build.dir}/schema\MSI">
+                <includes name="*" />
             </comparefiles>
-
-            <mkdir dir="${build.dir}\Schemas\MSI" />
-            <xsd schema="${src.dir}\Tasks\MSITask.xsd"
-                language="CS" namespace="NAnt.Contrib.Schemas.MSI" nologo="true"
-                outputdir="${build.dir}\Schemas\MSI" uri="NAnt.Contrib.Tasks.MSITask" />
+            <mkdir dir="${build.dir}/schema\MSI" />
+            <xsd schema="${src.dir}/Tasks/MSITask.xsd" language="CS" namespace="NAnt.Contrib.Schemas.MSI" nologo="true" outputdir="${build.dir}/schema/MSI" uri="NAnt.Contrib.Tasks.MSITask" />
         </if>
-
-        <if uptodate="${src.dir}\Tasks\MSMTask.xsd">
-            <comparefiles basedir="${build.dir}\Schemas\MSM">
-                <includes name="*"/>
+        <if uptodate="${src.dir}/Tasks/MSMTask.xsd">
+            <comparefiles basedir="${build.dir}/schema/MSM">
+                <includes name="*" />
             </comparefiles>
-
-            <mkdir dir="${build.dir}\Schemas\MSM" />
-            <xsd schema="${src.dir}\Tasks\MSMTask.xsd"
-                language="CS" namespace="NAnt.Contrib.Schemas.MSM" nologo="true"
-                outputdir="${build.dir}\Schemas\MSM" uri="NAnt.Contrib.Tasks.MSMTask" />
+            <mkdir dir="${build.dir}/schema/MSM" />
+            <xsd schema="${src.dir}/Tasks/MSMTask.xsd" language="CS" namespace="NAnt.Contrib.Schemas.MSM" nologo="true" outputdir="${build.dir}/schema/MSM" uri="NAnt.Contrib.Tasks.MSMTask" />
         </if>
-
-        <csc target="library" output="${build.dir}\NAnt.Contrib.Schemas.dll">
-            <sources basedir="${build.dir}\Schemas">
+        <csc target="library" output="${build.dir}/bin/NAnt.Contrib.Schemas.dll">
+            <sources basedir="${build.dir}/schema">
                 <includes name="**.cs"/>
             </sources>
-            <arg value="/nowarn:1591,1595"/>
+            <arg value="/nowarn:1591,1595" />
         </csc>
     </target>
 
@@ -139,73 +128,65 @@
     <!--* Build the NAnt.Contrib.Tasks.dll library                      *-->
     <!--*****************************************************************-->
     <target name="build" depends="prepare, prepare.slingshot, compile.schemas" description="compiles the source code">
-        <csc target="library" debug="${debug}"
-            output="${build.dir}\${project.FormalName}.Tasks.dll"
-            doc="${build.dir}\${project.FormalName}.Tasks.xml">
+        <csc target="library" debug="${debug}" output="${build.dir}/bin/${project.FormalName}.Tasks.dll" doc="${build.dir}/bin/${project.FormalName}.Tasks.xml">
             <sources>
-                <includes name="${src.dir}\**.cs"/>
-                <includes name="${build.dir}\Schemas\**.cs" />
+                <includes name="${src.dir}/**.cs" />
+                <includes name="${build.dir}/schema/**.cs" />
             </sources>
             <references>
-                <includes name="${nant-bin.dir}\NAnt.Core.dll"/>
-                <includes name="${nant-bin.dir}\NAnt.DotNetTasks.dll"/>
-                <includes name="${nant-bin.dir}\NUnitCore.dll"/>
-                <includes name="bin\CollectionGen.dll"/>
-                <includes name="bin\SourceSafe.Interop.dll"/>
-                <includes name="bin\Interop.StarTeam.dll"/>
-                <includes name="bin\Interop.WindowsInstaller.dll"/>
-                <includes name="bin\Interop.MsmMergeTypeLib.dll"/>
-                <includes name="${build.dir}\SLiNgshoT.Core.dll"/>
-                <includes name="${build.dir}\NAnt.Contrib.Schemas.dll"/>
+                <includes name="${nant.dir}/bin/NAnt.Core.dll" />
+                <includes name="${nant.dir}/bin/NAnt.DotNetTasks.dll" />
+                <includes name="${nant.dir}/bin/NUnitCore.dll" />
+                <includes name="${build.dir}/bin/CollectionGen.dll" />
+                <includes name="${build.dir}/bin/SourceSafe.Interop.dll" />
+                <includes name="${build.dir}/bin/Interop.StarTeam.dll" />
+                <includes name="${build.dir}/bin/Interop.WindowsInstaller.dll" />
+                <includes name="${build.dir}/bin/Interop.MsmMergeTypeLib.dll" />
+                <includes name="${build.dir}/bin/SLiNgshoT.Core.dll" />
+                <includes name="${build.dir}/bin/NAnt.Contrib.Schemas.dll" />
             </references>
             <resources>
-                <includes name="${src.dir}\xsl\*.*"/>
-            <includes name="${build.dir}\Schemas\**.resources" />
+                <includes name="${src.dir}\xsl\*.*" />
+                <includes name="${build.dir}/schema/**.resources" />
             </resources>
-            <arg value="/nowarn:1591,1595"/>
+            <arg value="/nowarn:1591,1595" />
         </csc>
-        <!--
-        <delete dir="${build.dir}\Schemas" />
-        <delete file="${build.dir}\NAnt.Contrib.Schemas.dll" />
-        -->
     </target>
 
     <!--*****************************************************************-->
     <!--* Build the SLiNgshoT.Core.dll assemblies                       *-->
     <!--*****************************************************************-->
     <target name="prepare.slingshot" depends="init" description="Compiles and copies the SLiNgshoT assemblies">
-
-      <nant buildfile="Tools/SLiNgshoT/SLiNgshoT.build" target="Release"/>
-      <copy file="Tools/SLiNgshoT/build/Release/SLiNgshoT.Core.dll" tofile="${build.dir}/SLiNgshoT.Core.dll"/>
-      <copy file="Tools/SLiNgshoT/build/Release/SLiNgshoT.exe" tofile="${build.dir}/SLiNgshoT.exe"/>
+        <nant buildfile="Tools/SLiNgshoT/SLiNgshoT.build" target="Release"/>
+        <copy file="Tools/SLiNgshoT/build/Release/SLiNgshoT.Core.dll" tofile="${build.dir}/bin/SLiNgshoT.Core.dll"/>
+        <copy file="Tools/SLiNgshoT/build/Release/SLiNgshoT.exe" tofile="${build.dir}/bin/SLiNgshoT.exe"/>
     </target>
 
     <!--*****************************************************************-->
     <!--* Build the unit tests library                                  *-->
     <!--*****************************************************************-->
     <target name="buildtests" depends="build" description="Compiles the NUnit Tests">
-        <!-- copy nant assemblies needed for the tests to run -->
-        <copy todir="${build.dir}">
+        <!-- copy NAnt assemblies needed for the tests to run -->
+        <copy todir="${build.dir}/bin">
             <fileset basedir="${nant.dir}/bin" failonempty="true">
-                <includes name="nunit.framework.dll"/>
-                <includes name="NAnt.Core.dll"/>
-                <includes name="NAnt.DotNetTasks.dll"/>
-                <includes name="NAnt.Core.Tests.dll"/>
-                <includes name="log4net-net-1.0.dll"/>
+                <includes name="nunit.framework.dll" />
+                <includes name="NAnt.Core.dll" />
+                <includes name="NAnt.DotNetTasks.dll" />
+                <includes name="NAnt.Core.Tests.dll" />
+                <includes name="log4net.dll" />
             </fileset>
         </copy>
-
-        <csc target="library" output="${build.dir}\${project.FormalName}.Tests.dll" debug="${debug}">
+        <csc target="library" output="${build.dir}/bin/${project.FormalName}.Tests.dll" debug="${debug}">
             <sources basedir="${tests.dir}">
-                <includes name="**/*.cs"/>
+                <includes name="**/*.cs" />
             </sources>
             <references>
-                <includes name="${nant-bin.dir}/nunit.framework.dll"/>
-                <includes name="${nant-bin.dir}/NAnt.Core.dll"/>
-                <includes name="${nant-bin.dir}/NAnt.Core.Tests.dll"/>
-                <includes name="${build.dir}/${project.FormalName}.Tasks.dll"/>
+                <includes name="${nant.dir}/bin/nunit.framework.dll"/>
+                <includes name="${nant.dir}/bin/NAnt.Core.dll"/>
+                <includes name="${nant.dir}/bin/NAnt.Core.Tests.dll"/>
+                <includes name="${build.dir}/bin/${project.FormalName}.Tasks.dll"/>
             </references>
-            <arg value="/nowarn:1591"/>
+            <arg value="/nowarn:1591" />
         </csc>
     </target>
 
@@ -217,24 +198,31 @@
     <!--*****************************************************************-->
     <target name="test" depends="buildtests init" description="run unit tests">
         <nunit2>
-            <formatter type="Plain"/>        
-            <test assemblyname="${build.dir}\${project.FormalName}.Tests.dll" />
+            <formatter type="Plain" />
+            <test assemblyname="${build.dir}/bin/${project.FormalName}.Tests.dll" />
         </nunit2>
+        <!-- remove NAnt assemblies that were needed for the tests to run -->
+        <delete>
+            <fileset basedir="${build.dir}/bin">
+                <includes name="nunit.framework.dll" />
+                <includes name="NAnt.Core.dll" />
+                <includes name="NAnt.DotNetTasks.dll" />
+                <includes name="NAnt.Core.Tests.dll" />
+                <includes name="log4net.dll" />
+            </fileset>
+        </delete>
     </target>
 
     <!--*****************************************************************-->
     <!--* Build NDoc documentation                                      *-->
     <!--*****************************************************************-->
     <target name="doc" depends="build" description="build documentation">
-        <copy file="htdocs/style.css" todir="${build.dir}/doc" />
-        <copy file="htdocs/arrow.gif" todir="${build.dir}/doc" />
-        <available property="NantDocumenterExists" resource="${nant.dir}\bin\NDoc.Documenter.NAnt.dll" type="File"/>
-        <!--  propertyexists="NAntReleaseExists"  -->
+        <available property="NantDocumenterExists" resource="${nant.dir}/bin/NDoc.Documenter.NAnt.dll" type="File" />
         <ifnot propertytrue="NantDocumenterExists">
-            <fail message=" NDoc.Documenter.NAnt.dll not found. Run the 'userdoc' target in your NAnt source tree " />
+            <fail message="NDoc.Documenter.NAnt.dll not found. Run the 'userdoc' target in your NAnt source tree" />
         </ifnot>
         <ndoc>
-            <assemblies basedir="${build.dir}" failonempty="true">
+            <assemblies basedir="${build.dir}/bin" failonempty="true">
                 <includes name="*Tasks.dll"/>
             </assemblies>
             <documenters>
@@ -242,7 +230,7 @@
                     <property name="OutputDirectory" value="${build.dir}/doc/help/tasks" />
                 </documenter>
                 <documenter name="MSDN">
-                    <property name="OutputDirectory" value="${build.dir}/doc/MSDN" />
+                    <property name="OutputDirectory" value="${build.dir}/doc/sdk" />
                     <property name="HtmlHelpName" value="NAntContrib-SDK" />
                     <property name="IncludeFavorites" value="False" />
                     <property name="Title" value="NAntContrib SDK Documentation - v.${project.version}" />
@@ -264,24 +252,66 @@
                  </documenter>
             </documenters>
         </ndoc>
-        <copy todir="${build.dir}">
-            <fileset basedir="${build.dir}/doc/MSDN" failonempty="true">
-                <includes name="*.chm"/>
+        <!-- delete everything but the .chm -->
+        <delete>
+            <fileset basedir="${build.dir}/doc/sdk">
+                <includes name="**/*" />
+                <excludes name="NAntContrib-SDK.chm" />
+            </fileset>
+        </delete>
+        <!-- copy images and stylesheet so we can preview userdoc and have it look right -->
+        <copy todir="${build.dir}/doc/help">
+            <fileset basedir="htdocs/help">
+                <includes name="**/*" />
             </fileset>
         </copy>
         <echo message="Preview task references: file://${build.dir}/doc/help/tasks/index.html"/>
     </target>
-    <target name="UpdateNAntReleaseFiles">
-        <available property="NAntReleaseExists" resource="${nant.dir}" type="Directory"/>
-        <ifnot propertyexists="NAntReleaseExists" propertytrue="NAntReleaseExists">
-            <echo level="Error">
-   Folder '${nant.dir}' does not exist. pass the value of nant.dir on the commandline:
-   something like
-   nant -D:nant.dir=c:\cvs\nant\build\nant-0.8.4-debug -f:NAntContrib.build
+    <target name="package" depends="test doc" description="Creates a package zip file.">
+        <!-- remove non-release files -->
+        <delete>
+            <fileset basedir="${build.dir}/bin">
+                <includes name="*.Tests.*" />
+                <includes name="nunit.framework.dll" />
+                <includes name="NAnt.Core.dll" />
+                <includes name="NAnt.DotNetTasks.dll" />
+                <includes name="log4net.dll" />
+            </fileset>
+        </delete>
 
-   nant.dir should point to the build directory just above bin.
-            </echo>
-            <fail />
-        </ifnot>
+        <!-- copy project files -->
+        <copy todir="${build.dir}">
+            <fileset>
+                <includes name="src/**" />
+                <includes name="Tests/**" />
+                <includes name="*" />
+
+                <!--Start "Exclude VS.Net stuff" -->
+                <excludes name="**/*.suo" />
+                <excludes name="**/*j.user" />
+                <excludes name="**/bin/**" />
+                <excludes name="**/obj/**" />
+                <!--End "Exclude VS.Net stuff"-->
+            </fileset>
+        </copy>
+
+        <!-- copy website files -->
+        <copy todir="${build.dir}/doc">
+            <fileset basedir="htdocs">
+                <includes name="*" />
+            </fileset>
+        </copy>
+
+        <!-- create zip file -->
+        <property name="project.zip-path" value="${nant.project.basedir}/build/${project.name}-${project.version}.zip" />
+        <zip zipfile="${project.zip-path}">
+            <fileset basedir="${build.dir}">
+                <includes name="**/*" />
+
+                <excludes name="**/cache/**"/>
+                <excludes name="**/_*/**"/>
+            </fileset>
+        </zip>
+        <echo message="Created a '${project.config}' package at file://${project.zip-path}" />
     </target>
 </project>
