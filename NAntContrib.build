@@ -129,10 +129,11 @@
     <target name="build" depends="prepare, prepare.slingshot, compile.schemas, create-common-assemblyinfo" description="compiles the source code">
         <csc target="library" warnaserror="true" nowarn="0618,1591" debug="${build.debug}" define="${current.build.defines}" output="${build.dir}/bin/${project.FormalName}.Tasks.dll" doc="${build.dir}/bin/${project.FormalName}.Tasks.xml">
             <sources>
-                <include name="${src.dir}/**.cs" />
-                <include name="${build.dir}/schema/**.cs" />
-
-                <exclude name="${src.dir}/tasks/SharePoint/**.cs" />
+	       <include name="${src.dir}/**/*.cs" />
+	       <include name="${build.dir}/schema/**/*.cs" />
+	       
+	       <exclude name="${src.dir}/tasks/SharePoint/*.cs" />
+	       
             </sources>
             <references>
                 <include name="${nant.dir}/bin/NAnt.Core.dll" />
@@ -173,13 +174,18 @@
             </fileset>
         </copy>
         <!-- compile the test assembly -->
-        <csc target="library" warnaserror="true" nowarn="1591" debug="${build.debug}" define="${current.build.defines}" output="${build.dir}/bin/${project.FormalName}.Tests.dll">
+        <csc verbose="true" target="library" warnaserror="true" nowarn="1591" debug="${build.debug}" define="${current.build.defines}" output="${build.dir}/bin/${project.FormalName}.Tests.dll">
             <sources>
                 <include name="${tests.dir}/**/*.cs" />
                 <!-- common assembly-level attributes -->
                 <include name="${src.dir}/CommonAssemblyInfo.cs" />
+                <!-- 
+                  tomasr@mvps.org: had to explicitly exclude it because it kept
+                  getting included. Don't know why.
+                -->
+                <exclude name="${src.dir}/AssemblyInfo.cs" />
 
-                <exclude name="${tests.dir}/tasks/SharePoint/**.cs"/>
+                <exclude name="${tests.dir}/tasks/SharePoint/*.cs"/>
             </sources>
             <references>
                  <include name="${nant.dir}/bin/NAnt.Core.dll" />
