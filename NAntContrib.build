@@ -1,8 +1,11 @@
 <?xml version="1.0"?>
-<!--********************************************-->
-<!--*      Builds the NAntContrib Project      *-->
-<!--********************************************-->
+<!--*****************************************************************-->
+<!--* @(#)NAntContrib.build                                         *-->
+<!--*                                                               *-->  
+<!--* Builds the NAntContrib Project                                *-->
+<!--*****************************************************************-->
 <project name="NAntContrib" default="build">
+
     <tstamp/>
     <property name="debug" value="true"/>
     <property name="project.name" value="nantcontrib"/>
@@ -20,20 +23,21 @@
     <property name="backup.name" value="..\${project.name}-backup-${tstamp.date}-${tstamp.time}.zip" />
     <property name="project.version" value="x.x"/>
 
-    <!--
-        Clean the outputs.
-    -->
+    <!--*****************************************************************-->
+    <!--* Clean the outputs                                             *-->
+    <!--*****************************************************************-->
     <target name="clean" description="cleans up everything">
+
         <delete dir="${build.dir}" failonerror="false"/>
         <delete dir="${dist.dir}" failonerror="false"/>
         <delete file="${dist.name}" failonerror="false"/>
     </target>
     
-    <!--
-        Rebuild the solution from scratch, test, and create
-        documentation
-    -->
+    <!--*****************************************************************-->
+    <!--* Rebuild the solution from scratch, test, and create docs      *-->
+    <!--*****************************************************************-->
     <target name="all" description="make a full, clean rebuild">
+
       <call target="clean"/> 
       <call target="build"/>
       <call target="buildtests"/>
@@ -41,22 +45,23 @@
       <call target="doc"/>
     </target>
     
-    <!--
-        Build the solution, then test.
-    -->
+    <!--*****************************************************************-->
+    <!--* Build the solution, then test                                 *-->
+    <!--*****************************************************************-->
     <target name="buildandtest" description="make a full, clean rebuild">
+
       <call target="build"/>
       <call target="buildtests"/>
       <call target="test"/>
     </target>
 
-    <!--
-        Prepare directories and build settings
-    -->
+    <!--*****************************************************************-->
+    <!--* Prepare directories and build settings                        *-->
+    <!--*****************************************************************-->
     <target name="prepare">
+
       <mkdir dir="${build.dir}"/>
       <mkdir dir="${dist.dir}"/>
-      <!--<copy file="${nant-bin.dir}/NUnitCore.dll" todir="${build.dir}"/> -->
       <copy todir="${build.dir}">
             <fileset basedir="bin">
                 <includes name="CollectionGen.dll"/>
@@ -64,27 +69,61 @@
                 <includes name="Interop.StarTeam.dll"/>
                 <includes name="Interop.WindowsInstaller.dll"/>
                 <includes name="Interop.MsmMergeTypeLib.dll"/>
-		<includes name="MSITaskErrors.mst"/>
-		<includes name="MSITaskTemplate.msi"/>
+		    <includes name="MSITaskErrors.mst"/>
+		    <includes name="MSITaskTemplate.msi"/>
             </fileset>
       </copy>
     </target>
 
+    <!--*****************************************************************-->
+    <!--* Bootstrap the Xsd Task                                        *-->
+    <!--*****************************************************************-->
+    <target name="compile.schematask" description="compiles the Xsd task">
+    
+        <csc target="library" output="${build.dir}\NAnt.Xsd.Tasks.dll">
+            <sources basedir="${src.dir}">
+                <includes name="Tasks/XsdTask.cs"/>
+            </sources>
+            <references>
+                <includes name="${nant-bin.dir}\NAnt.Core.dll"/>
+            </references>
+            <arg value="/nowarn:1591"/>
+        </csc>
+    </target>
+    
+    <!--*****************************************************************-->
+    <!--* Bootstrap XML Schemas into assemblies for task validation     *-->
+    <!--*****************************************************************-->
+    <target name="compile.schemas" depends="compile.schematask" description="compiles Task XML Schemas into assemblies">
+		
+		<taskdef assembly="${build.dir}\NAnt.Xsd.Tasks.dll" />
+		<mkdir dir="${build.dir}\Schemas" />
+    
+		<mkdir dir="${build.dir}\Schemas\MSI" />
+		<xsd schema="${src.dir}\Tasks\MSITask.xsd" nologo="true" 
+			language="CS" namespace="NAnt.Contrib.Schemas.MSI" 
+			outputdir="${build.dir}\Schemas\MSI" uri="NAnt.Contrib.Tasks.MSITask" />
+			
+		<csc target="library" output="${build.dir}\NAnt.Contrib.Schemas.dll">
+            <sources basedir="${build.dir}\Schemas">
+                <includes name="**.cs"/>
+            </sources>
+            <arg value="/nowarn:1591"/>
+        </csc>
+    </target>
 
-
-    <!--
-        Build the NAnt.Contrib.Tasks.dll library
-    -->
-    <target name="build" depends="prepare, prepare.slingshot" description="compiles the source code">
-
-        <!-- compile NAnt.Contrib.Tasks.dll -->
+    <!--*****************************************************************-->
+    <!--* Build the NAnt.Contrib.Tasks.dll library                      *-->
+    <!--*****************************************************************-->
+    <target name="build" depends="prepare, prepare.slingshot, compile.schemas" description="compiles the source code">
+    
         <csc target="library" 
                output="${build.dir}\${project.FormalName}.Tasks.dll" 
                debug="${debug}" 
-               doc="${build.dir}\${project.FormalName}.Tasks.xml"
-            >
+               doc="${build.dir}\${project.FormalName}.Tasks.xml">
             <sources basedir="${src.dir}">
                 <includes name="**/*.cs"/>
+                <includes name="..\${build.dir}\Schemas\**.cs" />
                 <excludes name="Tasks/TaskDefTask.cs"/>
             </sources>
             <references>
@@ -96,28 +135,31 @@
                 <includes name="bin\Interop.WindowsInstaller.dll"/>
                 <includes name="bin\Interop.MsmMergeTypeLib.dll"/>
                 <includes name="build\SLiNgshoT.Core.dll"/>
+                <includes name="build\NAnt.Contrib.Schemas.dll"/>
             </references>
             <resources>
                 <includes name="${src.dir}/xsl/*.*"/>
             </resources>
-            <arg value="/nowarn:1591"/>
+            <arg value="/nowarn:1591,1595"/>
         </csc>
-
+        <delete dir="${build.dir}\Schemas" />
+        <delete file="${build.dir}\NAnt.Contrib.Schemas.dll" />
     </target>
 
+    <!--*****************************************************************-->
+    <!--* Build the SLiNgshoT.Core.dll library                          *-->
+    <!--*****************************************************************-->
     <target name="prepare.slingshot" description="Compiles and copies the SLiNgshoT library">
 
-      <!-- compile SLiNgshoT.Core.dll -->
       <nant buildfile="Tools/SLiNgshoT/SLiNgshoT.build" target="SLiNgshoT.Core.Release"/>
       <copy file="Tools/SLiNgshoT/build/Release/SLiNgshoT.Core.dll" tofile="${build.dir}/SLiNgshoT.Core.dll"/>
-
     </target>
 
-    <!--
-        Build the unit tests library
-    -->
+    <!--*****************************************************************-->
+    <!--* Build the unit tests library                                  *-->
+    <!--*****************************************************************-->
     <target name="buildtests" depends="build" description="Compiles the NUnit Tests">
-        <!-- compile NAntContrib.Tests.dll -->
+
         <csc target="library" output="${build.dir}\${project.FormalName}.Tests.dll" debug="${debug}">
             <sources basedir="${tests.dir}">
                 <includes name="**/*.cs"/>
@@ -128,15 +170,18 @@
                 <includes name="${nant-bin.dir}/NAnt.Tests.dll"/>
                 <includes name="${build.dir}/${project.FormalName}.Tasks.dll"/>
             </references>
+            <arg value="/nowarn:1591"/>
         </csc>
     </target>
 
-    <!--
-        Perform unit tests.  If a unit test fails, the build fails.
-        The base directory is set to the Test directory so that tests can easily
-        load external data files wihtout having to worry about complicated paths.
-    -->
+    <!--*****************************************************************-->
+    <!--* Perform unit tests.  If a unit test fails, the build fails.   *-->
+    <!--* The base directory is set to the Test directory so that tests *-->
+    <!--* can easily load external data files wihtout having to worry   *-->
+    <!--* about complicated paths.                                      *-->
+    <!--*****************************************************************-->
     <target name="test" depends="buildtests" description="run unit tests">
+
         <nunit basedir="${tests.dir}" verbose="false" haltonerror="true" haltonfailure="true">
             <formatter type="Xml"/>
             <formatter type="Plain"/>
@@ -144,7 +189,11 @@
         </nunit>
     </target>
 
+    <!--*****************************************************************-->
+    <!--* Archive a .zip backup of the source                           *-->
+    <!--*****************************************************************-->
     <target name="backup" depends="clean" description="make local backup">
+
         <echo message="Creating backup ${backup.name}"/>
         <zip zipfile="${backup.name}">
             <fileset basedir=".">
@@ -153,11 +202,13 @@
         </zip>
     </target>
     
-    <!-- skot -->
+    <!--*****************************************************************-->
+    <!--* Build the taskdef.Tasks.dll library                           *-->
+    <!--*****************************************************************-->
     <target name="taskdef.build" description="build taskdef assembly">
+
+        <mkdir dir="${build.dir}" />
         <property name="taskDefAssembly" value="${build.dir}\taskdef.Tasks.dll" />
-        
-        <!-- compile NAnt.Contrib.Tasks.dll -->
         <csc target="library" output="${taskDefAssembly}" debug="${debug}">
             <sources basedir="${src.dir}">
                 <includes name="Tasks/TaskDefTask.cs"/>
@@ -166,14 +217,21 @@
                 <includes name="${nant-bin.dir}\NAnt.Core.dll"/>
             </references>
             <arg value="/nowarn:1591"/>
-        </csc>		
+        </csc>
     </target>
     
+    <!--*****************************************************************-->
+    <!--* Deploy the taskdef.Tasks.dll to the executing copy of NAnt    *-->
+    <!--*****************************************************************-->
     <target name="use" depends="taskdef.build" description="Copies taskdef assemblies to nant-bin/tasks folder.">
+
         <mkdir dir="${nant.extra-tasks.dir}"/>
-        <copy file="${taskDefAssembly}" todir="${nant.extra-tasks.dir}" />
+        <copy file="${taskDefAssembly}" todir="${nant.extra-tasks.dir}" failonerror="false" />
     </target>
     
+    <!--*****************************************************************-->
+    <!--* Build NDoc documentation                                      *-->
+    <!--*****************************************************************-->
     <target name="doc" depends="build" description="build documentation">
         <echo message="Requires HtmlHelp compiler (hhc.exe) to be in the system path"/>
         <ndoc failonerror="false">
@@ -208,29 +266,30 @@
         <copy file="${build.dir}/docs/MSDN/NAntContrib.chm" todir="${build.dir}"/>
     </target>
 
-  <target name="install" depends="build" description="build msi install">
-	<echo message="*****************************************************************************" />
+    <!--*****************************************************************-->
+    <!--* Create the .msi Windows Installer setup file                  *-->
+    <!--*****************************************************************-->
+    <target name="install" depends="build" description="build msi install">
 	<echo message="** NOTE: NAnt needs to be checked out to the same directory as NAntContrib **" />
-	<echo message="*****************************************************************************" />
 	<property name="installsource.dir" value="install" />
-	<!-- Import Tasks -->
+	
 	<taskdef assembly="${build.dir}\NAnt.Contrib.Tasks.dll" />
-	<!-- Clean Previous Install -->
+	
 	<delete dir="${installsource.dir}\NAnt" failonerror="false" />
 	<delete dir="${installsource.dir}\Temp" failonerror="false" />
-	<!-- Build NAnt -->
+	
 	<property name="nant.dir" value="..\nant" />
 	<property name="nantbuild.dir" value="..\nant\build\nant-0.8.0\bin" />
 	<nant buildfile="${nant.dir}\NAnt.build" target="release build" />
-	<!-- Build Addin -->
+	
 	<property name="addin.dir" value="Tools\VSNetAddin" />
 	<property name="fromcontrib" value="true" />
 	<nant buildfile="${addin.dir}\Default.build" target="build" inheritall="true" />
-	<!-- Create Installation Source Dirs -->
+	
 	<mkdir dir="${installsource.dir}\NAnt\Tasks" />
-	<!-- Copy NAnt Console -->
+	
 	<copy tofile="${installsource.dir}\NAnt\NAnt.exe" file="${nantbuild.dir}\NAnt.Console.exe" />
-	<!-- Copy NAnt Core Files -->
+	
 	<copy todir="${installsource.dir}\NAnt">
 		<fileset basedir="${nantbuild.dir}">
 			<includes name="NAnt.Core.dll" />
@@ -239,14 +298,14 @@
 			<includes name="NUnitCore.dll" />
 		</fileset>
 	</copy>
-	<!-- Copy NAnt Default Tasks -->
+	
 	<copy todir="${installsource.dir}\NAnt\Tasks">
 		<fileset basedir="${nantbuild.dir}">
 			<includes name="*Tasks.dll" />
 			<includes name="SharpZipLib.dll" />
 		</fileset>
 	</copy>
-	<!-- Copy NAntContrib Tasks/Files -->
+	
 	<copy todir="${installsource.dir}\NAnt\Tasks">
 		<fileset basedir="${build.dir}">
 			<includes name="*.dll" />
@@ -254,9 +313,9 @@
 			<includes name="*.msi" />
 		</fileset>
 	</copy>
-	<!-- Copy License -->
+	
 	<copy todir="${installsource.dir}\NAnt" file="license.txt" />
-	<!-- Copy Addin -->
+	
 	<copy todir="${installsource.dir}\NAnt">
 		<fileset basedir="${addin.dir}\build\NAntAddin">	
 			<includes name="*.bmp" />
@@ -268,29 +327,29 @@
 			<includes name="NAntTaskNodes.xml" />
 		</fileset>
 	</copy>
-	<!-- Copy Addin TaskImages -->
+	
 	<mkdir dir="${installsource.dir}\NAnt\TaskImages" />
 	<copy todir="${installsource.dir}\NAnt\TaskImages">
 		<fileset basedir="${addin.dir}\build\NAntAddin\TaskImages">	
 			<includes name="*.bmp" />
 		</fileset>
 	</copy>
-	<!-- Copy Addin Resources -->
+	
 	<mkdir dir="${installsource.dir}\NAnt\1033" />
 	<copy todir="${installsource.dir}\NAnt\1033" file="${addin.dir}\build\NAntAddin\1033\NAntAddinResources.dll" />
-	<!-- Copy Addin Script Template -->
+	
 	<mkdir dir="${installsource.dir}\NewFileItems" />
 	<copy tofile="${installsource.dir}\NewFileItems\NAntScript.build" file="${addin.dir}\NAntScript.build.txt" />
 	<copy todir="${installsource.dir}\NewFileItems" file="${addin.dir}\NAntScript.vsdir" />
-	<!-- Copy SLiNgshoT -->
+	
 	<property name="slingshot.dir" value="Tools\SLiNgshoT" />
 	<nant buildfile="${slingshot.dir}\SLiNgshoT.build" target="SLiNgshoT.Release SLiNgshoT" />
 	<copy todir="${installsource.dir}\NAnt" file="${slingshot.dir}\build\Release\SLiNgshoT.Core.dll" />
 	<copy todir="${installsource.dir}\NAnt" file="${slingshot.dir}\build\Release\SLiNgshoT.exe" />
-	<!-- Build MSI Installation -->
+	
 	<msi output="NAntSetup.msi" sourcedir="${installsource.dir}" 
 		banner="Tools\VSNetAddin\installlogo.bmp" background="Tools\VSNetAddin\installbg.bmp" 
-		license="Tools\VSNetAddin\license.rtf" debug="true">
+		license="Tools\VSNetAddin\license.rtf" debug="true" validate="true" verbose="true">
       <properties>
         <property name="ProductName" value="NAnt" />
         <property name="ProductVersion" value="1.0.0.1" />
