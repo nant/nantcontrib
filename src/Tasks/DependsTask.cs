@@ -51,7 +51,7 @@ namespace NAnt.Contrib.Tasks {
         /// Expressions get evaluated when the task is executed.  
         /// </remarks>
         [TaskAttribute("on", Required=true, ExpandProperties=true)]
-        public StringCollection DependsCollection {
+        public string DependsCollection {
             set {
                 foreach (string str in value.Split(new char[] {' ', ','})) {
                     string dependency = str.Trim();
@@ -60,7 +60,6 @@ namespace NAnt.Contrib.Tasks {
                     }
                 }
             }
-            get { return _dependencies;  }
         }
 
         #endregion Public Instance Properties
@@ -72,7 +71,7 @@ namespace NAnt.Contrib.Tasks {
         /// </summary>
         protected override void ExecuteTask() {
           Target owningTarget = Parent as Target;
-          StringCollection dependencies = DependsCollection;
+          StringCollection dependencies = _dependencies;
 
             foreach(string target in dependencies) {
                 
