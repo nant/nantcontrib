@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 <project name="nantcontrib" default="nightly-self">
+    <!-- set release type -->
+    <property name="project.release.type" value="nightly" />
     <!-- set build.date property to current date in format yyyyMMdd -->
     <tstamp property="build.date" pattern="yyyyMMdd" />
     <!-- set base uri for linking to NAnt help -->
