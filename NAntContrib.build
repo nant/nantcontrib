@@ -448,7 +448,7 @@
 
     <target name="package-src" depends="package-common">
         <!-- determine name of package zip file -->
-        <property name="project.zip-path.src" value="${project::get-base-directory()}/build/${project.name}-${project.version}-src.zip" />
+        <property name="project.zip-path.src" value="${project::get-base-directory()}/build/${project.name}-${project.version.full}-src.zip" />
         <!-- remove package zip file if it already exists -->
         <delete file="${project.zip-path.src}" if="${file::exists(project.zip-path.src)}" />
         <!-- create package zip file -->
@@ -486,7 +486,7 @@
 
     <target name="package-bin" depends="package-common">
         <!-- determine name of package zip file -->
-        <property name="project.zip-path.bin" value="${project::get-base-directory()}/build/${project.name}-${project.version}-bin.zip" />
+        <property name="project.zip-path.bin" value="${project::get-base-directory()}/build/${project.name}-${project.version.full}-bin.zip" />
         <!-- remove package zip file if it already exists -->
         <delete file="${project.zip-path.bin}" if="${file::exists(project.zip-path.bin)}" />
         <!-- create package zip file -->
