@@ -3,3 +3,4 @@
 *.user
 obj
 bin
+.#*
