@@ -47,6 +47,9 @@ namespace NAnt.Contrib.Tasks
    /// Note that if the name attribite of a schema is an empty
    /// string, then the system will use the targetNamespace attribute
    /// of the underlying schema to associate it with a namespace.
+   /// 
+   /// You can use the failonerror attribute of the task to control
+   /// whether a validation failure will stop the build or not.
    /// </remarks>
    /// <example>
    ///   <code><![CDATA[
@@ -55,9 +58,9 @@ namespace NAnt.Contrib.Tasks
    ///            <schemaref source="rcf-schema.xsd"/>
    ///            <schemaref namespace="urn:schemas-company-com:base" source="base-schema.xsd"/>
    ///          </schemas>
-   ///         <xmlfiles>
+   ///         <files>
    ///            <includes name="*.xml"/>
-   ///         </xmlfiles>
+   ///         </files>
    ///      </validatexml>
    ///   ]]></code>
    /// </example>
@@ -71,7 +74,7 @@ namespace NAnt.Contrib.Tasks
       /// <summary>
       /// Set of XML files to use as input
       /// </summary>
-      [FileSet("xmlfiles", Required=true)]
+      [FileSet("files", Required=true)]
       public FileSet XmlFiles {
          get { return _xmlFiles; }
       }
@@ -117,7 +120,12 @@ namespace NAnt.Contrib.Tasks
             if ( _numErrors == 0 ) {
                Log.WriteLine(LogPrefix + "Document is valid");
             } else {
-               Log.WriteLine(LogPrefix + _numErrors + " Errors in document");
+               if ( !FailOnError ) {
+                  Log.WriteLine(LogPrefix + _numErrors + " Errors in document");
+               } else  {
+                  string msg = string.Format("Invalid XML Document '{0}'", file);
+                  throw new BuildException(msg, Location);
+               }
             }
          }
       }
