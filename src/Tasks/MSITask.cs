@@ -46,7 +46,7 @@ namespace NAnt.Contrib.Tasks
     /// <summary>
     /// Builds a Windows Installer (MSI) File.
     /// </summary>
-    /// <remarks>None.</remarks>
+    /// <remarks>Requires <c>cabarc.exe</c> in the path.  This tool is included in the Microsoft Cabinet SDK.</remarks>
     [TaskName("msi")]
     [SchemaValidator(typeof(msi))]
     public class MSITask : SchemaValidatedTask
