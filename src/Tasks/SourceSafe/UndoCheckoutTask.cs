@@ -23,6 +23,7 @@
 #endregion
 
 using System;
+using System.IO;
 
 using SourceSafeTypeLib;
 
@@ -64,18 +65,18 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         #region Private Instance Fields
 
         private bool _recursive = true;
-        private string _localPath = "";
+        private DirectoryInfo _localPath;
 
         #endregion Private Instance Fields
 
         #region Public Instance Properties
 
         /// <summary>
-        /// The absolute path to the local working directory. This is required if you wish to 
+        /// The path to the local working directory. This is required if you wish to 
         /// have your local file replaced with the latest version from SourceSafe.
         /// </summary>
         [TaskAttribute("localpath", Required=false)]
-        public string LocalPath {
+        public DirectoryInfo LocalPath {
             get { return _localPath; }
             set { _localPath = value; }
         }
@@ -101,7 +102,8 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
             int flags = (Recursive ? Convert.ToInt32(RecursiveFlag) : 0);
 
             try {
-                Item.UndoCheckout(LocalPath, flags);
+                string localPath = LocalPath != null ? LocalPath.FullName : "";
+                Item.UndoCheckout(localPath, flags);
             } catch (Exception ex) {
                 throw new BuildException("The undo check-out operation failed.", 
                     Location, ex);

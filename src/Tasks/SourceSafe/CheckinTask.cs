@@ -23,7 +23,10 @@
 #endregion
 
 using System;
+using System.IO;
+
 using SourceSafeTypeLib;
+
 using NAnt.Core;
 using NAnt.Core.Attributes;
 
@@ -66,7 +69,7 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         #region Private Instance Fields
 
         private string _comment = "";
-        private string _localPath;
+        private DirectoryInfo _localPath;
         private bool _recursive = true;
         private bool _writable;
 
@@ -84,11 +87,10 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         }
 
         /// <summary>
-        /// The absolute path to the local working directory.
+        /// The path to the local working directory.
         /// </summary>
         [TaskAttribute("localpath", Required=true)]
-        [StringValidator(AllowEmpty=false)]
-        public string LocalPath {
+        public DirectoryInfo LocalPath {
             get { return _localPath; }
             set { _localPath = value; }
         }
@@ -128,7 +130,7 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
                 (Writable ? Convert.ToInt32(VSSFlags.VSSFLAG_USERRONO) : Convert.ToInt32(VSSFlags.VSSFLAG_USERROYES));
 
             try {
-                Item.Checkin(Comment, LocalPath, flags);
+                Item.Checkin(Comment, LocalPath.FullName, flags);
             } catch (Exception ex) {
                 throw new BuildException("The check-in operation failed.", 
                     Location, ex);
