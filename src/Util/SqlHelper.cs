@@ -31,7 +31,6 @@ namespace NAnt.Contrib.Util
    {
       private OleDbConnection _connection;
       private OleDbTransaction _transaction;
-      private int _commandTimeout = 0;
       
 		/// <summary>
 		/// OleDB Connection object
@@ -78,6 +77,7 @@ namespace NAnt.Contrib.Util
       /// Executes a SQL statement.
       /// </summary>
       /// <param name="sql">SQL statement to execute</param>
+      /// <param name="cmdTimeout">Command timeout to use</param>
       /// <returns>Data reader used to check the result</returns>
       public IDataReader Execute(string sql, int cmdTimeout)
       {
