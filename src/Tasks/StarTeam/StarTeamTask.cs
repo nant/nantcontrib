@@ -202,7 +202,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		
 			if (null == view) 
 			{
-				throw new BuildException("Cannot find view" + this.url + " in repository()");
+				throw new BuildException("Cannot find view" + this.url + " in repository()",Location);
 			}
 		
 			InterOpStarTeam.StView snapshot = createSnapshotView(view);

@@ -158,7 +158,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		{
 			if (null != _rootLocalFolder && !this.Forced)
 			{
-				Log.WriteLine("Warning: rootLocalFolder specified, but forcing off.");
+				Log.WriteLine(LogPrefix + "Warning: rootLocalFolder specified, but forcing off.");
 			}
 		}
 		
@@ -204,7 +204,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 					{
 						if(this.Verbose) 
 						{
-							Log.WriteLine("Skipping : {0}",localFile.ToString());
+							Log.WriteLine(LogPrefix + "Skipping : {0}",localFile.ToString());
 						}
 						notMatched++;
 						continue;
@@ -225,11 +225,16 @@ namespace NAnt.Contrib.Tasks.StarTeam
 							stFile.updateStatus(true, true);
 							fileStatus = (stFile.Status);
 						}
+						if(fileStatus == starTeamStatusStatics.merge || fileStatus == starTeamStatusStatics.Modified) 
+						{
+							Log.WriteLine(LogPrefix + "Not processing {0} as it is Modified or needs Merging and Forced parameter is not on.",stFile.toString());
+							continue;
+						}
 						if (fileStatus == starTeamStatusStatics.CURRENT)
 						{
 							//count files not processed so we can inform later
 							notProcessed++;
-							//Log.WriteLine("Not processing {0} as it is current.", stFile.toString());
+							//Log.WriteLine(LogPrefix + "Not processing {0} as it is current.", stFile.toString());
 							continue;
 						}
 						//TODO merged files get processed. We may want to provide a flag to allow merges to be skipped as well
@@ -257,7 +262,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 					if(localFile.FullName.IndexOf(".build") > 0)
 						continue;
 
-					Log.WriteLine("Checking Out: " + (localFile.ToString()));
+					Log.WriteLine(LogPrefix + "Checking Out: " + (localFile.ToString()));
 
 					stFile.checkoutTo(localFile.FullName, _lockStatus, true, true, true);
 					_filesAffected++;
@@ -267,9 +272,9 @@ namespace NAnt.Contrib.Tasks.StarTeam
 				if(this.Verbose)
 				{
 					if(notProcessed > 0) 
-						Log.WriteLine("{0} : {1} files not processed because they were current.",targetFolder.FullName,notProcessed.ToString());
+						Log.WriteLine(LogPrefix + "{0} : {1} files not processed because they were current.",targetFolder.FullName,notProcessed.ToString());
 					if(notMatched > 0) 
-						Log.WriteLine("{0} : {1} files not processed because they did not match includes/excludes.",targetFolder.FullName,notMatched.ToString());
+						Log.WriteLine(LogPrefix + "{0} : {1} files not processed because they did not match includes/excludes.",targetFolder.FullName,notMatched.ToString());
 				}
 
 				// Now we recursively call this method on all sub folders in this
@@ -292,7 +297,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 			}
 			catch (IOException e)
 			{
-				throw new BuildException(e.Message);
+				throw new BuildException(e.Message,Location,e);
 			}
 		}
 		                                                         		
@@ -304,16 +309,36 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		{
 			try
 			{
+				Log.WriteLine(LogPrefix + "Deleting {0} uncontrolled items.",localFiles.Count);
+
 				foreach(string fileName in localFiles.Keys)
 				{
-					FileInfo file = new FileInfo(fileName);
-					delete(file);
+//					if(Directory.Exists(fileName)) 
+//					{
+//						Log.WriteLine(LogPrefix + "NOT Deleting {0} as it is a directory.",fileName);
+//						Directory.Delete(fileName,true);
+//						continue;
+//					}            
+				    FileInfo file = new FileInfo(fileName);
+					try 
+					{
+						this.delete(file);
+//						Log.WriteLine(LogPrefix + "Deleting {0}",fileName);
+//						System.IO.File.SetAttributes(fileName,System.IO.FileAttributes.Normal);
+//						file.Delete();
+					}
+					catch(Exception e)
+					{
+						Log.WriteLine(LogPrefix + "NOT Deleting {0} - {1}.",fileName,e.Message);
+						continue;
+					}
+					//delete(file);
 				}
 			}
 			//TODO: Move security catch into delete()
 			catch (System.Security.SecurityException e)
 			{
-				Log.WriteLine("Error deleting file: {0}", e);
+				Log.WriteLine(LogPrefix + "Error deleting file: {0}", e);
 			}
 		}
 		
@@ -332,21 +357,20 @@ namespace NAnt.Contrib.Tasks.StarTeam
 				}
 			}
 			
-			Log.WriteLine("Deleting: {0}",file.FullName);
-			bool tmpBool;
+			Log.WriteLine(LogPrefix + "Deleting: {0}",file.FullName);
 			if (File.Exists(file.FullName))
 			{
+				System.IO.File.SetAttributes(file.FullName,System.IO.FileAttributes.Normal);
 				File.Delete(file.FullName);
-				tmpBool = true;
 			}
 			else if (Directory.Exists(file.FullName))
 			{
 				Directory.Delete(file.FullName);
-				tmpBool = true;
 			}
 			else
-				tmpBool = false;
-			return tmpBool;
+				return false;
+			
+			return true;
 		}
 	}
 }

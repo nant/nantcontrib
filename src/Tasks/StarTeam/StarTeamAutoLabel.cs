@@ -166,24 +166,32 @@ namespace NAnt.Contrib.Tasks.StarTeam
 			InterOpStarTeam.StView snapshot = openView();
 			InterOpStarTeam.StFile stFile = getVersionStFile(snapshot);
 			
-			//load xml document find versions and save incremented version 
-			XmlDocument xmlDoc = new XmlDocument();
-			xmlDoc.Load(stFile.FullName);
-			XmlNode nodeVersion = xmlDoc.DocumentElement.SelectSingleNode("version");
-			if(_versionMajor < 0) _versionMajor = Convert.ToInt32(nodeVersion.Attributes.GetNamedItem("major").InnerText);
-			if(_versionMinor < 0) _versionMinor = Convert.ToInt32(nodeVersion.Attributes.GetNamedItem("minor").InnerText);
-			if( _versionBuild < 0) _versionBuild = Convert.ToInt32(nodeVersion.Attributes.GetNamedItem("build").InnerText);
+			try 
+			{      
+				//load xml document find versions and save incremented version 
+				XmlDocument xmlDoc = new XmlDocument();
+				xmlDoc.Load(stFile.FullName);
+				XmlNode nodeVersion = xmlDoc.DocumentElement.SelectSingleNode("version");
+				if(_versionMajor < 0) _versionMajor = Convert.ToInt32(nodeVersion.Attributes.GetNamedItem("major").InnerText);
+				if(_versionMinor < 0) _versionMinor = Convert.ToInt32(nodeVersion.Attributes.GetNamedItem("minor").InnerText);
+				if( _versionBuild < 0) _versionBuild = Convert.ToInt32(nodeVersion.Attributes.GetNamedItem("build").InnerText);
 				
-			if(_doIncrement == true) 
-			{
-				if(_incrementMajor == true) _versionMajor++;
-				if(_incrementMinor == true) _versionMinor++;
-				if(_incrementBuild == true) _versionBuild++;
+				if(_doIncrement == true) 
+				{
+					if(_incrementMajor == true) _versionMajor++;
+					if(_incrementMinor == true) _versionMinor++;
+					if(_incrementBuild == true) _versionBuild++;
+				}
+				nodeVersion.Attributes.GetNamedItem("major").InnerText = _versionMajor.ToString();
+				nodeVersion.Attributes.GetNamedItem("minor").InnerText = _versionMinor.ToString();
+				nodeVersion.Attributes.GetNamedItem("build").InnerText = _versionBuild.ToString();
+				xmlDoc.Save(stFile.FullName);
 			}
-			nodeVersion.Attributes.GetNamedItem("major").InnerText = _versionMajor.ToString();
-			nodeVersion.Attributes.GetNamedItem("minor").InnerText = _versionMinor.ToString();
-			nodeVersion.Attributes.GetNamedItem("build").InnerText = _versionBuild.ToString();
-			xmlDoc.Save(stFile.FullName);
+			catch(XmlException e)
+			{
+				throw new BuildException("Error parsing / updating version xml",Location,e);
+			}
+
 
 			stFile.checkin("version updated via stautolabel", starTeamLockTypeStatics.UNLOCKED,true, true, true);
 			this.Label = string.Format("{0}{1}.{2}.{3}",this.Label,_versionMajor,_versionMinor,_versionBuild);
@@ -239,18 +247,29 @@ namespace NAnt.Contrib.Tasks.StarTeam
 			string versionFilePath = stFolder.getFilePath(_versionFile);
 
 			//create xml and save to local file
-			StreamWriter s = new StreamWriter(versionFilePath,false,System.Text.ASCIIEncoding.ASCII);
-			XmlTextWriter xmlWriter = new XmlTextWriter(s);
-			xmlWriter.WriteStartDocument(false);
-			xmlWriter.WriteStartElement("stautolabel");
-			xmlWriter.WriteStartElement("version");
-			xmlWriter.WriteAttributeString("major","1");
-			xmlWriter.WriteAttributeString("minor","0");
-			xmlWriter.WriteAttributeString("build","0");
-			xmlWriter.WriteEndElement();
-			xmlWriter.WriteEndElement();
-			xmlWriter.Close();
-
+			try 
+			{
+				StreamWriter s = new StreamWriter(versionFilePath,false,System.Text.ASCIIEncoding.ASCII);
+				XmlTextWriter xmlWriter = new XmlTextWriter(s);
+				xmlWriter.WriteStartDocument(false);
+				xmlWriter.WriteStartElement("stautolabel");
+				xmlWriter.WriteStartElement("version");
+				xmlWriter.WriteAttributeString("major","1");
+				xmlWriter.WriteAttributeString("minor","0");
+				xmlWriter.WriteAttributeString("build","0");
+				xmlWriter.WriteEndElement();
+				xmlWriter.WriteEndElement();
+				xmlWriter.Close();
+			}
+			catch(System.Security.SecurityException e)
+			{
+				throw new BuildException(string.Format("You do not have access to {0}",versionFilePath),Location,e);
+			}
+			catch(IOException e)
+			{
+				throw new BuildException(string.Format("Version filepath {0} invalid.",versionFilePath),Location,e);
+			}
+			
 			//add local file to starteam 
 			InterOpStarTeam.StFile newFile = starteamFileFactory.Create(stFolder);
 			string comment = "version number xml created by stautonumber NAnt task";

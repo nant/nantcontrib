@@ -135,8 +135,10 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		/// Default : false - force check in/out actions regardless of the status that StarTeam is maintaining for the file. 
 		/// </summary>
 		/// <remarks>
-		/// If <see cref="RootLocalFolder"/> is set then this property should be set <c>true</c>. 
-		/// Otherwise the checkout will be based on statuses which do not relate to the target folder.  
+		/// <para>If <see cref="RootLocalFolder"/> is set then this property should be set <c>true</c>. 
+		/// Otherwise the checkout will be based on how the repository compares to local target folder.
+		/// </para>
+		/// <para>Note that if forced is not on. Files with status Modified and Merge will not be processed.</para>
 		/// </remarks>
 		[TaskAttribute("forced")]
 		[BooleanValidator]
@@ -175,12 +177,12 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		/// </summary>
 		protected override void ExecuteTask() 
 		{
+			_filesAffected = 0;
+			testPreconditions();
+		
+			InterOpStarTeam.StView snapshot = openView();
 			try
 			{
-				_filesAffected = 0;
-				testPreconditions();
-			
-				InterOpStarTeam.StView snapshot = openView();
 				InterOpStarTeam.StStarTeamFinderStatics starTeamFinder = new InterOpStarTeam.StStarTeamFinderStatics();
 				InterOpStarTeam.StFolder starTeamRootFolder = starTeamFinder.findFolder(snapshot.RootFolder, _rootStarTeamFolder);
 			    
@@ -189,7 +191,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 
 				if (null == starTeamRootFolder)
 				{
-					throw new BuildException("Unable to find root folder in repository.");
+					throw new BuildException("Unable to find root folder in repository.",Location);
 				}
 				if (null == _rootLocalFolder)
 				{
@@ -200,7 +202,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 					}
 					catch(Exception e) 
 					{
-						throw new BuildException(string.Format("Could not get handle to root folder ({0}) found.",starTeamRootFolder.Path),e);
+						throw new BuildException(string.Format("Could not get handle to root folder ({0}) found.",starTeamRootFolder.Path),Location,e);
 					}
 				}
 				else
@@ -208,22 +210,22 @@ namespace NAnt.Contrib.Tasks.StarTeam
 					// force StarTeam to use our folder
 					try 
 					{
-						Log.WriteLine("Overriding local folder to {0}",_rootLocalFolder);
+						Log.WriteLine(LogPrefix + "Overriding local folder to {0}",_rootLocalFolder);
 						localrootfolder = new FileInfo(_rootLocalFolder);
 					}
 					catch(Exception e) 
 					{
-						throw new BuildException(string.Format("Could not get handle to root folder ({0}) found.",starTeamRootFolder.Path),e);
+						throw new BuildException(string.Format("Could not get handle to root folder ({0}) found.",starTeamRootFolder.Path),Location,e);
 					}
 				}
 				
 				// Inspect everything in the root folder and then recursively
 				visit(starTeamRootFolder, localrootfolder);
-				Log.WriteLine("{0} Files Affected",_filesAffected.ToString());
+				Log.WriteLine(LogPrefix + "{0} Files Affected",_filesAffected.ToString());
 			}
 			catch (System.Exception e)
 			{
-				throw new BuildException(e.Message);
+				throw new BuildException(e.Message,Location,e);
 			}
 		}
 	
@@ -243,7 +245,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 						return stLabel;
 					}
 				}
-				throw new BuildException("Error: label " + _label + " does not exist in view");
+				throw new BuildException("Error: label " + _label + " does not exist in view",Location);
 			}
 			return null;
 		}

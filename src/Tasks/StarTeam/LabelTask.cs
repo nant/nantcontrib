@@ -105,7 +105,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 				}
 				catch (System.FormatException e)
 				{
-					throw new BuildException(string.Format("Unable to parse the date {0} : {1}", value ,e.Message),e);
+					throw new BuildException(string.Format("Unable to parse the date {0} : {1}", value ,e.Message),Location,e);
 				}
 			}
 			
@@ -176,11 +176,11 @@ namespace NAnt.Contrib.Tasks.StarTeam
 					sLabelType = "Revision";
 				else 
 					sLabelType = (this._isBuildLabel ? "View Build" : "View");
-				Log.WriteLine("Created {0} Label: {1}",sLabelType, _labelName);
+				Log.WriteLine(LogPrefix + "Created {0} Label: {1}",sLabelType, _labelName);
 			}
 			catch(Exception e)
 			{
-				throw new BuildException(string.Format("Creating label {0} failed : {1}",_labelName,e.Message));
+				throw new BuildException(string.Format("Creating label {0} failed : {1}",_labelName,e.Message),Location,e);
 			}
 
 			return newLabel;

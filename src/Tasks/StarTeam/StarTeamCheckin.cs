@@ -146,7 +146,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		{
 			if (null != _rootLocalFolder && this.Forced)
 			{
-				Log.WriteLine("Warning: rootLocalFolder specified, but forcing off.");
+				Log.WriteLine(LogPrefix + "Warning: rootLocalFolder specified, but forcing off.");
 			}
 		}
 		
@@ -178,7 +178,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 					{
 						if(this.Verbose) 
 						{
-							Log.WriteLine("Skipping : {0}",localFile.ToString());
+							Log.WriteLine(LogPrefix + "Skipping : {0}",localFile.ToString());
 						}
 						notMatched++;
 						continue;
@@ -197,18 +197,23 @@ namespace NAnt.Contrib.Tasks.StarTeam
 							stFile.updateStatus(true, true);
 							fileStatus = (stFile.Status);
 						}
+						if(fileStatus == starTeamStatusStatics.merge) 
+						{
+							Log.WriteLine(LogPrefix + "Not processing {0} as it needs Merging and Forced is not on.",stFile.toString());
+							continue;
+						}
 						if (fileStatus == starTeamStatusStatics.CURRENT)
 						{
 							//count files not processed so we can inform later
 							notProcessed++;
-							//Log.WriteLine("Not processing {0} as it is current.",stFile.toString());
+							//Log.WriteLine(LogPrefix + "Not processing {0} as it is current.",stFile.toString());
 							continue;
 						}
 					}
 					
 					//may want to offer this to be surpressed but usually it is a good idea to have
 					//in the build log what changed for that build.
-					Log.WriteLine("Checking In: {0}", localFile.ToString());
+					Log.WriteLine(LogPrefix + "Checking In: {0}", localFile.ToString());
 
 					//check in anything else
 					stFile.checkinFrom(localFile.FullName, _comment, _lockStatus, true, true, true);
@@ -228,9 +233,9 @@ namespace NAnt.Contrib.Tasks.StarTeam
 				if(this.Verbose)
 				{
 					if(notProcessed > 0) 
-						Log.WriteLine("{0} : {1} files not processed because they were current.",targetFolder.FullName,notProcessed.ToString());
+						Log.WriteLine(LogPrefix + "{0} : {1} files not processed because they were current.",targetFolder.FullName,notProcessed.ToString());
 					if(notMatched > 0) 
-						Log.WriteLine("{0} : {1} files not processed because they did not match includes/excludes.",targetFolder.FullName,notMatched.ToString());
+						Log.WriteLine(LogPrefix + "{0} : {1} files not processed because they did not match includes/excludes.",targetFolder.FullName,notMatched.ToString());
 				}
 
 				
@@ -255,7 +260,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 			}
 			catch (IOException e)
 			{
-				throw new BuildException(e.Message);
+				throw new BuildException(e.Message,Location,e);
 			}
 		}
 		
@@ -275,7 +280,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 			//TODO: Move security catch into add()
 			catch (System.Security.SecurityException e)
 			{
-				Log.WriteLine("Error adding file: {0}",e.Message);
+				Log.WriteLine(LogPrefix + "Error adding file: {0}",e.Message);
 			}
 		}
 		
@@ -290,11 +295,11 @@ namespace NAnt.Contrib.Tasks.StarTeam
 			{
 				if(!_createFolders) 
 				{
-					Log.WriteLine("Could not add new folder as createfolders is disabled: {0}",file.FullName);
+					Log.WriteLine(LogPrefix + "Could not add new folder as createfolders is disabled: {0}",file.FullName);
 					return false;
 				}
 
-				Log.WriteLine("Adding new folder to repository: {0}",file.FullName);
+				Log.WriteLine(LogPrefix + "Adding new folder to repository: {0}",file.FullName);
 				InterOpStarTeam.StFolder newFolder = starteamFolderFactory.Create(parentFolder);
 				newFolder.Name = file.Name;
 				newFolder.update();
@@ -307,7 +312,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 			}
 			else 
 			{
-				Log.WriteLine("Adding new file to repository: {0}",file.FullName);
+				Log.WriteLine(LogPrefix + "Adding new file to repository: {0}",file.FullName);
 				InterOpStarTeam.StFile newFile = starteamFileFactory.Create(parentFolder);
 				newFile.Add(file.FullName, file.Name, null, _comment, starTeamLockTypeStatics.UNLOCKED, true, true);
 				
