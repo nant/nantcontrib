@@ -271,7 +271,7 @@ Creating folder and getting file from NAnt Nightly Build (${nant.releasebuild.na
     <!--*****************************************************************-->
     <!--* Build user	documentation                                   *-->
     <!--*****************************************************************-->    
-	<target name="userdoc" depends="">
+	<target name="userdoc" depends="build">
 
 		<!-- use ndoc and NDoc.Documenter.NAnt to build user doc -->
         <ndoc>
@@ -298,11 +298,11 @@ Creating folder and getting file from NAnt Nightly Build (${nant.releasebuild.na
         <echo message="Requires HtmlHelp compiler (hhc.exe) to be in the system path"/>
         <ndoc failonerror="false">
             <assemblies basedir="${build.dir}">
-                <includes name="NAnt.Contrib.Tasks.dll"/>
+                <includes name="*Tasks.dll"/>
             </assemblies>
             <documenters>
                 <documenter name="MSDN">
-                    <property name="OutputDirectory" value="${build.dir}\docs\MSDN" />
+                    <property name="OutputDirectory" value="${build.dir}\doc\MSDN" />
                     <property name="HtmlHelpName" value="NAntContrib" />
                     <property name="HtmlHelpCompilerFilename" value="hhc.exe" />
                     <property name="IncludeFavorites" value="False" />
@@ -325,6 +325,7 @@ Creating folder and getting file from NAnt Nightly Build (${nant.releasebuild.na
                  </documenter>             
             </documenters> 
         </ndoc>
+        <delete direcotory="${build.dir}/doc/MSDN" failonerror="false"/>
         <copy file="${build.dir}/docs/MSDN/NAntContrib.chm" todir="${build.dir}"/>
     </target>
 
