@@ -41,7 +41,7 @@
   <property name="vstools.dir" value="${vsnet.dir}\Common7\Tools" />
   <property name="dotnetlibs.dir" value="${dotnet.dir}\Primary Interop Assemblies" />
   <property name="buildlibs.arg" value="&quot;/lib:${vslibs.dir};${dotnetlibs.dir}&quot;" />
-  <target name="prepare" description="Prepares the Build Directory">
+  <target name="prepare" description="Prepares the Build Directory" depends="build.nantcontrib">
     <mkdir dir="${build.dir}" />
     <mkdir dir="${dest.dir}" />
     <copy file="${bin.dir}\Interop.VSUserControlHostLib.dll" todir="${dest.dir}" />
@@ -65,7 +65,7 @@
     <echo message="*" />
     <echo message="*" />
     <echo message="**********************************************************************************" />
-    <sysinfo />
+    <sysinfo />  
   </target>
   <target name="addin.compile" description="Compiles the Addin" depends="build.nant">
     <echo message="**************************************************" />
@@ -73,15 +73,15 @@
     <echo message="* Compiling C# Addin Class Library" />
     <echo message="*" />
     <echo message="**************************************************" />
-    <exec program="regasm" commandline="${dest.dir}\${product.name}.dll /silent /unregister" failonerror="false"/>
-    <exec program="resgen" commandline="NAntAddin.resx ${dest.dir}\NAnt.Contrib.NAntAddin.Addin.resources" />
-    <exec program="resgen" commandline="Controls\AboutDialog.resx ${dest.dir}\NAnt.Contrib.NAntAddin.Dialogs.AboutDialog.resources" />
-    <exec program="resgen" commandline="Controls\AddPropertyDialog.resx ${dest.dir}\NAnt.Contrib.NAntAddin.Dialogs.AddPropertyDialog.resources" />
-    <exec program="resgen" commandline="Controls\AddTargetDialog.resx ${dest.dir}\NAnt.Contrib.NAntAddin.Dialogs.AddTargetDialog.resources" />
-    <exec program="resgen" commandline="Controls\AddTaskDialog.resx ${dest.dir}\NAnt.Contrib.NAntAddin.Dialogs.AddTaskDialog.resources" />
-    <exec program="resgen" commandline="Controls\ScriptExplorerControl.resx ${dest.dir}\NAnt.Contrib.NAntAddin.Controls.ScriptExplorerControl.resources" />
-    <exec program="resgen" commandline="Controls\TaskNodeDialog.resx ${dest.dir}\NAnt.Contrib.NAntAddin.Dialogs.TaskNodeDialog.resources" />
-    <exec program="resgen" commandline="Controls\VSNetToolbarControl.resx ${dest.dir}\NAnt.Contrib.NAntAddin.Controls.VSNetToolbarDesigner.resources" />
+    <regasm assembly="${dest.dir}\${product.name}.dll" unregister="true" silent="true" failonerror="false" />
+    <resgen input="NAntAddin.resx" output="${dest.dir}\NAnt.Contrib.NAntAddin.Addin.resources" />
+    <resgen input="Controls\AboutDialog.resx" output="${dest.dir}\NAnt.Contrib.NAntAddin.Dialogs.AboutDialog.resources" />
+    <resgen input="Controls\AddPropertyDialog.resx" output="${dest.dir}\NAnt.Contrib.NAntAddin.Dialogs.AddPropertyDialog.resources" />
+    <resgen input="Controls\AddTargetDialog.resx" output="${dest.dir}\NAnt.Contrib.NAntAddin.Dialogs.AddTargetDialog.resources" />
+    <resgen input="Controls\AddTaskDialog.resx" output="${dest.dir}\NAnt.Contrib.NAntAddin.Dialogs.AddTaskDialog.resources" />
+    <resgen input="Controls\ScriptExplorerControl.resx" output="${dest.dir}\NAnt.Contrib.NAntAddin.Controls.ScriptExplorerControl.resources" />
+    <resgen input="Controls\TaskNodeDialog.resx" output="${dest.dir}\NAnt.Contrib.NAntAddin.Dialogs.TaskNodeDialog.resources" />
+    <resgen input="Controls\VSNetToolbarControl.resx" output="${dest.dir}\NAnt.Contrib.NAntAddin.Controls.VSNetToolbarDesigner.resources" />
     <csc target="library" debug="true" define="DEBUG;TRACE" output="${dest.dir}/${product.name}.dll" doc="${dest.dir}\${product.name}.xml">
       <resources>
         <includes name="${dest.dir}\**.resources" />
@@ -114,7 +114,7 @@
         <includes name="${dest.dir}\**.resources" />
       </fileset>
     </delete>
-    <exec program="regasm" commandline="${dest.dir}\${product.name}.dll /tlb:${dest.dir}\${product.name}.tlb /codebase ${dest.dir}\${product.name}.dll" />
+    <regasm assembly="${dest.dir}\${product.name}.dll" typelibrary="${dest.dir}\${product.name}.tlb" codebase="true" silent="true" failonerror="false" />
   </target>
   <target name="resources.compile" description="Compiles Addin Resources" depends="addin.compile">
     <echo message="**************************************************" />
@@ -144,7 +144,6 @@
       <arg value="/MTd" />
       <arg value="/Yc&quot;stdafx.h&quot;" />
       <arg value="/Fp&quot;${resources.dest.dir}\NAntAddinResources.pch&quot;" />
-      <arg value="/Fd&quot;${resources.dest.dir}\vc70.pdb&quot;" />
       <arg value="/W3" />
       <arg value="/nologo" />
       <arg value="/c" />
@@ -154,7 +153,7 @@
       <arg value="&quot;${resources.dir}\stdafx.cpp&quot;" />
       <arg value="&quot;${resources.dir}\NAntAddinResources.cpp&quot;" />
     </cl>
-    <exec program="${vstools.dir}\bin\rc" basedir="${resources.dir}" commandline="/fo&quot;..\${resources.dest.dir}\NAntAddinResources.res&quot; &quot;NAntAddinResources.rc&quot;" />
+    <rc rcfile="${resources.dir}\NAntAddinResources.rc" output="${resources.dest.dir}\NAntAddinResources.res"/>
     <echo message="**************************************************" />
     <echo message="*" />
     <echo message="* Linking C++ Resource Library" />
@@ -213,7 +212,7 @@
     <copy file="${nantbuild.dir}\NDoc.Core.dll" todir="${dest.dir}" />
     <copy file="${nantbuild.dir}\NDoc.Documenter.Msdn.dll" todir="${dest.dir}" />
     <copy file="${nantbuild.dir}\NUnitCore.dll" todir="${dest.dir}" />
-    <copy file="${nantbuild.dir}\NZipLib.dll" todir="${dest.dir}" />
+    <copy file="${nantbuild.dir}\SharpZipLib.dll" todir="${dest.dir}" />
   </target>
   <target name="build.nantcontrib" description="Compiles NAntContrib">
     <echo message="**************************************************" />
@@ -228,7 +227,7 @@
   </target>
   <target name="clean" description="Deletes Build Output">
 	<exec program="regsvr32" commandline="/u /s ${dest.dir}\VSUserControlHost.dll" failonerror="false" />
-	<exec program="regasm" commandline="${dest.dir}\${product.name}.dll /silent /unregister" failonerror="false" />
+	<regasm assembly="${dest.dir}\${product.name}.dll" unregister="true" silent="true" failonerror="false" />
     <delete dir="${dest.dir}" failonerror="false" />
   </target>
   <target name="rebuild" description="Cleans and Builds the Addin" depends="clean,build" />
@@ -370,7 +369,7 @@
       </fileset>
     </delete>
   </target>
-  <target name="build.install" description="Builds the MSI Install" depends="build.nantcontrib"><!--depends="build.nantcontrib, build"-->
+  <target name="build.install" description="Builds the MSI Install" depends="prepare"><!--depends="build.nantcontrib, build"-->
     <echo message="**************************************************" />
     <echo message="*" />
     <echo message="* Building MSI (Windows Installer) File..." />
@@ -420,17 +419,17 @@
         <includes name="NAntAddinSetup\*.msm" />
       </mergemodules>
       <registry>
-	  <key path="Software\Microsoft\VisualStudio\7.0\AddIns\NAnt.Addin" root="machine">
-	    <component ref="AddinFiles" />
-	    <value name="SatelliteDLLName" value="NAntAddinResources.dll" />
-        <value name="SatelliteDLLPath" value="[ADDINFOLDER]" />
-        <value name="FriendlyName" value="NAnt Addin" />
-	    <value name="Description" value="Integrates the NAnt build system with the Visual Studio .NET IDE." />
-	    <value name="CommandLineSafe" dword="00000000" />
-	    <value name="CommandPreload" dword="00000001" />
-	    <value name="LoadBehavior" dword="00000000" />
-	    <value name="AboutBoxDetails" value="NAnt Addin for Visual Studio .NET" />
-	    <value name="AboutBoxIcon">
+        <key path="Software\Microsoft\VisualStudio\7.0\AddIns\NAnt.Addin" root="machine">
+	      <component ref="AddinFiles" />
+          <value name="SatelliteDLLName" value="NAntAddinResources.dll" />
+          <value name="SatelliteDLLPath" value="[ADDINFOLDER]" />
+          <value name="FriendlyName" value="NAnt Addin" />
+          <value name="Description" value="Integrates the NAnt build system with the Visual Studio .NET IDE." />
+          <value name="CommandLineSafe" dword="00000000" />
+          <value name="CommandPreload" dword="00000001" />
+          <value name="LoadBehavior" dword="00000000" />
+          <value name="AboutBoxDetails" value="NAnt Addin for Visual Studio .NET" />
+          <value name="AboutBoxIcon">
 <![CDATA[00,00,01,00,01,00,20,20,10,00,00,00,00,00,e8,02,00,00,16,00,
 00,00,28,00,00,00,20,00,00,00,40,00,00,00,01,00,04,00,00,00,00,00,00,02,00,
 00,00,00,00,00,00,00,00,00,10,00,00,00,10,00,00,00,00,00,00,00,00,00,80,00,
@@ -461,8 +460,9 @@ ff,ff,ff,ff,ff,ff,ff,ff,ff,80,00,ff,ff,80,00,ff,ff,80,00,00,01,80,00,00,01,
 80,00,00,01,80,00,00,01,80,00,00,01,80,00,00,01,80,00,00,01,80,00,00,01,f0,
 00,00,01,d0,00,00,01,f0,00,00,01,d0,00,00,01,f0,00,00,01,f0,00,00,01,f0,00,
 00,01,f0,00,00,01,f0,00,00,01,f0,00,00,01,f0,00,00,01,f0,00,00,01,f0,00,00,
-01,f0,00,00,01,f0,00,00,01,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff]]></value>
-	  </key>
+01,f0,00,00,01,f0,00,00,01,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff]]>
+          </value>
+        </key>
       </registry>
     </msi>
   </target>
