@@ -49,8 +49,45 @@
                 Added '.' operator during checkout to fix issue with incorrect destination directory (bug <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=1078255&group_id=54790&atid=474851">#1078255</a>).
             </li>
         </ul>
+        <h4>Task changes</h4>
+        <h5><a class="heading" href="help/tasks/vssget.html">&lt;vssget&gt;</a></h5>
+        <ul>
+            <li>
+                Added &quot;filetimestamp&quot; attribute that allows the behavior
+                for timestamps of local files to be set.
+            </li>
+            <li>
+                If &quot;localpath&quot; is not an absolute path, it will now be
+                considered as a path relative to the project base directory.
+            </li>
+        </ul>
+        <h5><a class="heading" href="help/tasks/vsscheckin.html">&lt;vsscheckin&gt;</a></h5>
+        <ul>
+            <li>
+                If &quot;localpath&quot; is not an absolute path, it will now be
+                considered as a path relative to the project base directory.
+            </li>
+        </ul>
+        <h5><a class="heading" href="help/tasks/vsscheckout.html">&lt;vsscheckout&gt;</a></h5>
+        <ul>
+            <li>
+                Added &quot;filetimestamp&quot; attribute that allows the behavior
+                for timestamps of local files to be set.
+            </li>
+            <li>
+                If &quot;localpath&quot; is not an absolute path, it will now be
+                considered as a path relative to the project base directory.
+            </li>
+        </ul>
+        <h5><a class="heading" href="help/tasks/vssundocheckout.html">&lt;vssundocheckout&gt;</a></h5>
+        <ul>
+            <li>
+                If &quot;localpath&quot; is not an absolute path, it will now be
+                considered as a path relative to the project base directory.
+            </li>
+        </ul>
         <h3>0.85-rc1 (November 28, 2004)</h3>
-        <h4>New Tasks</h4>
+        <h4>New tasks</h4>
         <h5><a class="heading" href="help/tasks/depends.html">&lt;depends&gt;</a></h5>
         <ul>
             <li>
@@ -212,7 +249,7 @@
         <h3>0.84-rc 2 (December 21, 2003)</h3>
         <p>No changes</p>
         <h3>0.84-rc 1 (December 6, 2003)</h3>
-        <h4>New Tasks</h4>
+        <h4>New tasks</h4>
         <h5>&lt;vssdif&gt;</h5>
         <ul>
             <li>
