@@ -187,6 +187,36 @@
                     BuildAction="Compile"
                 />
                 <File
+                    RelPath="Tasks\GacTaskBase.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\GacInstallTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\GacUninstallTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\SchemeType.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Types\Assembly.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Types\AssemblySet.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
                     RelPath="Tasks\GacTask.cs"
                     SubType="Code"
                     BuildAction="Compile"
