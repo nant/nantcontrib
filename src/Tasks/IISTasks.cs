@@ -142,7 +142,7 @@ namespace NAnt.Contrib.Tasks
          get { return _accessexecute; }
          set { _accessexecute = value; }
       }
-	
+
       [TaskAttribute("accessnoremoteexecute")]
       public bool accessnoremoteexecute{
          get { return _accessnoremoteexecute; }
@@ -564,8 +564,7 @@ namespace NAnt.Contrib.Tasks
             newVirDir.Properties["SSIExecDisable"][0] = _ssiexecdisable;
             newVirDir.Properties["UNCAuthenticationPassthrough"][0] = _uncauthenticationpassthrough;
             newVirDir.Properties["AspScriptErrorMessage"][0] = _aspscripterrormessage;
-	    newVirDir.Properties["DefaultDoc"][0] = _defaultdoc;
-
+            newVirDir.Properties["DefaultDoc"][0] = _defaultdoc;
 
             // Save Changes
             newVirDir.CommitChanges();
@@ -603,20 +602,17 @@ namespace NAnt.Contrib.Tasks
          get { return _vdirname; }
          set { _vdirname = value; }
       }
-	
+
       protected override void ExecuteTask(){
-         try{
-	    DirectoryEntry folderRoot = new DirectoryEntry(_iispath);
+         try {
+            DirectoryEntry folderRoot = new DirectoryEntry(_iispath);
             DirectoryEntries rootEntries = folderRoot.Children;
-	    folderRoot.RefreshCache();
-	    DirectoryEntry childVirDir = folderRoot.Children.Find(_vdirname,folderRoot.SchemaClassName);
-	      
+            folderRoot.RefreshCache();
+            DirectoryEntry childVirDir = folderRoot.Children.Find(_vdirname,folderRoot.SchemaClassName);
             rootEntries.Remove(childVirDir);
-	  
-	    childVirDir.Close();
+            childVirDir.Close();
             folderRoot.Close();
-         }
-         catch (Exception e){
+         } catch (Exception e) {
             throw new BuildException(this.GetType().ToString() + ": Error deleting virtual directory, see build log for details.", Location, e);
          }
       }
@@ -645,7 +641,7 @@ namespace NAnt.Contrib.Tasks
          get { return _vdirname; }
          set { _vdirname = value; }
       }
-	
+
       protected override void ExecuteTask(){
          try{
             DirectoryEntry folderRoot = new DirectoryEntry(_iispath);
