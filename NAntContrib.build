@@ -13,6 +13,7 @@
     <property name="src.dir" value="src" />
     <property name="tests.dir" value="tests" />
     <property name="tools.dir" value="Tools" />
+    <property name="nant.base.uri" value="${nant.dir}/doc/help/" overwrite="false" />
 
     <!-- named project configurations (used by self-test and self-doc tasks) -->
     <target name="debug" description="Perform a 'debug' build">
@@ -209,12 +210,21 @@
         </ifnot>
         <ndoc>
             <assemblies basedir="${build.dir}/bin" failonempty="true">
-                <includes name="NAnt.Contrib.Tasks.dll"/>
+                <includes name="NAnt.Contrib.Tasks.dll" />
+                <includes name="${nant.dir}/bin/NAnt.Core.dll" />
             </assemblies>
             <documenters>
                 <documenter name="NAntTask">
                     <property name="OutputDirectory" value="${build.dir}/doc/help" />
                     <property name="LinkToSdkDocVersion" value="${link.sdkdoc.version}" />
+                    <property name="NAntBaseUri" value="${nant.base.uri}" />
+                    <!-- only document classes in NAnt.Contrib namespace -->
+                    <property name="NamespaceFilter" value="NAnt.Contrib" />
+                    <property name="DocumentAttributes" value="True" />
+                    <property name="IncludeAssemblyVersion" value="True" />
+                    <property name="ShowMissingParams" value="True" />
+                    <property name="ShowMissingReturns" value="True" />
+                    <property name="ShowMissingValues" value="True" />
                 </documenter>
                 <documenter name="MSDN">
                     <property name="OutputDirectory" value="${build.dir}/doc/sdk" />
