@@ -14,8 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//
-// Bob Arnson (nant@bobs.org)
+// Ian MacLean ( ian_maclean@another.com )
 
 using System;
 using System.Text;
@@ -25,54 +24,36 @@ using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks.Perforce {
-    
-    /// <summary>
-    /// Fetch a specific file from a Perforce depot without needing a clientspec to map it. Wraps the 'p4 print' command.
-    /// </summary>
-    ///<example>
-    /// <para>
-    ///<code>
-    ///     <![CDATA[
-    ///<p4print file="//depot/foo/mainline/clientspec" outputfile=".\clientspec" />
-    ///<p4client input=".\clientspec" />
-    ///     ]]>
-    ///   </code>
-    /// </para>
+    /// <summary>Open file(s) in a client workspace for deletion from the depot.
+    /// <example>
+    /// <para>Mark all cs files under the give view for deletion and place them in the "Deleting" changelist</para>
+    /// <code>
+    ///        <![CDATA[
+    ///    <p4delete view="//Root/ProjectX/Test/...*.cs" changelist="Deleting" />
+    ///        ]]>
+    /// </code>
     /// </example>
-    /// <todo> fileset? </todo>
-    /// <author> <a href="mailto:nant@bobs.org">Bob Arnson</a></author>
-    [TaskName("p4print")]
-    public class P4Print : P4Base {
-        
+    /// </summary>
+    public class P4Delete : P4Base {
         #region Private Instance Fields
-        
-        private string _file = null;
-        private string _outputFile = null;
-        
-        #endregion Private Instance Fields
-        
-        #region Public Instance Properties
-        
-        /// <summary> 
-        /// The depot or local filename (including optional path) of the file to fetch; required
+
+        private string _changelist = null;
+
+        #endregion
+
+        #region Public Instance Fields
+
+        /// <summary>
+        /// Changelist to place the marked for deletion item into. optional.
         /// </summary>
-        [TaskAttribute("file", Required = true)]
-        public string File {
-            get { return _file; }
-            set { _file = StringUtils.ConvertEmptyToNull(value); }
+        [TaskAttribute("changelist",Required=false)]
+        public string Changelist {
+            get { return _changelist; }
+            set { _changelist = StringUtils.ConvertEmptyToNull(value); }
         }
-        
-        /// <summary> 
-        /// The local filename to write the fetched file to; required
-        /// </summary>
-        [TaskAttribute("outputfile", Required = true)]
-        public string P4OutputFile {
-            get { return _outputFile; }
-            set { _outputFile = StringUtils.ConvertEmptyToNull(value); }
-        }
-        
-        #endregion Public Instance Properties
-        
+
+        #endregion
+
         /// <summary>
         /// This is an override used by the base class to get command specific args.
         /// </summary>
@@ -88,9 +69,16 @@ namespace NAnt.Contrib.Tasks.Perforce {
         /// <returns></returns>
         protected string getSpecificCommandArguments( ) {
             StringBuilder arguments = new StringBuilder();
-            arguments.Append("-s print -q ");
-            arguments.Append(string.Format("-o {0} ", P4OutputFile));
-            arguments.Append(File);
+            arguments.Append("delete ");
+
+            if ( View == null) {
+                throw new BuildException("A \"view\" attribute is required for p4add");
+            }
+            if ( Changelist != null ) {
+                arguments.Append( string.Format("-c {0} ", Perforce.GetChangelistNumber( User, Client, Changelist, true )));
+            }
+            arguments.Append( View );
+
             return arguments.ToString();
         }
         

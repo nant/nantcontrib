@@ -102,7 +102,7 @@ namespace NAnt.Contrib.Tasks.Perforce {
         /// <returns></returns>
         protected string getSpecificCommandArguments( ) {
             StringBuilder arguments = new StringBuilder();
-            arguments.Append("-s sync ");
+            arguments.Append("sync ");
             
             if ( View  != null ) {
                 arguments.Append( View );
@@ -112,8 +112,8 @@ namespace NAnt.Contrib.Tasks.Perforce {
             }
             if ( Force ) {
                 arguments.Append( " -f");
-            }                       
-            //arguments.append("-s sync " + P4CmdOpts + " " + syncCmd);
+            }
+           
            return arguments.ToString();
         }
         

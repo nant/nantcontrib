@@ -19,6 +19,7 @@
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
+using NAnt.Core;
 using NAnt.Core.Tasks;
 using NAnt.Core.Util;
 using NAnt.Core.Attributes;
@@ -38,7 +39,8 @@ namespace NAnt.Contrib.Tasks.Perforce {
         private string _perforceClient = null;
         private string _perforceUser = null;
         private string _perforceView = null;
-       
+        private bool _scriptOutput = false;
+
         #endregion Private Instance Fields
 
         #region Public Instance Properties
@@ -48,7 +50,7 @@ namespace NAnt.Contrib.Tasks.Perforce {
         /// <summary> The p4d server and port to connect to;
         /// optional, default "perforce:1666"
         /// </summary>
-        [TaskAttribute("port")]
+        [TaskAttribute("port",Required=false)]
         public string Port {
             get { return _perforcePort; }
             set {_perforcePort = StringUtils.ConvertEmptyToNull(value); }
@@ -57,30 +59,53 @@ namespace NAnt.Contrib.Tasks.Perforce {
         /// <summary> The p4 client spec to use;
         /// optional, defaults to the current user
         /// </summary>
-        [TaskAttribute("client")]
+        [TaskAttribute("client",Required=false)]
         public string Client {
-            get { return _perforceClient; }
+            get { 
+                if (_perforceClient == null) {
+                    _perforceClient = Perforce.GetClient();
+                }
+                return _perforceClient; 
+            }
             set { _perforceClient = StringUtils.ConvertEmptyToNull(value); }
 
         }
         /// <summary> The p4 username;
         /// optional, defaults to the current user
         /// </summary>
-        [TaskAttribute("user")]
+        [TaskAttribute("user",Required=false)]
         public string User {
-            get { return _perforceUser; }
+            get { 
+                if (_perforceUser == null){
+                    _perforceUser = Perforce.GetUserName();
+                }
+                return _perforceUser; 
+            }
             set { _perforceUser = StringUtils.ConvertEmptyToNull(value); }
 
         }
         /// <summary> The client, branch or label view to operate upon;
         /// optional default "//..."
         /// </summary>
-        [TaskAttribute("view")]
+        [TaskAttribute("view",Required=false)]
         virtual public string View {
             get { return _perforceView; }
             set { _perforceView = StringUtils.ConvertEmptyToNull(value); }
-
         }
+
+        /// <summary>
+        /// Prepends a descriptive field (for example, text:, info:, error:, exit:) to each 
+        /// line of output produced by a Perforce command. 
+        /// This is most often used when scripting.
+        /// optional default false
+        /// </summary>
+        [TaskAttribute("script",Required=false)]
+        [BooleanValidator()]
+        virtual public bool Script {
+            get { return _scriptOutput; }
+            set { _scriptOutput = value; }
+        }
+
         ///// <summary> Set extra command options; only used on some
         ///// of the Perforce tasks.
         ///// </summary>
@@ -133,17 +158,21 @@ namespace NAnt.Contrib.Tasks.Perforce {
             }
             if (Client != null ) {
                 arguments.Append(string.Format(" -c {0}", Client ) );
-
             }
+            if (Script) {
+                arguments.Append(" -s");
+            }
+
             // Get the command specific arguments from the derived class
             arguments.Append(" ");
             arguments.Append(CommandSpecificArguments);
-            
-            //arguments.Append(CommandOptions);     
+
             _arguments = arguments.ToString();
 
             // call base class to do perform the actual call
+            Log(Level.Verbose, ExeName + _arguments.ToString());
             base.ExecuteTask();
+
         } 
         #endregion Override implementation of Task
     }
