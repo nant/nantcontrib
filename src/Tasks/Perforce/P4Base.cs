@@ -119,7 +119,7 @@ namespace NAnt.Contrib.Tasks.Perforce {
         /// Override the ExeName paramater for p4.exe
         /// </summary>
         public override string ExeName {
-            get { return "p4.exe"; }
+            get { return "p4"; }
         }
             
         #endregion Public Instance Properties
