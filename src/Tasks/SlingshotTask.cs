@@ -69,6 +69,7 @@ namespace NAnt.Contrib.Tasks {
     ///   </code>
     /// </example>
     [TaskName("slingshot")]
+    [Obsolete("Use the <solution> task instead.", false)]
     public class SlingshotTask : Task {
         #region Private Instance Fields
 
