@@ -163,7 +163,7 @@ namespace NAnt.Contrib.Tasks {
                 }
 
                 if (Conditionals != null) {
-                    writer.AppendFormat(" /d \"{0}\"", _conditionals);
+                    writer.AppendFormat(" /d {0}", _conditionals);
                 }
 
                 writer.AppendFormat(" /outdir \"{0}\"", OutDir.FullName);
