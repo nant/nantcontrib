@@ -15,6 +15,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Ian MacLean ( ian_maclean@another.com )
+// Jeff Hemry ( jdhemry@qwest.net )
 
 using System;
 using System.Text;
@@ -27,7 +28,7 @@ namespace NAnt.Contrib.Tasks.Perforce {
 
     /// <summary>Synchronize client space to a Perforce depot view.  
     /// The API allows additional functionality of the "p4 sync" command
-    /// (such as "p4 sync -f //...#have" or other exotic invocations).
+    /// (such as "p4 sync -f //...#have" or other exotic invocations). Wraps the 'p4 sync' command.
     /// </summary>
     ///<example>
     ///<para>Sync to head using P4USER, P4PORT and P4CLIENT settings specified</para>    

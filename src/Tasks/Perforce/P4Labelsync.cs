@@ -15,6 +15,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Ian MacLean ( ian_maclean@another.com )
+// Jeff Hemry ( jdhemry@qwest.net )
 
 using System;
 using System.Text;
@@ -24,7 +25,9 @@ using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks.Perforce {
-    /// <summary>Synchronize a label with the contents of the current client workspace.
+    /// <summary>
+    /// Synchronize a label with the contents of the current client workspace. Wraps the 'p4 labelsync' command.
+    /// </summary>
     /// <example>
     /// <para>Apply a previously created label to the specified view.</para>
     /// <code>
@@ -33,7 +36,7 @@ namespace NAnt.Contrib.Tasks.Perforce {
     ///        ]]>
     /// </code>
     /// </example>
-    /// </summary>
+    [TaskName("p4labelsync")]
     public class P4Labelsync : P4Base {
         #region Private Instance Fields
 
@@ -48,7 +51,7 @@ namespace NAnt.Contrib.Tasks.Perforce {
         /// Labelname to sync the specified or default view with. required.
         /// </summary>
         [TaskAttribute("labelname",Required=true)]
-        public string Labelname  {
+        public string Labelname {
             get { return _labelname; }
             set { _labelname = StringUtils.ConvertEmptyToNull(value); }
         }

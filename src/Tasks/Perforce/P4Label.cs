@@ -15,6 +15,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Ian MacLean ( ian_maclean@another.com )
+// Jeff Hemry ( jdhemry@qwest.net )
 
 using System;
 using System.Text;
@@ -24,7 +25,9 @@ using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks.Perforce {
-    /// <summary>Create or edit a label specification and its view.
+    /// <summary>
+    /// Create or edit a label specification and its view. Wraps the 'p4 label' command.
+    /// </summary>
     /// <example>
     /// <para>Create a new label called "SDK_V1.2"</para>
     /// <code>
@@ -39,7 +42,6 @@ namespace NAnt.Contrib.Tasks.Perforce {
     ///        ]]>
     /// </code>
     /// </example>
-    /// </summary>
     [TaskName("p4label")]
     public class P4Label : P4Base {
         #region Private Instance Fields
@@ -55,7 +57,7 @@ namespace NAnt.Contrib.Tasks.Perforce {
         /// Name of label to create/delete. required.
         /// </summary>
         [TaskAttribute("labelname",Required=true)]
-        public string Labelname  {
+        public string Labelname {
             get { return _labelname; }
             set { _labelname = StringUtils.ConvertEmptyToNull(value); }
         }
@@ -107,6 +109,7 @@ namespace NAnt.Contrib.Tasks.Perforce {
 
             return arguments.ToString();
         }
+        
         #endregion Override implementation of Task
     }
 }

@@ -15,6 +15,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Ian MacLean ( ian_maclean@another.com )
+// Jeff Hemry ( jdhemry@qwest.net )
 
 using System;
 using System.Text;
@@ -24,7 +25,9 @@ using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks.Perforce {
-    /// <summary>Open file(s) in a client workspace for addition to the depot.
+    /// <summary>
+    /// Open file(s) in a client workspace for addition to the depot. Wraps the 'p4 add' command.
+    /// The P4Submit command is required to submit to the perforce server.
     /// </summary>
     /// <example>
     /// <para>Add all cs files under the given directory into the "new" changelist 
@@ -41,6 +44,7 @@ namespace NAnt.Contrib.Tasks.Perforce {
     ///        ]]>
     /// </code>
     /// </example>
+    [TaskName("p4add")]
     public class P4Add : P4Base {
         #region Private Instance Fields
 
@@ -84,8 +88,7 @@ namespace NAnt.Contrib.Tasks.Perforce {
         /// <summary>
         /// This is an override used by the base class to get command specific args.
         /// </summary>
-        protected override string CommandSpecificArguments 
-        {
+        protected override string CommandSpecificArguments {
             get { return getSpecificCommandArguments(); }
         }
         

@@ -15,6 +15,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Ian MacLean ( ian_maclean@another.com )
+// Jeff Hemry ( jdhemry@qwest.net )
 
 using System;
 using System.Text;
@@ -24,24 +25,31 @@ using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks.Perforce {
-    /// <summary>Set registry variables that perforce uses.
+    /// <summary>
+    /// Set registry variables that perforce uses.
+    /// </summary>
     /// <example>
     /// <para>Modify any of the three variables (at least one required).
-    /// <br/>Note: this sets the environment variables that p4 uses, but does
+    /// <br/>Note: this sets the environment variables that p4 uses, but does 
     /// not validate them.</para>
     /// <code>
-    ///  <![CDATA[
-    ///  <p4set client="myClient" user="jonb" port="server:1666" />
-    ///  ]]>
+    ///        <![CDATA[
+    ///        <p4set client="myClient" user="jonb" port="server:1666" />
+    ///        ]]>
     /// </code>
     /// </example>
-    /// </summary>
     [TaskName("p4set")]
         public class P4Set : P4Base {
 
+        
         #region Private Instance Fields
+
+
         #endregion
+
         #region Public Instance Fields
+
+
         #endregion
 
         /// <summary>
@@ -66,19 +74,18 @@ namespace NAnt.Contrib.Tasks.Perforce {
             }
 
             if ( User != null ) {
-                Perforce.SetVariable("P4USER", User);
+                Perforce.SetVariable("P4USER",User);
             }
             if ( Client != null ) {
-                Perforce.SetVariable("P4CLIENT", Client);
+                Perforce.SetVariable("P4CLIENT",Client);
             }
             if ( Port != null ) {
-                Perforce.SetVariable("P4PORT", Port);
+                Perforce.SetVariable("P4PORT",Port);
             }
 
             return arguments.ToString();
         }
 
         #endregion Override implementation of Task
-
     }
 }

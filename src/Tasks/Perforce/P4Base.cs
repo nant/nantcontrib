@@ -15,6 +15,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Ian MacLean ( ian_maclean@another.com )
+// Jeff Hemry ( jdhemry@qwest.net )
 
 using System;
 using System.Text;
@@ -25,10 +26,21 @@ using NAnt.Core.Util;
 using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks.Perforce {
+
     /// <summary>
     /// Base class for Perforce (P4) NAnt tasks. See individual task for example usage.
+    /// <seealso cref="P4Add">P4Add</seealso>
+    /// <seealso cref="P4Change">P4Change</seealso>
+    /// <seealso cref="P4Delete">P4Delete</seealso>
+    /// <seealso cref="P4Edit">P4Edit</seealso>
+    /// <seealso cref="P4Label">P4Label</seealso>
+    /// <seealso cref="P4Labelsync">P4Labelsync</seealso>
+    /// <seealso cref="P4Print">P4Print</seealso>
+    /// <seealso cref="P4Reopen">P4Reopen</seealso>
+    /// <seealso cref="P4Revert">P4Revert</seealso>
+    /// <seealso cref="P4Submit">P4Submit</seealso>
+    /// <seealso cref="P4Sync">P4Sync</seealso>
     /// </summary>
-    /// <seealso cref="P4Sync">P4Sync</seealso>    
     public abstract class P4Base: ExternalProgramBase {
         #region Private Instance Fields
         
@@ -43,8 +55,8 @@ namespace NAnt.Contrib.Tasks.Perforce {
 
         #region Public Instance Properties
         
-        /// <summary>
-        /// The p4d server and port to connect to; optional, default "perforce:1666".
+        /// <summary> The p4d server and port to connect to;
+        /// optional, default "perforce:1666"
         /// </summary>
         [TaskAttribute("port",Required=false)]
         public string Port {

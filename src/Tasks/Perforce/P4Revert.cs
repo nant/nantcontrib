@@ -15,6 +15,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Ian MacLean ( ian_maclean@another.com )
+// Jeff Hemry ( jdhemry@qwest.net )
 
 using System;
 using System.Text;
@@ -24,7 +25,9 @@ using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks.Perforce {
-    /// <summary>Discard changes made to open files.
+    /// <summary>
+    /// Discard changes made to open files. Wraps the 'p4 revert' command.
+    /// </summary>
     /// <example>
     /// <para>Revert all txt files in a given changelist.</para>
     /// <code>
@@ -45,7 +48,6 @@ namespace NAnt.Contrib.Tasks.Perforce {
     ///        ]]>
     /// </code>
     /// </example>
-    /// </summary>
     [TaskName("p4revert")]
     public class P4Revert : P4Base {
 

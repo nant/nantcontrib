@@ -15,6 +15,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Ian MacLean ( ian_maclean@another.com )
+// Jeff Hemry ( jdhemry@qwest.net )
 
 using System;
 using System.Text;
@@ -25,7 +26,10 @@ using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks.Perforce {
     
-    /// <summary>Opens file(s) in a client workspace for edit.
+    /// <summary>
+    /// Opens file(s) in a client workspace for edit. Wraps the 'p4 edit' command.
+    /// The P4Submit command is required to submit to the perforce server.
+    /// </summary>
     /// <example>
     /// <para>Open all files in the ProjectX Test folder for edit, and place into the default changelist.</para>
     /// <code>
@@ -40,7 +44,6 @@ namespace NAnt.Contrib.Tasks.Perforce {
     ///        ]]>
     /// </code>
     /// </example>
-    /// </summary>
     [TaskName("p4edit")]
     public class P4Edit : P4Base {
         
@@ -86,8 +89,7 @@ namespace NAnt.Contrib.Tasks.Perforce {
         /// local method to build the command string for this particular command
         /// </summary>
         /// <returns></returns>
-        protected string getSpecificCommandArguments( ) 
-        {
+        protected string getSpecificCommandArguments( ) {
             StringBuilder arguments = new StringBuilder();
             arguments.Append("edit ");
             

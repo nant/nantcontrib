@@ -15,6 +15,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Ian MacLean ( ian_maclean@another.com )
+// Jeff Hemry ( jdhemry@qwest.net )
 
 using System;
 using System.Text;
@@ -24,7 +25,10 @@ using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks.Perforce {
-    /// <summary>Move opened files between changelists or change the files’ type.
+    /// <summary>
+    /// Move opened files between changelists or change the files’ type. Wraps the 'p4 reopen' command.
+    /// The P4Submit command is required to submit to the perforce server.
+    /// </summary>
     /// This has two different but related uses:
     /// Moving opened files between changelists (default or named).
     /// Changing the type of an opened file.
@@ -42,7 +46,7 @@ namespace NAnt.Contrib.Tasks.Perforce {
     ///        ]]>
     /// </code>
     /// </example>
-    /// </summary>
+    [TaskName("p4reopen")]
     public class P4Reopen : P4Base {
         #region Private Instance Fields
 

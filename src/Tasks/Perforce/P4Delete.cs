@@ -15,6 +15,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Ian MacLean ( ian_maclean@another.com )
+// Jeff Hemry ( jdhemry@qwest.net )
 
 using System;
 using System.Text;
@@ -24,7 +25,10 @@ using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks.Perforce {
-    /// <summary>Open file(s) in a client workspace for deletion from the depot.
+    /// <summary>
+    /// Open file(s) in a client workspace for deletion from the depot. Wraps the 'p4 delete' command.
+    /// The P4Submit command is required to submit to the perforce server.
+    /// </summary>
     /// <example>
     /// <para>Mark all cs files under the give view for deletion and place them in the "Deleting" changelist</para>
     /// <code>
@@ -33,7 +37,6 @@ namespace NAnt.Contrib.Tasks.Perforce {
     ///        ]]>
     /// </code>
     /// </example>
-    /// </summary>
     [TaskName("p4delete")]
     public class P4Delete : P4Base {
         #region Private Instance Fields

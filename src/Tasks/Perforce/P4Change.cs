@@ -15,6 +15,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Ian MacLean ( ian_maclean@another.com )
+// Jeff Hemry ( jdhemry@qwest.net )
 
 using System;
 using System.Text;
@@ -24,7 +25,9 @@ using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks.Perforce {
-    /// <summary>Create or delete a changelist specification.
+    /// <summary>
+    /// Create or delete a changelist specification. Wraps the 'p4 change' command.
+    /// </summary>
     /// <example>
     /// <para>Create a new changelist called "mynewchange".</para>
     /// <code>
@@ -39,7 +42,7 @@ namespace NAnt.Contrib.Tasks.Perforce {
     ///        ]]>
     /// </code>
     /// </example>
-    /// </summary>
+    [TaskName("p4change")]
     public class P4Change : P4Base {
         #region Private Instance Fields
 
@@ -84,7 +87,7 @@ namespace NAnt.Contrib.Tasks.Perforce {
         /// local method to build the command string for this particular command
         /// </summary>
         /// <returns></returns>
-        protected string getSpecificCommandArguments( )  {
+        protected string getSpecificCommandArguments( ) {
             StringBuilder arguments = new StringBuilder();
             arguments.Append("change ");
 
