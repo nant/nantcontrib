@@ -278,6 +278,10 @@
 	<!-- Copy Addin Resources -->
 	<mkdir dir="${installsource.dir}\NAnt\1033" />
 	<copy todir="${installsource.dir}\NAnt\1033" file="${addin.dir}\build\NAntAddin\1033\NAntAddinResources.dll" />
+	<!-- Copy Addin Script Template -->
+	<mkdir dir="${installsource.dir}\NewFileItems" />
+	<copy tofile="${installsource.dir}\NewFileItems\NAntScript.build" file="${addin.dir}\NAntScript.build.txt" />
+	<copy todir="${installsource.dir}\NewFileItems" file="${addin.dir}\NAntScript.vsdir" />
 	<!-- Copy SLiNgshoT -->
 	<property name="slingshot.dir" value="Tools\SLiNgshoT" />
 	<nant buildfile="${slingshot.dir}\SLiNgshoT.build" target="SLiNgshoT.Release SLiNgshoT" />
@@ -288,12 +292,18 @@
 		banner="Tools\VSNetAddin\installlogo.bmp" background="Tools\VSNetAddin\installbg.bmp" 
 		license="Tools\VSNetAddin\license.rtf" debug="true">
       <properties>
-        <property name="ProductName" value="NAnt"/>
-        <property name="ProductVersion" value="1.0.0.1"/>
+        <property name="ProductName" value="NAnt" />
+        <property name="ProductVersion" value="1.0.0.1" />
         <property name="Manufacturer" value="The NAnt SourceForge Project"/>
-        <property name="ProductCode" value="{2D2FB50C-DADF-4813-8932-8EF1E8CB8E80}"/>
-        <property name="UpgradeCode" value="{B989702A-035F-44F1-B40D-192BA25DECB7}"/>
+        <property name="ProductCode" value="{2D2FB50C-DADF-4813-8932-8EF1E8CB8E80}" />
+        <property name="UpgradeCode" value="{B989702A-035F-44F1-B40D-192BA25DECB7}" />
+        <property name="VSNETINSTALLDIR" value="ProgramFilesFolder" />
       </properties>
+      <search>
+        <key type="registry" path="Software\Microsoft\VisualStudio\7.0" root="machine">
+          <value name="InstallDir" ref="VSNETINSTALLDIR" />
+        </key>
+      </search>
       <features>
         <feature name="DefaultFeature" title="NAnt Platform" display="1">
           <description>The NAnt build platform. Includes Core, .NET, and Zip Tasks.</description>
@@ -311,6 +321,7 @@
 			<description>Addin for using NAnt from Visual Studio .NET.</description>
             <feature name="AddinTaskImagesFeature" display="0" />
             <feature name="AddinResourcesFeature" display="0" />
+            <feature name="AddinTemplateFeature" display="0" />
           </feature>
           <feature name="SlingshotFeature" title="SLiNgshoT" display="1" typical="false">
 			<description>Converts Visual Studio .NET projects to NAnt scripts.</description>
@@ -409,7 +420,15 @@
 			<includes name="NAntAddinResources.dll" />
           </fileset>
         </component>
-	   <component name="SlingshotFiles" id="{E7E89E51-FE7C-4C2C-B563-1B70D6FF841D}" attr="2">
+        <component name="AddinTemplateFiles" id="{DDFECF7D-9A01-43a5-93A1-095F9E501BEC}" attr="2">
+          <directory ref="NEWFILEITEMSFOLDER" />
+          <feature ref="AddinTemplateFeature" />
+          <key file="NAntScript.build" />
+          <fileset basedir="${installsource.dir}\NewFileItems">
+			<includes name="*.*" />
+          </fileset>
+        </component>
+	    <component name="SlingshotFiles" id="{E7E89E51-FE7C-4C2C-B563-1B70D6FF841D}" attr="2">
           <directory ref="NANTFOLDER" />
           <feature ref="SlingshotFeature" />
           <key file="SLiNgshoT.exe" />
@@ -417,7 +436,7 @@
 			<includes name="SLiNgshoT.exe" />
           </fileset>
         </component>
-	  <component name="SlingshotLibFiles" id="{A0E2FED6-0CD9-43D7-9A7B-0DF704129FEC}" attr="2">
+	    <component name="SlingshotLibFiles" id="{A0E2FED6-0CD9-43D7-9A7B-0DF704129FEC}" attr="2">
           <directory ref="NANTFOLDER" />
           <feature ref="SlingshotLibFeature" />
           <key file="SLiNgshoT.Core.dll" />
@@ -427,6 +446,7 @@
         </component>
       </components>
       <directories>
+		<directory name="NEWFILEITEMSFOLDER" foldername="NewFileItems" root="VSNETINSTALLDIR" />
         <directory name="NANTFOLDER" foldername="NAnt" root="ProgramFilesFolder">
 			<directory name="TASKSFOLDER" foldername="Tasks" />
 			<directory name="ADDINRESOURCEFOLDER" foldername="1033" />
