@@ -23,37 +23,41 @@
 #endregion
 
 using System;
-using System.IO;
-using System.Text;
-using Microsoft.Win32;
-using System.Reflection;
-using System.Diagnostics;
 using System.ComponentModel;
 using System.Collections;
 using System.Collections.Specialized;
-using System.Xml;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
+using System.Text;
+using System.Xml;
+
+using Microsoft.Win32;
+
+using MsmMergeTypeLib;
+using WindowsInstaller;
 
 using NAnt.Core;
+using NAnt.Core.Attributes;
 using NAnt.Core.Tasks;
 using NAnt.Core.Types;
-using NAnt.Core.Attributes;
 
 using NAnt.Contrib.Schemas.MSI;
-using WindowsInstaller;
-using MsmMergeTypeLib;
 
-namespace NAnt.Contrib.Tasks
-{
+namespace NAnt.Contrib.Tasks {
     /// <summary>
     /// Builds a Windows Installer (MSI) File.
     /// </summary>
-    /// <remarks>Requires <c>cabarc.exe</c> in the path.  This tool is included in the Microsoft Cabinet SDK.</remarks>
+    /// <remarks>
+    /// Requires <c>cabarc.exe</c> in the path.  This tool is included in the 
+    /// Microsoft Cabinet SDK.
+    /// </remarks>
     [TaskName("msi")]
     [SchemaValidator(typeof(msi))]
-    public class MSITask : SchemaValidatedTask
-    {
+    public class MSITask : SchemaValidatedTask {
         msi msi;
 
         Hashtable files = new Hashtable();
@@ -62,8 +66,7 @@ namespace NAnt.Contrib.Tasks
         ArrayList typeLibRecords = new ArrayList();
         Hashtable typeLibComponents = new Hashtable();
 
-        string[] commonFolderNames = new string[]
-        {
+        string[] commonFolderNames = new string[] {
             "AdminToolsFolder", "AppDataFolder",
             "CommonAppDataFolder", "CommonFiles64Folder",
             "CommonFilesFolder", "DesktopFolder",
@@ -84,8 +87,7 @@ namespace NAnt.Contrib.Tasks
         /// <param name="TaskNode">Node that contains the XML fragment
         /// used to define this task instance.</param>
         /// <remarks>None.</remarks>
-        protected override void InitializeTask(XmlNode TaskNode)
-        {
+        protected override void InitializeTask(XmlNode TaskNode) {
             base.InitializeTask(TaskNode);
 
             msi = (msi)SchemaObject;
@@ -95,8 +97,7 @@ namespace NAnt.Contrib.Tasks
         /// Executes the Task.
         /// </summary>
         /// <remarks>None.</remarks>
-        protected override void ExecuteTask()
-        {
+        protected override void ExecuteTask() {
             // Create WindowsInstaller.Installer
             Type msiType = Type.GetTypeFromProgID("WindowsInstaller.Installer");
             Object obj = Activator.CreateInstance(msiType);
@@ -105,27 +106,23 @@ namespace NAnt.Contrib.Tasks
             Module tasksModule = Assembly.GetExecutingAssembly().GetModule("NAnt.Contrib.Tasks.dll");
 
             string source = Path.Combine(Path.GetDirectoryName(tasksModule.FullyQualifiedName), "MSITaskTemplate.msi");
-            if (msi.template != null)
-            {
+            if (msi.template != null) {
                 source = Path.Combine(Project.BaseDirectory, msi.template);
             }
-            if (!File.Exists(source))
-            {
-                throw new BuildException(LogPrefix +
-                    "ERROR: Unable to find template file: " + source);
+            if (!File.Exists(source)) {
+                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                    "Unable to find template file {0}.", source), Location);
             }
 
             string dest = Path.Combine(Project.BaseDirectory, Path.Combine(msi.sourcedir, msi.output));
 
             string errors = Path.Combine(Path.GetDirectoryName(tasksModule.FullyQualifiedName), "MSITaskErrors.mst");
-            if (msi.errortemplate != null)
-            {
+            if (msi.errortemplate != null) {
                 errors = Path.Combine(Project.BaseDirectory, msi.errortemplate);
             }
-            if (!File.Exists(errors))
-            {
-                throw new BuildException(LogPrefix +
-                    "ERROR: Unable to find error template file: " + errors);
+            if (!File.Exists(errors)) {
+                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                    "Unable to find error template file {0}.", errors), Location);
             }
 
             string tempPath = Path.Combine(Project.BaseDirectory,
@@ -138,114 +135,94 @@ namespace NAnt.Contrib.Tasks
             CleanOutput(cabFile, tempPath);
 
             // Copy the Template MSI File
-            try
-            {
+            try {
                 File.Copy(source, dest, true);
                 File.SetAttributes(dest, System.IO.FileAttributes.Normal);
-            }
-            catch (IOException)
-            {
-                throw new BuildException(LogPrefix +
-                    "ERROR: File in use or cannot be copied to output.");
+            } catch (IOException ex) {
+                throw new BuildException("File in use or cannot be copied to" 
+                    + " output.", Location, ex);
             }
 
-            try
-            {
+            try {
                 // Open the Output Database.
                 Database d = null;
-                try
-                {
-                    d = (Database)msiType.InvokeMember(
+                try {
+                    d = (Database) msiType.InvokeMember(
                         "OpenDatabase",
                         BindingFlags.InvokeMethod,
                         null, obj,
-                        new Object[]
-                        {
+                        new Object[] {
                             dest,
                             MsiOpenDatabaseMode.msiOpenDatabaseModeDirect
                         });
 
-                    if (msi.debug)
-                    {
+                    if (msi.debug) {
                         // If Debug is true, transform the error strings in
                         d.ApplyTransform(errors, MsiTransformError.msiTransformErrorNone);
                     }
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     CleanOutput(cabFile, tempPath);
                     System.Console.WriteLine(e.ToString());
                     throw new Win32Exception();
                 }
 
-                Log(Level.Info, LogPrefix + "Building MSI Database \"" + msi.output + "\".");
+                Log(Level.Info, LogPrefix + "Building MSI Database '{0}'.", msi.output);
 
                 // Load the Banner Image
-                if (!LoadBanner(d))
-                {
+                if (!LoadBanner(d)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
                 // Load the Background Image
-                if (!LoadBackground(d))
-                {
+                if (!LoadBackground(d)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
                 // Load the License File
-                if (!LoadLicense(d))
-                {
+                if (!LoadLicense(d)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
                 // Load Properties
-                if (!LoadProperties(d, msiType, obj))
-                {
+                if (!LoadProperties(d, msiType, obj)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
                 // Load Registry Locators
-                if (!LoadRegLocator(d, msiType, obj))
-                {
+                if (!LoadRegLocator(d, msiType, obj)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
                 // Load Application Search
-                if (!LoadAppSearch(d, msiType, obj))
-                {
+                if (!LoadAppSearch(d, msiType, obj)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
                 // Load Launch Conditions
-                if (!LoadLaunchCondition(d, msiType, obj))
-                {
+                if (!LoadLaunchCondition(d, msiType, obj)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
                 // Add user defined table(s) to the database
-                if (!AddTables(d, msiType, obj))
-                {
+                if (!AddTables(d, msiType, obj)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                try
-                {
+                try {
                     // Commit the MSI Database
                     d.Commit();
 
                     GC.Collect();
                     GC.WaitForPendingFinalizers();
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     CleanOutput(cabFile, tempPath);
                     System.Console.WriteLine(e.ToString());
                     throw new Win32Exception();
@@ -254,16 +231,14 @@ namespace NAnt.Contrib.Tasks
                 View directoryView, asmView, asmNameView, classView, progIdView;
 
                 // Load Directories
-                if (!LoadDirectories(d, msiType, obj, out directoryView))
-                {
+                if (!LoadDirectories(d, msiType, obj, out directoryView)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
                 // Load Assemblies
                 if (!LoadAssemblies(d, msiType, obj, out asmView,
-                    out asmNameView, out classView, out progIdView))
-                {
+                    out asmNameView, out classView, out progIdView)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
@@ -272,14 +247,12 @@ namespace NAnt.Contrib.Tasks
 
                 // Load Components
                 if (!LoadComponents(d, msiType, obj, ref lastSequence,
-                    asmView, asmNameView, directoryView, classView, progIdView))
-                {
+                    asmView, asmNameView, directoryView, classView, progIdView)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                try
-                {
+                try {
                     directoryView.Close();
                     asmView.Close();
                     asmNameView.Close();
@@ -298,44 +271,38 @@ namespace NAnt.Contrib.Tasks
                     GC.Collect();
                     GC.WaitForPendingFinalizers();
                 }
-                catch (Exception e)
-                {
+                catch (Exception e) {
                     CleanOutput(cabFile, tempPath);
                     System.Console.WriteLine(e.ToString());
                     throw new Win32Exception();
                 }
 
                 // Load Features
-                if (!LoadFeatures(d, msiType, obj))
-                {
+                if (!LoadFeatures(d, msiType, obj)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
                 // Load Dialog Data
-                if (!LoadDialog(d, msiType, obj))
-                {
+                if (!LoadDialog(d, msiType, obj)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
                 // Load Dialog Control Data
-                if (!LoadControl(d, msiType, obj))
-                {
+                if (!LoadControl(d, msiType, obj)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
                 // Load Dialog Control Condition Data
-                if (!LoadControlCondition(d, msiType, obj))
-                {
+                if (!LoadControlCondition(d, msiType, obj)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
                 // Load Dialog Control Event Data
-                if (!LoadControlEvent(d, msiType, obj))
-                {
+                if (!LoadControlEvent(d, msiType, obj)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
@@ -343,21 +310,18 @@ namespace NAnt.Contrib.Tasks
                 View registryView;
 
                 // Load the Registry
-                if (!LoadRegistry(d, msiType, obj, out registryView))
-                {
+                if (!LoadRegistry(d, msiType, obj, out registryView)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
                 // Load TypeLibs
-                if (!LoadTypeLibs(d, msiType, obj, registryView))
-                {
+                if (!LoadTypeLibs(d, msiType, obj, registryView)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                try
-                {
+                try {
                     registryView.Close();
                     registryView = null;
 
@@ -366,75 +330,64 @@ namespace NAnt.Contrib.Tasks
 
                     GC.Collect();
                     GC.WaitForPendingFinalizers();
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     CleanOutput(cabFile, tempPath);
                     System.Console.WriteLine(e.ToString());
                     throw new Win32Exception();
                 }
 
                 // Load Icon Data
-                if (!LoadIcon(d, msiType, obj))
-                {
+                if (!LoadIcon(d, msiType, obj)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
                 // Load Shortcut Data
-                if (!LoadShortcut(d, msiType, obj))
-                {
+                if (!LoadShortcut(d, msiType, obj)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
                 // Load Binary Data
-                if (!LoadBinary(d, msiType, obj))
-                {
+                if (!LoadBinary(d, msiType, obj)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
                 // Load Custom Actions
-                if (!LoadCustomAction(d, msiType, obj))
-                {
+                if (!LoadCustomAction(d, msiType, obj)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
                 // Load Sequences
-                if (!LoadSequence(d, msiType, obj))
-                {
+                if (!LoadSequence(d, msiType, obj)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
                 // Load ActionText
-                if (!LoadActionText(d, msiType, obj))
-                {
+                if (!LoadActionText(d, msiType, obj)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
                 // Load the application mappings
-                if (!LoadAppMappings(d, msiType, obj))
-                {
+                if (!LoadAppMappings(d, msiType, obj)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
                 // Load the url properties to convert
                 // url properties to a properties object
-                if (!LoadUrlProperties(d, msiType, obj))
-                {
+                if (!LoadUrlProperties(d, msiType, obj)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
                 // Load the vdir properties to convert
                 // a vdir to an url
-                if (!LoadVDirProperties(d, msiType, obj))
-                {
+                if (!LoadVDirProperties(d, msiType, obj)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
@@ -442,35 +395,30 @@ namespace NAnt.Contrib.Tasks
                 // Load the application root properties
                 // to make a virtual directory an virtual
                 // application
-                if (!LoadAppRootCreate(d, msiType, obj))
-                {
+                if (!LoadAppRootCreate(d, msiType, obj)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
                 // Load IIS Directory Properties
-                if (!LoadIISProperties(d, msiType, obj))
-                {
+                if (!LoadIISProperties(d, msiType, obj)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
                 // Load Summary Information
-                if (!LoadSummaryInfo(d))
-                {
+                if (!LoadSummaryInfo(d)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
                 // Load Environment Variables
-                if (!LoadEnvironment(d, msiType, obj))
-                {
+                if (!LoadEnvironment(d, msiType, obj)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                try
-                {
+                try {
                     // Commit the MSI Database
                     d.Commit();
                     d = null;
@@ -478,58 +426,47 @@ namespace NAnt.Contrib.Tasks
                     GC.Collect();
                     GC.WaitForPendingFinalizers();
                 }
-                catch (Exception e)
-                {
+                catch (Exception e) {
                     CleanOutput(cabFile, tempPath);
                     System.Console.WriteLine(e.ToString());
                     throw new Win32Exception();
                 }
 
                 // Load Merge Modules
-                if (!LoadMergeModules(dest, tempPath))
-                {
+                if (!LoadMergeModules(dest, tempPath)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                try
-                {
-
+                try {
                     d = (Database)msiType.InvokeMember(
                         "OpenDatabase",
                         BindingFlags.InvokeMethod,
                         null, obj,
-                        new Object[]
-                        {
+                        new Object[] {
                             dest,
                             MsiOpenDatabaseMode.msiOpenDatabaseModeDirect
                         });
-
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     CleanOutput(cabFile, tempPath);
                     System.Console.WriteLine(e.ToString());
                     throw new Win32Exception();
                 }
 
                 // Reorder Files
-                if (!ReorderFiles(d, ref lastSequence))
-                {
+                if (!ReorderFiles(d, ref lastSequence)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
                 // Load Media
-                if (!LoadMedia(d, msiType, obj, lastSequence))
-                {
+                if (!LoadMedia(d, msiType, obj, lastSequence)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
                 // Compress Files
-                if (!CreateCabFile(d, msiType, obj))
-                {
+                if (!CreateCabFile(d, msiType, obj)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
@@ -538,8 +475,7 @@ namespace NAnt.Contrib.Tasks
                 CleanOutput(cabFile, tempPath);
                 Log(Level.Info, "Done.");
 
-                try
-                {
+                try {
                     Log(Level.Info, LogPrefix + "Saving MSI Database...");
 
                     // Commit the MSI Database
@@ -548,17 +484,13 @@ namespace NAnt.Contrib.Tasks
 
                     GC.Collect();
                     GC.WaitForPendingFinalizers();
-
                 }
-                catch (Exception e)
-                {
+                catch (Exception e) {
                     System.Console.WriteLine(e.ToString());
                     throw new Win32Exception();
                 }
                 Log(Level.Info, "Done.");
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 CleanOutput(cabFile, tempPath);
                 throw new BuildException(LogPrefix + "ERROR: " +
                     e.GetType().FullName + " thrown:\n" +
@@ -571,18 +503,14 @@ namespace NAnt.Contrib.Tasks
         /// </summary>
         /// <param name="cabFile">The path to the cabinet file.</param>
         /// <param name="tempPath">The path to temporary files.</param>
-        private void CleanOutput(string cabFile, string tempPath)
-        {
-            try
-            {
+        private void CleanOutput(string cabFile, string tempPath) {
+            try {
                 File.Delete(cabFile);
-            }
-            catch (Exception) {}
-            try
-            {
+            } catch {}
+
+            try {
                 Directory.Delete(tempPath, true);
-            }
-            catch (Exception) {}
+            } catch {}
         }
 
         /// <summary>
@@ -590,19 +518,15 @@ namespace NAnt.Contrib.Tasks
         /// </summary>
         /// <param name="Database">The MSI database.</param>
         /// <returns>True if successful.</returns>
-        private bool LoadBanner(Database Database)
-        {
+        private bool LoadBanner(Database Database) {
             // Try to open the Banner
-            if (msi.banner != null)
-            {
+            if (msi.banner != null) {
                 string bannerFile = Path.Combine(Project.BaseDirectory, msi.banner);
-                if (File.Exists(bannerFile))
-                {
+                if (File.Exists(bannerFile)) {
                     View bannerView = Database.OpenView("SELECT * FROM `Binary` WHERE `Name`='bannrbmp'");
                     bannerView.Execute(null);
                     Record bannerRecord = bannerView.Fetch();
-                    if (Verbose)
-                    {
+                    if (Verbose) {
                         Log(Level.Info, LogPrefix + "Storing Banner:\n\t" + bannerFile);
                     }
 
@@ -612,10 +536,9 @@ namespace NAnt.Contrib.Tasks
                     bannerView.Close();
                     bannerView = null;
                 }
-                else
-                {
+                else {
                     Log(Level.Error, LogPrefix +
-                        "ERROR: Unable to open Banner Image:\n\n\t" +
+                        "Unable to open Banner Image:\n\n\t" +
                         bannerFile + "\n\n");
                     return false;
                 }
@@ -628,19 +551,15 @@ namespace NAnt.Contrib.Tasks
         /// </summary>
         /// <param name="Database">The MSI database.</param>
         /// <returns>True if successful.</returns>
-        private bool LoadBackground(Database Database)
-        {
+        private bool LoadBackground(Database Database) {
             // Try to open the Background
-            if (msi.background != null)
-            {
+            if (msi.background != null) {
                 string bgFile = Path.Combine(Project.BaseDirectory, msi.background);
-                if (File.Exists(bgFile))
-                {
+                if (File.Exists(bgFile)) {
                     View bgView = Database.OpenView("SELECT * FROM `Binary` WHERE `Name`='dlgbmp'");
                     bgView.Execute(null);
                     Record bgRecord = bgView.Fetch();
-                    if (Verbose)
-                    {
+                    if (Verbose) {
                         Log(Level.Info, LogPrefix + "Storing Background:\n\t" + bgFile);
                     }
 
@@ -650,8 +569,7 @@ namespace NAnt.Contrib.Tasks
                     bgView.Close();
                     bgView = null;
                 }
-                else
-                {
+                else {
                     Log(Level.Error, LogPrefix +
                         "ERROR: Unable to open Background Image:\n\n\t" +
                         bgFile + "\n\n");
@@ -666,49 +584,36 @@ namespace NAnt.Contrib.Tasks
         /// </summary>
         /// <param name="Database">The MSI database.</param>
         /// <returns>True if successful.</returns>
-        private bool LoadLicense(Database Database)
-        {
-
+        private bool LoadLicense(Database Database) {
             // Try to open the License
-            if (msi.license != null)
-            {
+            if (msi.license != null) {
                 string licFile = Path.Combine(Project.BaseDirectory, msi.license);
-                if (File.Exists(licFile))
-                {
+                if (File.Exists(licFile)) {
                     View licView = Database.OpenView("SELECT * FROM `Control` WHERE `Control`='AgreementText'");
                     licView.Execute(null);
                     Record licRecord = licView.Fetch();
-                    if (Verbose)
-                    {
+                    if (Verbose) {
                         Log(Level.Info, LogPrefix + "Storing License:\n\t" + licFile);
                     }
                     StreamReader licReader = null;
-                    try
-                    {
+                    try {
                         licReader = File.OpenText(licFile);
                         licRecord.set_StringData(10, licReader.ReadToEnd());
                         licView.Modify(MsiViewModify.msiViewModifyUpdate, licRecord);
-                    }
-                    catch (IOException)
-                    {
+                    } catch (IOException) {
                         Log(Level.Error, LogPrefix +
                             "ERROR: Unable to open License File:\n\n\t" +
                             licFile + "\n\n");
                         return false;
-                    }
-                    finally
-                    {
+                    } finally {
                         licView.Close();
                         licView = null;
-                        if (licReader != null)
-                        {
+                        if (licReader != null) {
                             licReader.Close();
                             licReader = null;
                         }
                     }
-                }
-                else
-                {
+                } else {
                     Log(Level.Error, LogPrefix +
                         "ERROR: Unable to open License File:\n\n\t" +
                         licFile + "\n\n");
@@ -725,19 +630,16 @@ namespace NAnt.Contrib.Tasks
         /// <param name="InstallerType">The MSI Installer type.</param>
         /// <param name="InstallerObject">The MSI Installer object.</param>
         /// <returns>True if successful.</returns>
-        private bool LoadProperties(Database Database, Type InstallerType, Object InstallerObject)
-        {
+        private bool LoadProperties(Database Database, Type InstallerType, Object InstallerObject) {
             // Select the "Property" Table
             View propView = Database.OpenView("SELECT * FROM `Property`");
 
-            if (Verbose)
-            {
+            if (Verbose) {
                 Log(Level.Info, LogPrefix + "Adding Properties:");
             }
 
             // Add properties from Task definition
-            foreach (property property in msi.properties)
-            {
+            foreach (property property in msi.properties) {
                 // Insert the Property
                 Record recProp = (Record)InstallerType.InvokeMember(
                     "CreateRecord",
@@ -748,15 +650,13 @@ namespace NAnt.Contrib.Tasks
                 string name = property.name;
                 string sValue = property.value;
 
-                if (name == null || name == "")
-                {
+                if (name == null || name == "") {
                     Log(Level.Error, LogPrefix +
                         "ERROR: Property with no name attribute detected.");
                     return false;
                 }
 
-                if (sValue == null || sValue == "")
-                {
+                if (sValue == null || sValue == "") {
                     Log(Level.Error, LogPrefix +
                         "ERROR: Property " + name +
                         " has no value.");
@@ -767,8 +667,7 @@ namespace NAnt.Contrib.Tasks
                 recProp.set_StringData(2, sValue);
                 propView.Modify(MsiViewModify.msiViewModifyMerge, recProp);
 
-                if (Verbose)
-                {
+                if (Verbose) {
                     Log(Level.Info, "\t" + name);
                 }
             }
@@ -792,8 +691,7 @@ namespace NAnt.Contrib.Tasks
         /// <returns>True if successful.</returns>
         private bool LoadComponents(Database Database, Type InstallerType, Object InstallerObject,
             ref int LastSequence, View MsiAssemblyView, View MsiAssemblyNameView,
-            View DirectoryView, View ClassView, View ProgIdView)
-        {
+            View DirectoryView, View ClassView, View ProgIdView) {
             // Open the "Component" Table
             View compView = Database.OpenView("SELECT * FROM `Component`");
 
@@ -809,15 +707,12 @@ namespace NAnt.Contrib.Tasks
             // Add components from Task definition
             int componentIndex = 0;
 
-            if (Verbose)
-            {
+            if (Verbose) {
                 Log(Level.Info, LogPrefix + "Add Files:");
             }
 
-            if (msi.components != null)
-            {
-                foreach (MSIComponent component in msi.components)
-                {
+            if (msi.components != null) {
+                foreach (MSIComponent component in msi.components) {
                     // Insert the Component
                     Record recComp = (Record)InstallerType.InvokeMember(
                         "CreateRecord",
@@ -841,36 +736,27 @@ namespace NAnt.Contrib.Tasks
                         ref LastSequence, MsiAssemblyView, MsiAssemblyNameView,
                         compView, featCompView, ClassView, ProgIdView, selfRegView);
 
-                    if (!success)
-                    {
+                    if (!success) {
                         return success;
                     }
 
-                    if ((component.attr & 4) != 0)
-                    {
+                    if ((component.attr & 4) != 0) {
                         recComp.set_StringData(6, component.key.file);
                         compView.Modify(MsiViewModify.msiViewModifyMerge, recComp);
-                    }
-                    else if (files.Contains(component.directory + "|" + component.key.file))
-                    {
+                    } else if (files.Contains(component.directory + "|" + component.key.file)) {
                         string keyFileName = (string)files[component.directory + "|" + component.key.file];
-                        if (keyFileName == "KeyIsDotNetAssembly")
-                        {
+                        if (keyFileName == "KeyIsDotNetAssembly") {
                             Log(Level.Error, LogPrefix + "ERROR: Cannot specify key '" + component.key.file +
                                 "' for component '" + component.name + "'. File has been detected as " +
                                 "being a COM component or Microsoft.NET assembly and is " +
                                 "being registered with its own component. Please specify " +
                                 "a different file in the same directory for this component's key.");
                             return false;
-                        }
-                        else
-                        {
+                        } else {
                             recComp.set_StringData(6, keyFileName);
                             compView.Modify(MsiViewModify.msiViewModifyMerge, recComp);
                         }
-                    }
-                    else
-                    {
+                    } else {
                         Log(Level.Error,
                             LogPrefix + "ERROR: KeyFile \"" + component.key.file +
                             "\" not found in Component \"" + component.name + "\".");
@@ -881,13 +767,11 @@ namespace NAnt.Contrib.Tasks
                 // Add featureComponents from Task definition
                 IEnumerator keyEnum = featureComponents.Keys.GetEnumerator();
 
-                while (keyEnum.MoveNext())
-                {
+                while (keyEnum.MoveNext()) {
                     string component = Properties.ExpandProperties((string)keyEnum.Current, Location);
                     string feature = Properties.ExpandProperties((string)featureComponents[component], Location);
 
-                    if (feature == null)
-                    {
+                    if (feature == null) {
                         Log(Level.Error, LogPrefix +
                             "ERROR: Component " + component +
                             " mapped to nonexistent feature.");
@@ -895,7 +779,7 @@ namespace NAnt.Contrib.Tasks
                     }
 
                     // Insert the FeatureComponent
-                    Record recFeatComps = (Record)InstallerType.InvokeMember(
+                    Record recFeatComps = (Record) InstallerType.InvokeMember(
                         "CreateRecord",
                         BindingFlags.InvokeMethod,
                         null, InstallerObject,
@@ -929,8 +813,7 @@ namespace NAnt.Contrib.Tasks
         /// <param name="DirectoryView">The MSI database view.</param>
         /// <returns>True if successful.</returns>
         private bool LoadDirectories(Database Database, Type InstallerType,
-            Object InstallerObject, out View DirectoryView)
-        {
+            Object InstallerObject, out View DirectoryView) {
             // Open the "Directory" Table
             DirectoryView = Database.OpenView("SELECT * FROM `Directory`");
 
@@ -943,8 +826,7 @@ namespace NAnt.Contrib.Tasks
             directoryList.Add(targetDir);
 
             // Insert the Common Directories
-            for (int i = 0; i < commonFolderNames.Length; i++)
-            {
+            for (int i = 0; i < commonFolderNames.Length; i++) {
                 MSIRootDirectory commonDir = new MSIRootDirectory();
                 commonDir.name = commonFolderNames[i];
                 commonDir.root = "TARGETDIR";
@@ -958,20 +840,17 @@ namespace NAnt.Contrib.Tasks
 
             int depth = 1;
 
-            if (Verbose)
-            {
+            if (Verbose) {
                 Log(Level.Info, LogPrefix + "Adding Directories:");
             }
 
             // Add directories from Task definition
-            foreach (MSIRootDirectory directory in msi.directories)
-            {
+            foreach (MSIRootDirectory directory in msi.directories) {
                 bool result = AddDirectory(Database,
                     DirectoryView, null, InstallerType,
                     InstallerObject, directory, depth);
 
-                if (!result)
-                {
+                if (!result) {
                     DirectoryView.Close();
                     DirectoryView = null;
                     return result;
@@ -995,11 +874,9 @@ namespace NAnt.Contrib.Tasks
         private bool AddDirectory(Database Database, View DirectoryView,
             string ParentDirectory,
             Type InstallerType, object InstallerObject,
-            MSIDirectory Directory, int Depth)
-        {
+            MSIDirectory Directory, int Depth) {
             string newParent = ParentDirectory;
-            if (Directory is MSIRootDirectory)
-            {
+            if (Directory is MSIRootDirectory) {
                 newParent = ((MSIRootDirectory)Directory).root;
             }
 
@@ -1024,18 +901,15 @@ namespace NAnt.Contrib.Tasks
             if (Directory.foldername == ".")
                 path = Directory.foldername;
 
-            if (relativePath.ToString() == "")
-            {
+            if (relativePath.ToString() == "") {
                 return true;
             }
 
-            if (path == "MsiTaskPathNotFound")
-            {
+            if (path == "MsiTaskPathNotFound") {
                 return false;
             }
 
-            if (Verbose)
-            {
+            if (Verbose) {
                 Log(Level.Info, "\t" +
                     Path.Combine(Project.BaseDirectory, Path.Combine(msi.sourcedir, relativePath.ToString())));
             }
@@ -1044,18 +918,15 @@ namespace NAnt.Contrib.Tasks
 
             DirectoryView.Modify(MsiViewModify.msiViewModifyMerge, recDir);
 
-            if (Directory.directory != null)
-            {
-                foreach (MSIDirectory childDirectory in Directory.directory)
-                {
+            if (Directory.directory != null) {
+                foreach (MSIDirectory childDirectory in Directory.directory) {
                     int newDepth = Depth + 1;
 
                     bool result = AddDirectory(Database, DirectoryView,
                         Directory.name, InstallerType,
                         InstallerObject, childDirectory, newDepth);
 
-                    if (!result)
-                    {
+                    if (!result) {
                         return result;
                     }
                 }
@@ -1071,8 +942,7 @@ namespace NAnt.Contrib.Tasks
         /// <param name="InstallerObject">The MSI Installer object.</param>
         /// <param name="LastSequence">The sequence number of the last file in the .cab.</param>
         /// <returns>True if successful.</returns>
-        private bool LoadMedia(Database Database, Type InstallerType, Object InstallerObject, int LastSequence)
-        {
+        private bool LoadMedia(Database Database, Type InstallerType, Object InstallerObject, int LastSequence) {
             // Open the "Media" Table
             View mediaView = Database.OpenView("SELECT * FROM `Media`");
 
@@ -1100,29 +970,20 @@ namespace NAnt.Contrib.Tasks
         /// </summary>
         /// <param name="Database">The MSI database.</param>
         /// <returns>True if successful.</returns>
-        private bool LoadSummaryInfo(Database Database)
-        {
+        private bool LoadSummaryInfo(Database Database) {
             property productName = null;
             property manufacturer = null;
             property keywords = null;
             property comments = null;
 
-            foreach (property prop in msi.properties)
-            {
-                if (prop.name == "ProductName")
-                {
+            foreach (property prop in msi.properties) {
+                if (prop.name == "ProductName") {
                     productName = prop;
-                }
-                else if (prop.name == "Manufacturer")
-                {
+                } else if (prop.name == "Manufacturer") {
                     manufacturer = prop;
-                }
-                else if (prop.name == "Keywords")
-                {
+                } else if (prop.name == "Keywords") {
                     keywords = prop;
-                }
-                else if (prop.name == "Comments")
-                {
+                } else if (prop.name == "Comments") {
                     comments = prop;
                 }
             }
@@ -1132,12 +993,10 @@ namespace NAnt.Contrib.Tasks
             summaryInfo.set_Property(3, productName.value);
             summaryInfo.set_Property(4, manufacturer.value);
 
-            if (keywords != null)
-            {
+            if (keywords != null) {
                 summaryInfo.set_Property(5, keywords.value);
             }
-            if (comments != null)
-            {
+            if (comments != null) {
                 summaryInfo.set_Property(6, comments.value);
             }
 
@@ -1157,15 +1016,12 @@ namespace NAnt.Contrib.Tasks
         /// <param name="InstallerType">The MSI Installer type.</param>
         /// <param name="InstallerObject">The MSI Installer object.</param>
         /// <returns>True if successful.</returns>
-        private bool LoadEnvironment(Database Database, Type InstallerType, Object InstallerObject)
-        {
+        private bool LoadEnvironment(Database Database, Type InstallerType, Object InstallerObject) {
             // Open the "Environment" Table
             View envView = Database.OpenView("SELECT * FROM `Environment`");
 
-            if (msi.environment != null)
-            {
-                foreach (MSIVariable variable in msi.environment)
-                {
+            if (msi.environment != null) {
+                foreach (MSIVariable variable in msi.environment) {
                     // Insert the Varible
                     Record recVar = (Record)InstallerType.InvokeMember(
                         "CreateRecord",
@@ -1176,8 +1032,7 @@ namespace NAnt.Contrib.Tasks
                     recVar.set_StringData(1, "_" + Guid.NewGuid().ToString().ToUpper().Replace("-", null));
                     recVar.set_StringData(2, variable.name);
 
-                    if (variable.append != null && variable.append != "")
-                    {
+                    if (variable.append != null && variable.append != "") {
                         recVar.set_StringData(3, "[~];" + variable.append);
                     }
 
@@ -1199,8 +1054,7 @@ namespace NAnt.Contrib.Tasks
         /// <param name="InstallerType">The MSI Installer type.</param>
         /// <param name="InstallerObject">The MSI Installer object.</param>
         /// <returns>True if successful.</returns>
-        private bool LoadFeatures(Database Database, Type InstallerType, Object InstallerObject)
-        {
+        private bool LoadFeatures(Database Database, Type InstallerType, Object InstallerObject) {
             // Open the "Feature" Table
             View featView = Database.OpenView("SELECT * FROM `Feature`");
             // Open the "Condition" Table
@@ -1210,18 +1064,15 @@ namespace NAnt.Contrib.Tasks
             int order = 1;
             int depth = 1;
 
-            if (Verbose)
-            {
+            if (Verbose) {
                 Log(Level.Info, LogPrefix + "Adding Features:");
             }
 
-            foreach (MSIFeature feature in msi.features)
-            {
+            foreach (MSIFeature feature in msi.features) {
                 bool result = AddFeature(featView, conditionView, null, InstallerType,
                     InstallerObject, feature, depth, order);
 
-                if (!result)
-                {
+                if (!result) {
                     featView.Close();
                     return result;
                 }
@@ -1249,33 +1100,26 @@ namespace NAnt.Contrib.Tasks
         /// <param name="Order">The tree order of this feature.</param>
         private bool AddFeature(View FeatureView, View ConditionView, string ParentFeature,
             Type InstallerType, Object InstallerObject,
-            MSIFeature Feature, int Depth, int Order)
-        {
+            MSIFeature Feature, int Depth, int Order) {
             string directory = null;
-            if (Feature.directory != null)
-            {
+            if (Feature.directory != null) {
                 directory = Feature.directory;
-            }
-            else
-            {
+            } else {
                 bool foundComponent = false;
 
                 IEnumerator featComps = featureComponents.Keys.GetEnumerator();
 
-                while (featComps.MoveNext())
-                {
+                while (featComps.MoveNext()) {
                     string componentName = (string)featComps.Current;
                     string featureName = (string)featureComponents[componentName];
 
-                    if (featureName == Feature.name)
-                    {
+                    if (featureName == Feature.name) {
                         directory = (string)components[componentName];
                         foundComponent = true;
                     }
                 }
 
-                if (!foundComponent)
-                {
+                if (!foundComponent) {
                     Log(Level.Error,
                         LogPrefix + "ERROR: Feature " + Feature.name +
                         " needs to be assigned a component or directory.");
@@ -1296,12 +1140,9 @@ namespace NAnt.Contrib.Tasks
             recFeat.set_StringData(4, Feature.description);
             recFeat.set_IntegerData(5, Feature.display);
 
-            if (!Feature.typical)
-            {
+            if (!Feature.typical) {
                 recFeat.set_StringData(6, "4");
-            }
-            else
-            {
+            } else {
                 recFeat.set_StringData(6, "3");
             }
 
@@ -1310,23 +1151,18 @@ namespace NAnt.Contrib.Tasks
 
             FeatureView.Modify(MsiViewModify.msiViewModifyMerge, recFeat);
 
-            if (Verbose)
-            {
+            if (Verbose) {
                 Log(Level.Info, "\t" + Feature.name);
             }
 
             // Add feature conditions
-            if (Feature.conditions != null)
-            {
-                if (Verbose)
-                {
+            if (Feature.conditions != null) {
+                if (Verbose) {
                     Log(Level.Info, "\t\tAdding Feature Conditions...");
                 }
 
-                foreach (MSIFeatureCondition featureCondition in Feature.conditions)
-                {
-                    try
-                    {
+                foreach (MSIFeatureCondition featureCondition in Feature.conditions) {
+                    try {
                         // Insert the feature's condition
                         Record recCondition = (Record)InstallerType.InvokeMember(
                             "CreateRecord",
@@ -1339,30 +1175,25 @@ namespace NAnt.Contrib.Tasks
                         recCondition.set_StringData(3, featureCondition.expression);
                         ConditionView.Modify(MsiViewModify.msiViewModifyMerge, recCondition);
                     }
-                    catch (Exception e)
-                    {
+                    catch (Exception e) {
                         Log(Level.Info, "\nError adding feature condition: " + e.ToString());
                     }
                 }
 
-                if (Verbose)
-                {
+                if (Verbose) {
                     Log(Level.Info, "Done");
                 }
             }
 
-            if (Feature.feature != null)
-            {
-                foreach (MSIFeature childFeature in Feature.feature)
-                {
+            if (Feature.feature != null) {
+                foreach (MSIFeature childFeature in Feature.feature) {
                     int newDepth = Depth + 1;
                     int newOrder = 1;
 
                     bool result = AddFeature(FeatureView, ConditionView, Feature.name, InstallerType,
                         InstallerObject, childFeature, newDepth, newOrder);
 
-                    if (!result)
-                    {
+                    if (!result) {
                         return result;
                     }
                     newOrder++;
@@ -1404,8 +1235,7 @@ namespace NAnt.Contrib.Tasks
             string ComponentDirectory, string ComponentName, ref int ComponentCount,
             ref int Sequence, View MsiAssemblyView, View MsiAssemblyNameView,
             View ComponentView, View FeatureComponentView, View ClassView, View ProgIdView,
-            View SelfRegView)
-        {
+            View SelfRegView) {
             XmlElement fileSetElem = (XmlElement)((XmlElement)_xmlNode).SelectSingleNode(
                 "components/component[@id='" + Component.id + "']/fileset");
 
@@ -1419,12 +1249,9 @@ namespace NAnt.Contrib.Tasks
             StringBuilder relativePath = new StringBuilder();
 
             string newParent = null;
-            if (componentDirInfo is MSIRootDirectory)
-            {
+            if (componentDirInfo is MSIRootDirectory) {
                 newParent = ((MSIRootDirectory)componentDirInfo).root;
-            }
-            else
-            {
+            } else {
                 newParent = FindParent(ComponentDirectory);
             }
 
@@ -1438,8 +1265,7 @@ namespace NAnt.Contrib.Tasks
             string basePath = Path.Combine(Project.BaseDirectory, msi.sourcedir);
             string fullPath = Path.Combine(basePath, relativePath.ToString());
 
-            for (int i = 0; i < componentFiles.FileNames.Count; i++)
-            {
+            for (int i = 0; i < componentFiles.FileNames.Count; i++) {
                 // Insert the File
                 Record recFile = (Record)InstallerType.InvokeMember(
                     "CreateRecord",
@@ -1452,12 +1278,9 @@ namespace NAnt.Contrib.Tasks
 
                 MSIFileOverride fileOverride = null;
 
-                if (Component.forceid != null)
-                {
-                    foreach (MSIFileOverride curOverride in Component.forceid)
-                    {
-                        if (curOverride.file == fileName)
-                        {
+                if (Component.forceid != null) {
+                    foreach (MSIFileOverride curOverride in Component.forceid) {
+                        if (curOverride.file == fileName) {
                             fileOverride = curOverride;
                             break;
                         }
@@ -1475,28 +1298,21 @@ namespace NAnt.Contrib.Tasks
                 files.Add(Component.directory + "|" + fileName, fileId);
                 recFile.set_StringData(1, fileId);
 
-                if (File.Exists(filePath))
-                {
-                    try
-                    {
+                if (File.Exists(filePath)) {
+                    try {
                         recFile.set_StringData(4, new FileInfo(filePath).Length.ToString());
-                    }
-                    catch (Exception)
-                    {
+                    } catch (Exception) {
                         Log(Level.Error, LogPrefix +
                             "ERROR: Could not open file " + filePath);
                         return false;
                     }
-                }
-                else
-                {
+                } else {
                     Log(Level.Error, LogPrefix +
                         "ERROR: Could not open file " + filePath);
                     return false;
                 }
 
-                if (Verbose)
-                {
+                if (Verbose) {
                     Log(Level.Info, "\t" +
                         Path.Combine(Project.BaseDirectory, Path.Combine(Path.Combine(msi.sourcedir,
                         relativePath.ToString()), fileName)));
@@ -1510,29 +1326,23 @@ namespace NAnt.Contrib.Tasks
                 bool isAssembly = false;
                 Assembly fileAssembly = null;
                 string fileVersion = "";
-                try
-                {
+                try {
                     FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(filePath);
                     fileVersion = fileVersionInfo.FileVersion;
-                }
-                catch (Exception) {}
+                } catch {}
 
-                try
-                {
+                try {
                     fileAssembly = Assembly.LoadFrom(filePath);
                     fileVersion = fileAssembly.GetName().Version.ToString();
                     isAssembly = true;
-                }
-                catch (Exception) {}
+                } catch {}
 
-                if (isAssembly || filePath.EndsWith(".tlb"))
-                {
+                if (isAssembly || filePath.EndsWith(".tlb")) {
                     string feature = (string)featureComponents[ComponentName];
 
                     string asmCompName = ComponentName;
 
-                    if (componentFiles.FileNames.Count > 1)
-                    {
+                    if (componentFiles.FileNames.Count > 1) {
                         asmCompName = "C_" + fileId;
                         string newCompId = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
 
@@ -1565,8 +1375,7 @@ namespace NAnt.Contrib.Tasks
                         FeatureComponentView.Modify(MsiViewModify.msiViewModifyMerge, featComp);
                     }
 
-                    if (isAssembly)
-                    {
+                    if (isAssembly) {
                         // Add a record for a new MsiAssembly
                         Record recAsm = (Record)InstallerType.InvokeMember(
                             "CreateRecord",
@@ -1595,20 +1404,17 @@ namespace NAnt.Contrib.Tasks
                             typeof(AssemblyCultureAttribute), true);
 
                         string culture = "neutral";
-                        if (cultureAttrs.Length > 0)
-                        {
+                        if (cultureAttrs.Length > 0) {
                             culture = cultureAttrs[0].Culture;
                         }
 
                         string publicKey = null;
                         byte[] keyToken = asmName.GetPublicKeyToken();
-                        if (keyToken != null)
-                        {
+                        if (keyToken != null) {
                             publicKey = ByteArrayToString(keyToken);
                         }
 
-                        if (name != null && name != "")
-                        {
+                        if (name != null && name != "") {
                             Record recAsmName = (Record)InstallerType.InvokeMember(
                                 "CreateRecord",
                                 BindingFlags.InvokeMethod,
@@ -1621,8 +1427,7 @@ namespace NAnt.Contrib.Tasks
                             MsiAssemblyNameView.Modify(MsiViewModify.msiViewModifyMerge, recAsmName);
                         }
 
-                        if (version != null && version != "")
-                        {
+                        if (version != null && version != "") {
                             Record recAsmVersion = (Record)InstallerType.InvokeMember(
                                 "CreateRecord",
                                 BindingFlags.InvokeMethod,
@@ -1634,8 +1439,7 @@ namespace NAnt.Contrib.Tasks
                             MsiAssemblyNameView.Modify(MsiViewModify.msiViewModifyMerge, recAsmVersion);
                         }
 
-                        if (culture != null && culture != "")
-                        {
+                        if (culture != null && culture != "") {
                             Record recAsmLocale = (Record)InstallerType.InvokeMember(
                                 "CreateRecord",
                                 BindingFlags.InvokeMethod,
@@ -1648,8 +1452,7 @@ namespace NAnt.Contrib.Tasks
                             MsiAssemblyNameView.Modify(MsiViewModify.msiViewModifyMerge, recAsmLocale);
                         }
 
-                        if (publicKey != null && publicKey != "")
-                        {
+                        if (publicKey != null && publicKey != "") {
                             Record recPublicKey = (Record)InstallerType.InvokeMember(
                                 "CreateRecord",
                                 BindingFlags.InvokeMethod,
@@ -1664,47 +1467,39 @@ namespace NAnt.Contrib.Tasks
 
                         bool checkInterop = Component.checkinterop;
 
-                        if (fileOverride != null)
-                        {
+                        if (fileOverride != null) {
                             checkInterop = fileOverride.checkinterop;
                         }
 
-                        if (checkInterop)
-                        {
+                        if (checkInterop) {
                             bool success = CheckAssemblyForCOMInterop(
                                 filePath, fileAssembly, InstallerType,
                                 InstallerObject, ComponentName,
                                 asmCompName, ClassView, ProgIdView);
 
-                            if (!success)
-                            {
+                            if (!success) {
                                 return success;
                             }
                         }
 
                         // File can't be a member of both components
-                        if (componentFiles.FileNames.Count > 1)
-                        {
+                        if (componentFiles.FileNames.Count > 1) {
                             files.Remove(ComponentDirectory + "|" + fileName);
                             files.Add(ComponentDirectory + "|" + fileName, "KeyIsDotNetAssembly");
                         }
                     }
-                    else if (filePath.EndsWith(".tlb"))
-                    {
+                    else if (filePath.EndsWith(".tlb")) {
                         typeLibComponents.Add(
                             Path.GetFileName(filePath),
                             asmCompName);
                     }
                 }
 
-                if (filePath.EndsWith(".dll"))
-                {
+                if (filePath.EndsWith(".dll")) {
                     int hmod = LoadLibrary(filePath);
-                    if (hmod != 0)
-                    {
+                    if (hmod != 0) {
                         int regSvr = GetProcAddress(hmod, "DllRegisterServer");
-                        if (regSvr != 0)
-                        {
+                        if (regSvr != 0) {
                             Log(Level.Info, LogPrefix +
                                 "Configuring " +
                                 Path.GetFileName(filePath) +
@@ -1727,14 +1522,12 @@ namespace NAnt.Contrib.Tasks
                     // type library for self registration.
                 }
 
-                if (File.Exists(filePath))
-                {
+                if (File.Exists(filePath)) {
                     string cabDir = Path.Combine(
                         Project.BaseDirectory,
                         Path.Combine(msi.sourcedir, "Temp"));
 
-                    if (!Directory.Exists(cabDir))
-                    {
+                    if (!Directory.Exists(cabDir)) {
                         Directory.CreateDirectory(cabDir);
                     }
 
@@ -1743,19 +1536,16 @@ namespace NAnt.Contrib.Tasks
                 }
 
                 if (!isAssembly && !filePath.EndsWith(".tlb")
-                    || componentFiles.FileNames.Count == 1)
-                {
+                    || componentFiles.FileNames.Count == 1) {
                     recFile.set_StringData(2, Component.name);
                 }
 
                 // Set the file version equal to the override value, if present
-                if ((fileOverride != null) && (fileOverride.version != null) && (fileOverride.version != ""))
-                {
+                if ((fileOverride != null) && (fileOverride.version != null) && (fileOverride.version != "")) {
                     fileVersion = fileOverride.version;
                 }
 
-                if (!IsVersion(ref fileVersion))
-                {
+                if (!IsVersion(ref fileVersion)) {
                     fileVersion = null;
                 }
 
@@ -1781,22 +1571,18 @@ namespace NAnt.Contrib.Tasks
         /// </summary>
         /// <param name="Version">The version string to verify.</param>
         /// <returns></returns>
-        private bool IsVersion(ref string Version)
-        {
+        private bool IsVersion(ref string Version) {
             // For cases of 5,5,2,2
             Version = Version.Trim().Replace(",", ".");
             Version = Version.Replace(" ", "");
             string[] versionParts = Version.Split('.');
             bool result = true;
 
-            foreach (string versionPart in versionParts)
-            {
-                try
-                {
+            foreach (string versionPart in versionParts) {
+                try {
                     int iVersionPart = Convert.ToInt32(versionPart);
                 }
-                catch (Exception)
-                {
+                catch (Exception) {
                     result = false;
                     break;
                 }
@@ -1813,47 +1599,37 @@ namespace NAnt.Contrib.Tasks
         /// <param name="RegistryView">View containing the Registry table.</param>
         /// <returns>True if successful.</returns>
         private bool LoadRegistry(Database Database, Type InstallerType,
-            Object InstallerObject, out View RegistryView)
-        {
+            Object InstallerObject, out View RegistryView) {
             // Open the "Registry" Table
             RegistryView = Database.OpenView("SELECT * FROM `Registry`");
 
-            if (msi.registry != null)
-            {
-                if (Verbose)
-                {
+            if (msi.registry != null) {
+                if (Verbose) {
                     Log(Level.Info, LogPrefix + "Adding Registry Values:");
                 }
 
-                foreach (MSIRegistryKey key in msi.registry)
-                {
+                foreach (MSIRegistryKey key in msi.registry) {
                     int rootKey = -1;
-                    switch (key.root.ToString())
-                    {
-                        case "classes":
-                        {
+                    switch (key.root.ToString()) {
+                        case "classes": {
                             rootKey = 0;
                             break;
                         }
-                        case "user":
-                        {
+                        case "user": {
                             rootKey = 1;
                             break;
                         }
-                        case "machine":
-                        {
+                        case "machine": {
                             rootKey = 2;
                             break;
                         }
-                        case "users":
-                        {
+                        case "users": {
                             rootKey = 3;
                             break;
                         }
                     }
 
-                    foreach (MSIRegistryKeyValue value in key.value)
-                    {
+                    foreach (MSIRegistryKeyValue value in key.value) {
                         // Insert the Value
                         Record recVal = (Record)InstallerType.InvokeMember(
                             "CreateRecord",
@@ -1867,23 +1643,19 @@ namespace NAnt.Contrib.Tasks
                         recVal.set_StringData(3, key.path);
                         recVal.set_StringData(4, value.name);
 
-                        if (Verbose)
-                        {
+                        if (Verbose) {
                             string keypath = GetDisplayablePath(key.path);
                             Log(Level.Info, "\t" + keypath + @"#" + value.name);
                         }
 
-                        if (value.value != null && value.value != "")
-                        {
+                        if (value.value != null && value.value != "") {
                             recVal.set_StringData(5, value.value);
                         }
-                        else if (value.dword != null && value.dword != "")
-                        {
+                        else if (value.dword != null && value.dword != "") {
                             string sDwordMsi = "#" + Int32.Parse(value.dword);
                             recVal.set_StringData(5, sDwordMsi);
                         }
-                        else
-                        {
+                        else {
                             string val1 = value.Value.Replace(",", null);
                             string val2 = val1.Replace(" ", null);
                             string val3 = val2.Replace("\n", null);
@@ -1914,8 +1686,7 @@ namespace NAnt.Contrib.Tasks
         private bool LoadAssemblies(Database Database, Type InstallerType,
             Object InstallerObject, out View MsiAssemblyView,
             out View MsiAssemblyNameView, out View ClassView,
-            out View ProgIdView)
-        {
+            out View ProgIdView) {
             MsiAssemblyView = Database.OpenView("SELECT * FROM `MsiAssembly`");
             MsiAssemblyNameView = Database.OpenView("SELECT * FROM `MsiAssemblyName`");
             ClassView = Database.OpenView("SELECT * FROM `Class`");
@@ -1932,54 +1703,41 @@ namespace NAnt.Contrib.Tasks
         /// <param name="InstallerObject">The MSI Installer object.</param>
         /// <returns>True if successful.</returns>
         private bool LoadRegLocator(Database Database, Type InstallerType,
-            Object InstallerObject)
-        {
+            Object InstallerObject) {
             // Add properties from Task definition
-            if (msi.search != null)
-            {
-                if (Verbose)
-                {
+            if (msi.search != null) {
+                if (Verbose) {
                     Log(Level.Info, LogPrefix + "Adding Locators:");
                 }
 
-                foreach (searchKey key in msi.search)
-                {
-                    switch (key.type.ToString())
-                    {
-                        case "registry":
-                        {
+                foreach (searchKey key in msi.search) {
+                    switch (key.type.ToString()) {
+                        case "registry": {
                             // Select the "RegLocator" Table
                             View regLocatorView = Database.OpenView("SELECT * FROM `RegLocator`");
 
                             int rootKey = -1;
-                            switch (key.root.ToString())
-                            {
-                                case "classes":
-                                {
+                            switch (key.root.ToString()) {
+                                case "classes": {
                                     rootKey = 0;
                                     break;
                                 }
-                                case "user":
-                                {
+                                case "user": {
                                     rootKey = 1;
                                     break;
                                 }
-                                case "machine":
-                                {
+                                case "machine": {
                                     rootKey = 2;
                                     break;
                                 }
-                                case "users":
-                                {
+                                case "users": {
                                     rootKey = 3;
                                     break;
                                 }
                             }
 
-                            if (key.value != null)
-                            {
-                                foreach (searchKeyValue value in key.value)
-                                {
+                            if (key.value != null) {
+                                foreach (searchKeyValue value in key.value) {
                                     string signature = "SIG_" + value.setproperty;
 
                                     // Insert the signature to the RegLocator Table
@@ -1997,8 +1755,7 @@ namespace NAnt.Contrib.Tasks
                                     recRegLoc.set_IntegerData(5, 2);
                                     regLocatorView.Modify(MsiViewModify.msiViewModifyMerge, recRegLoc);
 
-                                    if (Verbose)
-                                    {
+                                    if (Verbose) {
                                         string path = GetDisplayablePath(key.path);
                                         Log(Level.Info, "\t" + key.path + @"#" + value.name);
                                     }
@@ -2009,8 +1766,7 @@ namespace NAnt.Contrib.Tasks
 
                             break;
                         }
-                        case "file":
-                        {
+                        case "file": {
                             break;
                         }
                     }
@@ -2027,24 +1783,17 @@ namespace NAnt.Contrib.Tasks
         /// <param name="InstallerObject">The MSI Installer object.</param>
         /// <returns>True if successful.</returns>
         private bool LoadAppSearch(Database Database, Type InstallerType,
-            Object InstallerObject)
-        {
+            Object InstallerObject) {
             // Add properties from Task definition
-            if (msi.search != null)
-            {
-                foreach (searchKey key in msi.search)
-                {
-                    switch (key.type.ToString())
-                    {
-                        case "registry":
-                        {
+            if (msi.search != null) {
+                foreach (searchKey key in msi.search) {
+                    switch (key.type.ToString()) {
+                        case "registry": {
                             // Select the "AppSearch" Table
                             View appSearchView = Database.OpenView("SELECT * FROM `AppSearch`");
 
-                            if (key.value != null)
-                            {
-                                foreach (searchKeyValue value in key.value)
-                                {
+                            if (key.value != null) {
+                                foreach (searchKeyValue value in key.value) {
                                     string signature = "SIG_" + value.setproperty;
 
                                     // Insert the Property/Signature into AppSearch Table
@@ -2065,8 +1814,7 @@ namespace NAnt.Contrib.Tasks
 
                             break;
                         }
-                        case "file":
-                        {
+                        case "file": {
                             break;
                         }
                     }
@@ -2083,13 +1831,10 @@ namespace NAnt.Contrib.Tasks
         /// <param name="InstallerObject">The MSI Installer object.</param>
         /// <returns>True if successful.</returns>
         private bool LoadLaunchCondition(Database Database, Type InstallerType,
-            Object InstallerObject)
-        {
+            Object InstallerObject) {
             // Add properties from Task definition
-            if (msi.launchconditions != null)
-            {
-                if (Verbose)
-                {
+            if (msi.launchconditions != null) {
+                if (Verbose) {
                     Log(Level.Info, LogPrefix + "Adding Launch Conditions:");
                 }
 
@@ -2097,10 +1842,8 @@ namespace NAnt.Contrib.Tasks
                 View lcView = Database.OpenView("SELECT * FROM `LaunchCondition`");
 
                 // Add binary data from Task definition
-                foreach (MSILaunchCondition launchCondition in msi.launchconditions)
-                {
-                    if (Verbose)
-                    {
+                foreach (MSILaunchCondition launchCondition in msi.launchconditions) {
+                    if (Verbose) {
                         Log(Level.Info, "\t" + launchCondition.name);
                     }
 
@@ -2131,29 +1874,23 @@ namespace NAnt.Contrib.Tasks
         /// <param name="InstallerObject">The MSI Installer object.</param>
         /// <returns>True if successful.</returns>
         private bool LoadIcon(Database Database, Type InstallerType,
-            Object InstallerObject)
-        {
-            if (msi.icons != null)
-            {
+            Object InstallerObject) {
+            if (msi.icons != null) {
 
                 // Open the Icon Table
                 View iconView = Database.OpenView("SELECT * FROM `Icon`");
 
-                if (Verbose)
-                {
+                if (Verbose) {
                     Log(Level.Info, LogPrefix + "Adding Icon Data:");
                 }
 
                 // Add binary data from Task definition
-                foreach (MSIIcon icon in msi.icons)
-                {
-                    if (Verbose)
-                    {
+                foreach (MSIIcon icon in msi.icons) {
+                    if (Verbose) {
                         Log(Level.Info, "\t" + Path.Combine(Project.BaseDirectory, icon.value));
                     }
 
-                    if (File.Exists(Path.Combine(Project.BaseDirectory, icon.value)))
-                    {
+                    if (File.Exists(Path.Combine(Project.BaseDirectory, icon.value))) {
                         // Insert the icon data
                         Record recIcon = (Record)InstallerType.InvokeMember(
                             "CreateRecord",
@@ -2165,8 +1902,7 @@ namespace NAnt.Contrib.Tasks
                         recIcon.SetStream(2, Path.Combine(Project.BaseDirectory, icon.value));
                         iconView.Modify(MsiViewModify.msiViewModifyMerge, recIcon);
                     }
-                    else
-                    {
+                    else {
                         Log(Level.Error, LogPrefix +
                             "ERROR: Unable to open file:\n\n\t" +
                             Path.Combine(Project.BaseDirectory, icon.value) + "\n\n");
@@ -2191,22 +1927,17 @@ namespace NAnt.Contrib.Tasks
         /// <param name="InstallerObject">The MSI Installer object.</param>
         /// <returns>True if successful.</returns>
         private bool LoadShortcut(Database Database, Type InstallerType,
-            Object InstallerObject)
-        {
+            Object InstallerObject) {
             // Add properties from Task definition
-            if (msi.shortcuts != null)
-            {
-                if (Verbose)
-                {
+            if (msi.shortcuts != null) {
+                if (Verbose) {
                     Log(Level.Info, LogPrefix + "Adding Shortcuts:");
                 }
 
                 View shortcutView = Database.OpenView("SELECT * FROM `Shortcut`");
 
-                foreach (MSIShortcut shortcut in msi.shortcuts)
-                {
-                    if (Verbose)
-                    {
+                foreach (MSIShortcut shortcut in msi.shortcuts) {
+                    if (Verbose) {
                         Log(Level.Info, "\t" + shortcut.name);
                     }
 
@@ -2247,45 +1978,35 @@ namespace NAnt.Contrib.Tasks
         /// <param name="InstallerObject">The MSI Installer object.</param>
         /// <returns>True if successful.</returns>
         private bool AddTables(Database Database, Type InstallerType,
-            Object InstallerObject)
-        {
+            Object InstallerObject) {
             // Add properties from Task definition
-            if (msi.tables != null)
-            {
-                if (Verbose)
-                {
+            if (msi.tables != null) {
+                if (Verbose) {
                     Log(Level.Info, LogPrefix + "Adding Tables:");
                 }
 
-                foreach (MSITable table in msi.tables)
-                {
-                    if (Verbose)
-                    {
+                foreach (MSITable table in msi.tables) {
+                    if (Verbose) {
                         Log(Level.Info, "\t" + table.name);
                     }
 
                     bool tableExists = true;
-                    try
-                    {
+                    try {
                         View tableView = Database.OpenView("SELECT * FROM `" + table.name + "`");
 
-                        if (Verbose)
-                        {
+                        if (Verbose) {
                             Log(Level.Info, "\t\tTable exists.. skipping");
                         }
                         tableExists = true;
                         tableView.Close();
                         tableView = null;
                     }
-                    catch (Exception)
-                    {
+                    catch (Exception) {
                         tableExists = false;
                     }
 
-                    if (!tableExists)
-                    {
-                        if (Verbose)
-                        {
+                    if (!tableExists) {
+                        if (Verbose) {
                             Log(Level.Info, "\t\tAdding table structure...");
                         }
 
@@ -2298,8 +2019,7 @@ namespace NAnt.Contrib.Tasks
 
                         ArrayList columnList = new ArrayList();
 
-                        foreach (MSITableColumn column in table.columns)
-                        {
+                        foreach (MSITableColumn column in table.columns) {
                             // Add this column to the column list
                             MSIRowColumnData currentColumn = new MSIRowColumnData();
 
@@ -2314,19 +2034,15 @@ namespace NAnt.Contrib.Tasks
 
                             recValidation.set_StringData(1, table.name);
                             recValidation.set_StringData(2, column.name);
-                            if (column.nullable)
-                            {
-                                if (column.key)
-                                {
+                            if (column.nullable) {
+                                if (column.key) {
                                     recValidation.set_StringData(3, "@");
                                 }
-                                else
-                                {
+                                else {
                                     recValidation.set_StringData(3, "Y");
                                 }
                             }
-                            else
-                            {
+                            else {
                                 recValidation.set_StringData(3, "N");
                             }
                             if (column.minvalueSpecified)
@@ -2338,8 +2054,7 @@ namespace NAnt.Contrib.Tasks
                                 recValidation.set_IntegerData(7, column.keycolumn);
 
 
-                            if (!firstColumn)
-                            {
+                            if (!firstColumn) {
                                 tableStructureColumns += "\t";
                                 tableStructureColumnTypes += "\t";
                             }
@@ -2348,17 +2063,13 @@ namespace NAnt.Contrib.Tasks
 
                             tableStructureColumns += column.name;
 
-                            switch(column.category.ToString())
-                            {
+                            switch(column.category.ToString()) {
                                 case "Text":
-                                    if (column.type == null || column.type == "")
-                                    {
-                                        if (column.nullable)
-                                        {
+                                    if (column.type == null || column.type == "") {
+                                        if (column.nullable) {
                                             tableStructureColumnTypes += "S0";
                                         }
-                                        else
-                                        {
+                                        else {
                                             tableStructureColumnTypes += "s0";
                                         }
                                     }
@@ -2366,14 +2077,11 @@ namespace NAnt.Contrib.Tasks
                                     currentColumn.type = "string";
                                     break;
                                 case "UpperCase":
-                                    if (column.type == null || column.type == "")
-                                    {
-                                        if (column.nullable)
-                                        {
+                                    if (column.type == null || column.type == "") {
+                                        if (column.nullable) {
                                             tableStructureColumnTypes += "S72";
                                         }
-                                        else
-                                        {
+                                        else {
                                             tableStructureColumnTypes += "s72";
                                         }
                                     }
@@ -2381,14 +2089,11 @@ namespace NAnt.Contrib.Tasks
                                     currentColumn.type = "string";
                                     break;
                                 case "LowerCase":
-                                    if (column.type == null || column.type == "")
-                                    {
-                                        if (column.nullable)
-                                        {
+                                    if (column.type == null || column.type == "") {
+                                        if (column.nullable) {
                                             tableStructureColumnTypes += "S72";
                                         }
-                                        else
-                                        {
+                                        else {
                                             tableStructureColumnTypes += "s72";
                                         }
                                     }
@@ -2396,14 +2101,11 @@ namespace NAnt.Contrib.Tasks
                                     currentColumn.type = "string";
                                     break;
                                 case "Integer":
-                                    if (column.type == null || column.type == "")
-                                    {
-                                        if (column.nullable)
-                                        {
+                                    if (column.type == null || column.type == "") {
+                                        if (column.nullable) {
                                             tableStructureColumnTypes += "I2";
                                         }
-                                        else
-                                        {
+                                        else {
                                             tableStructureColumnTypes += "i2";
                                         }
                                     }
@@ -2415,14 +2117,11 @@ namespace NAnt.Contrib.Tasks
                                     currentColumn.type = "int";
                                     break;
                                 case "DoubleInteger":
-                                    if (column.type == null || column.type == "")
-                                    {
-                                        if (column.nullable)
-                                        {
+                                    if (column.type == null || column.type == "") {
+                                        if (column.nullable) {
                                             tableStructureColumnTypes += "I4";
                                         }
-                                        else
-                                        {
+                                        else {
                                             tableStructureColumnTypes += "i4";
                                         }
                                     }
@@ -2434,14 +2133,11 @@ namespace NAnt.Contrib.Tasks
                                     currentColumn.type = "int";
                                     break;
                                 case "Time/Date":
-                                    if (column.type == null || column.type == "")
-                                    {
-                                        if (column.nullable)
-                                        {
+                                    if (column.type == null || column.type == "") {
+                                        if (column.nullable) {
                                             tableStructureColumnTypes += "I4";
                                         }
-                                        else
-                                        {
+                                        else {
                                             tableStructureColumnTypes += "i4";
                                         }
                                     }
@@ -2453,14 +2149,11 @@ namespace NAnt.Contrib.Tasks
                                     currentColumn.type = "int";
                                     break;
                                 case "Identifier":
-                                    if (column.type == null || column.type == "")
-                                    {
-                                        if (column.nullable)
-                                        {
+                                    if (column.type == null || column.type == "") {
+                                        if (column.nullable) {
                                             tableStructureColumnTypes += "S72";
                                         }
-                                        else
-                                        {
+                                        else {
                                             tableStructureColumnTypes += "s72";
                                         }
                                     }
@@ -2468,14 +2161,11 @@ namespace NAnt.Contrib.Tasks
                                     currentColumn.type = "string";
                                     break;
                                 case "Property":
-                                    if (column.type == null || column.type == "")
-                                    {
-                                        if (column.nullable)
-                                        {
+                                    if (column.type == null || column.type == "") {
+                                        if (column.nullable) {
                                             tableStructureColumnTypes += "S72";
                                         }
-                                        else
-                                        {
+                                        else {
                                             tableStructureColumnTypes += "s72";
                                         }
                                     }
@@ -2483,14 +2173,11 @@ namespace NAnt.Contrib.Tasks
                                     currentColumn.type = "string";
                                     break;
                                 case "Filename":
-                                    if (column.type == null || column.type == "")
-                                    {
-                                        if (column.nullable)
-                                        {
+                                    if (column.type == null || column.type == "") {
+                                        if (column.nullable) {
                                             tableStructureColumnTypes += "S255";
                                         }
-                                        else
-                                        {
+                                        else {
                                             tableStructureColumnTypes += "s255";
                                         }
                                     }
@@ -2498,14 +2185,11 @@ namespace NAnt.Contrib.Tasks
                                     currentColumn.type = "string";
                                     break;
                                 case "WildCardFilename":
-                                    if (column.type == null || column.type == "")
-                                    {
-                                        if (column.nullable)
-                                        {
+                                    if (column.type == null || column.type == "") {
+                                        if (column.nullable) {
                                             tableStructureColumnTypes += "L0";
                                         }
-                                        else
-                                        {
+                                        else {
                                             tableStructureColumnTypes += "l0";
                                         }
                                     }
@@ -2513,14 +2197,11 @@ namespace NAnt.Contrib.Tasks
                                     currentColumn.type = "string";
                                     break;
                                 case "Path":
-                                    if (column.type == null || column.type == "")
-                                    {
-                                        if (column.nullable)
-                                        {
+                                    if (column.type == null || column.type == "") {
+                                        if (column.nullable) {
                                             tableStructureColumnTypes += "S255";
                                         }
-                                        else
-                                        {
+                                        else {
                                             tableStructureColumnTypes += "s255";
                                         }
                                     }
@@ -2528,14 +2209,11 @@ namespace NAnt.Contrib.Tasks
                                     currentColumn.type = "string";
                                     break;
                                 case "Paths":
-                                    if (column.type == null || column.type == "")
-                                    {
-                                        if (column.nullable)
-                                        {
+                                    if (column.type == null || column.type == "") {
+                                        if (column.nullable) {
                                             tableStructureColumnTypes += "S255";
                                         }
-                                        else
-                                        {
+                                        else {
                                             tableStructureColumnTypes += "s255";
                                         }
                                     }
@@ -2543,14 +2221,11 @@ namespace NAnt.Contrib.Tasks
                                     currentColumn.type = "string";
                                     break;
                                 case "AnyPath":
-                                    if (column.type == null || column.type == "")
-                                    {
-                                        if (column.nullable)
-                                        {
+                                    if (column.type == null || column.type == "") {
+                                        if (column.nullable) {
                                             tableStructureColumnTypes += "S255";
                                         }
-                                        else
-                                        {
+                                        else {
                                             tableStructureColumnTypes += "s255";
                                         }
                                     }
@@ -2558,14 +2233,11 @@ namespace NAnt.Contrib.Tasks
                                     currentColumn.type = "string";
                                     break;
                                 case "DefaultDir":
-                                    if (column.type == null || column.type == "")
-                                    {
-                                        if (column.nullable)
-                                        {
+                                    if (column.type == null || column.type == "") {
+                                        if (column.nullable) {
                                             tableStructureColumnTypes += "L255";
                                         }
-                                        else
-                                        {
+                                        else {
                                             tableStructureColumnTypes += "l255";
                                         }
                                     }
@@ -2573,14 +2245,11 @@ namespace NAnt.Contrib.Tasks
                                     currentColumn.type = "string";
                                     break;
                                 case "RegPath":
-                                    if (column.type == null || column.type == "")
-                                    {
-                                        if (column.nullable)
-                                        {
+                                    if (column.type == null || column.type == "") {
+                                        if (column.nullable) {
                                             tableStructureColumnTypes += "L255";
                                         }
-                                        else
-                                        {
+                                        else {
                                             tableStructureColumnTypes += "l255";
                                         }
                                     }
@@ -2588,14 +2257,11 @@ namespace NAnt.Contrib.Tasks
                                     currentColumn.type = "string";
                                     break;
                                 case "Formatted":
-                                    if (column.type == null || column.type == "")
-                                    {
-                                        if (column.nullable)
-                                        {
+                                    if (column.type == null || column.type == "") {
+                                        if (column.nullable) {
                                             tableStructureColumnTypes += "S255";
                                         }
-                                        else
-                                        {
+                                        else {
                                             tableStructureColumnTypes += "s255";
                                         }
                                     }
@@ -2603,14 +2269,11 @@ namespace NAnt.Contrib.Tasks
                                     currentColumn.type = "string";
                                     break;
                                 case "Template":
-                                    if (column.type == null || column.type == "")
-                                    {
-                                        if (column.nullable)
-                                        {
+                                    if (column.type == null || column.type == "") {
+                                        if (column.nullable) {
                                             tableStructureColumnTypes += "L0";
                                         }
-                                        else
-                                        {
+                                        else {
                                             tableStructureColumnTypes += "l0";
                                         }
                                     }
@@ -2618,14 +2281,11 @@ namespace NAnt.Contrib.Tasks
                                     currentColumn.type = "string";
                                     break;
                                 case "Condition":
-                                    if (column.type == null || column.type == "")
-                                    {
-                                        if (column.nullable)
-                                        {
+                                    if (column.type == null || column.type == "") {
+                                        if (column.nullable) {
                                             tableStructureColumnTypes += "S255";
                                         }
-                                        else
-                                        {
+                                        else {
                                             tableStructureColumnTypes += "s255";
                                         }
                                     }
@@ -2633,14 +2293,11 @@ namespace NAnt.Contrib.Tasks
                                     currentColumn.type = "string";
                                     break;
                                 case "GUID":
-                                    if (column.type == null || column.type == "")
-                                    {
-                                        if (column.nullable)
-                                        {
+                                    if (column.type == null || column.type == "") {
+                                        if (column.nullable) {
                                             tableStructureColumnTypes += "S38";
                                         }
-                                        else
-                                        {
+                                        else {
                                             tableStructureColumnTypes += "s38";
                                         }
                                     }
@@ -2648,14 +2305,11 @@ namespace NAnt.Contrib.Tasks
                                     currentColumn.type = "string";
                                     break;
                                 case "Version":
-                                    if (column.type == null || column.type == "")
-                                    {
-                                        if (column.nullable)
-                                        {
+                                    if (column.type == null || column.type == "") {
+                                        if (column.nullable) {
                                             tableStructureColumnTypes += "S32";
                                         }
-                                        else
-                                        {
+                                        else {
                                             tableStructureColumnTypes += "s32";
                                         }
                                     }
@@ -2663,14 +2317,11 @@ namespace NAnt.Contrib.Tasks
                                     currentColumn.type = "string";
                                     break;
                                 case "Language":
-                                    if (column.type == null || column.type == "")
-                                    {
-                                        if (column.nullable)
-                                        {
+                                    if (column.type == null || column.type == "") {
+                                        if (column.nullable) {
                                             tableStructureColumnTypes += "S255";
                                         }
-                                        else
-                                        {
+                                        else {
                                             tableStructureColumnTypes += "s255";
                                         }
                                     }
@@ -2678,14 +2329,11 @@ namespace NAnt.Contrib.Tasks
                                     currentColumn.type = "string";
                                     break;
                                 case "Binary":
-                                    if (column.type == null || column.type == "")
-                                    {
-                                        if (column.nullable)
-                                        {
+                                    if (column.type == null || column.type == "") {
+                                        if (column.nullable) {
                                             tableStructureColumnTypes += "V0";
                                         }
-                                        else
-                                        {
+                                        else {
                                             tableStructureColumnTypes += "v0";
                                         }
                                     }
@@ -2693,14 +2341,11 @@ namespace NAnt.Contrib.Tasks
                                     currentColumn.type = "binary";
                                     break;
                                 case "CustomSource":
-                                    if (column.type == null || column.type == "")
-                                    {
-                                        if (column.nullable)
-                                        {
+                                    if (column.type == null || column.type == "") {
+                                        if (column.nullable) {
                                             tableStructureColumnTypes += "S72";
                                         }
-                                        else
-                                        {
+                                        else {
                                             tableStructureColumnTypes += "s72";
                                         }
                                     }
@@ -2708,14 +2353,11 @@ namespace NAnt.Contrib.Tasks
                                     currentColumn.type = "string";
                                     break;
                                 case "Cabinet":
-                                    if (column.type == null || column.type == "")
-                                    {
-                                        if (column.nullable)
-                                        {
+                                    if (column.type == null || column.type == "") {
+                                        if (column.nullable) {
                                             tableStructureColumnTypes += "S255";
                                         }
-                                        else
-                                        {
+                                        else {
                                             tableStructureColumnTypes += "s255";
                                         }
                                     }
@@ -2723,14 +2365,11 @@ namespace NAnt.Contrib.Tasks
                                     currentColumn.type = "string";
                                     break;
                                 case "Shortcut":
-                                    if (column.type == null || column.type == "")
-                                    {
-                                        if (column.nullable)
-                                        {
+                                    if (column.type == null || column.type == "") {
+                                        if (column.nullable) {
                                             tableStructureColumnTypes += "S72";
                                         }
-                                        else
-                                        {
+                                        else {
                                             tableStructureColumnTypes += "s72";
                                         }
                                     }
@@ -2738,27 +2377,22 @@ namespace NAnt.Contrib.Tasks
                                     currentColumn.type = "string";
                                     break;
                                 default:
-                                    if (column.type == null || column.type == "")
-                                    {
-                                        if (Verbose)
-                                        {
+                                    if (column.type == null || column.type == "") {
+                                        if (Verbose) {
                                             Log(Level.Info, " ");
                                             Log(Level.Info, LogPrefix + "Must specify a valid category or type.  Defaulting to category type: s0");
                                         }
-                                        if (column.nullable)
-                                        {
+                                        if (column.nullable) {
                                             tableStructureColumnTypes += "S0";
                                         }
-                                        else
-                                        {
+                                        else {
                                             tableStructureColumnTypes += "s0";
                                         }
                                         currentColumn.type = "string";
                                     }
                                     break;
                             }
-                            if (column.type != null)
-                            {
+                            if (column.type != null) {
                                 tableStructureColumnTypes += column.type;
                                 if (column.type.ToString().ToLower().StartsWith("i"))
                                     currentColumn.type = "int";
@@ -2789,31 +2423,26 @@ namespace NAnt.Contrib.Tasks
                         string tempFileName = "85E99F65_1B01_4add_8835_EB2C9DA4E8BF.idt";
                         string fullTempFileName = Path.Combine(Path.Combine(Project.BaseDirectory, msi.sourcedir), tempFileName);
                         FileStream tableStream = null;
-                        try
-                        {
+                        try {
                             tableStream = File.Create(fullTempFileName);
                             StreamWriter writer = new StreamWriter(tableStream);
                             writer.Write(tableStructureContents);
                             writer.Flush();
                         }
-                        finally
-                        {
+                        finally {
                             tableStream.Close();
                         }
 
-                        try
-                        {
+                        try {
                             Database.Import(Path.GetFullPath(Path.Combine(Project.BaseDirectory, msi.sourcedir)), tempFileName);
                         }
-                        catch (Exception ae)
-                        {
+                        catch (Exception ae) {
                             Log(Level.Error, LogPrefix + "ERROR: Temporary table file\n (" + Path.GetFullPath(Path.Combine(Path.Combine(Project.BaseDirectory, msi.sourcedir), tempFileName)) + ") is not valid:\n" +
                                 ae.ToString());
                         }
                         File.Delete(fullTempFileName);
 
-                        if (Verbose)
-                        {
+                        if (Verbose) {
                             Log(Level.Info, "Done");
                         }
 
@@ -2839,48 +2468,37 @@ namespace NAnt.Contrib.Tasks
         /// <param name="columnList">List of column objects for the current table (Containing: column name, id, type).</param>
         /// <returns>True if successful.</returns>
         private bool AddTableData(Database Database, Type InstallerType,
-            Object InstallerObject, string currentTable, MSITable table, ArrayList columnList)
-        {
+            Object InstallerObject, string currentTable, MSITable table, ArrayList columnList) {
 
-            if (Verbose)
-            {
+            if (Verbose) {
                 Log(Level.Info, "\t\tAdding table data...");
             }
             View tableView = Database.OpenView("SELECT * FROM `" + currentTable + "`");
 
-            foreach (MSITableRow row in table.rows)
-            {
+            foreach (MSITableRow row in table.rows) {
                 Record newRec = (Record)InstallerType.InvokeMember(
                     "CreateRecord",
                     BindingFlags.InvokeMethod,
                     null, InstallerObject,
                     new object[] { columnList.Count });
-                try
-                {
+                try {
                     // Go through each element defining row data
-                    foreach(MSITableRowColumnData columnData in row.columns)
-                    {
+                    foreach(MSITableRowColumnData columnData in row.columns) {
                         // Create the record and add it
                         // Check to see if the current element equals a specified column.
-                        foreach (MSIRowColumnData columnInfo in columnList)
-                        {
-                            if (columnInfo.name == columnData.name)
-                            {
-                                if (columnInfo.type == "int")
-                                {
+                        foreach (MSIRowColumnData columnInfo in columnList) {
+                            if (columnInfo.name == columnData.name) {
+                                if (columnInfo.type == "int") {
                                     newRec.set_IntegerData((columnInfo.id + 1), Convert.ToInt32(columnData.value));
                                 }
-                                else if (columnInfo.type == "binary")
-                                {
+                                else if (columnInfo.type == "binary") {
                                     newRec.SetStream((columnInfo.id + 1), columnData.value);
                                 }
-                                else if (columnInfo.type == "guid")
-                                {
+                                else if (columnInfo.type == "guid") {
                                     // Guids must have all uppercase letters
                                     newRec.set_StringData((columnInfo.id + 1), columnData.value.ToUpper());
                                 }
-                                else
-                                {
+                                else {
                                     newRec.set_StringData((columnInfo.id + 1), columnData.value);
                                 }
                                 break;
@@ -2889,16 +2507,14 @@ namespace NAnt.Contrib.Tasks
                     }
                     tableView.Modify(MsiViewModify.msiViewModifyMerge, newRec);
                 }
-                catch (Exception e)
-                {
+                catch (Exception e) {
                     Log(Level.Info, LogPrefix + "Incorrect row data format.\n\n" + e.ToString());
                 }
             }
             tableView.Close();
             tableView = null;
 
-            if (Verbose)
-            {
+            if (Verbose) {
                 Log(Level.Info, "Done");
             }
             return true;
@@ -2914,36 +2530,30 @@ namespace NAnt.Contrib.Tasks
         /// <param name="Database">The MSI database.</param>
         /// <param name="LastSequence">The last file's sequence number.</param>
         /// <returns>True if successful</returns>
-        private bool ReorderFiles(Database Database, ref int LastSequence)
-        {
+        private bool ReorderFiles(Database Database, ref int LastSequence) {
             string curPath = Path.Combine(Project.BaseDirectory, msi.sourcedir);
             string curTempPath = Path.Combine(curPath, "Temp");
 
-            try
-            {
+            try {
                 string[] curFileNames = Directory.GetFiles(curTempPath, "*.*");
                 LastSequence = 1;
 
-                foreach (string curDirFileName in curFileNames)
-                {
+                foreach (string curDirFileName in curFileNames) {
                     View curFileView = Database.OpenView(
                         "SELECT * FROM `File` WHERE `File`='" +
                         Path.GetFileName(curDirFileName) + "'");
 
-                    if (curFileView != null)
-                    {
+                    if (curFileView != null) {
                         curFileView.Execute(null);
                         Record recCurFile = curFileView.Fetch();
 
-                        if (recCurFile != null)
-                        {
+                        if (recCurFile != null) {
                             recCurFile.set_StringData(8, LastSequence.ToString());
                             curFileView.Modify(MsiViewModify.msiViewModifyUpdate, recCurFile);
 
                             LastSequence++;
                         }
-                        else
-                        {
+                        else {
                             Log(Level.Info, LogPrefix + "File " +
                                 Path.GetFileName(curDirFileName) +
                                 " not found during reordering.");
@@ -2959,8 +2569,7 @@ namespace NAnt.Contrib.Tasks
                     curFileView = null;
                 }
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 // There are no files added to the msi.  (Msi containing only merge modules?)
                 Log(Level.Info, LogPrefix + "NOTE: No files found to add to MSI (Does not include MSM files).\n" + e.Message + "\n" + e.StackTrace);
             }
@@ -2974,8 +2583,7 @@ namespace NAnt.Contrib.Tasks
         /// <param name="InstallerType">The MSI Installer type.</param>
         /// <param name="InstallerObject">The MSI Installer object.</param>
         /// <returns>True if successful.</returns>
-        private bool CreateCabFile(Database Database, Type InstallerType, Object InstallerObject)
-        {
+        private bool CreateCabFile(Database Database, Type InstallerType, Object InstallerObject) {
             Log(Level.Info, LogPrefix + "Compressing Files...");
 
             // Create the CabFile
@@ -2998,37 +2606,31 @@ namespace NAnt.Contrib.Tasks
             process.StartInfo = processInfo;
             process.EnableRaisingEvents = true;
 
-            try
-            {
+            try {
                 process.Start();
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 Log(Level.Error, LogPrefix + "ERROR: cabarc.exe is not in your path! \n" + e.ToString());
                 return false;
             }
 
-            try
-            {
+            try {
                 process.WaitForExit();
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 Log(Level.Error, "");
                 Log(Level.Error, "Error creating cab file: " + e.Message);
                 return false;
             }
 
-            if (process.ExitCode != 0)
-            {
+            if (process.ExitCode != 0) {
                 Log(Level.Error, "");
                 Log(Level.Error, "Error creating cab file, application returned error " +
                     process.ExitCode + ".");
                 return false;
             }
 
-            if (!process.HasExited)
-            {
+            if (!process.HasExited) {
                 Log(Level.Info,"" );
                 Log(Level.Info, "Killing the cabarc process.");
                 process.Kill();
@@ -3038,11 +2640,9 @@ namespace NAnt.Contrib.Tasks
 
             Log(Level.Info, "Done.");
 
-            if (File.Exists(cabFile))
-            {
+            if (File.Exists(cabFile)) {
                 View cabView = Database.OpenView("SELECT * FROM `_Streams`");
-                if (Verbose)
-                {
+                if (Verbose) {
                     Log(Level.Info, LogPrefix + "Storing Cabinet in MSI Database...");
                 }
 
@@ -3060,8 +2660,7 @@ namespace NAnt.Contrib.Tasks
                 cabView = null;
 
             }
-            else
-            {
+            else {
                 Log(Level.Error, LogPrefix +
                     "ERROR: Unable to open Cabinet file:\n\n\t" +
                     cabFile + "\n\n");
@@ -3078,10 +2677,8 @@ namespace NAnt.Contrib.Tasks
         /// </summary>
         /// <param name="LongFile">The file to shorten.</param>
         /// <returns>The new shortened file.</returns>
-        private string GetShortFile(string LongFile)
-        {
-            if (LongFile.Length <= 8)
-            {
+        private string GetShortFile(string LongFile) {
+            if (LongFile.Length <= 8) {
                 return LongFile;
             }
 
@@ -3095,10 +2692,8 @@ namespace NAnt.Contrib.Tasks
         /// </summary>
         /// <param name="LongPath">The path to shorten.</param>
         /// <returns>The new shortened path.</returns>
-        private string GetShortPath(string LongPath)
-        {
-            if (LongPath.Length <= 8)
-            {
+        private string GetShortPath(string LongPath) {
+            if (LongPath.Length <= 8) {
                 return LongPath;
             }
 
@@ -3106,24 +2701,20 @@ namespace NAnt.Contrib.Tasks
             int result = GetShortPathName(LongPath, shortPath, shortPath.Capacity);
 
             Uri shortPathUri = null;
-            try
-            {
+            try {
                 shortPathUri = new Uri("file://" + shortPath.ToString());
             }
-            catch (Exception)
-            {
+            catch (Exception) {
                 Log(Level.Error, LogPrefix + "ERROR: Directory " +
                     LongPath + " not found.");
                 return "MsiTaskPathNotFound";
             }
 
             string[] shortPathSegments = shortPathUri.Segments;
-            if (shortPathSegments.Length == 0)
-            {
+            if (shortPathSegments.Length == 0) {
                 return LongPath;
             }
-            if (shortPathSegments.Length == 1)
-            {
+            if (shortPathSegments.Length == 1) {
                 return shortPathSegments[0];
             }
             return shortPathSegments[shortPathSegments.Length-1];
@@ -3134,10 +2725,8 @@ namespace NAnt.Contrib.Tasks
         /// </summary>
         /// <param name="LongPath">The path to shorten.</param>
         /// <returns>The new shortened path.</returns>
-        private string GetShortDir(string LongPath)
-        {
-            if (LongPath.Length <= 8)
-            {
+        private string GetShortDir(string LongPath) {
+            if (LongPath.Length <= 8) {
                 return LongPath;
             }
 
@@ -3145,12 +2734,10 @@ namespace NAnt.Contrib.Tasks
             int result = GetShortPathName(LongPath, shortPath, shortPath.Capacity);
 
             Uri shortPathUri = null;
-            try
-            {
+            try {
                 shortPathUri = new Uri("file://" + shortPath.ToString());
             }
-            catch (Exception)
-            {
+            catch (Exception) {
                 Log(Level.Error, LogPrefix + "ERROR: Directory " +
                     LongPath + " not found.");
                 return "MsiTaskPathNotFound";
@@ -3180,34 +2767,26 @@ namespace NAnt.Contrib.Tasks
             string Parent,
             string Default,
             StringBuilder Path,
-            View DirectoryView)
-        {
-            if (Name == "TARGETDIR")
-            {
+            View DirectoryView) {
+            if (Name == "TARGETDIR") {
                 return;
             }
 
-            for (int i = 0; i < commonFolderNames.Length; i++)
-            {
-                if (Name == commonFolderNames[i])
-                {
+            for (int i = 0; i < commonFolderNames.Length; i++) {
+                if (Name == commonFolderNames[i]) {
                     return;
                 }
             }
 
             ArrayList directoryList = new ArrayList();
-            foreach(MSIRootDirectory directory in msi.directories)
-            {
+            foreach(MSIRootDirectory directory in msi.directories) {
                 directoryList.Add(directory);
             }
 
-            foreach (property property in msi.properties)
-            {
-                if (Name == property.name)
-                {
+            foreach (property property in msi.properties) {
+                if (Name == property.name) {
                     MSIDirectory directory = FindDirectory(Name);
-                    if (directory == null)
-                    {
+                    if (directory == null) {
                         MSIRootDirectory propDirectory = new MSIRootDirectory();
                         propDirectory.name = Name;
                         propDirectory.root = "TARGETDIR";
@@ -3225,22 +2804,17 @@ namespace NAnt.Contrib.Tasks
                 }
             }
 
-            if (Path.Length > 0)
-            {
+            if (Path.Length > 0) {
                 Path.Insert(0, @"\");
             }
 
             Path.Insert(0, Default);
-            if (Parent != null)
-            {
+            if (Parent != null) {
                 MSIDirectory PathInfo = FindDirectory(Parent);
 
-                if (PathInfo == null)
-                {
-                    foreach (property property in msi.properties)
-                    {
-                        if (Parent == property.name)
-                        {
+                if (PathInfo == null) {
+                    foreach (property property in msi.properties) {
+                        if (Parent == property.name) {
                             MSIRootDirectory directory = new MSIRootDirectory();
                             directory.name = Parent;
                             directory.root = "TARGETDIR";
@@ -3273,12 +2847,10 @@ namespace NAnt.Contrib.Tasks
                 }
 
                 string newParent = null;
-                if (PathInfo is MSIRootDirectory)
-                {
+                if (PathInfo is MSIRootDirectory) {
                     newParent = ((MSIRootDirectory)PathInfo).root;
                 }
-                else
-                {
+                else {
                     newParent = FindParent(Parent);
                 }
 
@@ -3293,17 +2865,12 @@ namespace NAnt.Contrib.Tasks
         /// a nodelist and their children.
         /// </summary>
         /// <param name="Nodes">The nodes to recurse.</param>
-        void ExpandPropertiesInNodes(XmlNodeList Nodes)
-        {
-            foreach (XmlNode node in Nodes)
-            {
-                if (node.ChildNodes != null)
-                {
+        void ExpandPropertiesInNodes(XmlNodeList Nodes) {
+            foreach (XmlNode node in Nodes) {
+                if (node.ChildNodes != null) {
                     ExpandPropertiesInNodes(node.ChildNodes);
-                    if (node.Attributes != null)
-                    {
-                        foreach (XmlAttribute attr in node.Attributes)
-                        {
+                    if (node.Attributes != null) {
+                        foreach (XmlAttribute attr in node.Attributes) {
                             attr.Value = Properties.ExpandProperties(attr.Value, Location);
                         }
                     }
@@ -3317,14 +2884,12 @@ namespace NAnt.Contrib.Tasks
         /// </summary>
         /// <param name="ByteArray">The array of bytes.</param>
         /// <returns>The string containing the array.</returns>
-        private string ByteArrayToString(Byte[] ByteArray)
-        {
+        private string ByteArrayToString(Byte[] ByteArray) {
             if ((ByteArray == null) || (ByteArray.Length == 0))
                 return "";
             StringBuilder sb = new StringBuilder ();
             sb.Append (ByteArray[0].ToString("x2"));
-            for (int i = 1; i < ByteArray.Length; i++)
-            {
+            for (int i = 1; i < ByteArray.Length; i++) {
                 sb.Append(ByteArray[i].ToString("x2"));
             }
             return sb.ToString().ToUpper();
@@ -3341,25 +2906,21 @@ namespace NAnt.Contrib.Tasks
         /// <param name="InstallerObject">The MSI Installer object.</param>
         /// <param name="RegistryView">View containing the Registry Table.</param>
         /// <returns>True if successful.</returns>
-        private bool LoadTypeLibs(Database Database, Type InstallerType, object InstallerObject, View RegistryView)
-        {
+        private bool LoadTypeLibs(Database Database, Type InstallerType, object InstallerObject, View RegistryView) {
             // Open the "TypeLib" Table
             View typeLibView = Database.OpenView("SELECT * FROM `TypeLib`");
 
             string runtimeVer = Environment.Version.ToString(4);
 
-            for (int i = 0; i < typeLibRecords.Count; i++)
-            {
+            for (int i = 0; i < typeLibRecords.Count; i++) {
                 TypeLibRecord tlbRecord = (TypeLibRecord)typeLibRecords[i];
 
                 IntPtr pTypeLib = new IntPtr(0);
                 int result = LoadTypeLib(tlbRecord.TypeLibFileName, ref pTypeLib);
-                if (result == 0)
-                {
+                if (result == 0) {
                     UCOMITypeLib typeLib = (UCOMITypeLib)Marshal.GetTypedObjectForIUnknown(
                         pTypeLib, typeof(UCOMITypeLib));
-                    if (typeLib != null)
-                    {
+                    if (typeLib != null) {
                         int helpContextId;
                         string name, docString, helpFile;
 
@@ -3393,40 +2954,33 @@ namespace NAnt.Contrib.Tasks
                         typeLibView.Modify(MsiViewModify.msiViewModifyMerge, recTypeLib);
 
                         // If a .NET type library wrapper for an assembly
-                        if (tlbRecord.AssemblyName != null)
-                        {
+                        if (tlbRecord.AssemblyName != null) {
                             // Get all the types defined in the typelibrary
                             // that are not marked "noncreatable"
 
                             int typeCount = typeLib.GetTypeInfoCount();
-                            for (int j = 0; j < typeCount; j++)
-                            {
+                            for (int j = 0; j < typeCount; j++) {
                                 UCOMITypeInfo typeInfo = null;
                                 typeLib.GetTypeInfo(j, out typeInfo);
 
-                                if (typeInfo != null)
-                                {
+                                if (typeInfo != null) {
                                     IntPtr pTypeAttr = new IntPtr(0);
                                     typeInfo.GetTypeAttr(out pTypeAttr);
 
                                     TYPEATTR typeAttr = (TYPEATTR)Marshal.PtrToStructure(pTypeAttr, typeof(TYPEATTR));
 
                                     if (typeAttr.typekind == TYPEKIND.TKIND_COCLASS
-                                        && typeAttr.wTypeFlags == TYPEFLAGS.TYPEFLAG_FCANCREATE)
-                                    {
+                                        && typeAttr.wTypeFlags == TYPEFLAGS.TYPEFLAG_FCANCREATE) {
                                         string clsid = "{" + typeAttr.guid.ToString().ToUpper() + "}";
 
-                                        if (typeInfo is UCOMITypeInfo2)
-                                        {
+                                        if (typeInfo is UCOMITypeInfo2) {
                                             UCOMITypeInfo2 typeInfo2 = (UCOMITypeInfo2)typeInfo;
-                                            if (typeInfo2 != null)
-                                            {
+                                            if (typeInfo2 != null) {
                                                 object custData = new object();
                                                 Guid g = new Guid("0F21F359-AB84-41E8-9A78-36D110E6D2F9");
                                                 typeInfo2.GetCustData(ref g, out custData);
 
-                                                if (custData != null)
-                                                {
+                                                if (custData != null) {
                                                     string className = (string)custData;
 
                                                     // Insert the Class
@@ -3487,8 +3041,7 @@ namespace NAnt.Contrib.Tasks
                                             }
                                         }
                                     }
-                                    else if (typeAttr.typekind == TYPEKIND.TKIND_DISPATCH)
-                                    {
+                                    else if (typeAttr.typekind == TYPEKIND.TKIND_DISPATCH) {
                                         string iid = "{" + typeAttr.guid.ToString().ToUpper() + "}";
 
                                         string typeName, typeDocString, typeHelpFile;
@@ -3498,17 +3051,14 @@ namespace NAnt.Contrib.Tasks
                                             out typeDocString, out typeHelpContextId,
                                             out typeHelpFile);
 
-                                        if (typeInfo is UCOMITypeInfo2)
-                                        {
+                                        if (typeInfo is UCOMITypeInfo2) {
                                             UCOMITypeInfo2 typeInfo2 = (UCOMITypeInfo2)typeInfo;
-                                            if (typeInfo2 != null)
-                                            {
+                                            if (typeInfo2 != null) {
                                                 object custData = new object();
                                                 Guid g = new Guid("0F21F359-AB84-41E8-9A78-36D110E6D2F9");
                                                 typeInfo2.GetCustData(ref g, out custData);
 
-                                                if (custData != null)
-                                                {
+                                                if (custData != null) {
                                                     string className = (string)custData;
 
                                                     // Insert the Interface
@@ -3582,18 +3132,15 @@ namespace NAnt.Contrib.Tasks
         /// <param name="Database">The MSI Database.</param>
         /// <param name="TempPath">The path to temporary files.</param>
         /// <returns>True if successful.</returns>
-        private bool LoadMergeModules(string Database, string TempPath)
-        {
+        private bool LoadMergeModules(string Database, string TempPath) {
             // If <mergemodules>...</mergemodules> exists in the nant msi task
 
-            if (msi.mergemodules != null)
-            {
+            if (msi.mergemodules != null) {
                 MsmMergeClass mergeClass = new MsmMergeClass();
 
                 int index = 1;
 
-                if (Verbose)
-                {
+                if (Verbose) {
                     Log(Level.Info, LogPrefix + "Storing Merge Modules:");
                 }
 
@@ -3601,12 +3148,12 @@ namespace NAnt.Contrib.Tasks
                     Directory.CreateDirectory(TempPath);
 
                 // Merge module(s) assigned to a specific feature
-                foreach (MSIMerge merge in msi.mergemodules)
-                {
+                foreach (MSIMerge merge in msi.mergemodules) {
                     // Get each merge module file name assigned to this feature
                     NAntFileSet modules = merge.modules;
 
                     FileSet mergeSet = new FileSet();
+                    mergeSet.Parent = this;
                     mergeSet.Project = Project;
 
                     XmlElement modulesElem = (XmlElement)((XmlElement)_xmlNode).SelectSingleNode(
@@ -3615,24 +3162,19 @@ namespace NAnt.Contrib.Tasks
                     mergeSet.Initialize(modulesElem);
 
                     // Iterate each module assigned to this feature
-                    foreach (string mergeModule in mergeSet.FileNames)
-                    {
-                        if (Verbose)
-                        {
+                    foreach (string mergeModule in mergeSet.FileNames) {
+                        if (Verbose) {
                             Log(Level.Info, "\t" + Path.GetFileName(mergeModule));
                         }
 
-                        try
-                        {
+                        try {
                             // Open the merge module (by Filename)
                             mergeClass.OpenModule(mergeModule, 1033);
 
-                            try
-                            {
+                            try {
                                 mergeClass.OpenDatabase(Database);
                             }
-                            catch (FileLoadException fle)
-                            {
+                            catch (FileLoadException fle) {
                                 Log(Level.Info, fle.Message + " " + fle.FileName + " " + fle.StackTrace);
                                 return false;
                             }
@@ -3653,8 +3195,7 @@ namespace NAnt.Contrib.Tasks
 
                             Process process = new Process();
 
-                            if (File.Exists(moduleCab))
-                            {
+                            if (File.Exists(moduleCab)) {
                                 // Extract the cabfile contents to a Temp directory
                                 ProcessStartInfo processInfo = new ProcessStartInfo();
 
@@ -3672,12 +3213,10 @@ namespace NAnt.Contrib.Tasks
 
                                 process.Start();
 
-                                try
-                                {
+                                try {
                                     process.WaitForExit();
                                 }
-                                catch (Exception e)
-                                {
+                                catch (Exception e) {
                                     Log(Level.Info, "" );
                                     Log(Level.Info, "Error extracting merge module cab file: " + moduleCab);
                                     Log(Level.Info, "Error was: " + e.Message);
@@ -3686,8 +3225,7 @@ namespace NAnt.Contrib.Tasks
                                     return false;
                                 }
 
-                                if (process.ExitCode != 0)
-                                {
+                                if (process.ExitCode != 0) {
                                     Log(Level.Error, "");
                                     Log(Level.Error, "Error extracting merge module cab file: " + moduleCab);
                                     Log(Level.Error, "Application returned ERROR: " + process.ExitCode);
@@ -3699,8 +3237,7 @@ namespace NAnt.Contrib.Tasks
                                 File.Delete(moduleCab);
                             }
                         }
-                        catch (Exception)
-                        {
+                        catch (Exception) {
                             Log(Level.Error, LogPrefix + "ERROR: cabarc.exe is not in your path");
                             Log(Level.Error, LogPrefix + "or file " + mergeModule + " is not found.");
                             return false;
@@ -3725,30 +3262,24 @@ namespace NAnt.Contrib.Tasks
         /// <param name="InstallerType">The MSI Installer type.</param>
         /// <param name="InstallerObject">The MSI Installer object.</param>
         /// <returns>True if successful.</returns>
-        private bool LoadBinary(Database Database, Type InstallerType, Object InstallerObject)
-        {
-            if (msi.binaries != null)
-            {
+        private bool LoadBinary(Database Database, Type InstallerType, Object InstallerObject) {
+            if (msi.binaries != null) {
 
                 // Open the Binary Table
                 View binaryView = Database.OpenView("SELECT * FROM `Binary`");
 
-                if (Verbose)
-                {
+                if (Verbose) {
                     Log(Level.Info, LogPrefix + "Adding Binary Data:");
                 }
 
                 // Add binary data from Task definition
-                foreach (MSIBinary binary in msi.binaries)
-                {
-                    if (Verbose)
-                    {
+                foreach (MSIBinary binary in msi.binaries) {
+                    if (Verbose) {
                         Log(Level.Info, "\t" + Path.Combine(Project.BaseDirectory, binary.value));
 
                         int nameColSize = 50;
 
-                        if (binary.name.Length > nameColSize)
-                        {
+                        if (binary.name.Length > nameColSize) {
                             Log(Level.Warning, LogPrefix +
                                 "WARNING: Binary key name longer than " + nameColSize + " characters:\n\tName: " +
                                 binary.name + "\n\tLength: " + binary.name.Length.ToString());
@@ -3756,8 +3287,7 @@ namespace NAnt.Contrib.Tasks
                         }
                     }
 
-                    if (File.Exists(Path.Combine(Project.BaseDirectory, binary.value)))
-                    {
+                    if (File.Exists(Path.Combine(Project.BaseDirectory, binary.value))) {
                         // Insert the binary data
                         Record recBinary = (Record)InstallerType.InvokeMember(
                             "CreateRecord",
@@ -3769,8 +3299,7 @@ namespace NAnt.Contrib.Tasks
                         recBinary.SetStream(2, Path.Combine(Project.BaseDirectory, binary.value));
                         binaryView.Modify(MsiViewModify.msiViewModifyMerge, recBinary);
                     }
-                    else
-                    {
+                    else {
                         Log(Level.Error, LogPrefix +
                             "ERROR: Unable to open file:\n\n\t" +
                             Path.Combine(Project.BaseDirectory, binary.value) + "\n\n");
@@ -3794,23 +3323,18 @@ namespace NAnt.Contrib.Tasks
         /// <param name="InstallerType">The MSI Installer type.</param>
         /// <param name="InstallerObject">The MSI Installer object.</param>
         /// <returns>True if successful.</returns>
-        private bool LoadDialog(Database Database, Type InstallerType, Object InstallerObject)
-        {
-            if (msi.dialogs != null)
-            {
+        private bool LoadDialog(Database Database, Type InstallerType, Object InstallerObject) {
+            if (msi.dialogs != null) {
 
                 // Open the Dialog Table
                 View dialogView = Database.OpenView("SELECT * FROM `Dialog`");
 
-                if (Verbose)
-                {
+                if (Verbose) {
                     Log(Level.Info, LogPrefix + "Adding Dialogs:");
                 }
 
-                foreach (MSIDialog dialog in msi.dialogs)
-                {
-                    if (Verbose)
-                    {
+                foreach (MSIDialog dialog in msi.dialogs) {
+                    if (Verbose) {
                         Log(Level.Info, "\t" + dialog.name);
                     }
 
@@ -3848,23 +3372,17 @@ namespace NAnt.Contrib.Tasks
         /// <param name="InstallerType">The MSI Installer type.</param>
         /// <param name="InstallerObject">The MSI Installer object.</param>
         /// <returns>True if successful.</returns>
-        private bool LoadControl(Database Database, Type InstallerType, Object InstallerObject)
-        {
-            if (msi.controls != null)
-            {
-                if (Verbose)
-                {
+        private bool LoadControl(Database Database, Type InstallerType, Object InstallerObject) {
+            if (msi.controls != null) {
+                if (Verbose) {
                     Log(Level.Info, LogPrefix + "Dialog Controls:");
                 }
 
                 View controlView;
 
-                foreach (MSIControl control in msi.controls)
-                {
-                    if (control.remove)
-                    {
-                        if (Verbose)
-                        {
+                foreach (MSIControl control in msi.controls) {
+                    if (control.remove) {
+                        if (Verbose) {
                             Log(Level.Info, "\tRemoving: " + control.name);
                         }
 
@@ -3872,27 +3390,22 @@ namespace NAnt.Contrib.Tasks
                         controlView = Database.OpenView("SELECT * FROM `Control` WHERE `Dialog_`='" + control.dialog + "' AND `Control`='" + control.name + "' AND `Type`='" + control.type + "' AND `X`=" + control.x + " AND `Y`=" + control.y + " AND `Width`=" + control.width + " AND `Height`=" + control.height + " AND `Attributes`=" + control.attr);
                         controlView.Execute(null);
 
-                        try
-                        {
+                        try {
                             Record recControl = controlView.Fetch();
                             controlView.Modify(MsiViewModify.msiViewModifyDelete, recControl);
                         }
-                        catch (Exception)
-                        {
+                        catch (Exception) {
                             Log(Level.Error, LogPrefix +
                                 "ERROR: Control not found.\n\nSELECT * FROM `Control` WHERE `Dialog_`='" + control.dialog + "' AND `Control`='" + control.name + "' AND `Type`='" + control.type + "' AND `X`='" + control.x + "' AND `Y`='" + control.y + "' AND `Width`='" + control.width + "' AND `Height`='" + control.height + "' AND `Attributes`='" + control.attr + "'");
                             return false;
                         }
-                        finally
-                        {
+                        finally {
                             controlView.Close();
                             controlView = null;
                         }
                     }
-                    else
-                    {
-                        if (Verbose)
-                        {
+                    else {
+                        if (Verbose) {
                             Log(Level.Info, "\tAdding:   " + control.name);
                         }
                         // Open the Control Table
@@ -3935,50 +3448,39 @@ namespace NAnt.Contrib.Tasks
         /// <param name="InstallerType">The MSI Installer type.</param>
         /// <param name="InstallerObject">The MSI Installer object.</param>
         /// <returns>True if successful.</returns>
-        private bool LoadControlCondition(Database Database, Type InstallerType, Object InstallerObject)
-        {
-            if (msi.controlconditions != null)
-            {
+        private bool LoadControlCondition(Database Database, Type InstallerType, Object InstallerObject) {
+            if (msi.controlconditions != null) {
                 View controlConditionView;
 
-                if (Verbose)
-                {
+                if (Verbose) {
                     Log(Level.Info, LogPrefix + "Adding Dialog Control Conditions For:");
                 }
 
-                foreach (MSIControlCondition controlCondition in msi.controlconditions)
-                {
-                    if (controlCondition.remove)
-                    {
-                        if (Verbose)
-                        {
+                foreach (MSIControlCondition controlCondition in msi.controlconditions) {
+                    if (controlCondition.remove) {
+                        if (Verbose) {
                             Log(Level.Info, "\tRemoving: " + controlCondition.control);
                         }
 
                         controlConditionView = Database.OpenView("SELECT * FROM `ControlCondition` WHERE `Dialog_`='" + controlCondition.dialog + "' AND `Control_`='" + controlCondition.control + "' AND `Action`='" + controlCondition.action + "' AND `Condition`='" + controlCondition.condition + "'");
                         controlConditionView.Execute(null);
 
-                        try
-                        {
+                        try {
                             Record recControlCondition = controlConditionView.Fetch();
                             controlConditionView.Modify(MsiViewModify.msiViewModifyDelete, recControlCondition);
                         }
-                        catch (Exception)
-                        {
+                        catch (Exception) {
                             Log(Level.Error, LogPrefix +
                                 "ERROR: Control Condition not found.\n\nSELECT * FROM `ControlCondition` WHERE `Dialog_`='" + controlCondition.dialog + "' AND `Control_`='" + controlCondition.control + "' AND `Action`='" + controlCondition.action + "' AND `Condition`='" + controlCondition.condition + "'");
                             return false;
                         }
-                        finally
-                        {
+                        finally {
                             controlConditionView.Close();
                             controlConditionView = null;
                         }
                     }
-                    else
-                    {
-                        if (Verbose)
-                        {
+                    else {
+                        if (Verbose) {
                             Log(Level.Info, "\tAdding:   " + controlCondition.control);
                         }
 
@@ -4013,58 +3515,46 @@ namespace NAnt.Contrib.Tasks
         /// <param name="InstallerType">The MSI Installer type.</param>
         /// <param name="InstallerObject">The MSI Installer object.</param>
         /// <returns>True if successful.</returns>
-        private bool LoadControlEvent(Database Database, Type InstallerType, Object InstallerObject)
-        {
-            if (msi.controlevents != null)
-            {
-                if (Verbose)
-                {
+        private bool LoadControlEvent(Database Database, Type InstallerType, Object InstallerObject) {
+            if (msi.controlevents != null) {
+                if (Verbose) {
                     Log(Level.Info, LogPrefix + "Modifying Dialog Control Events:");
                 }
 
-                foreach (MSIControlEvent controlEvent in msi.controlevents)
-                {
+                foreach (MSIControlEvent controlEvent in msi.controlevents) {
                     // Open the ControlEvent Table
                     View controlEventView;
 
-                    if (Verbose)
-                    {
+                    if (Verbose) {
                         string action = "";
-                        if (controlEvent.remove)
-                        {
-                           action = "\tRemoving";
+                        if (controlEvent.remove) {
+                            action = "\tRemoving";
                         }
-                        else
-                        {
+                        else {
                             action = "\tAdding";
                         }
                         Log(Level.Info, action + "\tControl: " + controlEvent.control + "\tEvent: " + controlEvent.name);
                     }
-                    if (controlEvent.remove)
-                    {
+                    if (controlEvent.remove) {
                         controlEventView = Database.OpenView("SELECT * FROM `ControlEvent` WHERE `Dialog_`='" + controlEvent.dialog + "' AND `Control_`='" + controlEvent.control + "' AND `Event`='" + controlEvent.name + "' AND `Argument`='" + controlEvent.argument + "' AND `Condition`='" + controlEvent.condition + "'");
                         controlEventView.Execute(null);
-                        try
-                        {
+                        try {
                             Record recControlEvent = controlEventView.Fetch();
                             controlEventView.Modify(MsiViewModify.msiViewModifyDelete, recControlEvent);
                         }
-                        catch (IOException)
-                        {
+                        catch (IOException) {
                             Log(Level.Error, LogPrefix +
                                 "ERROR: Control Event not found.\n\nSELECT * FROM `ControlEvent` WHERE `Dialog_`='" + controlEvent.dialog + "' AND `Control_`='" + controlEvent.control + "' AND `Event`='" + controlEvent.name + "' AND `Argument`='" + controlEvent.argument + "' AND `Condition`='" + controlEvent.condition + "'");
                             return false;
                         }
-                        finally
-                        {
+                        finally {
                             controlEventView.Close();
                             controlEventView = null;
 
                         }
 
                     }
-                    else
-                    {
+                    else {
                         controlEventView = Database.OpenView("SELECT * FROM `ControlEvent`");
                         // Insert the condition
                         Record recControlEvent = (Record)InstallerType.InvokeMember(
@@ -4098,22 +3588,17 @@ namespace NAnt.Contrib.Tasks
         /// <param name="InstallerType">The MSI Installer type.</param>
         /// <param name="InstallerObject">The MSI Installer object.</param>
         /// <returns>True if successful.</returns>
-        private bool LoadCustomAction(Database Database, Type InstallerType, Object InstallerObject)
-        {
+        private bool LoadCustomAction(Database Database, Type InstallerType, Object InstallerObject) {
             // Add custom actions from Task definition
-            if (msi.customactions != null)
-            {
-                if (Verbose)
-                {
+            if (msi.customactions != null) {
+                if (Verbose) {
                     Log(Level.Info, LogPrefix + "Adding Custom Actions:");
                 }
 
                 View customActionView = Database.OpenView("SELECT * FROM `CustomAction`");
 
-                foreach (MSICustomAction customAction in msi.customactions)
-                {
-                    if (Verbose)
-                    {
+                foreach (MSICustomAction customAction in msi.customactions) {
+                    if (Verbose) {
                         Log(Level.Info, "\t" + customAction.action);
                     }
 
@@ -4145,13 +3630,10 @@ namespace NAnt.Contrib.Tasks
         /// <param name="InstallerType">The MSI Installer type.</param>
         /// <param name="InstallerObject">The MSI Installer object.</param>
         /// <returns>True if successful.</returns>
-        private bool LoadSequence(Database Database, Type InstallerType, Object InstallerObject)
-        {
+        private bool LoadSequence(Database Database, Type InstallerType, Object InstallerObject) {
             // Add custom actions from Task definition
-            if (msi.sequences != null)
-            {
-                if (Verbose)
-                {
+            if (msi.sequences != null) {
+                if (Verbose) {
                     Log(Level.Info, LogPrefix + "Adding Install/Admin Sequences:");
                 }
 
@@ -4163,10 +3645,8 @@ namespace NAnt.Contrib.Tasks
                 View advtExecuteView = Database.OpenView("SELECT * FROM `AdvtExecuteSequence`");
 
                 // Add binary data from Task definition
-                foreach (MSISequence sequence in msi.sequences)
-                {
-                    if (Verbose)
-                    {
+                foreach (MSISequence sequence in msi.sequences) {
+                    if (Verbose) {
                         Log(Level.Info, "\t" + sequence.action + " to the " + sequence.type.ToString() + "sequence table.");
                     }
 
@@ -4180,8 +3660,7 @@ namespace NAnt.Contrib.Tasks
                     recSequence.set_StringData(1, sequence.action);
                     recSequence.set_StringData(2, sequence.condition);
                     recSequence.set_IntegerData(3, sequence.value);
-                    switch(sequence.type.ToString())
-                    {
+                    switch(sequence.type.ToString()) {
                         case "installexecute":
                             installExecuteView.Modify(MsiViewModify.msiViewModifyMerge, recSequence);
                             break;
@@ -4222,27 +3701,21 @@ namespace NAnt.Contrib.Tasks
         /// <param name="InstallerType">The MSI Installer type.</param>
         /// <param name="InstallerObject">The MSI Installer object.</param>
         /// <returns>True if successful.</returns>
-        private bool LoadActionText(Database Database, Type InstallerType, Object InstallerObject)
-        {
-            if (msi.actiontext != null)
-            {
-                if (Verbose)
-                {
+        private bool LoadActionText(Database Database, Type InstallerType, Object InstallerObject) {
+            if (msi.actiontext != null) {
+                if (Verbose) {
                     Log(Level.Info, LogPrefix + "Adding ActionText:");
                 }
 
                 // Open the actiontext table
                 View actionTextView = Database.OpenView("SELECT * FROM `ActionText`");
 
-                foreach (MSIActionTextAction action in msi.actiontext)
-                {
-                    if (Verbose)
-                    {
+                foreach (MSIActionTextAction action in msi.actiontext) {
+                    if (Verbose) {
                         Log(Level.Info, "\t" + action.name);
                     }
 
-                    try
-                    {
+                    try {
                         // Insert the record to the respective table
                         Record recAction = (Record)InstallerType.InvokeMember(
                             "CreateRecord",
@@ -4255,11 +3728,9 @@ namespace NAnt.Contrib.Tasks
                         recAction.set_StringData(3, action.template);
                         actionTextView.Modify(MsiViewModify.msiViewModifyMerge, recAction);
                     }
-                    catch (Exception e)
-                    {
+                    catch (Exception e) {
                         Log(Level.Warning, LogPrefix + "Warning: Action text for \"" + action.name + "\" already exists in database.");
-                        if (Verbose)
-                        {
+                        if (Verbose) {
                             Log(Level.Error, LogPrefix + e.ToString());
                         }
                     }
@@ -4277,21 +3748,16 @@ namespace NAnt.Contrib.Tasks
         /// <param name="InstallerType">The MSI Installer type.</param>
         /// <param name="InstallerObject">The MSI Installer object.</param>
         /// <returns>True if successful.</returns>
-        private bool LoadAppMappings(Database Database, Type InstallerType, Object InstallerObject)
-        {
-            if (msi.appmappings != null)
-            {
-                if (Verbose)
-                {
+        private bool LoadAppMappings(Database Database, Type InstallerType, Object InstallerObject) {
+            if (msi.appmappings != null) {
+                if (Verbose) {
                     Log(Level.Info, LogPrefix + "Adding Application Mappings:");
                 }
 
                 View appmapView = Database.OpenView("SELECT * FROM `_AppMappings`");
 
-                foreach (MSIAppMapping appmap in msi.appmappings)
-                {
-                    if (Verbose)
-                    {
+                foreach (MSIAppMapping appmap in msi.appmappings) {
+                    if (Verbose) {
                         Log(Level.Info, "\t" + appmap.directory);
                     }
 
@@ -4322,21 +3788,16 @@ namespace NAnt.Contrib.Tasks
         /// <param name="InstallerType">The MSI Installer type.</param>
         /// <param name="InstallerObject">The MSI Installer object.</param>
         /// <returns>True if successful.</returns>
-        private bool LoadUrlProperties(Database Database, Type InstallerType, Object InstallerObject)
-        {
-            if (msi.urlproperties != null)
-            {
-                if (Verbose)
-                {
+        private bool LoadUrlProperties(Database Database, Type InstallerType, Object InstallerObject) {
+            if (msi.urlproperties != null) {
+                if (Verbose) {
                     Log(Level.Info, LogPrefix + "Adding URL Properties:");
                 }
 
                 View urlpropView = Database.OpenView("SELECT * FROM `_UrlToDir`");
 
-                foreach (MSIURLProperty urlprop in msi.urlproperties)
-                {
-                    if (Verbose)
-                    {
+                foreach (MSIURLProperty urlprop in msi.urlproperties) {
+                    if (Verbose) {
                         Log(Level.Info, "\t" + urlprop.name);
                     }
 
@@ -4365,21 +3826,16 @@ namespace NAnt.Contrib.Tasks
         /// <param name="InstallerType">The MSI Installer type.</param>
         /// <param name="InstallerObject">The MSI Installer object.</param>
         /// <returns>True if successful.</returns>
-        private bool LoadVDirProperties(Database Database, Type InstallerType, Object InstallerObject)
-        {
-            if (msi.vdirproperties != null)
-            {
-                if (Verbose)
-                {
+        private bool LoadVDirProperties(Database Database, Type InstallerType, Object InstallerObject) {
+            if (msi.vdirproperties != null) {
+                if (Verbose) {
                     Log(Level.Info, LogPrefix + "Adding VDir Properties:");
                 }
 
                 View vdirpropView = Database.OpenView("SELECT * FROM `_VDirToUrl`");
 
-                foreach (MSIVDirProperty vdirprop in msi.vdirproperties)
-                {
-                    if (Verbose)
-                    {
+                foreach (MSIVDirProperty vdirprop in msi.vdirproperties) {
+                    if (Verbose) {
                         Log(Level.Info, "\t" + vdirprop.name);
                     }
 
@@ -4409,21 +3865,16 @@ namespace NAnt.Contrib.Tasks
         /// <param name="InstallerType">The MSI Installer type.</param>
         /// <param name="InstallerObject">The MSI Installer object.</param>
         /// <returns>True if successful.</returns>
-        private bool LoadAppRootCreate(Database Database, Type InstallerType, Object InstallerObject)
-        {
-            if (msi.approots != null)
-            {
-                if (Verbose)
-                {
+        private bool LoadAppRootCreate(Database Database, Type InstallerType, Object InstallerObject) {
+            if (msi.approots != null) {
+                if (Verbose) {
                     Log(Level.Info, LogPrefix + "Adding Application Roots:");
                 }
 
                 View approotView = Database.OpenView("SELECT * FROM `_AppRootCreate`");
 
-                foreach (MSIAppRoot appRoot in msi.approots)
-                {
-                    if (Verbose)
-                    {
+                foreach (MSIAppRoot appRoot in msi.approots) {
+                    if (Verbose) {
                         Log(Level.Info, "\t" + appRoot.urlproperty);
                     }
 
@@ -4453,12 +3904,9 @@ namespace NAnt.Contrib.Tasks
         /// <param name="InstallerType">The MSI Installer type.</param>
         /// <param name="InstallerObject">The MSI Installer object.</param>
         /// <returns>True if successful.</returns>
-        private bool LoadIISProperties(Database Database, Type InstallerType, Object InstallerObject)
-        {
-            if (msi.iisproperties != null)
-            {
-                if (Verbose)
-                {
+        private bool LoadIISProperties(Database Database, Type InstallerType, Object InstallerObject) {
+            if (msi.iisproperties != null) {
+                if (Verbose) {
                     Log(Level.Info, LogPrefix + "Adding IIS Directory Properties:");
                 }
 
@@ -4466,10 +3914,8 @@ namespace NAnt.Contrib.Tasks
 
 
                 // Add binary data from Task definition
-                foreach (MSIIISProperty iisprop in msi.iisproperties)
-                {
-                    if (Verbose)
-                    {
+                foreach (MSIIISProperty iisprop in msi.iisproperties) {
+                    if (Verbose) {
                         Log(Level.Info, "\t" + iisprop.directory);
                     }
 
@@ -4500,20 +3946,17 @@ namespace NAnt.Contrib.Tasks
         /// <param name="Database">The MSI database.</param>
         /// <param name="TableName">Name of the table to check existance.</param>
         /// <returns>True if successful.</returns>
-        private bool VerifyTableExistance(Database Database, string TableName)
-        {
+        private bool VerifyTableExistance(Database Database, string TableName) {
             View tableView = Database.OpenView("SELECT * FROM `_Tables` WHERE `Name`='" + TableName + "'");
             tableView.Execute(null);
             Record tableRecord = tableView.Fetch();
 
-            if (tableRecord != null)
-            {
+            if (tableRecord != null) {
                 tableView.Close();
                 tableView = null;
                 return true;
             }
-            else
-            {
+            else {
                 tableView.Close();
                 tableView = null;
                 return false;
@@ -4537,8 +3980,7 @@ namespace NAnt.Contrib.Tasks
         /// <param name="ProgIdView">View containing the ProgId table.</param>
         /// <returns>True if successful.</returns>
         private bool CheckAssemblyForCOMInterop(string FileName, Assembly FileAssembly, Type InstallerType,
-            object InstallerObject, string ComponentName, string AssemblyComponentName, View ClassView, View ProgIdView)
-        {
+            object InstallerObject, string ComponentName, string AssemblyComponentName, View ClassView, View ProgIdView) {
             AssemblyName asmName = FileAssembly.GetName();
             string featureName = (string)featureComponents[ComponentName];
             string typeLibName = Path.GetFileNameWithoutExtension(FileName) + ".tlb";
@@ -4550,22 +3992,16 @@ namespace NAnt.Contrib.Tasks
             RegistryKey typeLibsKey = Registry.ClassesRoot.OpenSubKey("Typelib", false);
 
             string[] typeLibs = typeLibsKey.GetSubKeyNames();
-            foreach (string typeLib in typeLibs)
-            {
+            foreach (string typeLib in typeLibs) {
                 RegistryKey typeLibKey = typeLibsKey.OpenSubKey(typeLib, false);
-                if (typeLibKey != null)
-                {
+                if (typeLibKey != null) {
                     string[] typeLibSubKeys = typeLibKey.GetSubKeyNames();
-                    foreach (string typeLibSubKey in typeLibSubKeys)
-                    {
+                    foreach (string typeLibSubKey in typeLibSubKeys) {
                         RegistryKey win32Key = typeLibKey.OpenSubKey(typeLibSubKey + @"\0\win32");
-                        if (win32Key != null)
-                        {
+                        if (win32Key != null) {
                             string curTypeLibFileName = (string)win32Key.GetValue(null, null);
-                            if (curTypeLibFileName != null)
-                            {
-                                if (String.Compare(curTypeLibFileName, typeLibFileName, true) == 0)
-                                {
+                            if (curTypeLibFileName != null) {
+                                if (String.Compare(curTypeLibFileName, typeLibFileName, true) == 0) {
                                     Log(Level.Info, LogPrefix + "Configuring " + typeLibName + " for COM Interop...");
 
                                     Record recTypeLib = (Record)InstallerType.InvokeMember(
@@ -4590,8 +4026,7 @@ namespace NAnt.Contrib.Tasks
                     }
                     typeLibKey.Close();
 
-                    if (foundTypeLib)
-                    {
+                    if (foundTypeLib) {
                         break;
                     }
                 }
@@ -4602,28 +4037,21 @@ namespace NAnt.Contrib.Tasks
             RegistryKey clsidsKey = Registry.ClassesRoot.OpenSubKey("CLSID", false);
 
             string[] clsids = clsidsKey.GetSubKeyNames();
-            foreach (string clsid in clsids)
-            {
+            foreach (string clsid in clsids) {
                 RegistryKey clsidKey = clsidsKey.OpenSubKey(clsid, false);
-                if (clsidKey != null)
-                {
+                if (clsidKey != null) {
                     RegistryKey inprocKey = clsidKey.OpenSubKey("InprocServer32", false);
-                    if (inprocKey != null)
-                    {
+                    if (inprocKey != null) {
                         string clsidAsmName = (string)inprocKey.GetValue("Assembly", null);
-                        if (clsidAsmName != null)
-                        {
-                            if (asmName.FullName == clsidAsmName)
-                            {
+                        if (clsidAsmName != null) {
+                            if (asmName.FullName == clsidAsmName) {
                                 // Register ProgId(s)
                                 RegistryKey progIdKey = clsidKey.OpenSubKey("ProgId", false);
-                                if (progIdKey != null)
-                                {
+                                if (progIdKey != null) {
                                     string progId = (string)progIdKey.GetValue(null, null);
                                     string className = (string)clsidKey.GetValue(null, null);
 
-                                    if (progId != null)
-                                    {
+                                    if (progId != null) {
                                         Record recProgId = (Record)InstallerType.InvokeMember(
                                             "CreateRecord",
                                             BindingFlags.InvokeMethod,
@@ -4668,41 +4096,30 @@ namespace NAnt.Contrib.Tasks
             return true;
         }
 
-        private string FindParent(string DirectoryName)
-        {
-            foreach (MSIDirectory directory in msi.directories)
-            {
+        private string FindParent(string DirectoryName) {
+            foreach (MSIDirectory directory in msi.directories) {
                 string parent = FindParent(DirectoryName, directory);
-                if (parent != null)
-                {
+                if (parent != null) {
                     return parent;
                 }
             }
             return null;
         }
 
-        private string FindParent(string DirectoryName, MSIDirectory directory)
-        {
+        private string FindParent(string DirectoryName, MSIDirectory directory) {
             if (DirectoryName == directory.name &&
-                directory is MSIRootDirectory)
-            {
+                directory is MSIRootDirectory) {
                 return ((MSIRootDirectory)directory).root;
             }
-            else
-            {
-                if (directory.directory != null)
-                {
-                    foreach (MSIDirectory directory2 in directory.directory)
-                    {
-                        if (directory2.name == DirectoryName)
-                        {
+            else {
+                if (directory.directory != null) {
+                    foreach (MSIDirectory directory2 in directory.directory) {
+                        if (directory2.name == DirectoryName) {
                             return directory.name;
                         }
-                        else
-                        {
+                        else {
                             string parent = FindParent(DirectoryName, directory2);
-                            if (parent != null)
-                            {
+                            if (parent != null) {
                                 return parent;
                             }
                         }
@@ -4712,13 +4129,10 @@ namespace NAnt.Contrib.Tasks
             return null;
         }
 
-        private MSIDirectory FindDirectory(string DirectoryName)
-        {
-            foreach (MSIDirectory directory in msi.directories)
-            {
+        private MSIDirectory FindDirectory(string DirectoryName) {
+            foreach (MSIDirectory directory in msi.directories) {
                 MSIDirectory childDirectory = FindDirectory(DirectoryName, directory);
-                if (childDirectory != null)
-                {
+                if (childDirectory != null) {
                     return childDirectory;
                 }
             }
@@ -4726,20 +4140,15 @@ namespace NAnt.Contrib.Tasks
             return null;
         }
 
-        private MSIDirectory FindDirectory(string DirectoryName, MSIDirectory directory)
-        {
-            if (directory.name == DirectoryName)
-            {
+        private MSIDirectory FindDirectory(string DirectoryName, MSIDirectory directory) {
+            if (directory.name == DirectoryName) {
                 return directory;
             }
 
-            if (directory.directory != null)
-            {
-                foreach (MSIDirectory childDirectory in directory.directory)
-                {
+            if (directory.directory != null) {
+                foreach (MSIDirectory childDirectory in directory.directory) {
                     MSIDirectory childDirectory2 = FindDirectory(DirectoryName, childDirectory);
-                    if (childDirectory2 != null)
-                    {
+                    if (childDirectory2 != null) {
                         return childDirectory2;
                     }
                 }
@@ -4748,10 +4157,8 @@ namespace NAnt.Contrib.Tasks
             return null;
         }
 
-        private string GetDisplayablePath(string path)
-        {
-            if (path.Length > 40)
-            {
+        private string GetDisplayablePath(string path) {
+            if (path.Length > 40) {
                 return "..." + path.Substring(path.Length-37, 37);
             }
             return path;
@@ -4763,8 +4170,7 @@ namespace NAnt.Contrib.Tasks
     /// in the same directory as an assembly .dll
     /// that has been registered for COM interop.
     /// </summary>
-    internal class TypeLibRecord
-    {
+    internal class TypeLibRecord {
         private AssemblyName assemblyName;
         private string libId, typeLibFileName,
             featureName, assemblyComponent;
@@ -4780,8 +4186,7 @@ namespace NAnt.Contrib.Tasks
         public TypeLibRecord(
             string LibId, string TypeLibFileName,
             AssemblyName AssemblyName, string FeatureName,
-            string AssemblyComponent)
-        {
+            string AssemblyComponent) {
             libId = LibId;
             typeLibFileName = TypeLibFileName;
             assemblyName = AssemblyName;
@@ -4794,8 +4199,7 @@ namespace NAnt.Contrib.Tasks
         /// </summary>
         /// <value>The Assembly's component Name.</value>
         /// <remarks>None.</remarks>
-        public string AssemblyComponent
-        {
+        public string AssemblyComponent {
             get { return assemblyComponent; }
         }
 
@@ -4804,8 +4208,7 @@ namespace NAnt.Contrib.Tasks
         /// </summary>
         /// <value>The typelibrary filename.</value>
         /// <remarks>None.</remarks>
-        public string TypeLibFileName
-        {
+        public string TypeLibFileName {
             get { return typeLibFileName; }
         }
 
@@ -4814,8 +4217,7 @@ namespace NAnt.Contrib.Tasks
         /// </summary>
         /// <value>The typelibrary id.</value>
         /// <remarks>None.</remarks>
-        public string LibId
-        {
+        public string LibId {
             get { return libId; }
         }
 
@@ -4824,8 +4226,7 @@ namespace NAnt.Contrib.Tasks
         /// </summary>
         /// <value>The name of the assembly.</value>
         /// <remarks>None.</remarks>
-        public AssemblyName AssemblyName
-        {
+        public AssemblyName AssemblyName {
             get { return assemblyName; }
         }
 
@@ -4834,15 +4235,13 @@ namespace NAnt.Contrib.Tasks
         /// </summary>
         /// <value>The feature containing the typelibrary's file.</value>
         /// <remarks>None.</remarks>
-        public string FeatureName
-        {
+        public string FeatureName {
             get { return featureName; }
         }
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct MSIRowColumnData
-    {
+    public struct MSIRowColumnData {
         public string name;
         public int id;
         public string type;
@@ -4850,15 +4249,13 @@ namespace NAnt.Contrib.Tasks
 
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct CUSTDATAITEM
-    {
+    public struct CUSTDATAITEM {
         public Guid guid;
         public object varValue;
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct CUSTDATA
-    {
+    public struct CUSTDATA {
         public int cCustData;
         public CUSTDATAITEM[] prgCustData;
     }
@@ -4866,8 +4263,7 @@ namespace NAnt.Contrib.Tasks
     [ComImport]
     [Guid("00020412-0000-0000-C000-000000000046")]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    public interface UCOMITypeInfo2
-    {
+    public interface UCOMITypeInfo2 {
         #region Implementation of UCOMITypeInfo
         void GetContainingTypeLib(out System.Runtime.InteropServices.UCOMITypeLib ppTLB, out int pIndex);
         void GetIDsOfNames(string[] rgszNames, int cNames, int[] pMemId);
