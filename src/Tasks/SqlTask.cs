@@ -72,6 +72,7 @@ namespace NAnt.Contrib.Tasks
       private string _connectionString;
       private string _source;
       private string _delimiter;
+      private DelimiterStyle _delimiterStyle = DelimiterStyle.Normal;
       private bool _print = false;
       private bool _useTransaction = true;
       private string _output;
@@ -102,6 +103,22 @@ namespace NAnt.Contrib.Tasks
       public string Delimiter {
          get { return _delimiter; }
          set { _delimiter = value; }
+      }
+
+      /// <summary>
+      /// Kind of delimiter used. Allowed values are Normal or Line.
+      /// </summary>
+      /// <remarks>
+      /// Delimiters can be of two kinds: Normal delimiters are
+      /// always specified inline, so they permit having two
+      /// different statements in the same line. Line delimiters,
+      /// however, need to be in a line by their own.
+      /// Default is Normal.
+      /// </remarks>
+      [ TaskAttribute("delimstyle", Required=true) ]
+      public DelimiterStyle DelimiterStyle {
+         get { return _delimiterStyle; }
+         set { _delimiterStyle = value; }
       }
 
       /// <summary>
@@ -153,11 +170,14 @@ namespace NAnt.Contrib.Tasks
       /// </summary>
       protected override void ExecuteTask() 
       {
-         SqlStatementList statements;
+         SqlStatementAdapter adapter 
+            = new SqlStatementAdapter(Delimiter, DelimiterStyle);
+
+         string sql = null;
          if ( Source == null ) {
-            statements = SqlStatementList.FromString(_statements, Delimiter);
+            sql = adapter.AdaptSql(_statements);
          } else {
-            statements = SqlStatementList.FromFile(Source, Delimiter);
+            sql = adapter.AdaptSqlFile(Source);
          }
 
          bool closeWriter = false;
@@ -173,19 +193,18 @@ namespace NAnt.Contrib.Tasks
             writer = Console.Out;
          }
 
-         SqlHelper sql = new SqlHelper(ConnectionString, UseTransaction);
+         SqlHelper sqlHelper 
+            = new SqlHelper(ConnectionString, UseTransaction);
 
-         foreach ( string statement in statements ) {
-            try {
-               IDataReader results = sql.Execute(statement);
-               ProcessResults(results, writer);
-            } catch ( Exception e ) {
-               sql.Close(false);
-               throw new BuildException("SQL Resulted in Exception: " + e.Message);
-            }
+         try {
+            IDataReader results = sqlHelper.Execute(sql);
+            ProcessResults(results, writer);
+         } catch ( Exception e ) {
+            sqlHelper.Close(false);
+            throw new BuildException("SQL Resulted in Exception: " + e.Message);
          }
 
-         sql.Close(true);
+         sqlHelper.Close(true);
          if ( closeWriter ) {
             writer.Close();
          }
@@ -201,34 +220,33 @@ namespace NAnt.Contrib.Tasks
       {
          try 
          {
-            if ( results.RecordsAffected >= 0 ) {
-               Log.WriteLine(LogPrefix + "{0} Records Affected", results.RecordsAffected);
-               return;
-            }
-            if ( Print )
+            do 
             {
-               writer.WriteLine("");
-               int records = 0;
                DataTable schema = results.GetSchemaTable();
-               if ( schema != null ) {
+               if ( schema != null )
+               {
                   foreach ( DataRow row in schema.Rows ) {
-                     writer.Write(row["ColumnName"] + "\t");
+                     writer.Write(row["ColumnName"].ToString() + "\t");
                   }
-                  writer.WriteLine("");
-                  writer.WriteLine(new string('-', 79));
+                  writer.WriteLine();
+                  writer.WriteLine(new String('-', 79));
                }
-               while ( results.Read() ) {
+               while ( results.Read() ) 
+               {
                   for ( int i=0; i < results.FieldCount; i++ ) {
                      writer.Write(results[i].ToString() + "\t");
                   }
-                  writer.WriteLine("");
-                  records++;
+                  writer.WriteLine();
                }
-            }
-         } 
-         finally 
-         {
+               writer.WriteLine();
+
+            } while ( results.NextResult() );
+
+         } finally {
             results.Close();
+         }
+         if ( results.RecordsAffected >= 0 ) {
+            Log.WriteLine(LogPrefix + "{0} records affected", results.RecordsAffected);
          }
       }
 

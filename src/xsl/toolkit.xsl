@@ -288,10 +288,11 @@
 	   <tr class="EnvInfoRow">
 	      <td>Operating System</td>
 	      <td><xsl:value-of select="$sys.os"/></td>
-<!--	If this doesn't look right, your version of NAnt
+<!--	
+      If this doesn't look right, your version of NAnt
       has a broken sysinfo task...
 	      <td><xsl:value-of select="$sys.os.platform"/> - <xsl:value-of select="$sys.os.version"/></td>
-or
+      or
 	      <td><xsl:value-of select="$sys.os.version"/></td>
 -->	      
 	   </tr>

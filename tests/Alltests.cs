@@ -44,8 +44,8 @@ namespace NAnt.Contrib.Tests
             Assembly assembly = Assembly.GetExecutingAssembly(); // build/NAnt.Tests.dll
             string path = Path.GetDirectoryName(assembly.Location);
 
-            // force NAnt.Core.dll to be loaded
-            string corePath = Path.Combine(path, "NAnt.Contrib.dll");
+            // force NAnt.Contrib.Tasks.dll to be loaded
+            string corePath = Path.Combine(path, "NAnt.Contrib.Tasks.dll");
             Assembly.LoadFrom(corePath);
 
             // Use reflection to automagically scan all the classes that 
