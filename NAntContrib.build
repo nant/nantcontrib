@@ -154,8 +154,10 @@
         
         <!-- compile the test assembly -->
         <csc target="library" warnaserror="true" nowarn="1591" debug="${build.debug}" define="${current.build.defines}" output="${build.dir}/bin/${project.FormalName}.Tests.dll">
-            <sources basedir="${tests.dir}">
-                <includes name="**/*.cs" />
+            <sources>
+                <includes name="${tests.dir}/**/*.cs" />
+                <!-- common assembly-level attributes -->
+                <includes name="${src.dir}/CommonAssemblyInfo.cs" />
             </sources>
             <references>
                  <includes name="${nant.dir}/lib/${current.runtime.config}/${current.runtime.version}/nunit.framework.dll" />
