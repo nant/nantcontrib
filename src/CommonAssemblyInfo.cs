@@ -20,7 +20,7 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-[assembly: AssemblyConfiguration("net-1.0.win32; nightly")]
+[assembly: AssemblyConfiguration("net-1.0.win32; rc 1")]
 [assembly: AssemblyCompany("http://nantcontrib.sourceforge.net")]
 [assembly: AssemblyProduct("NAntContrib")]
 [assembly: AssemblyCopyright("Copyright (C) 2001-2003 Gerry Shaw")]
@@ -28,5 +28,5 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyCulture("")]     
 
 // build number expressed in number of days since 1/1/2000
-[assembly: AssemblyVersion("0.84.1432.0")]
+[assembly: AssemblyVersion("0.84.1435.0")]
 [assembly: AssemblyInformationalVersion("0.84")]
