@@ -211,7 +211,7 @@ namespace NAnt.Contrib.Util
       {
          if ( Properties == null )
             return sql;
-         return Properties.ExpandProperties(sql);
+         return Properties.ExpandProperties(sql, null);
       }
 
       

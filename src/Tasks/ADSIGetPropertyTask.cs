@@ -23,9 +23,8 @@ using SourceForge.NAnt;
 using SourceForge.NAnt.Tasks;
 using SourceForge.NAnt.Attributes;
 
-namespace Galileo.NAnt.Tasks
-{
-	/// <summary>
+namespace NAnt.Contrib.Tasks {
+    /// <summary>
 	/// Used to get the value of a property from an ADSI object.
 	/// </summary>
 	[TaskName("adsigetprop")]

@@ -86,11 +86,6 @@
                     HintPath = "G:\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.Data.dll"
                 />
                 <Reference
-                    Name = "NAnt.Core"
-                    AssemblyName = "NAnt.Core"
-                    HintPath = "..\..\nant\bin\NAnt.Core.dll"
-                />
-                <Reference
                     Name = "System.XML"
                     AssemblyName = "System.Xml"
                     HintPath = "G:\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.XML.dll"
@@ -106,14 +101,29 @@
                     HintPath = "..\bin\Interop.StarTeam.dll"
                 />
                 <Reference
-                    Name = "NDoc.Documenter.Msdn"
-                    AssemblyName = "NDoc.Documenter.Msdn"
-                    HintPath = "..\..\nant\bin\NDoc.Documenter.Msdn.dll"
+                    Name = "SLiNgshoT.Core"
+                    Project = "{3F533CCA-9C8F-4D84-8C1A-1F6D89CB5912}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
                 <Reference
                     Name = "NAnt.DotNetTasks"
                     AssemblyName = "NAnt.DotNetTasks"
-                    HintPath = "..\..\nant\bin\NAnt.DotNetTasks.dll"
+                    HintPath = "..\NAntRelease\bin\NAnt.DotNetTasks.dll"
+                />
+                <Reference
+                    Name = "NAnt.Core"
+                    AssemblyName = "NAnt.Core"
+                    HintPath = "..\NAntRelease\bin\NAnt.Core.dll"
+                />
+                <Reference
+                    Name = "System.DirectoryServices"
+                    AssemblyName = "System.DirectoryServices"
+                    HintPath = "..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.DirectoryServices.dll"
+                />
+                <Reference
+                    Name = "Interop.MsmMergeTypeLib"
+                    AssemblyName = "Interop.MsmMergeTypeLib"
+                    HintPath = "..\bin\Interop.MsmMergeTypeLib.dll"
                 />
             </References>
         </Build>
@@ -140,12 +150,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Tasks\AssemblyInfoTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Tasks\AxImpTask.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Tasks\ChecksumTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\CodeStatsTask.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -206,6 +226,15 @@
                 />
                 <File
                     RelPath = "Tasks\MSITask.xsd"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Tasks\MSMTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\MSMTask.xsd"
                     BuildAction = "Content"
                 />
                 <File
@@ -288,6 +317,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Tasks\VersionTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Tasks\WsdlTask.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -338,18 +372,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Tasks\StarTeam\CVS\Entries"
-                    BuildAction = "None"
-                />
-                <File
-                    RelPath = "Tasks\StarTeam\CVS\Repository"
-                    BuildAction = "None"
-                />
-                <File
-                    RelPath = "Tasks\StarTeam\CVS\Root"
-                    BuildAction = "None"
-                />
-                <File
                     RelPath = "Tasks\VSS\AddTask.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -383,18 +405,6 @@
                     RelPath = "Tasks\VSS\UndoCheckoutTask.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Tasks\VSS\CVS\Entries"
-                    BuildAction = "None"
-                />
-                <File
-                    RelPath = "Tasks\VSS\CVS\Repository"
-                    BuildAction = "None"
-                />
-                <File
-                    RelPath = "Tasks\VSS\CVS\Root"
-                    BuildAction = "None"
                 />
                 <File
                     RelPath = "Util\ChecksumHelper.cs"

@@ -50,19 +50,25 @@
                 <Reference
                     Name = "nunit.framework"
                     AssemblyName = "nunit.framework"
-                    HintPath = "..\..\nant\bin\nunit.framework.dll"
+                    HintPath = "..\NAntRelease\bin\nunit.framework.dll"
                 />
                 <Reference
                     Name = "NAnt.Core"
                     AssemblyName = "NAnt.Core"
-                    HintPath = "..\..\nant\bin\NAnt.Core.dll"
+                    HintPath = "..\NAntRelease\bin\NAnt.Core.dll"
                 />
             </References>
         </Build>
         <Files>
             <Include>
                 <File
+                    RelPath = "Alltests.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "AssemblyInfo.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File

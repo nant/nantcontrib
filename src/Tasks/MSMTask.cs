@@ -1306,8 +1306,8 @@ namespace NAnt.Contrib.Tasks
 
                 while (keyEnum.MoveNext())
                 {
-                    string component = Project.ExpandProperties((string)keyEnum.Current);
-                    string feature = Project.ExpandProperties((string)featureComponents[component]);
+                    string component = Properties.ExpandProperties((string)keyEnum.Current, Location);
+                    string feature = Properties.ExpandProperties((string)featureComponents[component], Location);
                     
                     // Insert the FeatureComponent
                     Record recFeatComps = (Record)InstallerType.InvokeMember(
@@ -3124,7 +3124,7 @@ namespace NAnt.Contrib.Tasks
                     {
                         foreach (XmlAttribute attr in node.Attributes) 
                         {
-                            attr.Value = Project.ExpandProperties(attr.Value);
+                            attr.Value = Properties.ExpandProperties(attr.Value, Location);
                         }
                     }
                 }

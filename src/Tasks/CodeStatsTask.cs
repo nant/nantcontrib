@@ -41,7 +41,7 @@ struct FileCodeCountInfo {
     }
 }
 
-namespace SourceForge.Nant.Tasks.CodeStatsTask {
+namespace Nant.Contrib.Tasks.CodeStatsTask {
     /// <summary>
     /// Generates Statistics from Source Code
     /// </summary>

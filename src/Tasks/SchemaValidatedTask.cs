@@ -47,6 +47,7 @@ namespace NAnt.Contrib.Tasks
         private object _schemaObject;
         private bool _validated = true;
         private ArrayList _validationExceptions = new ArrayList();
+        protected XmlNode _xmlNode;
 
         /// <summary>
         /// Returns the object from the Schema wrapper after 
@@ -83,6 +84,7 @@ namespace NAnt.Contrib.Tasks
         /// <remarks>None.</remarks>
         protected override void InitializeTask(XmlNode TaskNode)
         {
+            _xmlNode = TaskNode;
             XmlNode taskNode = TaskNode.Clone();
 
             // Expand all properties in the task and its child elements
@@ -93,7 +95,7 @@ namespace NAnt.Contrib.Tasks
                 {
                     foreach (XmlAttribute attr in taskNode.Attributes) 
                     {
-                        attr.Value = Project.ExpandProperties(attr.Value);
+                        attr.Value = Properties.ExpandProperties(attr.Value, Location);
                     }
                 }
             }
@@ -208,7 +210,7 @@ namespace NAnt.Contrib.Tasks
                     {
                         foreach (XmlAttribute attr in node.Attributes) 
                         {
-                            attr.Value = Project.ExpandProperties(attr.Value);
+                            attr.Value = Properties.ExpandProperties(attr.Value, Location);
                         }
                     }
                 }

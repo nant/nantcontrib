@@ -99,11 +99,6 @@
                     HintPath = "..\..\..\..\..\Program Files\Microsoft.NET\Primary Interop Assemblies\stdole.dll"
                 />
                 <Reference
-                    Name = "NDoc.Documenter.Msdn"
-                    AssemblyName = "NDoc.Documenter.Msdn"
-                    HintPath = "..\..\..\nant\bin\NDoc.Documenter.Msdn.dll"
-                />
-                <Reference
                     Name = "NAnt.Core"
                     AssemblyName = "NAnt.Core"
                     HintPath = "..\..\..\nant\bin\NAnt.Core.dll"
@@ -115,16 +110,6 @@
                     VersionMinor = "0"
                     Lcid = "0"
                     WrapperTool = "tlbimp"
-                />
-                <Reference
-                    Name = "NAnt.Documenter"
-                    AssemblyName = "NAnt.Documenter"
-                    HintPath = "..\..\..\nant\bin\NAnt.Documenter.dll"
-                />
-                <Reference
-                    Name = "CollectionGen"
-                    AssemblyName = "CollectionGen"
-                    HintPath = "..\..\..\nant\bin\CollectionGen.dll"
                 />
                 <Reference
                     Name = "office"
@@ -145,6 +130,16 @@
                     Name = "System.Design"
                     AssemblyName = "System.Design"
                     HintPath = "..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.Design.dll"
+                />
+                <Reference
+                    Name = "CollectionGen"
+                    AssemblyName = "CollectionGen"
+                    HintPath = "..\..\bin\CollectionGen.dll"
+                />
+                <Reference
+                    Name = "Interop.VSUserControlHostLib"
+                    AssemblyName = "Interop.VSUserControlHostLib"
+                    HintPath = "bin\Interop.VSUserControlHostLib.dll"
                 />
             </References>
         </Build>

@@ -4,26 +4,29 @@
 <!--*                                                               *-->  
 <!--* Builds the NAntContrib Project                                *-->
 <!--*****************************************************************-->
-<project name="NAntContrib" default="build">
+<project name="NAntContrib" default="build" xmlns-no="http://nant.sourceforge.net/schema/nant-current.xsd">
 
     <tstamp/>
     <property name="debug" value="true"/>
     <property name="project.name" value="nantcontrib"/>
     <property name="project.FormalName" value="NAnt.Contrib"/>
-    <property name="project.version" value="x.x"/>
+    <property name="project.version" value="0.0.1.0"/>
 
     <property name="src.dir" value="src"/>
     <property name="tests.dir" value="Tests"/>
-    <property name="build.dir" value="build"/>
+	
+	<property name="build.dir" value="${nant.project.basedir}/build/${project.name}-${project.version}-release" />
+	<if propertytrue="debug">
+		<property name="build.dir" value="${nant.project.basedir}/build/${project.name}-${project.version}-debug" />
+	</if>
+    
     <property name="dist.dir" value="dist"/>
     
-    <property name="nant-bin.dir" value="${nant.location}"/>
-    <property name="nant-doc.dir" value="${nant-bin.dir}\..\doc" />
-    <echo message="Using nant files from ${nant-bin.dir}"/>
+    <property name="nant.dir" value="NAntRelease" />
+    <property name="nant-bin.dir" value="${nant.dir}/bin"/>
+    <property name="nant-doc.dir" value="${nant.dir}/doc" />
     <property name="nant.extra-tasks.dir" value="${nant-bin.dir}" />
-    
-    <property name="nant.dir" value="..\nant" />
-    <property name="nantbuild.dir" value="${nant.dir}\build\nant-0.8.0\bin" />
+    <echo message="Using nant files from ${nant.dir}"/>
 
     <property name="backup.name" value="..\${project.name}-backup-${tstamp.date}-${tstamp.time}.zip" />
 
@@ -37,7 +40,9 @@
 
         <delete dir="${build.dir}" failonerror="false"/>
         <delete dir="${dist.dir}" failonerror="false"/>
-        <delete file="${dist.name}" failonerror="false"/>
+        <if propertyexists="${dist.name}">
+			<delete file="${dist.name}" failonerror="false"/>
+		</if>
     </target>
     
     <!--*****************************************************************-->
@@ -147,8 +152,8 @@
                 <includes name="bin\Interop.StarTeam.dll"/>
                 <includes name="bin\Interop.WindowsInstaller.dll"/>
                 <includes name="bin\Interop.MsmMergeTypeLib.dll"/>
-                <includes name="build\SLiNgshoT.Core.dll"/>
-                <includes name="build\NAnt.Contrib.Schemas.dll"/>
+                <includes name="${build.dir}\SLiNgshoT.Core.dll"/>
+                <includes name="${build.dir}\NAnt.Contrib.Schemas.dll"/>
             </references>
             <resources>
                 <includes name="${src.dir}\xsl\*.*"/>
@@ -252,7 +257,12 @@
     <!--* Build user	documentation                                   *-->
     <!--*****************************************************************-->    
 	<target name="userdoc" depends="">
-		<!-- use ndoc and NAnt.Documenter to build user doc -->
+
+		<nant buildfile="${nant.dir}\NAnt.build" target="release userdoc">
+			<property name="build.dir" value="${nant-bin.dir}"/>
+			<property name="build.debug" value="false"/>			
+		</nant>
+		<!-- use ndoc and NDoc.Documenter.NAnt to build user doc -->
         <ndoc>
             <assemblies basedir="${build.dir}">
                 <includes name="*Tasks.dll"/>

@@ -23,7 +23,7 @@ using System.Text.RegularExpressions;
 using System.Diagnostics;
 using SourceForge.NAnt.Attributes;
 
-namespace SourceForge.NAnt.Tasks {
+namespace NAnt.Contrib.Tasks {
 
     /// <summary>Increments a version number counter and auto-generates an AssemblyInfo.cs file.</summary>
     /// <remarks>

@@ -23,8 +23,7 @@ using SourceForge.NAnt;
 using SourceForge.NAnt.Tasks;
 using SourceForge.NAnt.Attributes;
 
-namespace Galileo.NAnt.Tasks
-{
+namespace NAnt.Contrib.Tasks {
   /// <summary>
   /// Base NAnt task for working with ADSI.  This task contains only the path of the ADSI
   /// object that you want to work with.

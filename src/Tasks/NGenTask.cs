@@ -128,7 +128,7 @@ namespace NAnt.Contrib.Tasks
         {
             get
             {
-                return MsftFXCompilerBase.ProgramFilepath(this);
+                return Name;
             }
         }
 

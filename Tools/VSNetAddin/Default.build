@@ -21,7 +21,15 @@
 -->
 <project name="NAntAddin" default="build" verbose="false">
   <description>Builds the NAnt Addin for Visual Studio.NET</description>
+
+  <!--*****************************************************************-->
+  <!--* Build with -D:fromcontrib=true builds NAnt, NAntContib,       *-->
+  <!--*   and VSNetAddin (Assumes NAnt & NAntContrib in same dir)     *-->
+  <!--*                                                               *-->
+  <!--* Build with -D:fromcontrib=false (default) - VSNetAddin only   *-->                                                             
+  <!--*****************************************************************-->
   <property name="fromcontrib" value="false" />
+
   <!--*******************************************************************-->
   <!--
   IMPORTANT: If you are having problems building, before anything else, 
@@ -29,10 +37,19 @@
   Microsoft.NET Primary Interop Assemblies, Microsoft Visual Studio.NET, 
   and Microsoft Help 2.0 SDK installed to.
   -->
+  <!--
   <property name="dotnet.dir" value="C:\Program Files\Microsoft.NET" />
   <property name="vsnet.dir" value="C:\Program Files\Microsoft Visual Studio .NET" />
   <property name="helpsdk.dir" value="C:\Program Files\Microsoft Help 2.0 SDK" />
+  -->
+  
+  <readregistry property="dotnetlibs.dir" key="SOFTWARE\Microsoft\.NETFramework\AssemblyFolders\Primary Interop Assemblies\" hive="LocalMachine" />
+  <readregistry property="vsnet.dir" key="SOFTWARE\Microsoft\VisualStudio\7.0\Setup\VS\ProductDir" hive="LocalMachine" />
+  
+  <!--<property name="dotnetlibs.dir" value="${dotnet.dir}\Primary Interop Assemblies" />-->
+  
   <!--*******************************************************************-->
+
   <property name="product.name" value="NAntAddin" />
   <property name="addinbuild.dir" value="build" />
   <property name="bin.dir" value="bin" />
@@ -40,15 +57,41 @@
   <property name="vside.dir" value="${vsnet.dir}\Common7\IDE" />
   <property name="vslibs.dir" value="${vside.dir}\PublicAssemblies" />
   <property name="vstools.dir" value="${vsnet.dir}\Common7\Tools" />
-  <property name="dotnetlibs.dir" value="${dotnet.dir}\Primary Interop Assemblies" />
   <property name="buildlibs.arg" value="&quot;/lib:${vslibs.dir};${dotnetlibs.dir}&quot;" />
+
+  <property name="nant.dir" value="..\..\..\NAnt" />
+  <property name="nantbuild.dir" value="${nant.dir}\bin" />
+  <property name="nantcontrib.dir" value="..\..\..\NAntContrib" />
   
   <include buildfile="VSNetAddinInstall.include" />
-  
-  <target name="prepare" description="Prepares the Build Directory" depends="build.nantcontrib">
+
+  <!--*****************************************************************-->
+  <!--* Build VSNet Addin                                             *-->
+  <!--*****************************************************************-->
+  <target name="build" description="Builds the NAnt Addin" depends="prepare, assemblies.deploy" />
+
+  <!--*****************************************************************-->
+  <!--* Clean the outputs                                             *-->
+  <!--*****************************************************************-->
+  <target name="clean" description="Deletes Build Output" depends="prepare">
+	<exec program="regsvr32" commandline="/u /s ${dest.dir}\VSUserControlHost.dll" failonerror="false" />
+	<regasm assembly="${dest.dir}\${product.name}.dll" unregister="true" silent="true" failonerror="false" />
+    <delete dir="${addinbuild.dir}" failonerror="false" />
+  </target>
+
+  <!--*****************************************************************-->
+  <!--* Rebuild (Clean and Build) the VSNet Addin                     *-->
+  <!--*****************************************************************-->
+  <target name="rebuild" description="Cleans and Builds the Addin" depends="clean, build" />
+
+  <!--*****************************************************************-->
+  <!--* Prepare the build directories                                 *-->
+  <!--*****************************************************************-->
+  <target name="prepare" description="Prepares the Build Directory" depends="build.nant, build.nantcontrib">
     <mkdir dir="${addinbuild.dir}" />
     <mkdir dir="${dest.dir}" />
     <copy file="${bin.dir}\Interop.VSUserControlHostLib.dll" todir="${dest.dir}" />
+
     <echo message="**********************************************************************************" />
     <echo message="*" />
     <echo message="* Building NAnt Addin for Visual Studio.NET..." />
@@ -71,7 +114,34 @@
     <echo message="**********************************************************************************" />
     <sysinfo />  
   </target>
-  <target name="addin.compile" description="Compiles the Addin" depends="build.nant">
+
+  <!--*****************************************************************-->
+  <!--* Build NANT if building from scratch via NAntContrib           *-->
+  <!--*****************************************************************-->
+  <target name="build.nant" description="Compiles NAnt" if="${fromcontrib}">
+    <nant buildfile="${nant.dir}\NAnt.build" target="build" basedir="${nant.dir}" />
+    <copy file="${nantbuild.dir}\NAnt.Core.dll" todir="${dest.dir}" />
+    <copy file="${nantbuild.dir}\NDoc.Core.dll" todir="${dest.dir}" />
+    <copy file="${nantbuild.dir}\NDoc.Documenter.Msdn.dll" todir="${dest.dir}" />
+    <copy file="${nantbuild.dir}\NUnitCore.dll" todir="${dest.dir}" />
+    <copy file="${nantbuild.dir}\SharpZipLib.dll" todir="${dest.dir}" />
+  </target>
+
+
+  <!--*******************************************************************-->
+  <!--* Build NANT\NAntContrib if building from scratch via NAntContrib *-->
+  <!--*******************************************************************-->
+  <target name="build.nantcontrib" description="Compiles NAntContrib" if="${fromcontrib}">
+    <nant buildfile="${nantcontrib.dir}\NAntContrib.build" target="build" basedir="${nantcontrib.dir}" />
+    <nant buildfile="${nantcontrib.dir}\NAntContrib.build" target="use" basedir="${nantcontrib.dir}" />
+    <taskdef assembly="${nantcontrib.dir}\build\NAnt.Contrib.Tasks.dll"/>
+  </target>
+  
+
+  <!--*****************************************************************-->
+  <!--* Compile the Addin                                             *-->
+  <!--*****************************************************************-->
+  <target name="addin.compile" description="Compiles the Addin" depends="prepare">
     <regasm assembly="${dest.dir}\${product.name}.dll" unregister="true" silent="true" failonerror="false" />
     <resgen input="NAntAddin.resx" output="${dest.dir}\NAnt.Contrib.NAntAddin.Addin.resources" />
     <resgen input="Controls\AboutDialog.resx" output="${dest.dir}\NAnt.Contrib.NAntAddin.Dialogs.AboutDialog.resources" />
@@ -104,7 +174,7 @@
         <includes name="VSLangProj.dll" asis="true" />
         <includes name="stdole.dll" asis="true" />
         <includes name="office.dll" asis="true" />
-        <includes name="${dest.dir}\NAnt.Core.dll" asis="true" />
+        <includes name="${nantbuild.dir}\NAnt.Core.dll" asis="true" />
         <includes name="${dest.dir}\Interop.VSUserControlHostLib.dll" asis="true" />
       </references>
     </csc>
@@ -115,13 +185,17 @@
     </delete>
     <regasm assembly="${dest.dir}\${product.name}.dll" typelibrary="${dest.dir}\${product.name}.tlb" codebase="true" silent="true" failonerror="false" exporttypelib="true" />
   </target>
+
+  <!--*****************************************************************-->
+  <!--* Compile Resources used by the Addin                           *-->
+  <!--*****************************************************************-->
   <target name="resources.compile" description="Compiles Addin Resources" depends="addin.compile">
     <property name="resources.dir" value="NAntAddinResources" />
 	<property name="resources.dest.dir" value="${dest.dir}\1033" />
       <mkdir dir="${resources.dest.dir}" />
       <cl outputdir="${resources.dest.dir}">
       <includedirs>
-        <includes name="${sys.env.INCLUDE}" asis="true" />
+        <!-- includes name="${sys.env.INCLUDE}" asis="true" /-->
         <includes name="${resources.dir}" />
       </includedirs>
       <arg value="/Od" />
@@ -150,7 +224,7 @@
     <rc rcfile="${resources.dir}\NAntAddinResources.rc" output="${resources.dest.dir}\NAntAddinResources.res"/>
     <link output="${resources.dest.dir}\NAntAddinResources.dll">
       <libdirs>
-        <includes name="${sys.env.LIB}" asis="true" />
+        <!--includes name="${sys.env.LIB}" asis="true" /-->
       </libdirs>
       <arg value="/INCREMENTAL" />
       <arg value="/NOLOGO" />
@@ -185,31 +259,10 @@
       </fileset>
     </delete>
   </target>
-  <target name="build" description="Builds the NAnt Addin" depends="assemblies.deploy" />
-  <target name="build.nant" description="Compiles NAnt" depends="prepare" if="${fromcontrib}">
-    <property name="nant.dir" value="..\..\..\NAnt" />
-    <property name="nantbuild.dir" value="${nant.dir}\bin" />
-    <nant buildfile="${nant.dir}\NAnt.build" target="build" basedir="${nant.dir}" />
-    <copy file="${nantbuild.dir}\NAnt.Core.dll" todir="${dest.dir}" />
-    <copy file="${nantbuild.dir}\NAnt.DotNetTasks.dll" todir="${dest.dir}" />
-    <copy file="${nantbuild.dir}\NAnt.ZipTasks.dll" todir="${dest.dir}" />
-    <copy file="${nantbuild.dir}\NDoc.Core.dll" todir="${dest.dir}" />
-    <copy file="${nantbuild.dir}\NDoc.Documenter.Msdn.dll" todir="${dest.dir}" />
-    <copy file="${nantbuild.dir}\NUnitCore.dll" todir="${dest.dir}" />
-    <copy file="${nantbuild.dir}\SharpZipLib.dll" todir="${dest.dir}" />
-  </target>
-  <target name="build.nantcontrib" description="Compiles NAntContrib">
-    <property name="nantcontrib.dir" value="..\..\..\NAntContrib" />
-    <nant buildfile="${nantcontrib.dir}\NAntContrib.build" target="build" basedir="${nantcontrib.dir}" if="${fromcontrib}" />
-    <nant buildfile="${nantcontrib.dir}\NAntContrib.build" target="use" basedir="${nantcontrib.dir}" if="${fromcontrib}" />
-    <taskdef assembly="${nantcontrib.dir}\build\NAnt.Contrib.Tasks.dll"/>
-  </target>
-  <target name="clean" description="Deletes Build Output" depends="prepare">
-	<exec program="regsvr32" commandline="/u /s ${dest.dir}\VSUserControlHost.dll" failonerror="false" />
-	<regasm assembly="${dest.dir}\${product.name}.dll" unregister="true" silent="true" failonerror="false" />
-    <delete dir="${dest.dir}" failonerror="false" />
-  </target>
-  <target name="rebuild" description="Cleans and Builds the Addin" depends="clean,build" />
+
+  <!--*****************************************************************-->
+  <!--* Copies Static Content to the Build Directory                  *-->
+  <!--*****************************************************************-->
   <target name="content.deploy" description="Copies Static Content to the Build Directory" depends="resources.compile">
     <exec program="regsvr32" commandline="/u /s ${dest.dir}\VSUserControlHost.dll" failonerror="false" />
     <copy todir="${dest.dir}">
@@ -228,7 +281,26 @@
       </fileset>
     </copy>
     <exec program="regsvr32" commandline="/s ${dest.dir}\VSUserControlHost.dll" />
+
+  <!--*******************************************************************-->
+  <!--* Need to copy all tasks to VS.Net IDE directory for local addin  *-->
+  <!--*******************************************************************-->
+ 
+    <delete dir="${vside.dir}\tasks" failonerror="false" />
+    <mkdir dir="${vside.dir}\tasks" />
+    <copy file="${nantbuild.dir}\NAnt.DotNetTasks.dll" todir="${vside.dir}\tasks" />
+    <copy file="${nantbuild.dir}\NAnt.NUnit1Tasks.dll" todir="${vside.dir}\tasks" />
+    <copy file="${nantbuild.dir}\NAnt.NUnit2Tasks.dll" todir="${vside.dir}\tasks" />
+    <copy file="${nantbuild.dir}\NAnt.ZipTasks.dll" todir="${vside.dir}\tasks" />
+    <copy file="${nantbuild.dir}\NAnt.VisualCppTasks.dll" todir="${vside.dir}\tasks" />
+    <copy file="${nantcontrib.dir}\build\NAnt.Contrib.Tasks.dll" todir="${vside.dir}\tasks"/>
+    <copy file="${nantcontrib.dir}\build\NAnt.Xsd.Tasks.dll" todir="${vside.dir}\tasks"/>
+
   </target>
+
+  <!--*****************************************************************-->
+  <!--* Build the User Documentation                                  *-->
+  <!--*****************************************************************-->
   <target name="vsdocs" description="Builds the User Documentation" depends="content.deploy">
     <property name="help.dir" value="NAntAddinDocs" />
     <hxcomp contents="${help.dir}\NAntAddinDocs.HxC" output="${dest.dir}\NAntAddinDocs.HxS" projectroot="${help.dir}" />
@@ -248,6 +320,10 @@
     </copy>
     <hxreg namespace="${product.name}" title="${product.name}" collection="${dest.dir}\NAntAddinDocs.HxC" helpfile="${dest.dir}\NAntAddinDocs.HxS" />
   </target>
+
+  <!--*****************************************************************-->
+  <!--* Copies Assemblies to the Build Directory                      *-->
+  <!--*****************************************************************-->
   <target name="assemblies.deploy" description="Copies Assemblies to the Build Directory" depends="vsdocs">
     <script language="C#">
       <code><![CDATA[
@@ -276,6 +352,10 @@
     <exec program="regedit" commandline="/s RegisterAddin.reg" />
     <delete file="RegisterAddin.reg" />
   </target>
+
+  <!--*****************************************************************-->
+  <!--* Build the API Reference                                       *-->
+  <!--*****************************************************************-->
   <target name="apidocs" description="Builds the API Reference" depends="build">
     <ndoc>
       <assemblies basedir="${dest.dir}">

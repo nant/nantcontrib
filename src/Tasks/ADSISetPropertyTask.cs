@@ -23,8 +23,7 @@ using SourceForge.NAnt;
 using SourceForge.NAnt.Tasks;
 using SourceForge.NAnt.Attributes;
 
-namespace Galileo.NAnt.Tasks
-{
+namespace NAnt.Contrib.Tasks {
   /// <summary>
   /// Sets a property on an ADSI object.
   /// </summary>

@@ -14,7 +14,8 @@
         <echo message="** NOTE: NAnt needs to be checked out to the same directory as NAntContrib **" />
         <property name="installsource.dir" value="install" />
 
-        <nant buildfile="${nant.dir}\NAnt.build" target="cleanall release build test userdoc sdkdoc" />
+        <!--<nant buildfile="${nant.dir}\NAnt.build" target="cleanall release build test userdoc sdkdoc" />-->
+        <property name="nantbuild.dir" value="${nant.dir}\bin" />
         <copy file="${nantbuild.dir}\NDoc.Documenter.NAnt.dll" tofile="${nant.dir}\bin\NDoc.Documenter.NAnt.dll" overwrite="true" failonerror="false" />
         <call target="build" />
         <call target="userdoc" />
