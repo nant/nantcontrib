@@ -89,7 +89,8 @@ namespace NAnt.Contrib.Tasks {
     /// </example>
     [TaskName("gac")]
     [ProgramLocation(LocationType.FrameworkSdkDir)]
-    public class GacTask : ExternalProgramBase {
+	[Obsolete("Use either <gac-install> or <gac-uninstall> tasks instead.", false)]
+	public class GacTask : ExternalProgramBase {
         /// <summary>
         /// Defines the actions that can be performed on an assembly using the
         /// <see cref="GacTask" />.
