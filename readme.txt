@@ -21,7 +21,7 @@ For example:
 	</target>
 </project>
 
-In order to avoid updating all build file when you move the NAnt.Contrib.Tasks assembly to another
+In order to avoid updating all build files when you move the NAnt.Contrib.Tasks assembly to another
 directory, you could register the directory containing the NAnt.Contrib.Tasks assembly in an 
 environment variable and then use the value of that environment variable in your build files.
 
@@ -53,9 +53,9 @@ Note: you'll have to manually create the "tasks\net" subdirectories.
 
 3. Modify NAnt configuration file (not recommended)
 
-An <include> element can be added to the <task-assemblies> node in the <framework> node of all
-.NET Framework versions that you intend to use. The "name" attribute of the <include> element 
-would hold the full path to NAnt.Contrib.Tasks.dll.
+An <include> element can be added to the <task-assemblies> node in the <framework> node for the
+.NET Framework version that you intend to use. The "name" attribute of the <include> element 
+should hold the absolute path to NAnt.Contrib.Tasks.dll.
 
 For example:
 
