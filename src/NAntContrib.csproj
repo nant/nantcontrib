@@ -31,7 +31,7 @@
                     FileAlignment = "4096"
                     IncrementalBuild = "true"
                     Optimize = "false"
-                    OutputPath = "bin\Debug\"
+                    OutputPath = "..\build\"
                     RegisterForComInterop = "false"
                     RemoveIntegerChecks = "false"
                     TreatWarningsAsErrors = "false"
@@ -97,7 +97,7 @@
                 />
                 <Reference
                     Name = "System.XML"
-                    AssemblyName = "System.XML"
+                    AssemblyName = "System.Xml"
                     HintPath = "G:\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.XML.dll"
                 />
                 <Reference
@@ -105,12 +105,18 @@
                     AssemblyName = "System.Web"
                     HintPath = "G:\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.Web.dll"
                 />
+                <Reference
+                    Name = "Interop.StarTeam"
+                    AssemblyName = "Interop.StarTeam"
+                    HintPath = "..\bin\Interop.StarTeam.dll"
+                />
             </References>
         </Build>
         <Files>
             <Include>
                 <File
                     RelPath = "AssemblyInfo.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -212,6 +218,48 @@
                     RelPath = "Tasks\Vb6Task.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\StarTeam\StarTeamCheckin.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\StarTeam\StarTeamCheckout.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\StarTeam\StarTeamLabel.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\StarTeam\StarTeamList.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\StarTeam\StarTeamTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\StarTeam\TreeBasedTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\StarTeam\CVS\Entries"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Tasks\StarTeam\CVS\Repository"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Tasks\StarTeam\CVS\Root"
+                    BuildAction = "None"
                 />
                 <File
                     RelPath = "Tasks\VSS\AddTask.cs"

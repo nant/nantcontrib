@@ -59,6 +59,7 @@
             <fileset basedir="bin">
                 <includes name="CollectionGen.dll"/>
                 <includes name="SourceSafe.Interop.dll"/>
+                <includes name="bin\Interop.StarTeam.dll"/>
                 <includes name="Interop.WindowsInstaller.dll"/>
 		    <includes name="MSITaskErrors.mst"/>
 		    <includes name="MSITaskTemplate.msi"/>
@@ -88,6 +89,7 @@
                 <includes name="${nant-bin.dir}\NUnitCore.dll"/>
                 <includes name="bin\CollectionGen.dll"/>
                 <includes name="bin\SourceSafe.Interop.dll"/>
+                <includes name="bin\Interop.StarTeam.dll"/>
                 <includes name="bin\Interop.WindowsInstaller.dll"/>
             </references>
             <resources>
