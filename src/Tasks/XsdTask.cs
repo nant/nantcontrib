@@ -261,7 +261,7 @@ namespace NAnt.Contrib.Tasks
                 if (OutputDir != null)
                 {
                     arguments.Append(" /o:");
-                    arguments.Append(OutputDir);
+                    arguments.Append("\""+ OutputDir +"\"");
                 }
 
                 if (Uri != null)

@@ -74,7 +74,7 @@ namespace NAnt.Contrib.Tasks {
         /// <summary>
         /// Initialize taks and verify parameters.
         /// </summary>
-        /// <param name="TaskNode">Node that contains the XML fragment 
+        /// <param name="TaskNode">Node that contains the XML fragment
         /// used to define this task instance.</param>
         /// <remarks>None.</remarks>
         protected override void InitializeTask(XmlNode TaskNode)
@@ -96,7 +96,7 @@ namespace NAnt.Contrib.Tasks {
 
             // Open the Template MSM File
             Module tasksModule = Assembly.GetExecutingAssembly().GetModule("NAnt.Contrib.Tasks.dll");
-            
+
             string source = Path.Combine(Path.GetDirectoryName(tasksModule.FullyQualifiedName), "MSMTaskTemplate.msm");
             if (msm.template != null)
             {
@@ -104,7 +104,7 @@ namespace NAnt.Contrib.Tasks {
             }
             if (!File.Exists(source))
             {
-                throw new BuildException(LogPrefix + 
+                throw new BuildException(LogPrefix +
                     "ERROR: Unable to find template file: " + source);
             }
 
@@ -117,14 +117,14 @@ namespace NAnt.Contrib.Tasks {
             }
             if (!File.Exists(errors))
             {
-                throw new BuildException(LogPrefix + 
+                throw new BuildException(LogPrefix +
                     "ERROR: Unable to find error template file: " + errors);
             }
 
-            string tempPath = Path.Combine(Project.BaseDirectory, 
+            string tempPath = Path.Combine(Project.BaseDirectory,
                 Path.Combine(msm.sourcedir, @"Temp"));
 
-            string cabFile = Path.Combine(Project.BaseDirectory, 
+            string cabFile = Path.Combine(Project.BaseDirectory,
                 Path.Combine(msm.sourcedir, @"MergeModule.CABinet"));
 
             CleanOutput(cabFile, tempPath);
@@ -137,7 +137,7 @@ namespace NAnt.Contrib.Tasks {
             }
             catch (IOException)
             {
-                throw new BuildException(LogPrefix + 
+                throw new BuildException(LogPrefix +
                     "ERROR: File in use or cannot be copied to output. (" + source + ")");
             }
 
@@ -149,8 +149,8 @@ namespace NAnt.Contrib.Tasks {
                 {
                     d = (Database)msmType.InvokeMember(
                         "OpenDatabase",
-                        BindingFlags.InvokeMethod, 
-                        null, obj, 
+                        BindingFlags.InvokeMethod,
+                        null, obj,
                         new Object[]
                         {
                             dest,
@@ -164,7 +164,7 @@ namespace NAnt.Contrib.Tasks {
                     }
                 }
                 catch (Exception e)
-                {                   
+                {
                     CleanOutput(cabFile, tempPath);
                     System.Console.WriteLine(e.ToString());
                     throw new Win32Exception();
@@ -226,8 +226,8 @@ namespace NAnt.Contrib.Tasks {
                 {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
-                }        
-        
+                }
+
                 // Load module dependencies
                 if (!LoadModuleDependency(d, msmType, obj))
                 {
@@ -295,7 +295,7 @@ namespace NAnt.Contrib.Tasks {
                 }
 
                 // Load Assemblies
-                if (!LoadAssemblies(d, msmType, obj, out asmView, 
+                if (!LoadAssemblies(d, msmType, obj, out asmView,
                     out asmNameView, out classView, out progIdView))
                 {
                     CleanOutput(cabFile, tempPath);
@@ -305,7 +305,7 @@ namespace NAnt.Contrib.Tasks {
                 int lastSequence = 0;
 
                 // Load Components
-                if (!LoadComponents(d, msmType, obj, ref lastSequence, 
+                if (!LoadComponents(d, msmType, obj, ref lastSequence,
                     asmView, asmNameView, directoryView, classView, progIdView))
                 {
                     CleanOutput(cabFile, tempPath);
@@ -441,14 +441,14 @@ namespace NAnt.Contrib.Tasks {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
-                
+
                 // Load the application mappings
                 if (!LoadAppMappings(d, msmType, obj))
                 {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
-                
+
                 // Load the url properties to convert
                 // url properties to a properties object
                 if (!LoadUrlProperties(d, msmType, obj))
@@ -557,8 +557,8 @@ namespace NAnt.Contrib.Tasks {
             catch (Exception e)
             {
                 CleanOutput(cabFile, tempPath);
-                throw new BuildException(LogPrefix + "ERROR: " + 
-                    e.GetType().FullName + " thrown:\n" + 
+                throw new BuildException(LogPrefix + "ERROR: " +
+                    e.GetType().FullName + " thrown:\n" +
                     e.Message + "\n" + e.StackTrace);
             }
         }
@@ -611,8 +611,8 @@ namespace NAnt.Contrib.Tasks {
                 }
                 else
                 {
-                    Log(Level.Error, LogPrefix + 
-                        "ERROR: Unable to open Banner Image:\n\n\t" + 
+                    Log(Level.Error, LogPrefix +
+                        "ERROR: Unable to open Banner Image:\n\n\t" +
                         bannerFile + "\n\n");
                     return false;
                 }
@@ -649,8 +649,8 @@ namespace NAnt.Contrib.Tasks {
                 }
                 else
                 {
-                    Log(Level.Error, LogPrefix + 
-                        "ERROR: Unable to open Background Image:\n\n\t" + 
+                    Log(Level.Error, LogPrefix +
+                        "ERROR: Unable to open Background Image:\n\n\t" +
                         bgFile + "\n\n");
                     return false;
                 }
@@ -675,9 +675,9 @@ namespace NAnt.Contrib.Tasks {
                     View licView = Database.OpenView("SELECT * FROM `Control` WHERE `Control`='AgreementText'");
                     licView.Execute(null);
                     Record licRecord = licView.Fetch();
-                    
+
                     Log(Level.Info, LogPrefix + "Storing License:\n\t" + licFile);
-                    
+
                     StreamReader licReader = null;
                     try
                     {
@@ -687,8 +687,8 @@ namespace NAnt.Contrib.Tasks {
                     }
                     catch (IOException)
                     {
-                       Log(Level.Error, LogPrefix + 
-                            "ERROR: Unable to open License File:\n\n\t" + 
+                       Log(Level.Error, LogPrefix +
+                            "ERROR: Unable to open License File:\n\n\t" +
                             licFile + "\n\n");
                         return false;
                     }
@@ -705,8 +705,8 @@ namespace NAnt.Contrib.Tasks {
                 }
                 else
                 {
-                    Log(Level.Error, LogPrefix + 
-                        "ERROR: Unable to open License File:\n\n\t" + 
+                    Log(Level.Error, LogPrefix +
+                        "ERROR: Unable to open License File:\n\n\t" +
                         licFile + "\n\n");
                     return false;
                 }
@@ -738,13 +738,13 @@ namespace NAnt.Contrib.Tasks {
                 string id = msm.id;
                 int language = Convert.ToInt32(msm.language);
                 string version = msm.version;
-              
+
                 Log(Level.Info, LogPrefix + "Storing Module Signature:\n\tId:\t\t" + id + "\n\tVersion:\t" + version + "\n\tLanguage:\t" + language);
-               
+
                 Record recModSig = (Record)InstallerType.InvokeMember(
-                    "CreateRecord", 
-                    BindingFlags.InvokeMethod, 
-                    null, InstallerObject, 
+                    "CreateRecord",
+                    BindingFlags.InvokeMethod,
+                    null, InstallerObject,
                     new object[] { 3 });
 
 
@@ -786,9 +786,9 @@ namespace NAnt.Contrib.Tasks {
                 {
                     // Insert the Property
                     Record recModDep = (Record)InstallerType.InvokeMember(
-                        "CreateRecord", 
-                        BindingFlags.InvokeMethod, 
-                        null, InstallerObject, 
+                        "CreateRecord",
+                        BindingFlags.InvokeMethod,
+                        null, InstallerObject,
                         new object[] { 5 });
 
                     string requiredId = dependency.id;
@@ -797,7 +797,7 @@ namespace NAnt.Contrib.Tasks {
 
                     if (requiredId == null || requiredId == "")
                     {
-                        Log(Level.Error, LogPrefix + 
+                        Log(Level.Error, LogPrefix +
                             "ERROR: Dependency with no id attribute detected.");
                         return false;
                     }
@@ -849,9 +849,9 @@ namespace NAnt.Contrib.Tasks {
                 {
                     // Insert the Property
                     Record recModEx = (Record)InstallerType.InvokeMember(
-                        "CreateRecord", 
-                        BindingFlags.InvokeMethod, 
-                        null, InstallerObject, 
+                        "CreateRecord",
+                        BindingFlags.InvokeMethod,
+                        null, InstallerObject,
                         new object[] { 6 });
 
                     string excludedId = exclusion.id;
@@ -861,7 +861,7 @@ namespace NAnt.Contrib.Tasks {
 
                     if (excludedId == null || excludedId == "")
                     {
-                        Log(Level.Error, LogPrefix + 
+                        Log(Level.Error, LogPrefix +
                             "ERROR: Exclusion with no id attribute detected.");
                         return false;
                     }
@@ -923,9 +923,9 @@ namespace NAnt.Contrib.Tasks {
 
                     // Insert the record to the respective table
                     Record recSequence = (Record)InstallerType.InvokeMember(
-                        "CreateRecord", 
-                        BindingFlags.InvokeMethod, 
-                        null, InstallerObject, 
+                        "CreateRecord",
+                        BindingFlags.InvokeMethod,
+                        null, InstallerObject,
                         new object[] { 5 });
 
                     recSequence.set_StringData(1, sequence.action);
@@ -990,16 +990,16 @@ namespace NAnt.Contrib.Tasks {
                 {
                     // Insert the Property
                     Record recModIgnoreTable = (Record)InstallerType.InvokeMember(
-                        "CreateRecord", 
-                        BindingFlags.InvokeMethod, 
-                        null, InstallerObject, 
+                        "CreateRecord",
+                        BindingFlags.InvokeMethod,
+                        null, InstallerObject,
                         new object[] { 1 });
 
                     string tableName = table.name;
 
                     if (tableName == null || tableName == "")
                     {
-                        Log(Level.Error, LogPrefix + 
+                        Log(Level.Error, LogPrefix +
                             "ERROR: Table with no name attribute detected.");
                         return false;
                     }
@@ -1044,9 +1044,9 @@ namespace NAnt.Contrib.Tasks {
                 {
                     // Insert the Property
                     Record recModSubstitutionTable = (Record)InstallerType.InvokeMember(
-                        "CreateRecord", 
-                        BindingFlags.InvokeMethod, 
-                        null, InstallerObject, 
+                        "CreateRecord",
+                        BindingFlags.InvokeMethod,
+                        null, InstallerObject,
                         new object[] { 4 });
 
                     string tableName = substitution.table;
@@ -1056,7 +1056,7 @@ namespace NAnt.Contrib.Tasks {
 
                     if (tableName == null || tableName == "")
                     {
-                        Log(Level.Error, LogPrefix + 
+                        Log(Level.Error, LogPrefix +
                             "ERROR: Substitution with no table attribute detected.");
                         return false;
                     }
@@ -1080,7 +1080,7 @@ namespace NAnt.Contrib.Tasks {
             }
 
             return true;
-            
+
         }
 
         /// <summary>
@@ -1106,9 +1106,9 @@ namespace NAnt.Contrib.Tasks {
                 {
                     // Insert the Property
                     Record recModConfigurationTable = (Record)InstallerType.InvokeMember(
-                        "CreateRecord", 
-                        BindingFlags.InvokeMethod, 
-                        null, InstallerObject, 
+                        "CreateRecord",
+                        BindingFlags.InvokeMethod,
+                        null, InstallerObject,
                         new object[] { 10 });
 
                     string name = configuration.name;
@@ -1141,7 +1141,7 @@ namespace NAnt.Contrib.Tasks {
 
                     if (name == null || name == "")
                     {
-                        Log(Level.Error, LogPrefix + 
+                        Log(Level.Error, LogPrefix +
                             "ERROR: Configuration with no name attribute detected.");
                         return false;
                     }
@@ -1171,7 +1171,7 @@ namespace NAnt.Contrib.Tasks {
             }
 
             return true;
-            
+
         }
 
         /// <summary>
@@ -1196,9 +1196,9 @@ namespace NAnt.Contrib.Tasks {
             {
                 // Insert the Property
                 Record recProp = (Record)InstallerType.InvokeMember(
-                    "CreateRecord", 
-                    BindingFlags.InvokeMethod, 
-                    null, InstallerObject, 
+                    "CreateRecord",
+                    BindingFlags.InvokeMethod,
+                    null, InstallerObject,
                     new object[] { 2 });
 
                 string name = property.name;
@@ -1206,15 +1206,15 @@ namespace NAnt.Contrib.Tasks {
 
                 if (name == null || name == "")
                 {
-                    Log(Level.Error, LogPrefix + 
+                    Log(Level.Error, LogPrefix +
                         "ERROR: Property with no name attribute detected.");
                     return false;
                 }
 
                 if (sValue == null || sValue == "")
                 {
-                    Log(Level.Error, LogPrefix + 
-                        "ERROR: Property " + name + 
+                    Log(Level.Error, LogPrefix +
+                        "ERROR: Property " + name +
                         " has no value.");
                     return false;
                 }
@@ -1248,8 +1248,8 @@ namespace NAnt.Contrib.Tasks {
         /// <param name="ClassView">View containing the Class table.</param>
         /// <param name="ProgIdView">View containing the ProgId table.</param>
         /// <returns>True if successful.</returns>
-        private bool LoadComponents(Database Database, Type InstallerType, Object InstallerObject, 
-            ref int LastSequence, View MsiAssemblyView, View MsiAssemblyNameView, 
+        private bool LoadComponents(Database Database, Type InstallerType, Object InstallerObject,
+            ref int LastSequence, View MsiAssemblyView, View MsiAssemblyNameView,
             View DirectoryView, View ClassView, View ProgIdView)
         {
             // Open the "Component" Table
@@ -1281,9 +1281,9 @@ namespace NAnt.Contrib.Tasks {
                 {
                     // Insert the Component
                     Record recComp = (Record)InstallerType.InvokeMember(
-                        "CreateRecord", 
-                        BindingFlags.InvokeMethod, 
-                        null, InstallerObject, 
+                        "CreateRecord",
+                        BindingFlags.InvokeMethod,
+                        null, InstallerObject,
                         new object[] { 6 });
 
                     recComp.set_StringData(1, component.name);
@@ -1296,9 +1296,9 @@ namespace NAnt.Contrib.Tasks {
 
                     // Add ModuleComponent
                     Record recModComp = (Record)InstallerType.InvokeMember(
-                        "CreateRecord", 
-                        BindingFlags.InvokeMethod, 
-                        null, InstallerObject, 
+                        "CreateRecord",
+                        BindingFlags.InvokeMethod,
+                        null, InstallerObject,
                         new object[] { 3 });
 
                     recModComp.set_StringData(1, component.name);
@@ -1308,10 +1308,10 @@ namespace NAnt.Contrib.Tasks {
 
                     componentIndex++;
 
-                    bool success = AddFiles(Database, DirectoryView, component, 
-                        fileView, InstallerType, InstallerObject, 
-                        component.directory, component.name, ref componentIndex, 
-                        ref LastSequence, MsiAssemblyView, MsiAssemblyNameView, 
+                    bool success = AddFiles(Database, DirectoryView, component,
+                        fileView, InstallerType, InstallerObject,
+                        component.directory, component.name, ref componentIndex,
+                        ref LastSequence, MsiAssemblyView, MsiAssemblyNameView,
                         compView, featCompView, ClassView, ProgIdView, selfRegView, modComponentView);
 
                     if (!success)
@@ -1324,10 +1324,10 @@ namespace NAnt.Contrib.Tasks {
                         string keyFileName = (string)files[component.directory + "|" + component.key.file];
                         if (keyFileName == "KeyIsDotNetAssembly")
                         {
-                            Log(Level.Error, LogPrefix + "ERROR: Cannot specify key '" + component.key.file + 
-                                "' for component '" + component.name + "'. File has been detected as " + 
-                                "being a COM component or Microsoft.NET assembly and is " + 
-                                "being registered with its own component. Please specify " + 
+                            Log(Level.Error, LogPrefix + "ERROR: Cannot specify key '" + component.key.file +
+                                "' for component '" + component.name + "'. File has been detected as " +
+                                "being a COM component or Microsoft.NET assembly and is " +
+                                "being registered with its own component. Please specify " +
                                 "a different file in the same directory for this component's key.");
                             return false;
                         }
@@ -1339,8 +1339,8 @@ namespace NAnt.Contrib.Tasks {
                     }
                     else
                     {
-                        Log(Level.Error, 
-                            LogPrefix + "ERROR: KeyFile \"" + component.key.file + 
+                        Log(Level.Error,
+                            LogPrefix + "ERROR: KeyFile \"" + component.key.file +
                             "\" not found in Component \"" + component.name + "\".");
                         return false;
                     }
@@ -1353,12 +1353,12 @@ namespace NAnt.Contrib.Tasks {
                 {
                     string component = Properties.ExpandProperties((string)keyEnum.Current, Location);
                     string feature = Properties.ExpandProperties((string)featureComponents[component], Location);
-                    
+
                     // Insert the FeatureComponent
                     Record recFeatComps = (Record)InstallerType.InvokeMember(
-                        "CreateRecord", 
-                        BindingFlags.InvokeMethod, 
-                        null, InstallerObject, 
+                        "CreateRecord",
+                        BindingFlags.InvokeMethod,
+                        null, InstallerObject,
                         new object[] { 2 });
 
                     recFeatComps.set_StringData(1, feature);
@@ -1391,7 +1391,7 @@ namespace NAnt.Contrib.Tasks {
         /// <param name="InstallerObject">The MSM Installer object.</param>
         /// <param name="DirectoryView">The MSM database view.</param>
         /// <returns>True if successful.</returns>
-        private bool LoadDirectories(Database Database, Type InstallerType, 
+        private bool LoadDirectories(Database Database, Type InstallerType,
             Object InstallerObject, out View DirectoryView)
         {
                 // Open the "Directory" Table
@@ -1399,7 +1399,7 @@ namespace NAnt.Contrib.Tasks {
 
             if (msm.directories != null)
             {
-                ArrayList directoryList = new ArrayList(msm.directories);       
+                ArrayList directoryList = new ArrayList(msm.directories);
 
                 MSMRootDirectory targetDir = new MSMRootDirectory();
                 targetDir.name = "TARGETDIR";
@@ -1431,8 +1431,8 @@ namespace NAnt.Contrib.Tasks {
                 // Add directories from Task definition
                 foreach (MSMRootDirectory directory in msm.directories)
                 {
-                    bool result = AddDirectory(Database, 
-                        DirectoryView, null, InstallerType, 
+                    bool result = AddDirectory(Database,
+                        DirectoryView, null, InstallerType,
                         InstallerObject, directory, depth);
 
                     if (!result)
@@ -1457,9 +1457,9 @@ namespace NAnt.Contrib.Tasks {
         /// <param name="Directory">This directory's Schema object.</param>
         /// <param name="Depth">The tree depth of this directory.</param>
         /// <returns></returns>
-        private bool AddDirectory(Database Database, View DirectoryView, 
-            string ParentDirectory, 
-            Type InstallerType, object InstallerObject, 
+        private bool AddDirectory(Database Database, View DirectoryView,
+            string ParentDirectory,
+            Type InstallerType, object InstallerObject,
             MSMDirectory Directory, int Depth)
         {
             string newParent = ParentDirectory;
@@ -1470,17 +1470,17 @@ namespace NAnt.Contrib.Tasks {
 
             // Insert the Directory
             Record recDir = (Record)InstallerType.InvokeMember(
-                "CreateRecord", 
-                BindingFlags.InvokeMethod, 
+                "CreateRecord",
+                BindingFlags.InvokeMethod,
                 null, InstallerObject, new object[] { 3 });
 
             recDir.set_StringData(1, Directory.name);
             recDir.set_StringData(2, newParent);
-            
+
             StringBuilder relativePath = new StringBuilder();
 
-            GetRelativePath(Database, InstallerType, InstallerObject, 
-                Directory.name, ParentDirectory, Directory.foldername, 
+            GetRelativePath(Database, InstallerType, InstallerObject,
+                Directory.name, ParentDirectory, Directory.foldername,
                 relativePath, DirectoryView);
 
             string basePath = Path.Combine(Project.BaseDirectory, msm.sourcedir);
@@ -1501,10 +1501,10 @@ namespace NAnt.Contrib.Tasks {
 
             if (Verbose)
             {
-                Log(Level.Info, "\t" + 
+                Log(Level.Info, "\t" +
                     Path.Combine(Project.BaseDirectory, Path.Combine(msm.sourcedir, relativePath.ToString())));
             }
-            
+
             recDir.set_StringData(3, path);
 
             DirectoryView.Modify(MsiViewModify.msiViewModifyMerge, recDir);
@@ -1515,8 +1515,8 @@ namespace NAnt.Contrib.Tasks {
                 {
                     int newDepth = Depth + 1;
 
-                    bool result = AddDirectory(Database, DirectoryView, 
-                        Directory.name, InstallerType, 
+                    bool result = AddDirectory(Database, DirectoryView,
+                        Directory.name, InstallerType,
                         InstallerObject, childDirectory, newDepth);
 
                     if (!result)
@@ -1577,7 +1577,7 @@ namespace NAnt.Contrib.Tasks {
             summaryInfo.set_Property(9, "{"+Guid.NewGuid().ToString().ToUpper()+"}");
             summaryInfo.set_Property(14, 200);
             summaryInfo.set_Property(15, 2);
-            
+
             summaryInfo.Persist();
 
             return true;
@@ -1601,9 +1601,9 @@ namespace NAnt.Contrib.Tasks {
                 {
                     // Insert the Varible
                     Record recVar = (Record)InstallerType.InvokeMember(
-                        "CreateRecord", 
-                        BindingFlags.InvokeMethod, 
-                        null, InstallerObject, 
+                        "CreateRecord",
+                        BindingFlags.InvokeMethod,
+                        null, InstallerObject,
                         new object[] { 4 });
 
                     recVar.set_StringData(1, "_" + Guid.NewGuid().ToString().ToUpper().Replace("-", null));
@@ -1654,11 +1654,11 @@ namespace NAnt.Contrib.Tasks {
         /// <param name="SelfRegView">View containing the SelfReg table.</param>
         /// <param name="modComponentView">View containing the ModuleComponent table.</param>
         /// <returns>True if successful.</returns>
-        private bool AddFiles(Database Database, View DirectoryView, MSMComponent Component, 
-            View FileView, Type InstallerType, Object InstallerObject, 
-            string ComponentDirectory, string ComponentName, ref int ComponentCount, 
-            ref int Sequence, View MsiAssemblyView, View MsiAssemblyNameView, 
-            View ComponentView, View FeatureComponentView, View ClassView, View ProgIdView, 
+        private bool AddFiles(Database Database, View DirectoryView, MSMComponent Component,
+            View FileView, Type InstallerType, Object InstallerObject,
+            string ComponentDirectory, string ComponentName, ref int ComponentCount,
+            ref int Sequence, View MsiAssemblyView, View MsiAssemblyNameView,
+            View ComponentView, View FeatureComponentView, View ClassView, View ProgIdView,
             View SelfRegView, View modComponentView)
         {
 
@@ -1670,7 +1670,7 @@ namespace NAnt.Contrib.Tasks {
             componentFiles.Initialize(fileSetElem);
 
             MSMDirectory componentDirInfo = FindDirectory(ComponentDirectory);
-            
+
             StringBuilder relativePath = new StringBuilder();
 
             string newParent = null;
@@ -1683,11 +1683,11 @@ namespace NAnt.Contrib.Tasks {
                 newParent = FindParent(ComponentDirectory);
             }
 
-            GetRelativePath(Database, InstallerType, 
-                InstallerObject, 
-                ComponentDirectory, 
-                newParent, 
-                componentDirInfo.foldername, 
+            GetRelativePath(Database, InstallerType,
+                InstallerObject,
+                ComponentDirectory,
+                newParent,
+                componentDirInfo.foldername,
                 relativePath, DirectoryView);
 
             string basePath = Path.Combine(Project.BaseDirectory, msm.sourcedir);
@@ -1697,14 +1697,14 @@ namespace NAnt.Contrib.Tasks {
             {
                 // Insert the File
                 Record recFile = (Record)InstallerType.InvokeMember(
-                    "CreateRecord", 
-                    BindingFlags.InvokeMethod, 
-                    null, InstallerObject, 
+                    "CreateRecord",
+                    BindingFlags.InvokeMethod,
+                    null, InstallerObject,
                     new object[] { 8 });
 
                 string fileName = Path.GetFileName(componentFiles.FileNames[i]);
                 string filePath = Path.Combine(fullPath, fileName);
-                
+
                 MSMFileOverride fileOverride = null;
 
                 if (Component.forceid != null)
@@ -1719,17 +1719,17 @@ namespace NAnt.Contrib.Tasks {
                     }
                 }
 
-                string fileId = fileOverride == null ? 
+                string fileId = fileOverride == null ?
                     "_" + Guid.NewGuid().ToString().ToUpper().Replace("-", null) :
                     fileOverride.id;
 
-                // If the user specifies forceid & specified a file attribute, use it.  Otherwise use the 
+                // If the user specifies forceid & specified a file attribute, use it.  Otherwise use the
                 // fileattr assigned to the component.
                 int fileAttr = ((fileOverride == null) || (fileOverride.attr == 0)) ? Component.fileattr : fileOverride.attr;
-                
+
                 files.Add(Component.directory + "|" + fileName, fileId);
                 recFile.set_StringData(1, fileId);
-            
+
                 if (File.Exists(filePath))
                 {
                     try
@@ -1738,28 +1738,28 @@ namespace NAnt.Contrib.Tasks {
                     }
                     catch (Exception)
                     {
-                        Log(Level.Error, LogPrefix + 
+                        Log(Level.Error, LogPrefix +
                             "ERROR: Could not open file " + filePath);
                         return false;
                     }
                 }
                 else
                 {
-                    Log(Level.Error, LogPrefix + 
+                    Log(Level.Error, LogPrefix +
                         "ERROR: Could not open file " + filePath);
                     return false;
                 }
 
                 if (Verbose)
                 {
-                    Log(Level.Info, "\t" + 
-                        Path.Combine(Project.BaseDirectory, Path.Combine(Path.Combine(msm.sourcedir, 
+                    Log(Level.Info, "\t" +
+                        Path.Combine(Project.BaseDirectory, Path.Combine(Path.Combine(msm.sourcedir,
                         relativePath.ToString()), fileName)));
                 }
 
-                // If the file is an assembly, create a new component to contain it, 
-                // add the new component, map the new component to the old component's 
-                // feature, and create an entry in the MsiAssembly and MsiAssemblyName 
+                // If the file is an assembly, create a new component to contain it,
+                // add the new component, map the new component to the old component's
+                // feature, and create an entry in the MsiAssembly and MsiAssemblyName
                 // table.
                 //
                 bool isAssembly = false;
@@ -1771,7 +1771,7 @@ namespace NAnt.Contrib.Tasks {
                     fileVersion = fileVersionInfo.FileVersion;
                 }
                 catch (Exception) {}
-                
+
                 try
                 {
                     fileAssembly = Assembly.LoadFrom(filePath);
@@ -1779,11 +1779,11 @@ namespace NAnt.Contrib.Tasks {
                     isAssembly = true;
                 }
                 catch (Exception) {}
-                
+
                 if (isAssembly || filePath.EndsWith(".tlb"))
                 {
                     string feature = (string)featureComponents[ComponentName];
-            
+
                     string asmCompName = ComponentName;
 
                     if (componentFiles.FileNames.Count > 1)
@@ -1792,12 +1792,12 @@ namespace NAnt.Contrib.Tasks {
                         string newCompId = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
 
                         recFile.set_StringData(2, asmCompName);
-                    
+
                         // Add a record for a new Component
                         Record recComp = (Record)InstallerType.InvokeMember(
-                            "CreateRecord", 
-                            BindingFlags.InvokeMethod, 
-                            null, InstallerObject, 
+                            "CreateRecord",
+                            BindingFlags.InvokeMethod,
+                            null, InstallerObject,
                             new object[] { 6 });
 
                         recComp.set_StringData(1, asmCompName);
@@ -1810,9 +1810,9 @@ namespace NAnt.Contrib.Tasks {
 
                         // Map the new Component to the existing one's Feature
                         Record featComp = (Record)InstallerType.InvokeMember(
-                            "CreateRecord", 
-                            BindingFlags.InvokeMethod, 
-                            null, InstallerObject, 
+                            "CreateRecord",
+                            BindingFlags.InvokeMethod,
+                            null, InstallerObject,
                             new object[] { 2 });
 
                         featComp.set_StringData(1, (string)featureComponents[ComponentName]);
@@ -1821,9 +1821,9 @@ namespace NAnt.Contrib.Tasks {
 
                         // Add the new component to the modulecomponents table
                         Record recModComp = (Record)InstallerType.InvokeMember(
-                            "CreateRecord", 
-                            BindingFlags.InvokeMethod, 
-                            null, InstallerObject, 
+                            "CreateRecord",
+                            BindingFlags.InvokeMethod,
+                            null, InstallerObject,
                             new object[] { 3 });
 
                         recModComp.set_StringData(1, asmCompName);
@@ -1836,9 +1836,9 @@ namespace NAnt.Contrib.Tasks {
                     {
                         // Add a record for a new MsiAssembly
                         Record recAsm = (Record)InstallerType.InvokeMember(
-                            "CreateRecord", 
-                            BindingFlags.InvokeMethod, 
-                            null, InstallerObject, 
+                            "CreateRecord",
+                            BindingFlags.InvokeMethod,
+                            null, InstallerObject,
                             new object[] { 5 });
 
                         recAsm.set_StringData(1, asmCompName);
@@ -1856,8 +1856,8 @@ namespace NAnt.Contrib.Tasks {
 
                         string name = asmName.Name;
                         string version = asmName.Version.ToString(4);
-                        
-                        AssemblyCultureAttribute[] cultureAttrs = 
+
+                        AssemblyCultureAttribute[] cultureAttrs =
                             (AssemblyCultureAttribute[])fileAssembly.GetCustomAttributes(
                             typeof(AssemblyCultureAttribute), true);
 
@@ -1877,9 +1877,9 @@ namespace NAnt.Contrib.Tasks {
                         if (name != null && name != "")
                         {
                             Record recAsmName = (Record)InstallerType.InvokeMember(
-                                "CreateRecord", 
-                                BindingFlags.InvokeMethod, 
-                                null, InstallerObject, 
+                                "CreateRecord",
+                                BindingFlags.InvokeMethod,
+                                null, InstallerObject,
                                 new object[] { 3 });
 
                             recAsmName.set_StringData(1, asmCompName);
@@ -1891,8 +1891,8 @@ namespace NAnt.Contrib.Tasks {
                         if (version != null && version != "")
                         {
                             Record recAsmVersion = (Record)InstallerType.InvokeMember(
-                                "CreateRecord", 
-                                BindingFlags.InvokeMethod, 
+                                "CreateRecord",
+                                BindingFlags.InvokeMethod,
                                 null, InstallerObject, new object[] { 3 });
 
                             recAsmVersion.set_StringData(1, asmCompName);
@@ -1904,9 +1904,9 @@ namespace NAnt.Contrib.Tasks {
                         if (culture != null && culture != "")
                         {
                             Record recAsmLocale = (Record)InstallerType.InvokeMember(
-                                "CreateRecord", 
-                                BindingFlags.InvokeMethod, 
-                                null, InstallerObject, 
+                                "CreateRecord",
+                                BindingFlags.InvokeMethod,
+                                null, InstallerObject,
                                 new object[] { 3 });
 
                             recAsmLocale.set_StringData(1, asmCompName);
@@ -1918,9 +1918,9 @@ namespace NAnt.Contrib.Tasks {
                         if (publicKey != null && publicKey != "")
                         {
                             Record recPublicKey = (Record)InstallerType.InvokeMember(
-                                "CreateRecord", 
-                                BindingFlags.InvokeMethod, 
-                                null, InstallerObject, 
+                                "CreateRecord",
+                                BindingFlags.InvokeMethod,
+                                null, InstallerObject,
                                 new object[] { 3 });
 
                             recPublicKey.set_StringData(1, asmCompName);
@@ -1930,8 +1930,8 @@ namespace NAnt.Contrib.Tasks {
                         }
 
                         bool success = CheckAssemblyForCOMInterop(
-                            filePath, fileAssembly, InstallerType, 
-                            InstallerObject, ComponentName, 
+                            filePath, fileAssembly, InstallerType,
+                            InstallerObject, ComponentName,
                             asmCompName, ClassView, ProgIdView);
 
                         if (!success)
@@ -1949,7 +1949,7 @@ namespace NAnt.Contrib.Tasks {
                     else if (filePath.EndsWith(".tlb"))
                     {
                         typeLibComponents.Add(
-                            Path.GetFileName(filePath), 
+                            Path.GetFileName(filePath),
                             asmCompName);
                     }
                 }
@@ -1962,16 +1962,16 @@ namespace NAnt.Contrib.Tasks {
                         int regSvr = GetProcAddress(hmod, "DllRegisterServer");
                         if (regSvr != 0)
                         {
-                            Log(Level.Info, LogPrefix + 
-                                "Configuring " + 
-                                Path.GetFileName(filePath) + 
+                            Log(Level.Info, LogPrefix +
+                                "Configuring " +
+                                Path.GetFileName(filePath) +
                                 " for COM Self Registration...");
 
                             // Add a record for a new Component
                             Record recSelfReg = (Record)InstallerType.InvokeMember(
-                                "CreateRecord", 
-                                BindingFlags.InvokeMethod, 
-                                null, InstallerObject, 
+                                "CreateRecord",
+                                BindingFlags.InvokeMethod,
+                                null, InstallerObject,
                                 new object[] { 2 });
 
                             recSelfReg.set_StringData(1, fileId);
@@ -1980,14 +1980,14 @@ namespace NAnt.Contrib.Tasks {
                         FreeLibrary(hmod);
                     }
 
-                    // Register COM .dlls with an embedded 
+                    // Register COM .dlls with an embedded
                     // type library for self registration.
                 }
 
                 if (File.Exists(filePath))
                 {
                     string cabDir = Path.Combine(
-                        Project.BaseDirectory, 
+                        Project.BaseDirectory,
                         Path.Combine(msm.sourcedir, "Temp"));
 
                     if (!Directory.Exists(cabDir))
@@ -1999,7 +1999,7 @@ namespace NAnt.Contrib.Tasks {
                     File.Copy(filePath, cabPath, true);
                 }
 
-                if (!isAssembly && !filePath.EndsWith(".tlb") 
+                if (!isAssembly && !filePath.EndsWith(".tlb")
                     || componentFiles.FileNames.Count == 1)
                 {
                     recFile.set_StringData(2, Component.name);
@@ -2015,14 +2015,14 @@ namespace NAnt.Contrib.Tasks {
                 {
                     fileVersion = null;
                 }
-                
+
                 recFile.set_StringData(3, GetShortFile(filePath) + "|" + fileName);
                 recFile.set_StringData(5, fileVersion);
                 recFile.set_StringData(6, null);  // Language
                 recFile.set_StringData(7, "512");
-                
+
                 Sequence++;
-                
+
                 recFile.set_StringData(8, Sequence.ToString());
                 FileView.Modify(MsiViewModify.msiViewModifyMerge, recFile);
             }
@@ -2060,7 +2060,7 @@ namespace NAnt.Contrib.Tasks {
             }
             return result;
         }
-        
+
         /// <summary>
         /// Loads records for the Registry table.
         /// </summary>
@@ -2069,7 +2069,7 @@ namespace NAnt.Contrib.Tasks {
         /// <param name="InstallerObject">The MSM Installer object.</param>
         /// <param name="RegistryView">View containing the Registry table.</param>
         /// <returns>True if successful.</returns>
-        private bool LoadRegistry(Database Database, Type InstallerType, 
+        private bool LoadRegistry(Database Database, Type InstallerType,
             Object InstallerObject, out View RegistryView)
         {
             // Open the "Registry" Table
@@ -2113,12 +2113,12 @@ namespace NAnt.Contrib.Tasks {
                     {
                         // Insert the Value
                         Record recVal = (Record)InstallerType.InvokeMember(
-                            "CreateRecord", 
-                            BindingFlags.InvokeMethod, 
-                            null, InstallerObject, 
+                            "CreateRecord",
+                            BindingFlags.InvokeMethod,
+                            null, InstallerObject,
                             new object[] { 6 });
 
-                        recVal.set_StringData(1, "_" + 
+                        recVal.set_StringData(1, "_" +
                             Guid.NewGuid().ToString().ToUpper().Replace("-", null));
                         recVal.set_StringData(2, rootKey.ToString());
                         recVal.set_StringData(3, key.path);
@@ -2168,9 +2168,9 @@ namespace NAnt.Contrib.Tasks {
         /// <param name="ClassView">View containing the Class table.</param>
         /// <param name="ProgIdView">View containing the ProgId table.</param>
         /// <returns></returns>
-        private bool LoadAssemblies(Database Database, Type InstallerType, 
-            Object InstallerObject, out View MsiAssemblyView, 
-            out View MsiAssemblyNameView, out View ClassView, 
+        private bool LoadAssemblies(Database Database, Type InstallerType,
+            Object InstallerObject, out View MsiAssemblyView,
+            out View MsiAssemblyNameView, out View ClassView,
             out View ProgIdView)
         {
             MsiAssemblyView = Database.OpenView("SELECT * FROM `MsiAssembly`");
@@ -2188,7 +2188,7 @@ namespace NAnt.Contrib.Tasks {
         /// <param name="InstallerType">The MSM Installer type.</param>
         /// <param name="InstallerObject">The MSM Installer object.</param>
         /// <returns>True if successful.</returns>
-        private bool LoadRegLocator(Database Database, Type InstallerType, 
+        private bool LoadRegLocator(Database Database, Type InstallerType,
             Object InstallerObject)
         {
             // Add properties from Task definition
@@ -2241,9 +2241,9 @@ namespace NAnt.Contrib.Tasks {
 
                                     // Insert the signature to the RegLocator Table
                                     Record recRegLoc = (Record)InstallerType.InvokeMember(
-                                        "CreateRecord", 
-                                        BindingFlags.InvokeMethod, 
-                                        null, InstallerObject, 
+                                        "CreateRecord",
+                                        BindingFlags.InvokeMethod,
+                                        null, InstallerObject,
                                         new object[] { 5 });
 
                                     recRegLoc.set_StringData(1, signature);
@@ -2284,7 +2284,7 @@ namespace NAnt.Contrib.Tasks {
         /// <param name="InstallerType">The MSM Installer type.</param>
         /// <param name="InstallerObject">The MSM Installer object.</param>
         /// <returns>True if successful.</returns>
-        private bool LoadAppSearch(Database Database, Type InstallerType, 
+        private bool LoadAppSearch(Database Database, Type InstallerType,
             Object InstallerObject)
         {
             // Add properties from Task definition
@@ -2298,7 +2298,7 @@ namespace NAnt.Contrib.Tasks {
                         {
                             // Select the "AppSearch" Table
                             View appSearchView = Database.OpenView("SELECT * FROM `AppSearch`");
-                                
+
                             if (key.value != null)
                             {
                                 foreach (searchKeyValue value in key.value)
@@ -2307,9 +2307,9 @@ namespace NAnt.Contrib.Tasks {
 
                                     // Insert the Property/Signature into AppSearch Table
                                     Record recAppSearch = (Record)InstallerType.InvokeMember(
-                                        "CreateRecord", 
-                                        BindingFlags.InvokeMethod, 
-                                        null, InstallerObject, 
+                                        "CreateRecord",
+                                        BindingFlags.InvokeMethod,
+                                        null, InstallerObject,
                                         new object[] { 2 });
 
                                     recAppSearch.set_StringData(1, value.setproperty);
@@ -2334,13 +2334,13 @@ namespace NAnt.Contrib.Tasks {
         }
 
         /// <summary>
-        /// Loads records for the Icon table.  
+        /// Loads records for the Icon table.
         /// </summary>
         /// <param name="Database">The MSM database.</param>
         /// <param name="InstallerType">The MSM Installer type.</param>
         /// <param name="InstallerObject">The MSM Installer object.</param>
         /// <returns>True if successful.</returns>
-        private bool LoadIcon(Database Database, Type InstallerType, 
+        private bool LoadIcon(Database Database, Type InstallerType,
             Object InstallerObject)
         {
             if (msm.icons != null)
@@ -2353,7 +2353,7 @@ namespace NAnt.Contrib.Tasks {
                 {
                     Log(Level.Info, LogPrefix + "Adding Icon Data:");
                 }
-                
+
                 // Add binary data from Task definition
                 foreach (MSMIcon icon in msm.icons)
                 {
@@ -2366,9 +2366,9 @@ namespace NAnt.Contrib.Tasks {
                     {
                         // Insert the icon data
                         Record recIcon = (Record)InstallerType.InvokeMember(
-                            "CreateRecord", 
-                            BindingFlags.InvokeMethod, 
-                            null, InstallerObject, 
+                            "CreateRecord",
+                            BindingFlags.InvokeMethod,
+                            null, InstallerObject,
                             new object[] { 2 });
 
                         recIcon.set_StringData(1, icon.name);
@@ -2378,8 +2378,8 @@ namespace NAnt.Contrib.Tasks {
                     }
                     else
                     {
-                        Log(Level.Error, LogPrefix + 
-                            "ERROR: Unable to open file:\n\n\t" + 
+                        Log(Level.Error, LogPrefix +
+                            "ERROR: Unable to open file:\n\n\t" +
                             Path.Combine(Project.BaseDirectory, icon.value) + "\n\n");
 
                         iconView.Close();
@@ -2395,13 +2395,13 @@ namespace NAnt.Contrib.Tasks {
         }
 
         /// <summary>
-        /// Loads records for the Shortcut table.  
+        /// Loads records for the Shortcut table.
         /// </summary>
         /// <param name="Database">The MSM database.</param>
         /// <param name="InstallerType">The MSM Installer type.</param>
         /// <param name="InstallerObject">The MSM Installer object.</param>
         /// <returns>True if successful.</returns>
-        private bool LoadShortcut(Database Database, Type InstallerType, 
+        private bool LoadShortcut(Database Database, Type InstallerType,
             Object InstallerObject)
         {
             // Add properties from Task definition
@@ -2423,9 +2423,9 @@ namespace NAnt.Contrib.Tasks {
 
                     // Insert the record into the table
                     Record shortcutRec = (Record)InstallerType.InvokeMember(
-                        "CreateRecord", 
-                        BindingFlags.InvokeMethod, 
-                        null, InstallerObject, 
+                        "CreateRecord",
+                        BindingFlags.InvokeMethod,
+                        null, InstallerObject,
                         new object[] { 12 });
 
                     shortcutRec.set_StringData(1, shortcut.name);
@@ -2458,7 +2458,7 @@ namespace NAnt.Contrib.Tasks {
         /// <param name="InstallerType">The MSM Installer type.</param>
         /// <param name="InstallerObject">The MSM Installer object.</param>
         /// <returns>True if successful.</returns>
-        private bool AddTables(Database Database, Type InstallerType, 
+        private bool AddTables(Database Database, Type InstallerType,
             Object InstallerObject)
         {
             // Add properties from Task definition
@@ -2475,12 +2475,12 @@ namespace NAnt.Contrib.Tasks {
                     {
                         Log(Level.Info, "\t" + table.name);
                     }
-                                    
+
                     bool tableExists = true;
                     try
                     {
                         View tableView = Database.OpenView("SELECT * FROM `" + table.name + "`");
-                    
+
                         if (Verbose)
                         {
                             Log(Level.Info, "\t\tTable exists.. skipping");
@@ -2519,9 +2519,9 @@ namespace NAnt.Contrib.Tasks {
                             currentColumn.id = columnList.Count;
 
                             Record recValidation = (Record)InstallerType.InvokeMember(
-                                "CreateRecord", 
-                                BindingFlags.InvokeMethod, 
-                                null, InstallerObject, 
+                                "CreateRecord",
+                                BindingFlags.InvokeMethod,
+                                null, InstallerObject,
                                 new object[] { 10 });
 
                             recValidation.set_StringData(1, table.name);
@@ -2726,22 +2726,22 @@ namespace NAnt.Contrib.Tasks {
                             recValidation.set_StringData(10, column.description);
 
                             if (column.key)
-                                tableStructureKeys += "\t" + column.name;                            
+                                tableStructureKeys += "\t" + column.name;
 
                             validationView.Modify(MsiViewModify.msiViewModifyMerge, recValidation);
-                    
+
                             columnList.Add(currentColumn);
 
                         }
 
                         // Create temp file.  Dump table structure contents into the file
-                        // Then import the file.  
+                        // Then import the file.
                         string tableStructureContents = tableStructureColumns + "\n" + tableStructureColumnTypes + "\n" + tableStructureKeys + "\n";
                         string tempFileName = "04527004_BBA8_4cee_B4FF_D54736559260.idt";
                         string fullTempFileName = Path.Combine(Path.Combine(Project.BaseDirectory, msm.sourcedir), tempFileName);
                         FileStream tableStream = null;
-                        try 
-                        {                                    
+                        try
+                        {
                             tableStream = File.Create(fullTempFileName);
                             StreamWriter writer = new StreamWriter(tableStream);
                             writer.Write(tableStructureContents);
@@ -2751,7 +2751,7 @@ namespace NAnt.Contrib.Tasks {
                         {
                             Log(Level.Error, "Error: " + e.ToString());
                         }
-                        finally 
+                        finally
                         {
                             tableStream.Close();
                         }
@@ -2765,7 +2765,7 @@ namespace NAnt.Contrib.Tasks {
                         }
                         catch (Exception ae)
                         {
-                            Log(Level.Error, LogPrefix + "ERROR: Temporary table file\n (" + Path.GetFullPath(Path.Combine(Path.Combine(Project.BaseDirectory, msm.sourcedir), tempFileName)) + ") is not valid:\n" + 
+                            Log(Level.Error, LogPrefix + "ERROR: Temporary table file\n (" + Path.GetFullPath(Path.Combine(Path.Combine(Project.BaseDirectory, msm.sourcedir), tempFileName)) + ") is not valid:\n" +
                                 ae.ToString());
                         }
                         File.Delete(fullTempFileName);
@@ -2796,7 +2796,7 @@ namespace NAnt.Contrib.Tasks {
         /// <param name="table">Xml node representing the current table</param>
         /// <param name="columnList">List of column objects for the current table (Containing: column name, id, type).</param>
         /// <returns>True if successful.</returns>
-        private bool AddTableData(Database Database, Type InstallerType, 
+        private bool AddTableData(Database Database, Type InstallerType,
             Object InstallerObject, string currentTable, MSMTable table, ArrayList columnList)
         {
 
@@ -2805,14 +2805,14 @@ namespace NAnt.Contrib.Tasks {
                 Log(Level.Info, "\t\tAdding table data...");
             }
             View tableView = Database.OpenView("SELECT * FROM `" + currentTable + "`");
-            
+
             foreach (MSMTableRow row in table.rows)
             {
                 Record newRec = (Record)InstallerType.InvokeMember(
-                    "CreateRecord", 
-                    BindingFlags.InvokeMethod, 
-                    null, InstallerObject, 
-                    new object[] { columnList.Count });                    
+                    "CreateRecord",
+                    BindingFlags.InvokeMethod,
+                    null, InstallerObject,
+                    new object[] { columnList.Count });
                 try
                 {
                     foreach(MSMTableRowColumnData columnData in row.columns)
@@ -2838,7 +2838,7 @@ namespace NAnt.Contrib.Tasks {
                                 break;
                             }
                         }
-                    }                
+                    }
                     tableView.Modify(MsiViewModify.msiViewModifyMerge, newRec);
                 }
                 catch (Exception)
@@ -2847,8 +2847,8 @@ namespace NAnt.Contrib.Tasks {
                 }
             }
             tableView.Close();
-            tableView = null;                    
-            
+            tableView = null;
+
             if (Verbose)
             {
                 Log(Level.Info, "Done");
@@ -2858,9 +2858,9 @@ namespace NAnt.Contrib.Tasks {
 
 
         /// <summary>
-        /// Sets the sequence number of files to match their 
-        /// storage order in the cabinet file, after some 
-        /// files have had their filenames changed to go in 
+        /// Sets the sequence number of files to match their
+        /// storage order in the cabinet file, after some
+        /// files have had their filenames changed to go in
         /// their own component.
         /// </summary>
         /// <param name="Database">The MSM database.</param>
@@ -2878,7 +2878,7 @@ namespace NAnt.Contrib.Tasks {
             foreach (string curDirFileName in curFileNames)
             {
                 View curFileView = Database.OpenView(
-                    "SELECT * FROM `File` WHERE `File`='" + 
+                    "SELECT * FROM `File` WHERE `File`='" +
                     Path.GetFileName(curDirFileName) + "'");
 
                 if (curFileView != null)
@@ -2895,8 +2895,8 @@ namespace NAnt.Contrib.Tasks {
                     }
                     else
                     {
-                        Log(Level.Info, LogPrefix + "File " + 
-                            Path.GetFileName(curDirFileName) + 
+                        Log(Level.Info, LogPrefix + "File " +
+                            Path.GetFileName(curDirFileName) +
                             " not found during reordering.");
 
                         curFileView.Close();
@@ -2932,7 +2932,7 @@ namespace NAnt.Contrib.Tasks {
             string tempDir = Path.Combine(msm.sourcedir, "Temp");
             if (tempDir.StartsWith(Project.BaseDirectory)) {
                 tempDir = tempDir.Substring(Project.BaseDirectory.Length+1);
-            }           
+            }
 
             processInfo.Arguments = "-p -r -P " + tempDir + @"\ N " + cabFile + " " + tempDir + @"\*";
 
@@ -2968,7 +2968,7 @@ namespace NAnt.Contrib.Tasks {
             if (process.ExitCode != 0)
             {
                 Log(Level.Error, "");
-                Log(Level.Error, "Error creating cab file, application returned error " + 
+                Log(Level.Error, "Error creating cab file, application returned error " +
                     process.ExitCode + ".");
                 return false;
             }
@@ -2983,7 +2983,7 @@ namespace NAnt.Contrib.Tasks {
             processInfo = null;
 
             Log(Level.Info, "Done.");
-            
+
             if (File.Exists(cabFile))
             {
                 View cabView = Database.OpenView("SELECT * FROM `_Streams`");
@@ -2993,9 +2993,9 @@ namespace NAnt.Contrib.Tasks {
                 }
 
                 Record cabRecord = (Record)InstallerType.InvokeMember(
-                    "CreateRecord", 
-                    BindingFlags.InvokeMethod, 
-                    null, InstallerObject, 
+                    "CreateRecord",
+                    BindingFlags.InvokeMethod,
+                    null, InstallerObject,
                     new object[] { 2 });
 
                 cabRecord.set_StringData(1, Path.GetFileName(cabFile));
@@ -3008,8 +3008,8 @@ namespace NAnt.Contrib.Tasks {
             }
             else
             {
-                Log(Level.Error, LogPrefix + 
-                    "ERROR: Unable to open Cabinet file:\n\n\t" + 
+                Log(Level.Error, LogPrefix +
+                    "ERROR: Unable to open Cabinet file:\n\n\t" +
                     cabFile + "\n\n");
                 return false;
             }
@@ -3017,7 +3017,7 @@ namespace NAnt.Contrib.Tasks {
         }
 
         [DllImport("kernel32.dll", CharSet=CharSet.Auto)]
-        private static extern int GetShortPathName(string LongPath, StringBuilder ShortPath, int BufferSize); 
+        private static extern int GetShortPathName(string LongPath, StringBuilder ShortPath, int BufferSize);
 
         /// <summary>
         /// Retrieves a DOS 8.3 filename for a file.
@@ -3050,7 +3050,7 @@ namespace NAnt.Contrib.Tasks {
 
             StringBuilder shortPath = new StringBuilder(255);
             int result = GetShortPathName(LongPath, shortPath, shortPath.Capacity);
-            
+
             Uri shortPathUri = null;
             try
             {
@@ -3058,7 +3058,7 @@ namespace NAnt.Contrib.Tasks {
             }
             catch (Exception)
             {
-                Log(Level.Error, LogPrefix + "ERROR: Directory " + 
+                Log(Level.Error, LogPrefix + "ERROR: Directory " +
                     LongPath + " not found.");
                 return "MsiTaskPathNotFound";
             }
@@ -3089,7 +3089,7 @@ namespace NAnt.Contrib.Tasks {
 
             StringBuilder shortPath = new StringBuilder(255);
             int result = GetShortPathName(LongPath, shortPath, shortPath.Capacity);
-            
+
             Uri shortPathUri = null;
             try
             {
@@ -3097,17 +3097,17 @@ namespace NAnt.Contrib.Tasks {
             }
             catch (Exception)
             {
-                Log(Level.Error, LogPrefix + "ERROR: Directory " + 
+                Log(Level.Error, LogPrefix + "ERROR: Directory " +
                     LongPath + " not found.");
                 return "MsiTaskPathNotFound";
             }
 
             return shortPath.ToString();
         }
-        
+
         /// <summary>
-        /// Retrieves the relative path of a file based on 
-        /// the component it belongs to and its entry in 
+        /// Retrieves the relative path of a file based on
+        /// the component it belongs to and its entry in
         /// the MSM directory table.
         /// </summary>
         /// <param name="Database">The MSM database.</param>
@@ -3119,13 +3119,13 @@ namespace NAnt.Contrib.Tasks {
         /// <param name="Path">The Path to the Folder from previous calls.</param>
         /// <param name="DirectoryView">The MSM database view.</param>
         private void GetRelativePath(
-            Database Database, 
-            Type InstallerType, 
+            Database Database,
+            Type InstallerType,
             Object InstallerObject,
-            string Name, 
-            string Parent, 
-            string Default, 
-            StringBuilder Path, 
+            string Name,
+            string Parent,
+            string Default,
+            StringBuilder Path,
             View DirectoryView)
         {
             if (Name == "TARGETDIR")
@@ -3203,8 +3203,8 @@ namespace NAnt.Contrib.Tasks {
 
                                 // Insert the Directory that is a Property
                                 Record recDir = (Record)InstallerType.InvokeMember(
-                                    "CreateRecord", 
-                                    BindingFlags.InvokeMethod, 
+                                    "CreateRecord",
+                                    BindingFlags.InvokeMethod,
                                     null, InstallerObject, new object[] { 3 });
 
                                 recDir.set_StringData(1, Parent);
@@ -3218,7 +3218,7 @@ namespace NAnt.Contrib.Tasks {
                                 break;
                             }
                         }
-                    }   
+                    }
 
                     string newParent = null;
                     if (PathInfo is MSMRootDirectory)
@@ -3230,20 +3230,20 @@ namespace NAnt.Contrib.Tasks {
                         newParent = FindParent(Parent);
                     }
 
-                    GetRelativePath(Database, InstallerType, InstallerObject, 
-                        Parent, newParent, 
+                    GetRelativePath(Database, InstallerType, InstallerObject,
+                        Parent, newParent,
                         PathInfo.foldername, Path, DirectoryView);
                 }
             }
-    
+
         }
 
         /// <summary>
-        /// Recursively expands properties of all attributes of 
+        /// Recursively expands properties of all attributes of
         /// a nodelist and their children.
         /// </summary>
         /// <param name="Nodes">The nodes to recurse.</param>
-        void ExpandPropertiesInNodes(XmlNodeList Nodes) 
+        void ExpandPropertiesInNodes(XmlNodeList Nodes)
         {
             foreach (XmlNode node in Nodes)
             {
@@ -3252,7 +3252,7 @@ namespace NAnt.Contrib.Tasks {
                     ExpandPropertiesInNodes(node.ChildNodes);
                     if (node.Attributes != null)
                     {
-                        foreach (XmlAttribute attr in node.Attributes) 
+                        foreach (XmlAttribute attr in node.Attributes)
                         {
                             attr.Value = Properties.ExpandProperties(attr.Value, Location);
                         }
@@ -3262,7 +3262,7 @@ namespace NAnt.Contrib.Tasks {
         }
 
         /// <summary>
-        /// Converts the Byte array in a public key 
+        /// Converts the Byte array in a public key
         /// token of an assembly to a string MSM expects.
         /// </summary>
         /// <param name="ByteArray">The array of bytes.</param>
@@ -3273,7 +3273,7 @@ namespace NAnt.Contrib.Tasks {
                 return "";
             StringBuilder sb = new StringBuilder ();
             sb.Append (ByteArray[0].ToString("x2"));
-            for (int i = 1; i < ByteArray.Length; i++) 
+            for (int i = 1; i < ByteArray.Length; i++)
             {
                 sb.Append(ByteArray[i].ToString("x2"));
             }
@@ -3314,7 +3314,7 @@ namespace NAnt.Contrib.Tasks {
                         string name, docString, helpFile;
 
                         typeLib.GetDocumentation(
-                            -1, out name, out docString, 
+                            -1, out name, out docString,
                             out helpContextId, out helpFile);
 
                         IntPtr pTypeLibAttr = new IntPtr(0);
@@ -3325,9 +3325,9 @@ namespace NAnt.Contrib.Tasks {
                         string tlbCompName = (string)typeLibComponents[Path.GetFileName(tlbRecord.TypeLibFileName)];
 
                         Record recTypeLib = (Record)InstallerType.InvokeMember(
-                            "CreateRecord", 
-                            BindingFlags.InvokeMethod, 
-                            null, InstallerObject, 
+                            "CreateRecord",
+                            BindingFlags.InvokeMethod,
+                            null, InstallerObject,
                             new object[] { 8 });
 
                         recTypeLib.set_StringData(1, "{"+typeLibAttr.guid.ToString().ToUpper()+"}");
@@ -3337,7 +3337,7 @@ namespace NAnt.Contrib.Tasks {
                         recTypeLib.set_StringData(5, docString == null ? name : docString);
                         recTypeLib.set_StringData(7, tlbRecord.FeatureName);
                         recTypeLib.set_IntegerData(8, 0);
-                        
+
                         typeLib.ReleaseTLibAttr(pTypeLibAttr);
 
                         typeLibView.Modify(MsiViewModify.msiViewModifyMerge, recTypeLib);
@@ -3345,7 +3345,7 @@ namespace NAnt.Contrib.Tasks {
                         // If a .NET type library wrapper for an assembly
                         if (tlbRecord.AssemblyName != null)
                         {
-                            // Get all the types defined in the typelibrary 
+                            // Get all the types defined in the typelibrary
                             // that are not marked "noncreatable"
 
                             int typeCount = typeLib.GetTypeInfoCount();
@@ -3361,7 +3361,7 @@ namespace NAnt.Contrib.Tasks {
 
                                     TYPEATTR typeAttr = (TYPEATTR)Marshal.PtrToStructure(pTypeAttr, typeof(TYPEATTR));
 
-                                    if (typeAttr.typekind == TYPEKIND.TKIND_COCLASS 
+                                    if (typeAttr.typekind == TYPEKIND.TKIND_COCLASS
                                         && typeAttr.wTypeFlags == TYPEFLAGS.TYPEFLAG_FCANCREATE)
                                     {
                                         string clsid = "{" + typeAttr.guid.ToString().ToUpper() + "}";
@@ -3381,53 +3381,53 @@ namespace NAnt.Contrib.Tasks {
 
                                                     // Insert the Class
                                                     Record recRegTlbRec = (Record)InstallerType.InvokeMember(
-                                                        "CreateRecord", 
-                                                        BindingFlags.InvokeMethod, 
-                                                        null, InstallerObject, 
+                                                        "CreateRecord",
+                                                        BindingFlags.InvokeMethod,
+                                                        null, InstallerObject,
                                                         new object[] { 6 });
 
-                                                    recRegTlbRec.set_StringData(1, 
+                                                    recRegTlbRec.set_StringData(1,
                                                         "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
                                                     recRegTlbRec.set_IntegerData(2, 0);
                                                     recRegTlbRec.set_StringData(3,
-                                                        @"CLSID\" + clsid + 
+                                                        @"CLSID\" + clsid +
                                                         @"\InprocServer32");
                                                     recRegTlbRec.set_StringData(4, "Class");
                                                     recRegTlbRec.set_StringData(5, className);
                                                     recRegTlbRec.set_StringData(6, tlbRecord.AssemblyComponent);
                                                     RegistryView.Modify(MsiViewModify.msiViewModifyMerge, recRegTlbRec);
 
-                                                    recRegTlbRec.set_StringData(1, 
+                                                    recRegTlbRec.set_StringData(1,
                                                         "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
                                                     recRegTlbRec.set_StringData(4, "ThreadingModel");
                                                     recRegTlbRec.set_StringData(5, "Both");
                                                     RegistryView.Modify(MsiViewModify.msiViewModifyMerge, recRegTlbRec);
 
-                                                    recRegTlbRec.set_StringData(1, 
+                                                    recRegTlbRec.set_StringData(1,
                                                         "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
                                                     recRegTlbRec.set_StringData(4, "RuntimeVersion");
                                                     recRegTlbRec.set_StringData(5, System.Environment.Version.ToString(3));
                                                     RegistryView.Modify(MsiViewModify.msiViewModifyMerge, recRegTlbRec);
 
-                                                    recRegTlbRec.set_StringData(1, 
+                                                    recRegTlbRec.set_StringData(1,
                                                         "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
                                                     recRegTlbRec.set_StringData(4, "Assembly");
                                                     recRegTlbRec.set_StringData(5, tlbRecord.AssemblyName.FullName);
                                                     RegistryView.Modify(MsiViewModify.msiViewModifyMerge, recRegTlbRec);
 
-                                                    recRegTlbRec.set_StringData(1, 
+                                                    recRegTlbRec.set_StringData(1,
                                                         "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
                                                     recRegTlbRec.set_StringData(3,
-                                                        @"CLSID\" + clsid + 
+                                                        @"CLSID\" + clsid +
                                                         @"\Implemented Categories");
                                                     recRegTlbRec.set_StringData(4, "+");
                                                     recRegTlbRec.set_StringData(5, null);
                                                     RegistryView.Modify(MsiViewModify.msiViewModifyMerge, recRegTlbRec);
 
-                                                    recRegTlbRec.set_StringData(1, 
+                                                    recRegTlbRec.set_StringData(1,
                                                         "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
                                                     recRegTlbRec.set_StringData(3,
-                                                        @"CLSID\" + clsid + 
+                                                        @"CLSID\" + clsid +
                                                         @"\Implemented Categories\{62C8FE65-4EBB-45e7-B440-6E39B2CDBF29}");
                                                     recRegTlbRec.set_StringData(4, "+");
                                                     recRegTlbRec.set_StringData(5, null);
@@ -3443,8 +3443,8 @@ namespace NAnt.Contrib.Tasks {
                                         string typeName, typeDocString, typeHelpFile;
                                         int typeHelpContextId;
 
-                                        typeInfo.GetDocumentation(-1, out typeName, 
-                                            out typeDocString, out typeHelpContextId, 
+                                        typeInfo.GetDocumentation(-1, out typeName,
+                                            out typeDocString, out typeHelpContextId,
                                             out typeHelpFile);
 
                                         if (typeInfo is UCOMITypeInfo2)
@@ -3462,14 +3462,14 @@ namespace NAnt.Contrib.Tasks {
 
                                                     // Insert the Interface
                                                     Record recRegTlbRec = (Record)InstallerType.InvokeMember(
-                                                        "CreateRecord", 
-                                                        BindingFlags.InvokeMethod, 
-                                                        null, InstallerObject, 
+                                                        "CreateRecord",
+                                                        BindingFlags.InvokeMethod,
+                                                        null, InstallerObject,
                                                         new object[] { 6 });
 
                                                     string typeLibComponent = (string)typeLibComponents[Path.GetFileName(tlbRecord.TypeLibFileName)];
 
-                                                    recRegTlbRec.set_StringData(1, 
+                                                    recRegTlbRec.set_StringData(1,
                                                         "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
                                                     recRegTlbRec.set_IntegerData(2, 0);
                                                     recRegTlbRec.set_StringData(3,
@@ -3479,7 +3479,7 @@ namespace NAnt.Contrib.Tasks {
                                                     recRegTlbRec.set_StringData(6, typeLibComponent);
                                                     RegistryView.Modify(MsiViewModify.msiViewModifyMerge, recRegTlbRec);
 
-                                                    recRegTlbRec.set_StringData(1, 
+                                                    recRegTlbRec.set_StringData(1,
                                                         "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
                                                     recRegTlbRec.set_StringData(3,
                                                         @"Interface\" + iid + @"\TypeLib");
@@ -3487,13 +3487,13 @@ namespace NAnt.Contrib.Tasks {
                                                     recRegTlbRec.set_StringData(5, "1.0");
                                                     RegistryView.Modify(MsiViewModify.msiViewModifyMerge, recRegTlbRec);
 
-                                                    recRegTlbRec.set_StringData(1, 
+                                                    recRegTlbRec.set_StringData(1,
                                                         "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
                                                     recRegTlbRec.set_StringData(4, null);
                                                     recRegTlbRec.set_StringData(5, "{"+typeLibAttr.guid.ToString().ToUpper()+"}");
                                                     RegistryView.Modify(MsiViewModify.msiViewModifyMerge, recRegTlbRec);
 
-                                                    recRegTlbRec.set_StringData(1, 
+                                                    recRegTlbRec.set_StringData(1,
                                                         "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
                                                     recRegTlbRec.set_StringData(3,
                                                         @"Interface\" + iid + @"\ProxyStubClsid32");
@@ -3501,7 +3501,7 @@ namespace NAnt.Contrib.Tasks {
                                                     recRegTlbRec.set_StringData(5, "{00020424-0000-0000-C000-000000000046}");
                                                     RegistryView.Modify(MsiViewModify.msiViewModifyMerge, recRegTlbRec);
 
-                                                    recRegTlbRec.set_StringData(1, 
+                                                    recRegTlbRec.set_StringData(1,
                                                         "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
                                                     recRegTlbRec.set_StringData(3,
                                                         @"Interface\" + iid + @"\ProxyStubClsid");
@@ -3526,8 +3526,8 @@ namespace NAnt.Contrib.Tasks {
         }
 
         /// <summary>
-        /// Loads records for the Binary table.  This table stores items 
-        /// such as bitmaps, animations, and icons. The binary table is 
+        /// Loads records for the Binary table.  This table stores items
+        /// such as bitmaps, animations, and icons. The binary table is
         /// also used to store data for custom actions.
         /// </summary>
         /// <param name="Database">The MSM database.</param>
@@ -3546,7 +3546,7 @@ namespace NAnt.Contrib.Tasks {
                 {
                     Log(Level.Info, LogPrefix + "Adding Binary Data:");
                 }
-                
+
                 // Add binary data from Task definition
                 foreach (MSMBinary binary in msm.binaries)
                 {
@@ -3560,8 +3560,8 @@ namespace NAnt.Contrib.Tasks {
 
                         if (binary.name.Length > nameColSize)
                         {
-                            Log(Level.Warning, LogPrefix + 
-                                "WARNING: Binary key name longer than " + nameColSize + " characters:\n\tName: " + 
+                            Log(Level.Warning, LogPrefix +
+                                "WARNING: Binary key name longer than " + nameColSize + " characters:\n\tName: " +
                                 binary.name + "\n\tLength: " + binary.name.Length.ToString());
 
                         }
@@ -3570,9 +3570,9 @@ namespace NAnt.Contrib.Tasks {
                     {
                         // Insert the binary data
                         Record recBinary = (Record)InstallerType.InvokeMember(
-                            "CreateRecord", 
-                            BindingFlags.InvokeMethod, 
-                            null, InstallerObject, 
+                            "CreateRecord",
+                            BindingFlags.InvokeMethod,
+                            null, InstallerObject,
                             new object[] { 2 });
 
                         recBinary.set_StringData(1, binary.name);
@@ -3581,8 +3581,8 @@ namespace NAnt.Contrib.Tasks {
                     }
                     else
                     {
-                        Log(Level.Error, LogPrefix + 
-                            "ERROR: Unable to open file:\n\n\t" + 
+                        Log(Level.Error, LogPrefix +
+                            "ERROR: Unable to open file:\n\n\t" +
                             Path.Combine(Project.BaseDirectory, binary.value) + "\n\n");
 
                         binaryView.Close();
@@ -3616,7 +3616,7 @@ namespace NAnt.Contrib.Tasks {
                 {
                     Log(Level.Info, LogPrefix + "Adding Dialogs:");
                 }
-                
+
                 foreach (MSMDialog dialog in msm.dialogs)
                 {
                     if (Verbose)
@@ -3626,9 +3626,9 @@ namespace NAnt.Contrib.Tasks {
 
                     // Insert the dialog
                     Record recDialog = (Record)InstallerType.InvokeMember(
-                        "CreateRecord", 
-                        BindingFlags.InvokeMethod, 
-                        null, InstallerObject, 
+                        "CreateRecord",
+                        BindingFlags.InvokeMethod,
+                        null, InstallerObject,
                         new object[] { 10 });
 
                     recDialog.set_StringData(1, dialog.name);
@@ -3641,7 +3641,7 @@ namespace NAnt.Contrib.Tasks {
                     recDialog.set_StringData(8, dialog.firstcontrol);
                     recDialog.set_StringData(9, dialog.defaultcontrol);
                     recDialog.set_StringData(10, dialog.cancelcontrol);
-                    
+
                     dialogView.Modify(MsiViewModify.msiViewModifyMerge, recDialog);
                 }
 
@@ -3680,11 +3680,11 @@ namespace NAnt.Contrib.Tasks {
                         try
                         {
                             Record recControl = controlView.Fetch();
-                            controlView.Modify(MsiViewModify.msiViewModifyDelete, recControl);                        
+                            controlView.Modify(MsiViewModify.msiViewModifyDelete, recControl);
                         }
                         catch (Exception)
                         {
-                            Log(Level.Error, LogPrefix + 
+                            Log(Level.Error, LogPrefix +
                                 "ERROR: Control not found.\n\nSELECT * FROM `Control` WHERE `Dialog_`='" + control.dialog + "' AND `Control`='" + control.name + "' AND `Type`='" + control.type + "' AND `X`='" + control.x + "' AND `Y`='" + control.y + "' AND `Width`='" + control.width + "' AND `Height`='" + control.height + "' AND `Attributes`='" + control.attr + "'");
                             return false;
                         }
@@ -3705,9 +3705,9 @@ namespace NAnt.Contrib.Tasks {
 
                         // Insert the control
                         Record recControl = (Record)InstallerType.InvokeMember(
-                            "CreateRecord", 
-                            BindingFlags.InvokeMethod, 
-                            null, InstallerObject, 
+                            "CreateRecord",
+                            BindingFlags.InvokeMethod,
+                            null, InstallerObject,
                             new object[] { 12 });
 
                         recControl.set_StringData(1, control.dialog);
@@ -3722,7 +3722,7 @@ namespace NAnt.Contrib.Tasks {
                         recControl.set_StringData(10, control.text);
                         recControl.set_StringData(11, control.nextcontrol);
                         recControl.set_StringData(12, control.help);
-                    
+
                         controlView.Modify(MsiViewModify.msiViewModifyMerge, recControl);
 
                         controlView.Close();
@@ -3750,7 +3750,7 @@ namespace NAnt.Contrib.Tasks {
                 {
                     Log(Level.Info, LogPrefix + "Control Conditions:");
                 }
-                
+
                 foreach (MSMControlCondition controlCondition in msm.controlconditions)
                 {
                     if (controlCondition.remove)
@@ -3767,11 +3767,11 @@ namespace NAnt.Contrib.Tasks {
                         try
                         {
                             Record recControlCondition = controlConditionView.Fetch();
-                            controlConditionView.Modify(MsiViewModify.msiViewModifyDelete, recControlCondition);                        
+                            controlConditionView.Modify(MsiViewModify.msiViewModifyDelete, recControlCondition);
                         }
                         catch (Exception)
                         {
-                            Log(Level.Error, LogPrefix + 
+                            Log(Level.Error, LogPrefix +
                                 "ERROR: Control Condition not found.\n\nSELECT * FROM `ControlCondition` WHERE `Dialog_`='" + controlCondition.dialog + "' AND `Control_`='" + controlCondition.control + "' AND `Action`='" + controlCondition.action + "' AND `Condition`='" + controlCondition.condition + "'");
                             return false;
                         }
@@ -3792,22 +3792,22 @@ namespace NAnt.Contrib.Tasks {
 
                         // Insert the condition
                         Record recControlCondition = (Record)InstallerType.InvokeMember(
-                            "CreateRecord", 
-                            BindingFlags.InvokeMethod, 
-                            null, InstallerObject, 
+                            "CreateRecord",
+                            BindingFlags.InvokeMethod,
+                            null, InstallerObject,
                             new object[] { 4 });
 
                         recControlCondition.set_StringData(1, controlCondition.dialog);
                         recControlCondition.set_StringData(2, controlCondition.control);
                         recControlCondition.set_StringData(3, controlCondition.action);
                         recControlCondition.set_StringData(4, controlCondition.condition);
-                    
+
                         controlConditionView.Modify(MsiViewModify.msiViewModifyMerge, recControlCondition);
 
                         controlConditionView.Close();
                         controlConditionView = null;
                     }
-                }           
+                }
             }
             return true;
         }
@@ -3827,7 +3827,7 @@ namespace NAnt.Contrib.Tasks {
                 {
                     Log(Level.Info, LogPrefix + "Modifying Dialog Control Events:");
                 }
-                
+
                 foreach (MSMControlEvent controlEvent in msm.controlevents)
                 {
                     View controlEventView;
@@ -3851,11 +3851,11 @@ namespace NAnt.Contrib.Tasks {
                         try
                         {
                             Record recControlEvent = controlEventView.Fetch();
-                            controlEventView.Modify(MsiViewModify.msiViewModifyDelete, recControlEvent);                        
+                            controlEventView.Modify(MsiViewModify.msiViewModifyDelete, recControlEvent);
                         }
                         catch (IOException)
                         {
-                            Log(Level.Error, LogPrefix + 
+                            Log(Level.Error, LogPrefix +
                                 "ERROR: Control Event not found.\n\nSELECT * FROM `ControlEvent` WHERE `Dialog_`='" + controlEvent.dialog + "' AND `Control_`='" + controlEvent.control + "' AND `Event`='" + controlEvent.name + "' AND `Argument`='" + controlEvent.argument + "' AND `Condition`='" + controlEvent.condition + "'");
                             return false;
                         }
@@ -3873,9 +3873,9 @@ namespace NAnt.Contrib.Tasks {
                         controlEventView = Database.OpenView("SELECT * FROM `ControlEvent`");
                         // Insert the condition
                         Record recControlEvent = (Record)InstallerType.InvokeMember(
-                            "CreateRecord", 
-                            BindingFlags.InvokeMethod, 
-                            null, InstallerObject, 
+                            "CreateRecord",
+                            BindingFlags.InvokeMethod,
+                            null, InstallerObject,
                             new object[] { 6 });
 
 
@@ -3885,7 +3885,7 @@ namespace NAnt.Contrib.Tasks {
                         recControlEvent.set_StringData(4, controlEvent.argument);
                         recControlEvent.set_StringData(5, controlEvent.condition);
                         recControlEvent.set_IntegerData(6, controlEvent.order);
-                    
+
                         controlEventView.Modify(MsiViewModify.msiViewModifyMerge, recControlEvent);
                         controlEventView.Close();
                         controlEventView = null;
@@ -3924,16 +3924,16 @@ namespace NAnt.Contrib.Tasks {
 
                     // Insert the record into the table
                     Record recCustomAction = (Record)InstallerType.InvokeMember(
-                        "CreateRecord", 
-                        BindingFlags.InvokeMethod, 
-                        null, InstallerObject, 
+                        "CreateRecord",
+                        BindingFlags.InvokeMethod,
+                        null, InstallerObject,
                         new object[] { 4 });
 
                     recCustomAction.set_StringData(1, customAction.action);
                     recCustomAction.set_IntegerData(2, customAction.type);
                     recCustomAction.set_StringData(3, customAction.source);
                     recCustomAction.set_StringData(4, customAction.target);
-                    
+
                     customActionView.Modify(MsiViewModify.msiViewModifyMerge, recCustomAction);
                 }
                 customActionView.Close();
@@ -3977,9 +3977,9 @@ namespace NAnt.Contrib.Tasks {
 
                     // Insert the record to the respective table
                     Record recSequence = (Record)InstallerType.InvokeMember(
-                        "CreateRecord", 
-                        BindingFlags.InvokeMethod, 
-                        null, InstallerObject, 
+                        "CreateRecord",
+                        BindingFlags.InvokeMethod,
+                        null, InstallerObject,
                         new object[] { 3 });
 
                     recSequence.set_StringData(1, sequence.action);
@@ -4050,9 +4050,9 @@ namespace NAnt.Contrib.Tasks {
                     {
                         // Insert the record to the respective table
                         Record recAction = (Record)InstallerType.InvokeMember(
-                            "CreateRecord", 
-                            BindingFlags.InvokeMethod, 
-                            null, InstallerObject, 
+                            "CreateRecord",
+                            BindingFlags.InvokeMethod,
+                            null, InstallerObject,
                             new object[] { 3 });
 
                         recAction.set_StringData(1, action.name);
@@ -4074,7 +4074,7 @@ namespace NAnt.Contrib.Tasks {
             }
             return true;
         }
-        
+
         /// <summary>
         /// Loads records for the _AppMappings table.
         /// </summary>
@@ -4102,16 +4102,16 @@ namespace NAnt.Contrib.Tasks {
 
                     // Insert the record into the table
                     Record recAppMap = (Record)InstallerType.InvokeMember(
-                        "CreateRecord", 
-                        BindingFlags.InvokeMethod, 
-                        null, InstallerObject, 
+                        "CreateRecord",
+                        BindingFlags.InvokeMethod,
+                        null, InstallerObject,
                         new object[] { 4 });
 
                     recAppMap.set_StringData(1, appmap.directory);
                     recAppMap.set_StringData(2, appmap.extension);
                     recAppMap.set_StringData(3, appmap.exepath);
                     recAppMap.set_StringData(4, appmap.verbs);
-                    
+
                     appmapView.Modify(MsiViewModify.msiViewModifyMerge, recAppMap);
 
                 }
@@ -4148,14 +4148,14 @@ namespace NAnt.Contrib.Tasks {
 
                     // Insert the record into the table
                     Record recURLProp = (Record)InstallerType.InvokeMember(
-                        "CreateRecord", 
-                        BindingFlags.InvokeMethod, 
-                        null, InstallerObject, 
+                        "CreateRecord",
+                        BindingFlags.InvokeMethod,
+                        null, InstallerObject,
                         new object[] { 2 });
 
                     recURLProp.set_StringData(1, urlprop.name);
                     recURLProp.set_StringData(2, urlprop.property);
-                    
+
                     urlpropView.Modify(MsiViewModify.msiViewModifyMerge, recURLProp);
 
                 }
@@ -4192,9 +4192,9 @@ namespace NAnt.Contrib.Tasks {
 
                     // Insert the record into the table
                     Record recVDirProp = (Record)InstallerType.InvokeMember(
-                        "CreateRecord", 
-                        BindingFlags.InvokeMethod, 
-                        null, InstallerObject, 
+                        "CreateRecord",
+                        BindingFlags.InvokeMethod,
+                        null, InstallerObject,
                         new object[] { 3 });
 
                     recVDirProp.set_StringData(1, vdirprop.name);
@@ -4236,9 +4236,9 @@ namespace NAnt.Contrib.Tasks {
 
                     // Insert the record into the table
                     Record recAppRootProp = (Record)InstallerType.InvokeMember(
-                        "CreateRecord", 
-                        BindingFlags.InvokeMethod, 
-                        null, InstallerObject, 
+                        "CreateRecord",
+                        BindingFlags.InvokeMethod,
+                        null, InstallerObject,
                         new object[] { 3 });
 
                     recAppRootProp.set_StringData(1, appRoot.component);
@@ -4282,15 +4282,15 @@ namespace NAnt.Contrib.Tasks {
 
                     // Insert the record into the table
                     Record recIISProp = (Record)InstallerType.InvokeMember(
-                        "CreateRecord", 
-                        BindingFlags.InvokeMethod, 
-                        null, InstallerObject, 
+                        "CreateRecord",
+                        BindingFlags.InvokeMethod,
+                        null, InstallerObject,
                         new object[] { 3 });
 
                     recIISProp.set_StringData(1, iisprop.directory);
                     recIISProp.set_IntegerData(2, iisprop.attr);
                     recIISProp.set_StringData(3, iisprop.defaultdoc);
-                    
+
                     iispropView.Modify(MsiViewModify.msiViewModifyMerge, recIISProp);
                 }
                 iispropView.Close();
@@ -4312,7 +4312,7 @@ namespace NAnt.Contrib.Tasks {
             if (Verbose)
             {
                 Log(Level.Info, LogPrefix + "Dropping unused tables:");
-            }            
+            }
             // Go through each table listed in _Tables
             View tableView = Database.OpenView("SELECT * FROM `_Tables`");
 
@@ -4320,7 +4320,7 @@ namespace NAnt.Contrib.Tasks {
             Record tableRecord = tableView.Fetch();
 
             while (tableRecord != null)
-            {                
+            {
                 string tableName = tableRecord.get_StringData(1);
 
                 if (VerifyTableEmpty(Database, tableName))
@@ -4332,7 +4332,7 @@ namespace NAnt.Contrib.Tasks {
                         tempView.Execute(null);
                         tempView.Close();
                         tempView = null;
-                        
+
                         // Delete entries in _Validation table
                         tempView = Database.OpenView("DELETE FROM `_Validation` WHERE `Table` = '" + tableName + "'");
                         tempView.Execute(null);
@@ -4348,7 +4348,7 @@ namespace NAnt.Contrib.Tasks {
                     {
                         return false;
                     }
-                
+
                 }
                 tableRecord = tableView.Fetch();
             }
@@ -4414,9 +4414,9 @@ namespace NAnt.Contrib.Tasks {
         }
 
         /// <summary>
-        /// Enumerates the registry to see if an assembly has been registered 
-        /// for COM interop, and if so adds these registry keys to the Registry 
-        /// table, ProgIds to the ProgId table, classes to the Classes table, 
+        /// Enumerates the registry to see if an assembly has been registered
+        /// for COM interop, and if so adds these registry keys to the Registry
+        /// table, ProgIds to the ProgId table, classes to the Classes table,
         /// and a TypeLib to the TypeLib table.
         /// </summary>
         /// <param name="FileName">The Assembly filename.</param>
@@ -4428,7 +4428,7 @@ namespace NAnt.Contrib.Tasks {
         /// <param name="ClassView">View containing the Class table.</param>
         /// <param name="ProgIdView">View containing the ProgId table.</param>
         /// <returns>True if successful.</returns>
-        private bool CheckAssemblyForCOMInterop(string FileName, Assembly FileAssembly, Type InstallerType, 
+        private bool CheckAssemblyForCOMInterop(string FileName, Assembly FileAssembly, Type InstallerType,
             object InstallerObject, string ComponentName, string AssemblyComponentName, View ClassView, View ProgIdView)
         {
             AssemblyName asmName = FileAssembly.GetName();
@@ -4461,13 +4461,13 @@ namespace NAnt.Contrib.Tasks {
                                     Log(Level.Info, LogPrefix + "Configuring " + typeLibName + " for COM Interop...");
 
                                     Record recTypeLib = (Record)InstallerType.InvokeMember(
-                                        "CreateRecord", 
-                                        BindingFlags.InvokeMethod, 
-                                        null, InstallerObject, 
+                                        "CreateRecord",
+                                        BindingFlags.InvokeMethod,
+                                        null, InstallerObject,
                                         new object[] { 8 });
 
                                     TypeLibRecord tlbRecord = new TypeLibRecord(
-                                        typeLib, typeLibFileName, 
+                                        typeLib, typeLibFileName,
                                         asmName, featureName, AssemblyComponentName);
 
                                     typeLibRecords.Add(tlbRecord);
@@ -4492,7 +4492,7 @@ namespace NAnt.Contrib.Tasks {
 
             // Register CLSID(s)
             RegistryKey clsidsKey = Registry.ClassesRoot.OpenSubKey("CLSID", false);
-            
+
             string[] clsids = clsidsKey.GetSubKeyNames();
             foreach (string clsid in clsids)
             {
@@ -4517,9 +4517,9 @@ namespace NAnt.Contrib.Tasks {
                                     if (progId != null)
                                     {
                                         Record recProgId = (Record)InstallerType.InvokeMember(
-                                            "CreateRecord", 
-                                            BindingFlags.InvokeMethod, 
-                                            null, InstallerObject, 
+                                            "CreateRecord",
+                                            BindingFlags.InvokeMethod,
+                                            null, InstallerObject,
                                             new object[] { 6 });
 
                                         recProgId.set_StringData(1, progId);
@@ -4529,9 +4529,9 @@ namespace NAnt.Contrib.Tasks {
                                         ProgIdView.Modify(MsiViewModify.msiViewModifyMerge, recProgId);
 
                                         Record recClass = (Record)InstallerType.InvokeMember(
-                                            "CreateRecord", 
-                                            BindingFlags.InvokeMethod, 
-                                            null, InstallerObject, 
+                                            "CreateRecord",
+                                            BindingFlags.InvokeMethod,
+                                            null, InstallerObject,
                                             new object[] { 13 });
 
                                         recClass.set_StringData(1, clsid);
@@ -4575,7 +4575,7 @@ namespace NAnt.Contrib.Tasks {
 
         private string FindParent(string DirectoryName, MSMDirectory directory)
         {
-            if (DirectoryName == directory.name && 
+            if (DirectoryName == directory.name &&
                 directory is MSMRootDirectory)
             {
                 return ((MSMRootDirectory)directory).root;

@@ -162,7 +162,7 @@ namespace NAnt.Contrib.Tasks {
                 }
                 args += " /nologo";
 
-                args += " " + assemblyName;
+                args += " \"" + assemblyName +"\"";
                 return args;
             }
         }
