@@ -134,7 +134,7 @@ namespace NAnt.Contrib.Tasks {
         /// File where the sql statements are defined.
         /// </summary>
         /// <remarks>
-        /// You cannot specify both a source and an inline set of statements
+        /// You cannot specify both a source and an inline set of statements.
         /// </remarks>
         [TaskAttribute("source")]
         public string Source {
@@ -256,8 +256,9 @@ namespace NAnt.Contrib.Tasks {
         ///<param name="taskNode">XML node used to define this task instance.</param>
         protected override void InitializeTask(System.Xml.XmlNode taskNode) {
             _embeddedSqlStatements = ((XmlElement) taskNode).InnerText;
-            if (StringUtils.IsNullOrEmpty(_embeddedSqlStatements)) {
-                throw new BuildException("No source file or statements have been specified.", Location);
+            if (Source == null && StringUtils.IsNullOrEmpty(_embeddedSqlStatements)) {
+                throw new BuildException("No source file or statements have been specified.", 
+                    Location);
             }
         }
 
