@@ -259,6 +259,7 @@ namespace NAnt.Contrib.Tasks {
                                     references.Includes.Add(tlbName);
                                 }
                                 else {
+                                    System.Globalization.NumberFormatInfo nfi = new System.Globalization.CultureInfo( "en-US", false ).NumberFormat;
                                     //the tlb filename embedded in the VBP file is just
                                     //a hint about where to look for it. If the file isn't
                                     //at that location, the typelib ID is used to lookup
@@ -267,16 +268,15 @@ namespace NAnt.Contrib.Tasks {
                                     // # Added to properly cast the parts of the version #
                                     // Ensure that we use the correct cast option
                                     string temp = match.Groups["majorver"].Value;
-                                    ushort majorVer = (-1 < temp.IndexOf(".")) ? (ushort)double.Parse(temp) : ushort.Parse(temp);
+                                    ushort majorVer = (-1 < temp.IndexOf(".")) ? (ushort)double.Parse(temp, nfi) : ushort.Parse(temp);  
                                     
                                     temp = match.Groups["minorver"].Value;
-                                    ushort minorVer = (-1 < temp.IndexOf(".")) ? (ushort)double.Parse(temp) : ushort.Parse(temp);
-
+                                    ushort minorVer = (-1 < temp.IndexOf(".")) ? (ushort)double.Parse(temp, nfi) : ushort.Parse(temp);
                                     temp = match.Groups["lcid"].Value;
                                     uint lcid = 0;
                                     
                                     if (0 < temp.Length) {
-                                        lcid = (-1 < temp.IndexOf(".")) ? (uint)double.Parse(temp) : uint.Parse(temp);
+                                        lcid = (-1 < temp.IndexOf(".")) ? (uint)double.Parse(temp, nfi) : uint.Parse(temp);
                                     }
                                     
                                     string tlbGuid = match.Groups["tlbguid"].Value;
