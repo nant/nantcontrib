@@ -451,6 +451,10 @@ namespace NAnt.Contrib.Tasks {
                         }
                     }
                 
+                    // holds a value indicating whether an empty separator line
+                    // should be output
+                    bool sepLine = false;
+
                     // output results
                     while (results.Read()) {
                         bool first = true;
@@ -465,9 +469,14 @@ namespace NAnt.Contrib.Tasks {
                             line.Append(results[i].ToString());
                             line.Append(QuoteChar);
                         }
+                        // output result
                         writer.WriteLine(line.ToString());
+                        // determine whether separator line should be output
+                        sepLine = line.Length > 0;
                     }
-                    writer.WriteLine();
+                    if (sepLine) {
+                        writer.WriteLine();
+                    }
                 } while (results.NextResult());
             } finally {
                 results.Close();
