@@ -261,12 +261,48 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///            <term>True</term>
         ///        </item>
         ///    </list>
-        ///    <h3>Nested Elements:</h3>
-        ///    <h4>&lt;modules&gt;</h4>
-        ///        <ul>
-        ///            Specifies the merge module(s) to include with the specified feature.
-        ///        </ul>
-        ///    <h4>&lt;/modules&gt;</h4>
+        /// <h3>Nested Elements:</h3>
+        /// <h4>&lt;modules&gt;</h4>
+        ///   <ul>
+        ///     Specifies the merge module(s) to include with the specified feature.
+        ///   </ul>
+        /// <h4>&lt;/modules&gt;</h4>
+        /// <h4>&lt;configurationitems&gt;</h4>
+        ///   <ul>
+        ///     <h4>&lt;configurationitem&gt;</h4>
+        ///       <ul>
+        ///         Specifies the value for a configurable item
+        ///         <h3>Parameters</h3>
+        ///         <list type="table">
+        ///             <listheader>
+        ///                 <term>Attribute</term>
+        ///                 <term>Type</term>
+        ///                 <term>Description</term>
+        ///                 <term>Required</term>
+        ///             </listheader>
+        ///             <item>
+        ///                 <term>module</term>
+        ///                 <term>string</term>
+        ///                 <term>Merge module filename to limit the configuration item to.  If this is not set, the configuration item will be applied to all merge modules in the fileset.</term>
+        ///                 <term>True</term>
+        ///             </item>
+        ///             <item>
+        ///                 <term>name</term>
+        ///                 <term>string</term>
+        ///                 <term>Name of item for which data is to be set</term>
+        ///                 <term>True</term>
+        ///             </item>
+        ///             <item>
+        ///                 <term>value</term>
+        ///                 <term>string</term>
+        ///                 <term>Value of the configurable item</term>
+        ///                 <term>True</term>
+        ///             </item>
+        ///         </list>
+        ///     </ul>
+        ///     <h4>&lt;/configurationitem&gt;</h4>
+        ///   </ul>
+        /// <h4>&lt;/configurationitems&gt;</h4>
         /// <h3>Examples</h3>
         /// <example>
         ///     <para>Add the NAnt merge module to the install.</para>
@@ -277,6 +313,22 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///             &lt;includes name="${nant.dir}\Install\NAnt.msm" /&gt;
         ///         &lt;/modules&gt;
         ///     &lt;/merge&gt;
+        /// &lt;/mergemodules&gt;
+        ///     </code>
+        /// </example>
+        /// <example>
+        ///     <para>Add a Visual Studio .wid package (merge module) and specify some configurable items.</para>
+        ///     <code>
+        /// &lt;mergemodules&gt;
+        ///   &lt;merge feature="F__DefaultFeature"&gt;
+        ///     &lt;modules&gt;
+        ///       &lt;includes name="VsdReadmeDlg.wid" /&gt;
+        ///     &lt;/modules&gt;
+        ///     &lt;configurationitems&gt;
+        ///       &lt;configurationitem name="BannerBitmap" value="CONFIGURED_BANNERBITMAP" /&gt;
+        ///       &lt;configurationitem module="VsdReadmeDlg.wid" name="ReadmeText" value="CONFIGURED_READMETEXT" /&gt;
+        ///     &lt;/configurationitems&gt;
+        ///   &lt;/merge&gt;
         /// &lt;/mergemodules&gt;
         ///     </code>
         /// </example>
