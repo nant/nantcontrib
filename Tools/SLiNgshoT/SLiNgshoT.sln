@@ -1,0 +1,27 @@
+Microsoft Visual Studio Solution File, Format Version 7.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SLiNgshoT", "SLiNgshoT\SLiNgshoT.csproj", "{7B7D512B-FDF9-4F39-9FA2-6986D76F6C13}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SLiNgshoT.Core", "SLiNgshoT.Core\SLiNgshoT.Core.csproj", "{3F533CCA-9C8F-4D84-8C1A-1F6D89CB5912}"
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		ConfigName.0 = Debug
+		ConfigName.1 = Release
+	EndGlobalSection
+	GlobalSection(ProjectDependencies) = postSolution
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{7B7D512B-FDF9-4F39-9FA2-6986D76F6C13}.Debug.ActiveCfg = Debug|.NET
+		{7B7D512B-FDF9-4F39-9FA2-6986D76F6C13}.Debug.Build.0 = Debug|.NET
+		{7B7D512B-FDF9-4F39-9FA2-6986D76F6C13}.Release.ActiveCfg = Release|.NET
+		{7B7D512B-FDF9-4F39-9FA2-6986D76F6C13}.Release.Build.0 = Release|.NET
+		{3F533CCA-9C8F-4D84-8C1A-1F6D89CB5912}.Debug.ActiveCfg = Debug|.NET
+		{3F533CCA-9C8F-4D84-8C1A-1F6D89CB5912}.Debug.Build.0 = Debug|.NET
+		{3F533CCA-9C8F-4D84-8C1A-1F6D89CB5912}.Release.ActiveCfg = Release|.NET
+		{3F533CCA-9C8F-4D84-8C1A-1F6D89CB5912}.Release.Build.0 = Release|.NET
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

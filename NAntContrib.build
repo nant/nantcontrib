@@ -83,6 +83,7 @@
                 <includes name="${nant-bin.dir}\NAnt.Core.dll"/>
                 <includes name="${nant-bin.dir}\NUnitCore.dll"/>
                 <includes name="bin\CollectionGen.dll"/>
+                <includes name="bin\SourceSafe.Interop.dll"/>
             </references>
             <resources>
                 <includes name="${src.dir}/xsl/*.*"/>
