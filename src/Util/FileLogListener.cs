@@ -340,7 +340,8 @@ namespace NAnt.Contrib.Util {
         public void Start() {
             _stopped = false;
             if (OutputWriter == null) {
-                OutputWriter = new StreamWriter(File.OpenWrite(Name));
+                OutputWriter = new StreamWriter(new FileStream(Name, 
+                    FileMode.Create, FileAccess.Write, FileShare.Read));
             }
             ((StreamWriter) OutputWriter).AutoFlush = AutoFlush;
         }
