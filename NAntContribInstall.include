@@ -20,6 +20,7 @@
         <property name="nant.schema.dir" value="${nant.dir}/schema/" />
         <property name="nant.src.dir" value="${nant.dir}/src/" />
         <property name="nant.tests.dir" value="${nant.dir}/tests/" />
+        <property name="nant.web.dir" value="${nant.dir}/web/" />
         
         <!-- NAnt specific properties -->
         <property name="nant.keyfile" value="NAnt.build" />
@@ -30,6 +31,8 @@
         <property name="nant.doc.help.keyfile" value="index.html" />
         <property name="nant.doc.sdk.dir" value="${nant.doc.dir}/sdk/" />
         <property name="nant.doc.sdk.keyfile" value="NAnt-SDK.chm" />
+
+		<property name="nant.web.keyfile" value="index.html" />
 
         <property name="nant.etc.keyfile" value="changelog.xsl" />
         <property name="nant.examples.keyfile" value="examples.build" />
@@ -50,6 +53,9 @@
         <property name="nantcontrib.doc.help.keyfile" value="index.html" />
         <property name="nantcontrib.doc.sdk.dir" value="${nantcontrib.doc.dir}/sdk/" />
         <property name="nantcontrib.doc.sdk.keyfile" value="NAntContrib-SDK.chm" />
+
+        <property name="nantcontrib.web.dir" value="${nantcontrib.dir}/web/" />
+        <property name="nantcontrib.web.keyfile" value="index.html" />
 
         <property name="nantcontrib.src.dir" value="${nantcontrib.dir}/src/" />
         <property name="nantcontrib.src.keyfile" value="NAntContrib.csproj" />
@@ -198,6 +204,15 @@
                         <description>NAntContrib source code and unit tests</description>
                     </feature>
                 </feature>              
+                <feature name="F__Web" title="Websites" display="1" typical="true" directory="D__NANT_WEB">
+                    <description>Websites/General Information</description>
+                    <feature name="F__Web_NAnt" title="NAnt Website" display="1" typical="true" directory="D__NANT">
+                        <description>NAnt website</description>
+                    </feature>
+                    <feature name="F__Web_NAntContrib" title="NAntContrib Website" display="1" typical="true" directory="D__NANT">
+                        <description>NAntContrib website</description>
+                    </feature>
+                </feature>              
             </features>
             
             <mergemodules>
@@ -221,6 +236,11 @@
                         <include name="${install.dir}/nant.src.msm" />
                     </modules>
                 </merge>
+                <merge feature="F__Web_NAnt">
+                    <modules>
+                        <include name="${install.dir}/nant.web.msm" />
+                    </modules>
+                </merge>
 
                 <merge feature="F__Bin_NAntContrib">
                     <modules>
@@ -237,11 +257,16 @@
                         <include name="${install.dir}/nantcontrib.src.msm" />
                     </modules>
                 </merge>
+                <merge feature="F__Web_NAntContrib">
+                    <modules>
+                        <include name="${install.dir}/nantcontrib.web.msm" />
+                    </modules>
+                </merge>
             </mergemodules>
         </msi>
     </target>
 
-    <target name="nant.mergemodules" depends="install.prepare nant.bin.msm nant.doc.msm nant.examples.msm nant.src.msm" />
+    <target name="nant.mergemodules" depends="install.prepare nant.bin.msm nant.doc.msm nant.examples.msm nant.src.msm nant.web.msm" />
 
     <target name="nant.bin.msm">
         <property name="msm.id" value="${script::CreateIdGuid()}" />
@@ -328,10 +353,6 @@
             </components>
 
             <shortcuts>
-                <shortcut name="S__Help_NAnt_Info" directory="D__NANTMENUFOLDER" filename="NAnt Information" 
-                            component="C__NAnt_Doc" target="[$C__NAnt_Doc]\index.html" showcmd="3" >
-                        <description>NAnt Information</description>
-                </shortcut>
                 <shortcut name="S__Help_NAnt_UserDocs" directory="D__NANTMENUFOLDER_HELP" filename="NAnt User Documentation" 
                             component="C__NAnt_Doc_Help" target="[$C__NAnt_Doc_Help]\index.html" showcmd="3" >
                         <description>NAnt User Documentation</description>
@@ -344,6 +365,47 @@
         </msm>
     </target>
         
+    <target name="nant.web.msm">
+        <property name="msm.id" value="${script::CreateIdGuid()}" />
+        
+        <msm
+            output="nant.web.msm"
+            sourcedir="${install.dir}"
+            id="NAnt_Web_Msm_${msm.id}"
+            version="${project.version}.${build.number}"
+            debug="true"
+        >
+            <properties>
+                <property name="Manufacturer" value="The NAnt SourceForge Project"/>
+            </properties>
+
+            <directories>
+                <directory name="D__NANT" foldername="NAnt" root="TARGETDIR">
+                    <directory name="D__NANT_WEB" foldername="web" >
+                        <directory name="D__NANT_WEB_NANT" foldername="NAnt" />
+                    </directory>
+                </directory>
+                <directory name="D__NANTMENUFOLDER" foldername="NAnt" root="ProgramMenuFolder" />
+            </directories>
+
+            <components>
+                <component name="C__NAnt_Web" id="{63660659-3935-4cbe-B96E-0438423A9B8D}" attr="2" directory="D__NANT_WEB_NANT" keepsubdirs="true">
+                    <key file="${nant.web.keyfile}" />
+                    <fileset basedir="${nant.web.dir}">
+                        <include name="**/*" />
+                    </fileset>
+                </component>
+            </components>
+
+            <shortcuts>
+                <shortcut name="S__Web_NAnt_Info" directory="D__NANTMENUFOLDER" filename="NAnt Information" 
+                            component="C__NAnt_Web" target="[$C__NAnt_Web]\index.html" showcmd="3" >
+                        <description>NAnt Information</description>
+                </shortcut>
+            </shortcuts>
+        </msm>
+    </target>
+
     <target name="nant.examples.msm">
         <property name="msm.id" value="${script::CreateIdGuid()}" />
         
@@ -455,7 +517,7 @@
         </msm>
     </target>
 
-    <target name="nantcontrib.mergemodules" depends="install.prepare nantcontrib.bin.msm nantcontrib.doc.msm nantcontrib.src.msm" />
+    <target name="nantcontrib.mergemodules" depends="install.prepare nantcontrib.bin.msm nantcontrib.doc.msm nantcontrib.src.msm nantcontrib.web.msm" />
 
     <target name="nantcontrib.bin.msm">
         <property name="msm.id" value="${script::CreateIdGuid()}" />
@@ -538,10 +600,6 @@
             </components>
 
             <shortcuts>
-                <shortcut name="S__Help_NAntContrib_Info" directory="D__NANTMENUFOLDER" filename="NAntContrib Information" 
-                            component="C__NAntContrib_Doc" target="[$C__NAntContrib_Doc]\index.html" showcmd="3" >
-                        <description>NAntContrib Information</description>
-                </shortcut>
                 <shortcut name="S__Help_NAntContrib_UserDocs" directory="D__NANTMENUFOLDER_HELP" filename="NAntContrib User Documentation" 
                             component="C__NAntContrib_Doc_Help" target="[$C__NAntContrib_Doc_Help]\index.html" showcmd="3" >
                         <description>NAntContrib User Documentation</description>
@@ -554,6 +612,47 @@
         </msm>
     </target>
     
+    <target name="nantcontrib.web.msm">
+        <property name="msm.id" value="${script::CreateIdGuid()}" />
+        
+        <msm
+            output="nantcontrib.web.msm"
+            sourcedir="${install.dir}"
+            id="NAntContrib_Web_Msm_${msm.id}"
+            version="${project.version}.${build.number}"
+            debug="true"
+        >
+            <properties>
+                <property name="Manufacturer" value="The NAnt SourceForge Project"/>
+            </properties>
+
+            <directories>
+                <directory name="D__NANT" foldername="NAnt" root="TARGETDIR">
+                    <directory name="D__NANT_WEB" foldername="web" >
+                        <directory name="D__NANT_WEB_NANTCONTRIB" foldername="NAntContrib" />
+                    </directory>
+                </directory>
+                <directory name="D__NANTMENUFOLDER" foldername="NAnt" root="ProgramMenuFolder" />
+            </directories>
+
+            <components>
+                <component name="C__NAntContrib_Web" id="{9B457BF9-EAE3-4c9f-B14B-0698E7626056}" attr="2" directory="D__NANT_WEB_NANTCONTRIB" keepsubdirs="true">
+                    <key file="${nantcontrib.web.keyfile}" />
+                    <fileset basedir="${nantcontrib.web.dir}">
+                        <include name="**/*" />
+                    </fileset>
+                </component>
+            </components>
+
+            <shortcuts>
+                <shortcut name="S__Web_NAntContrib_Info" directory="D__NANTMENUFOLDER" filename="NAntContrib Information" 
+                            component="C__NAntContrib_Web" target="[$C__NAntContrib_Web]\index.html" showcmd="3" >
+                        <description>NAntContrib Information</description>
+                </shortcut>                
+            </shortcuts>
+        </msm>
+    </target>
+
     <target name="nantcontrib.src.msm">
         <property name="msm.id" value="${script::CreateIdGuid()}" />
         
