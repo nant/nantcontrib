@@ -89,14 +89,14 @@
     <!-- Bootstrap XML Schemas into assemblies for task validation -->
     <target name="compile.schemas" depends="compile.schematask" description="compiles Task XML Schemas into assemblies">
         <loadtasks assembly="${build.dir}/bin/NAnt.Xsd.Tasks.dll"/>
-        <if uptodate="${src.dir}/Tasks/MSITask.xsd">
+        <if uptodatefile="${src.dir}/Tasks/MSITask.xsd">
             <comparefiles basedir="${build.dir}/schema\MSI">
                 <includes name="*" />
             </comparefiles>
             <mkdir dir="${build.dir}/schema\MSI" />
             <xsd schema="${src.dir}/Tasks/MSITask.xsd" language="CS" namespace="NAnt.Contrib.Schemas.MSI" nologo="true" outputdir="${build.dir}/schema/MSI" uri="NAnt.Contrib.Tasks.MSITask" />
         </if>
-        <if uptodate="${src.dir}/Tasks/MSMTask.xsd">
+        <if uptodatefile="${src.dir}/Tasks/MSMTask.xsd">
             <comparefiles basedir="${build.dir}/schema/MSM">
                 <includes name="*" />
             </comparefiles>
