@@ -92,18 +92,18 @@ namespace NAnt.Contrib.Tasks {
         private const int WIN32ERROR_ProcNotFound = 127;
         private const int WIN32ERROR_FileNotFound = 2;
 
-        private string _fileName = null; 
-        private bool _unregister = false;
-        private FileSet _fileset = new FileSet( );
+        private FileInfo _file; 
+        private bool _unregister;
+        private FileSet _fileset = new FileSet();
         
         /// <summary>
         /// The name of the file to register. This is provided as an alternate 
         /// to using the task's fileset.
         /// </summary>
         [TaskAttribute("file")]
-        public string FileName {
-            get { return _fileName; }
-            set { _fileName = value; }
+        public FileInfo File {
+            get { return _file; }
+            set { _file = value; }
         }
 
         /// <summary>Unregistering this time. ( /u paramater )Default is "false".</summary>
@@ -127,15 +127,10 @@ namespace NAnt.Contrib.Tasks {
 
         protected override void ExecuteTask() {
             // add the filename to the file set
-            if (FileName != null) {
-                try {
-                    string path = Project.GetFullPath(FileName);
-                    COMRegisterFileSet.Includes.Add(path);
-                }catch (Exception e) {
-                    string msg = String.Format("Could not find file '{0}'", FileName);
-                    throw new BuildException(msg, Location, e);
-                }
+            if (File != null) {
+                COMRegisterFileSet.Includes.Add(File.FullName);
             }
+
             // gather the information needed to perform the operation
             StringCollection fileNames = COMRegisterFileSet.FileNames;
                       
@@ -148,27 +143,39 @@ namespace NAnt.Contrib.Tasks {
 
             // perform operation
             foreach (string path in fileNames) {
-                if (!File.Exists(path)) {
+                if (!System.IO.File.Exists(path)) {
                     throw new BuildException(string.Format(CultureInfo.InvariantCulture,
                         "File '{0}' does not exist", path), Location);
                 }
 
-                Log(Level.Verbose, "Registering '{0}'.", path);
+                // store current directory
+                string originalCurrentDirectory = Directory.GetCurrentDirectory();
 
-                switch(Path.GetExtension(path).ToLower(CultureInfo.InvariantCulture)) {
-                    case ".tlb":
-                        RegisterTypelib(path);
-                        break;
-                    case ".exe":
-                        RegisterExeServer(path);
-                        break;
-                    case ".dll":
-                    case ".ocx" :
-                        RegisterDllServer(path);
-                        break;
-                    default:
-                        RegisterDllServer(path);
-                        break;
+                try {
+                    // change current directory to directory containing
+                    // the file to register
+                    Directory.SetCurrentDirectory(Path.GetDirectoryName(path));
+                   
+                    Log(Level.Verbose, "Registering '{0}'.", path);
+
+                    switch(Path.GetExtension(path).ToLower(CultureInfo.InvariantCulture)) {
+                        case ".tlb":
+                            RegisterTypelib(path);
+                            break;
+                        case ".exe":
+                            RegisterExeServer(path);
+                            break;
+                        case ".dll":
+                        case ".ocx" :
+                            RegisterDllServer(path);
+                            break;
+                        default:
+                            RegisterDllServer(path);
+                            break;
+                    }
+                } finally {
+                    // restore original current directory
+                    Directory.SetCurrentDirectory(originalCurrentDirectory);
                 }
             }
         }
