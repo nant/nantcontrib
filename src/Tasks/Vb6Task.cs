@@ -223,7 +223,7 @@ namespace NAnt.Contrib.Tasks {
                         if (key == "StartupProject" || key == "Project") {
                             // This is a project file - get the file name and 
                             // add it to the project list
-                            projectFiles.Add(keyValue);
+                            projectFiles.Add(Path.Combine(groupFile.DirectoryName, keyValue));
                         }
                     }
                 }
@@ -249,9 +249,12 @@ namespace NAnt.Contrib.Tasks {
             FileSet sources = new FileSet();
             FileSet references = new FileSet();
             
-            sources.BaseDirectory = new DirectoryInfo(Path.GetDirectoryName( projectFile ) );
-            references.BaseDirectory = sources.BaseDirectory;
-            
+            string basedir=Path.GetDirectoryName( projectFile );
+            if ( basedir != "" ) {
+                sources.BaseDirectory = new DirectoryInfo(Path.GetDirectoryName( projectFile ) );
+                references.BaseDirectory = sources.BaseDirectory;
+            }
+                     
             string outputFile = ParseProjectFile(projectFile, sources, references);
 
             FileInfo outputFileInfo = new FileInfo(OutDir != null ? Path.Combine(OutDir.FullName, outputFile) : outputFile);
