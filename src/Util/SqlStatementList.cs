@@ -27,20 +27,24 @@ using System.Security.Cryptography;
 using NAnt.Core.Attributes;
 using NAnt.Core;
 
-namespace NAnt.Contrib.Util { 
+namespace NAnt.Contrib.Util {
     /// <summary>
-    /// Determines how the delimiter is 
-    /// interpreted in a sql string
+    /// Determines how the delimiter is interpreted in a SQL string.
     /// </summary>
     public enum DelimiterStyle {
-        /// <summary>Delimiter can appear anywhere on a line</summary>
+        /// <summary>
+        /// Delimiter can appear anywhere on a line.
+        /// </summary>
         Normal = 0,
-        /// <summary>Delimiter always appears by itself on a line</summary>
+
+        /// <summary>
+        /// Delimiter always appears by itself on a line.
+        /// </summary>
         Line = 1
     }
 
     /// <summary>
-    /// Helper class to maintain a list of Sql Statements.
+    /// Helper class to maintain a list of SQL Statements.
     /// </summary>
     public class SqlStatementList : IEnumerable {
         private StringCollection _statements;
@@ -49,14 +53,13 @@ namespace NAnt.Contrib.Util {
         private PropertyDictionary _properties;
 
         /// <summary>
-        /// Number of statements in the list
+        /// Gets the number of statements in the list.
         /// </summary>
         public int Count {
             get { return _statements.Count; }
         }
-
         /// <summary>
-        /// Get the statement specified by the index
+        /// Gets the statement specified by the index.
         /// </summary>
         public string this[int index] {
             get { return _statements[index]; }
@@ -82,38 +85,64 @@ namespace NAnt.Contrib.Util {
         }
 
         /// <summary>
-        /// Parses the Sql into the internal list using the specified delimiter
+        /// Parses the SQL into the internal list using the specified delimiter
         /// and delimiter style
         /// </summary>
-        /// <param name="sql"></param>
+        /// <param name="sql">The SQL string to parse.</param>
         public void ParseSql(string sql) {
             StringReader reader = new StringReader(ExpandProps(sql));
             string line = null;
             StringBuilder sqlStatement = new StringBuilder();
 
-            while ( (line = reader.ReadLine()) != null ) {
-
-                if ( line.Trim() == string.Empty ) {
+            while ((line = reader.ReadLine()) != null) {
+                if (line.Trim().Length == 0) {
                     continue;
                 }
 
                 if (_style == DelimiterStyle.Normal) {
-                    if ( line.Trim().StartsWith("//") || line.Trim().StartsWith("--") ) {
+                    if (line.Trim().StartsWith("//") || line.Trim().StartsWith("--")) {
                         continue;
                     }
 
-                    string[] tokens = Regex.Split(line.Trim(), _delimiter);
-                    foreach ( string t in tokens ) {
-                        if ( t != string.Empty ) {
-                            _statements.Add(t);
+                    if (!Regex.IsMatch(line.Trim(), _delimiter)) {
+                        sqlStatement.Append(line.Trim() + Environment.NewLine);
+                    } else {
+                        if (line.Trim().Length > 0) {
+                            string[] tokens = Regex.Split(line.Trim(),_delimiter);
+                            for (int i = 0; i < tokens.Length; i++) {
+                                string token = tokens[i];
+                                if (i == 0) {
+                                    // the first token of a new line is still 
+                                    // part of the SQL statement that started 
+                                    // on a previous line
+                                    if (sqlStatement.Length > 0) {
+                                        sqlStatement.Append(token);
+                                        _statements.Add(sqlStatement.ToString());
+                                        sqlStatement = new StringBuilder();
+                                    } else {
+                                        sqlStatement = new StringBuilder();
+                                        if (token.Trim().Length > 0) {
+                                            sqlStatement.Append(token + Environment.NewLine);
+                                        }
+                                    }
+                                } else {
+                                    if (sqlStatement.Length > 0) {
+                                        _statements.Add(sqlStatement.ToString());
+                                        sqlStatement = new StringBuilder();
+                                    }
+
+                                    if (token.Trim().Length > 0) {
+                                        sqlStatement.Append(token + Environment.NewLine);
+                                    }
+                                }
+                            }
                         }
                     }
-                }
-                    // DelimiterStyle.Line
-                else {
+                } else { // DelimiterStyle.Line
                     if (line.Trim().ToUpper().Equals(_delimiter.ToUpper())) {
-                        if (sqlStatement.ToString().Trim().Length > 0)
+                        if (sqlStatement.ToString().Trim().Length > 0) {
                             _statements.Add(sqlStatement.ToString());
+                        }
 
                         sqlStatement = new StringBuilder();
                         continue;
@@ -121,10 +150,11 @@ namespace NAnt.Contrib.Util {
 
                     sqlStatement.Append(line + Environment.NewLine);
                 }
-
             }
-            if (sqlStatement.Length > 0)
+
+            if (sqlStatement.Length > 0) {
                 _statements.Add(sqlStatement.ToString());
+            }
         }
   
         /// <summary>
@@ -166,12 +196,12 @@ namespace NAnt.Contrib.Util {
             StringBuilder newSql = new StringBuilder("");
 
             string line = null;
-            while ( (line = reader.ReadLine()) != null ) {
+            while ((line = reader.ReadLine()) != null) {
                 line = line.Trim();
-                if ( line == string.Empty ) {
+                if (line == string.Empty) {
                     continue;
                 }
-                if ( line.StartsWith("//") || line.StartsWith("--") ) {
+                if (line.StartsWith("//") || line.StartsWith("--")) {
                     continue;
                 }
 
@@ -188,8 +218,9 @@ namespace NAnt.Contrib.Util {
         /// <param name="sql"></param>
         /// <returns></returns>
         private string ExpandProps(string sql) {
-            if ( Properties == null )
+            if (Properties == null) {
                 return sql;
+            }
             return Properties.ExpandProperties(sql, null);
         }
     }
