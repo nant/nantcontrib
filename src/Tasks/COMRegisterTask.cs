@@ -138,9 +138,13 @@ namespace NAnt.Contrib.Tasks {
             }
             // gather the information needed to perform the operation
             StringCollection fileNames = COMRegisterFileSet.FileNames;
-          
+                      
             // display build log message
-            Log(Level.Info, "Registering {0} files", fileNames.Count);
+            if (Unregister) {   
+                Log(Level.Info, "Unregistering {0} files", fileNames.Count);
+            } else {
+                Log(Level.Info, "Registering {0} files", fileNames.Count);
+            }
 
             // perform operation
             foreach (string path in fileNames) {
@@ -202,10 +206,6 @@ namespace NAnt.Contrib.Tasks {
                 FreeLibrary(handle);
                 throw new BuildException(message, Location);
             }
-            // unload the library
-            FreeLibrary(handle);
-            error = Marshal.GetLastWin32Error();
-
             try {
                 // Do the actual registration here
                 DynamicPInvoke.DynamicDllFuncInvoke(path, entryPoint);
@@ -218,7 +218,10 @@ namespace NAnt.Contrib.Tasks {
                     FreeLibrary(handle);
                 }
             }
+            // unload the library
+            FreeLibrary(handle);
         }
+        
 
         /// <summary>
         /// Register a COM type library
