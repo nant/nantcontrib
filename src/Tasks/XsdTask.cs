@@ -378,6 +378,18 @@ namespace NAnt.Contrib.Tasks {
                         Location, ex);
                 }
             }
+
+            // write resources file with "schema" resource containing the 
+            // XML Schema
+            if (Schema != null) {
+                XmlDocument schemaDoc = new XmlDocument();
+                schemaDoc.Load(Schema.FullName);
+
+                using (ResourceWriter schemaWriter = new ResourceWriter(Path.Combine(OutputDir.FullName, Namespace + ".resources"))) {
+                    schemaWriter.AddResource("schema", schemaDoc.DocumentElement.OuterXml);
+                    schemaWriter.Close();
+                }
+            }
         }
 
         #endregion Override implementation of ExternalProgramBase
