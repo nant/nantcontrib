@@ -22,103 +22,81 @@ using System.Xml;
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace NAnt.Contrib.NAntAddin.Nodes
-{
-	/// <summary>
-	/// Tree Node that represents an NAnt zip task.
-	/// </summary>
-	/// <remarks>None.</remarks>
-	[NAntTask("zip", "Create a ZIP Archive", "ziptask.bmp")]
-	public class NAntZipTaskNode : NAntTaskNode
-	{
-		/// <summary>
-		/// Creates a new <see cref="NAntZipTaskNode"/>.
-		/// </summary>
-		/// <param name="TaskElement">The task's XML element.</param>
-		/// <param name="ParentElement">The parent XML element of the task.</param>
-		/// <remarks>None.</remarks>
-		public NAntZipTaskNode(XmlElement TaskElement, XmlElement ParentElement) 
-			: base(TaskElement, ParentElement)
-		{
-		}
+namespace NAnt.Contrib.NAntAddin.Nodes {
+    /// <summary>
+    /// Tree Node that represents an NAnt zip task.
+    /// </summary>
+    /// <remarks>None.</remarks>
+    [NAntTask("zip", "Create a ZIP Archive", "ziptask.bmp")]
+    public class NAntZipTaskNode : NAntTaskNode {
+        /// <summary>
+        /// Creates a new <see cref="NAntZipTaskNode"/>.
+        /// </summary>
+        /// <param name="TaskElement">The task's XML element.</param>
+        /// <param name="ParentElement">The parent XML element of the task.</param>
+        /// <remarks>None.</remarks>
+        public NAntZipTaskNode(XmlElement TaskElement, XmlElement ParentElement) 
+            : base(TaskElement, ParentElement) {
+        }
 
-		/// <summary>
-		/// Gets or sets the name of the .zip file to create.
-		/// </summary>
-		/// <value>The name of the .zip file to create.</value>
-		/// <remarks>None.</remarks>
-		[Description("The name of the .zip file to create."),Category("Data")]
-		public string ZipFile
-		{
-			get
-			{
-				return TaskElement.GetAttribute("zipfile");
-			}
+        /// <summary>
+        /// Gets or sets the name of the .zip file to create.
+        /// </summary>
+        /// <value>The name of the .zip file to create.</value>
+        /// <remarks>None.</remarks>
+        [Description("The name of the .zip file to create."),Category("Data")]
+        public string ZipFile {
+            get {
+                return TaskElement.GetAttribute("zipfile");
+            }
+            set {
+                if (value == "") {
+                    TaskElement.RemoveAttribute("zipfile");
+                } else {
+                    TaskElement.SetAttribute("zipfile", value);
+                }
+                Save();
+            }
+        }
 
-			set
-			{
-				if (value == "")
-				{
-					TaskElement.RemoveAttribute("zipfile");
-				}
-				else
-				{
-					TaskElement.SetAttribute("zipfile", value);
-				}
-				Save();
-			}
-		}
+        /// <summary>
+        /// Gets or sets the level of zip compression.
+        /// </summary>
+        /// <value>The level of zip compression.</value>
+        /// <remarks>None.</remarks>
+        [Description("The level of zip compression."),Category("Data")]
+        public string ZipLevel {
+            get {
+                return TaskElement.GetAttribute("ziplevel");
+            }
+            set {
+                if (value == "") {
+                    TaskElement.RemoveAttribute("ziplevel");
+                } else {
+                    TaskElement.SetAttribute("ziplevel", value);
+                }
+                Save();
+            }
+        }
 
-		/// <summary>
-		/// Gets or sets the level of zip compression.
-		/// </summary>
-		/// <value>The level of zip compression.</value>
-		/// <remarks>None.</remarks>
-		[Description("The level of zip compression."),Category("Data")]
-		public string ZipLevel
-		{
-			get
-			{
-				return TaskElement.GetAttribute("ziplevel");
-			}
-
-			set
-			{
-				if (value == "")
-				{
-					TaskElement.RemoveAttribute("ziplevel");
-				}
-				else
-				{
-					TaskElement.SetAttribute("ziplevel", value);
-				}
-				Save();
-			}
-		}
-
-		/// <summary>
-		/// Gets or sets the source files to zip.
-		/// </summary>
-		/// <value>The source files to zip.</value>
-		/// <remarks>None.</remarks>
-		[Description("Source files to zip."),Category("Data")]
-		public FileSet FileSet
-		{
-			get
-			{
-				FileSet fileSet = new FileSet(TaskElement, this);
-				if (Parent == null)
-				{
-					return (FileSet)NAntReadOnlyNodeBuilder.GetReadOnlyNode(fileSet);
-				}
-				return fileSet;
-			}
-
-			set
-			{
-				value.AppendToTask(TaskElement, "fileset");
-				Save();
-			}
-		}
-	}
+        /// <summary>
+        /// Gets or sets the source files to zip.
+        /// </summary>
+        /// <value>The source files to zip.</value>
+        /// <remarks>None.</remarks>
+        [Description("Source files to zip."),Category("Data")]
+        public FileSet FileSet {
+            get {
+                FileSet fileSet = new FileSet(TaskElement, this);
+                if (Parent == null) {
+                    return (FileSet)NAntReadOnlyNodeBuilder.GetReadOnlyNode(fileSet);
+                }
+                return fileSet;
+            }
+            set {
+                value.AppendToTask(TaskElement, "fileset");
+                Save();
+            }
+        }
+    }
 }

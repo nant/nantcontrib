@@ -22,51 +22,41 @@ using System.Xml;
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace NAnt.Contrib.NAntAddin.Nodes
-{
-	/// <summary>
-	/// Tree Node that represents an NAnt fail task.
-	/// </summary>
-	/// <remarks>None.</remarks>
-	[NAntTask("fail", "Exit the Build", "exittask.bmp")]
-	public class NAntFailTaskNode : NAntTaskNode
-	{
-		/// <summary>
-		/// Creates a new <see cref="NAntFailTaskNode"/>.
-		/// </summary>
-		/// <param name="TaskElement">The task's XML element.</param>
-		/// <param name="ParentElement">The parent XML element of the task.</param>
-		/// <remarks>None.</remarks>
-		public NAntFailTaskNode(XmlElement TaskElement, XmlElement ParentElement)
-			: base(TaskElement, ParentElement)
-		{
-		}
+namespace NAnt.Contrib.NAntAddin.Nodes {
+    /// <summary>
+    /// Tree Node that represents an NAnt fail task.
+    /// </summary>
+    /// <remarks>None.</remarks>
+    [NAntTask("fail", "Exit the Build", "exittask.bmp")]
+    public class NAntFailTaskNode : NAntTaskNode {
+        /// <summary>
+        /// Creates a new <see cref="NAntFailTaskNode"/>.
+        /// </summary>
+        /// <param name="TaskElement">The task's XML element.</param>
+        /// <param name="ParentElement">The parent XML element of the task.</param>
+        /// <remarks>None.</remarks>
+        public NAntFailTaskNode(XmlElement TaskElement, XmlElement ParentElement)
+            : base(TaskElement, ParentElement) {
+        }
 
-		/// <summary>
-		/// Gets or sets a message giving further information on why the build exited.
-		/// </summary>
-		/// <value>A message giving further information on why the build exited.</value>
-		/// <remarks>None.</remarks>
-		[Description("A message giving further information on why the build exited."),Category("Data")]
-		public string Message
-		{
-			get
-			{
-				return TaskElement.GetAttribute("message");
-			}
-
-			set
-			{
-				if (value == "")
-				{
-					TaskElement.RemoveAttribute("message");
-				}
-				else
-				{
-					TaskElement.SetAttribute("message", value);
-				}
-				Save();
-			}
-		}
-	}
+        /// <summary>
+        /// Gets or sets a message giving further information on why the build exited.
+        /// </summary>
+        /// <value>A message giving further information on why the build exited.</value>
+        /// <remarks>None.</remarks>
+        [Description("A message giving further information on why the build exited."),Category("Data")]
+        public string Message {
+            get {
+                return TaskElement.GetAttribute("message");
+            }
+            set {
+                if (value == "") {
+                    TaskElement.RemoveAttribute("message");
+                } else {
+                    TaskElement.SetAttribute("message", value);
+                }
+                Save();
+            }
+        }
+    }
 }

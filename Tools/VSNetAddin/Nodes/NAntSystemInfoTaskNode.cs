@@ -22,51 +22,41 @@ using System.Xml;
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace NAnt.Contrib.NAntAddin.Nodes
-{
-	/// <summary>
-	/// Tree Node that represents an NAnt sysinfo task.
-	/// </summary>
-	/// <remarks>None.</remarks>
-	[NAntTask("sysinfo", "Set Properties with System Information", "sysinfotask.bmp")]
-	public class NAntSystemInfoTaskNode : NAntTaskNode
-	{
-		/// <summary>
-		/// Creates a new <see cref="NAntSystemInfoTaskNode"/>.
-		/// </summary>
-		/// <param name="TaskElement">The task's XML element.</param>
-		/// <param name="ParentElement">The parent XML element of the task.</param>
-		/// <remarks>None.</remarks>
-		public NAntSystemInfoTaskNode(XmlElement TaskElement, XmlElement ParentElement) 
-			: base(TaskElement, ParentElement)
-		{	
-		}
+namespace NAnt.Contrib.NAntAddin.Nodes {
+    /// <summary>
+    /// Tree Node that represents an NAnt sysinfo task.
+    /// </summary>
+    /// <remarks>None.</remarks>
+    [NAntTask("sysinfo", "Set Properties with System Information", "sysinfotask.bmp")]
+    public class NAntSystemInfoTaskNode : NAntTaskNode {
+        /// <summary>
+        /// Creates a new <see cref="NAntSystemInfoTaskNode"/>.
+        /// </summary>
+        /// <param name="TaskElement">The task's XML element.</param>
+        /// <param name="ParentElement">The parent XML element of the task.</param>
+        /// <remarks>None.</remarks>
+        public NAntSystemInfoTaskNode(XmlElement TaskElement, XmlElement ParentElement) 
+            : base(TaskElement, ParentElement) {
+        }
 
-		/// <summary>
-		/// Gets or sets the string to prefix the property names with.
-		/// </summary>
-		/// <value>The string to prefix the property names with. Default is "sys."</value>
-		/// <remarks>None.</remarks>
-		[Description("String to prefix the property names with. Default is \"sys\"."),Category("Data")]
-		public string Prefix
-		{
-			get
-			{
-				return TaskElement.GetAttribute("prefix");
-			}
-
-			set
-			{
-				if (value == "")
-				{
-					TaskElement.RemoveAttribute("prefix");
-				}
-				else
-				{
-					TaskElement.SetAttribute("prefix", value);
-				}
-				Save();
-			}
-		}
-	}
+        /// <summary>
+        /// Gets or sets the string to prefix the property names with.
+        /// </summary>
+        /// <value>The string to prefix the property names with. Default is "sys."</value>
+        /// <remarks>None.</remarks>
+        [Description("String to prefix the property names with. Default is \"sys\"."),Category("Data")]
+        public string Prefix {
+            get {
+                return TaskElement.GetAttribute("prefix");
+            }
+            set {
+                if (value == "") {
+                    TaskElement.RemoveAttribute("prefix");
+                } else {
+                    TaskElement.SetAttribute("prefix", value);
+                }
+                Save();
+            }
+        }
+    }
 }

@@ -422,7 +422,6 @@ namespace SLiNgshoT.Core {
             writer.WriteEndElement(); // call
             writer.WriteEndElement(); // target 
         }
-			
 
         public void WriteCleanProject(Project project) {
             writer.WriteStartElement("delete");

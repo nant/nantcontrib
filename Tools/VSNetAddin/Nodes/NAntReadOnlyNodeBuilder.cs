@@ -25,232 +25,212 @@ using System.Reflection.Emit;
 using System.Globalization;
 using System.ComponentModel;
 
-namespace NAnt.Contrib.NAntAddin.Nodes
-{
-	/// <summary>
-	/// Must be implemented by objects that 
-	/// are used by the Properties Window to 
-	/// edit. <see cref="FileSet"/> and 
-	/// <see cref="NDocDocumenter"/> both 
-	/// implement this interface. So do 
-	/// all instances of 
-	/// <see cref="NAntBaseNode"/>.
-	/// </summary>
-	/// <remarks>None.</remarks>
-	public interface ConstructorArgsResolver
-	{
-		/// <summary>
-		/// Returns the arguments that must be passed to 
-		/// the constructor of an object to create the 
-		/// same object.
-		/// </summary>
-		/// <returns>The arguments to pass.</returns>
-		/// <remarks>None.</remarks>
-		Object[] GetConstructorArgs();
-	}
+namespace NAnt.Contrib.NAntAddin.Nodes {
+    /// <summary>
+    /// Must be implemented by objects that 
+    /// are used by the Properties Window to 
+    /// edit. <see cref="FileSet"/> and 
+    /// <see cref="NDocDocumenter"/> both 
+    /// implement this interface. So do 
+    /// all instances of 
+    /// <see cref="NAntBaseNode"/>.
+    /// </summary>
+    /// <remarks>None.</remarks>
+    public interface ConstructorArgsResolver {
+        /// <summary>
+        /// Returns the arguments that must be passed to 
+        /// the constructor of an object to create the 
+        /// same object.
+        /// </summary>
+        /// <returns>The arguments to pass.</returns>
+        /// <remarks>None.</remarks>
+        Object[] GetConstructorArgs();
+    }
 
-	/// <summary>
-	/// Returns a Proxy node for any object 
-	/// that marks its Properties as read only. 
-	/// </summary>
-	/// <remarks>None.</remarks>
-	public class NAntReadOnlyNodeBuilder
-	{
-		private static AssemblyName assemblyName;
-		private static AssemblyBuilder assemblyBuilder;
-		private static ModuleBuilder typeDefiner;
-		private static Hashtable typeBuilders;
+    /// <summary>
+    /// Returns a Proxy node for any object 
+    /// that marks its Properties as read only. 
+    /// </summary>
+    /// <remarks>None.</remarks>
+    public class NAntReadOnlyNodeBuilder {
+        private static AssemblyName assemblyName;
+        private static AssemblyBuilder assemblyBuilder;
+        private static ModuleBuilder typeDefiner;
+        private static Hashtable typeBuilders;
 
-		private NAntReadOnlyNodeBuilder() {}
+        private NAntReadOnlyNodeBuilder() {}
 
-		/// <summary>
-		/// Returns a Proxy node for any object that marks
-		/// its Properties read only.
-		/// </summary>
-		/// <param name="BaseNode">The object to create a read only Proxy for.</param>
-		/// <returns>The new read only Proxy object.</returns>
-		/// <remarks>None.</remarks>
-		public static object GetReadOnlyNode(ConstructorArgsResolver BaseNode)
-		{
-			if (typeDefiner == null)
-			{
-				// Create the Assembly
-				assemblyName = new AssemblyName();
-				assemblyName.Name = "NAntAddinNodeProxy";
+        /// <summary>
+        /// Returns a Proxy node for any object that marks
+        /// its Properties read only.
+        /// </summary>
+        /// <param name="BaseNode">The object to create a read only Proxy for.</param>
+        /// <returns>The new read only Proxy object.</returns>
+        /// <remarks>None.</remarks>
+        public static object GetReadOnlyNode(ConstructorArgsResolver BaseNode) {
+            if (typeDefiner == null) {
+                // Create the Assembly
+                assemblyName = new AssemblyName();
+                assemblyName.Name = "NAntAddinNodeProxy";
 
-				assemblyBuilder = Thread.GetDomain().DefineDynamicAssembly(
-					assemblyName, AssemblyBuilderAccess.RunAndSave);
-			
-				typeDefiner = assemblyBuilder.DefineDynamicModule(
-					"NAntAddinNodeProxy", "NAntAddinNodeProxy.dll");
+                assemblyBuilder = Thread.GetDomain().DefineDynamicAssembly(
+                    assemblyName, AssemblyBuilderAccess.RunAndSave);
 
-				typeBuilders = new Hashtable();
-			}
-			
-			TypeBuilder typeBuilder = (TypeBuilder)typeBuilders[BaseNode.GetType().FullName + "_ReadOnly"];
-			if (typeBuilder == null)
-			{
-				//
-				// Define Constructor
-				//
+                typeDefiner = assemblyBuilder.DefineDynamicModule(
+                    "NAntAddinNodeProxy", "NAntAddinNodeProxy.dll");
 
-				ConstructorInfo baseConstructor = null;
-				ParameterInfo[] baseConstructorParamTypes = null;
-				Type[] baseConstructorTypes = null;
+                typeBuilders = new Hashtable();
+            }
 
-				// Find the base Constructor of the class we're creating a Proxy for
-				//
-				MethodInfo[] baseMethods = BaseNode.GetType().GetMethods();
-				ConstructorInfo[] baseConstructors = BaseNode.GetType().GetConstructors();
-				for (int i = 0; i < baseConstructors.Length; i++)
-				{
-					ConstructorInfo baseInfo = (ConstructorInfo)baseConstructors.GetValue(i);
-					if (baseInfo.GetParameters().Length > 0)
-					{
-						baseConstructor = baseInfo;
-						baseConstructorParamTypes = baseConstructor.GetParameters();
+            TypeBuilder typeBuilder = (TypeBuilder)typeBuilders[BaseNode.GetType().FullName + "_ReadOnly"];
+            if (typeBuilder == null) {
+                //
+                // Define Constructor
+                //
 
-						baseConstructorTypes = new Type[baseConstructorParamTypes.Length];
-						for (int j = 0; j < baseConstructorParamTypes.Length; j++)
-						{
-							baseConstructorTypes[j] = baseConstructorParamTypes[j].ParameterType;
-						}
+                ConstructorInfo baseConstructor = null;
+                ParameterInfo[] baseConstructorParamTypes = null;
+                Type[] baseConstructorTypes = null;
 
-						break;
-					}
-				}
+                // Find the base Constructor of the class we're creating a Proxy for
+                //
+                MethodInfo[] baseMethods = BaseNode.GetType().GetMethods();
+                ConstructorInfo[] baseConstructors = BaseNode.GetType().GetConstructors();
+                for (int i = 0; i < baseConstructors.Length; i++) {
+                    ConstructorInfo baseInfo = (ConstructorInfo)baseConstructors.GetValue(i);
+                    if (baseInfo.GetParameters().Length > 0) {
+                        baseConstructor = baseInfo;
+                        baseConstructorParamTypes = baseConstructor.GetParameters();
 
-				// Create the Type
-				typeBuilder = typeDefiner.DefineType(
-					BaseNode.GetType().FullName + "_ReadOnly", TypeAttributes.Public);
+                        baseConstructorTypes = new Type[baseConstructorParamTypes.Length];
+                        for (int j = 0; j < baseConstructorParamTypes.Length; j++) {
+                            baseConstructorTypes[j] = baseConstructorParamTypes[j].ParameterType;
+                        }
 
-				// Set the Type's Base Class
-				typeBuilder.SetParent(BaseNode.GetType());
+                        break;
+                    }
+                }
 
-				// Define the Type's Constructor
-				ConstructorBuilder constructor = typeBuilder.DefineConstructor(
-					MethodAttributes.Public, 
-					CallingConventions.Standard, 
-					baseConstructorTypes);
+                // Create the Type
+                typeBuilder = typeDefiner.DefineType(
+                    BaseNode.GetType().FullName + "_ReadOnly", TypeAttributes.Public);
 
-				ILGenerator generator = constructor.GetILGenerator();
+                // Set the Type's Base Class
+                typeBuilder.SetParent(BaseNode.GetType());
 
-				generator.Emit(OpCodes.Ldarg_0);
+                // Define the Type's Constructor
+                ConstructorBuilder constructor = typeBuilder.DefineConstructor(
+                    MethodAttributes.Public, 
+                    CallingConventions.Standard, 
+                    baseConstructorTypes);
 
-				// Load the Constructor arguments
-				for (int i = 0; i < baseConstructorTypes.Length; i++)
-				{
-					if (i == 0)
-					{
-						generator.Emit(OpCodes.Ldarg_1);
-					}
-					else if (i == 1)
-					{
-						generator.Emit(OpCodes.Ldarg_2);
-					}
-					else if (i == 2)
-					{
-						generator.Emit(OpCodes.Ldarg_3);
-					}
-				}
-				
-				// Get the Base Constructor
-				ConstructorInfo superConstructor = 
-					BaseNode.GetType().GetConstructor(baseConstructorTypes);
+                ILGenerator generator = constructor.GetILGenerator();
 
-				// Call the Base Constructor and return
-				generator.Emit(OpCodes.Call, baseConstructor);
-				generator.Emit(OpCodes.Ret);
+                generator.Emit(OpCodes.Ldarg_0);
 
-				//
-				// Define Properties
-				//
+                // Load the Constructor arguments
+                for (int i = 0; i < baseConstructorTypes.Length; i++) {
+                    if (i == 0) {
+                        generator.Emit(OpCodes.Ldarg_1);
+                    } else if (i == 1) {
+                        generator.Emit(OpCodes.Ldarg_2);
+                    } else if (i == 2) {
+                        generator.Emit(OpCodes.Ldarg_3);
+                    }
+                }
 
-				// Find the base Properties of the class we're creating a Proxy for
-				//
-				PropertyInfo[] baseProps = BaseNode.GetType().GetProperties();
-				for (int i = 0; i < baseProps.Length; i++)
-				{
-					PropertyInfo baseInfo = (PropertyInfo)baseProps.GetValue(i);
+                // Get the Base Constructor
+                ConstructorInfo superConstructor = 
+                    BaseNode.GetType().GetConstructor(baseConstructorTypes);
 
-					object[] browseableAttrs = baseInfo.GetCustomAttributes(
-						typeof(BrowsableAttribute), true);
+                // Call the Base Constructor and return
+                generator.Emit(OpCodes.Call, baseConstructor);
+                generator.Emit(OpCodes.Ret);
 
-					if (browseableAttrs.Length == 0)
-					{
-						PropertyBuilder property = typeBuilder.DefineProperty(
-							baseInfo.Name, PropertyAttributes.None, 
-							baseInfo.PropertyType, null);
+                //
+                // Define Properties
+                //
 
-						Type readOnlyType = typeof(ReadOnlyAttribute);
-						ConstructorInfo readOnlyConst = readOnlyType.GetConstructor(
-							new Type[] { typeof(Boolean) });
+                // Find the base Properties of the class we're creating a Proxy for
+                //
+                PropertyInfo[] baseProps = BaseNode.GetType().GetProperties();
+                for (int i = 0; i < baseProps.Length; i++) {
+                    PropertyInfo baseInfo = (PropertyInfo)baseProps.GetValue(i);
 
-						CustomAttributeBuilder propCustAttr = new CustomAttributeBuilder(
-							readOnlyConst, new Object[] { true });
+                    object[] browseableAttrs = baseInfo.GetCustomAttributes(
+                        typeof(BrowsableAttribute), true);
 
-						property.SetCustomAttribute(propCustAttr);
+                    if (browseableAttrs.Length == 0) {
+                        PropertyBuilder property = typeBuilder.DefineProperty(
+                            baseInfo.Name, PropertyAttributes.None, 
+                            baseInfo.PropertyType, null);
 
-						MethodBuilder propGetMethod = null;
-						MethodBuilder propSetMethod = null;
+                        Type readOnlyType = typeof(ReadOnlyAttribute);
+                        ConstructorInfo readOnlyConst = readOnlyType.GetConstructor(
+                            new Type[] { typeof(Boolean) });
 
-						if (baseInfo.CanRead)
-						{
-							propGetMethod = typeBuilder.DefineMethod(
-								"get_" + baseInfo.Name, 
-								MethodAttributes.Public | 
-								MethodAttributes.HideBySig | 
-								MethodAttributes.SpecialName, 
-								baseInfo.PropertyType, new Type[0]);
+                        CustomAttributeBuilder propCustAttr = new CustomAttributeBuilder(
+                            readOnlyConst, new Object[] { true });
 
-							ILGenerator propGetGen = propGetMethod.GetILGenerator();
-							LocalBuilder localProp = propGetGen.DeclareLocal(baseInfo.PropertyType);
-							propGetGen.Emit(OpCodes.Ldarg_0);
-							propGetGen.Emit(OpCodes.Call, baseInfo.GetGetMethod());
-							propGetGen.Emit(OpCodes.Stloc_0);
-							Label label = propGetGen.DefineLabel();
-							propGetGen.Emit(OpCodes.Br_S, label);
-							propGetGen.MarkLabel(label);
-							propGetGen.Emit(OpCodes.Ldloc_0);
-							propGetGen.Emit(OpCodes.Ret);
+                        property.SetCustomAttribute(propCustAttr);
 
-							property.SetGetMethod(propGetMethod);
-							
-						}
-						if (baseInfo.CanWrite)
-						{
-							propSetMethod = typeBuilder.DefineMethod(
-								"set_" + baseInfo.Name, 
-								MethodAttributes.Public | 
-								MethodAttributes.HideBySig | 
-								MethodAttributes.SpecialName, 
-								typeof(void), new Type[] { baseInfo.PropertyType });
+                        MethodBuilder propGetMethod = null;
+                        MethodBuilder propSetMethod = null;
 
-							ILGenerator propSetGen = propSetMethod.GetILGenerator();
-							propSetGen.Emit(OpCodes.Nop);
-							propSetGen.Emit(OpCodes.Ret);
+                        if (baseInfo.CanRead) {
+                            propGetMethod = typeBuilder.DefineMethod(
+                                "get_" + baseInfo.Name, 
+                                MethodAttributes.Public | 
+                                MethodAttributes.HideBySig | 
+                                MethodAttributes.SpecialName, 
+                                baseInfo.PropertyType, new Type[0]);
 
-							property.SetSetMethod(propSetMethod);
-						}
-					}
-				}
+                            ILGenerator propGetGen = propGetMethod.GetILGenerator();
+                            LocalBuilder localProp = propGetGen.DeclareLocal(baseInfo.PropertyType);
+                            propGetGen.Emit(OpCodes.Ldarg_0);
+                            propGetGen.Emit(OpCodes.Call, baseInfo.GetGetMethod());
+                            propGetGen.Emit(OpCodes.Stloc_0);
+                            Label label = propGetGen.DefineLabel();
+                            propGetGen.Emit(OpCodes.Br_S, label);
+                            propGetGen.MarkLabel(label);
+                            propGetGen.Emit(OpCodes.Ldloc_0);
+                            propGetGen.Emit(OpCodes.Ret);
 
-				typeBuilder.CreateType();
+                            property.SetGetMethod(propGetMethod);
+                        }
+                        if (baseInfo.CanWrite) {
+                            propSetMethod = typeBuilder.DefineMethod(
+                                "set_" + baseInfo.Name, 
+                                MethodAttributes.Public | 
+                                MethodAttributes.HideBySig | 
+                                MethodAttributes.SpecialName, 
+                                typeof(void), new Type[] { baseInfo.PropertyType });
 
-				typeBuilders.Add(BaseNode.GetType().FullName + "_ReadOnly", typeBuilder);
-			}
+                            ILGenerator propSetGen = propSetMethod.GetILGenerator();
+                            propSetGen.Emit(OpCodes.Nop);
+                            propSetGen.Emit(OpCodes.Ret);
 
-			object proxyNode = null;
+                            property.SetSetMethod(propSetMethod);
+                        }
+                    }
+                }
 
-			Object[] constructorArgs = BaseNode.GetConstructorArgs();
+                typeBuilder.CreateType();
 
-			proxyNode = assemblyBuilder.CreateInstance(
-				BaseNode.GetType().FullName + "_ReadOnly", false, 
-				BindingFlags.Default, null, 
-				constructorArgs, 
-				null, new object[0]);
+                typeBuilders.Add(BaseNode.GetType().FullName + "_ReadOnly", typeBuilder);
+            }
 
-			return proxyNode;
-		}
-	}
+            object proxyNode = null;
+
+            Object[] constructorArgs = BaseNode.GetConstructorArgs();
+
+            proxyNode = assemblyBuilder.CreateInstance(
+                BaseNode.GetType().FullName + "_ReadOnly", false, 
+                BindingFlags.Default, null, 
+                constructorArgs, 
+                null, new object[0]);
+
+            return proxyNode;
+        }
+    }
 }

@@ -22,51 +22,41 @@ using System.Xml;
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace NAnt.Contrib.NAntAddin.Nodes
-{
-	/// <summary>
-	/// Tree Node that represents an NAnt mkdir task.
-	/// </summary>
-	/// <remarks>None.</remarks>
-	[NAntTask("mkdir", "Create a Directory", "mkdirtask.bmp")]
-	public class NAntMakeDirectoryTaskNode : NAntTaskNode
-	{
-		/// <summary>
-		/// Creates a new <see cref="NAntMakeDirectoryTaskNode"/>.
-		/// </summary>
-		/// <param name="TaskElement">The task's XML element.</param>
-		/// <param name="ParentElement">The parent XML element of the task.</param>
-		/// <remarks>None.</remarks>
-		public NAntMakeDirectoryTaskNode(XmlElement TaskElement, XmlElement ParentElement) 
-			: base(TaskElement, ParentElement)
-		{
-		}
+namespace NAnt.Contrib.NAntAddin.Nodes {
+    /// <summary>
+    /// Tree Node that represents an NAnt mkdir task.
+    /// </summary>
+    /// <remarks>None.</remarks>
+    [NAntTask("mkdir", "Create a Directory", "mkdirtask.bmp")]
+    public class NAntMakeDirectoryTaskNode : NAntTaskNode {
+        /// <summary>
+        /// Creates a new <see cref="NAntMakeDirectoryTaskNode"/>.
+        /// </summary>
+        /// <param name="TaskElement">The task's XML element.</param>
+        /// <param name="ParentElement">The parent XML element of the task.</param>
+        /// <remarks>None.</remarks>
+        public NAntMakeDirectoryTaskNode(XmlElement TaskElement, XmlElement ParentElement) 
+            : base(TaskElement, ParentElement) {
+        }
 
-		/// <summary>
-		/// Gets or sets the directory to create.
-		/// </summary>
-		/// <value>The directory to create.</value>
-		/// <remarks>None.</remarks>
-		[Description("The directory to create."),Category("Data")]
-		public string Dir
-		{
-			get
-			{
-				return TaskElement.GetAttribute("dir");
-			}
-
-			set
-			{
-				if (value == "")
-				{
-					TaskElement.RemoveAttribute("dir");
-				}
-				else
-				{
-					TaskElement.SetAttribute("dir", value);
-				}
-				Save();
-			}
-		}
-	}
+        /// <summary>
+        /// Gets or sets the directory to create.
+        /// </summary>
+        /// <value>The directory to create.</value>
+        /// <remarks>None.</remarks>
+        [Description("The directory to create."),Category("Data")]
+        public string Dir {
+            get {
+                return TaskElement.GetAttribute("dir");
+            }
+            set {
+                if (value == "") {
+                    TaskElement.RemoveAttribute("dir");
+                } else {
+                    TaskElement.SetAttribute("dir", value);
+                }
+                Save();
+            }
+        }
+    }
 }

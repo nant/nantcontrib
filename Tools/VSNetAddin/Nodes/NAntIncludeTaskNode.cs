@@ -22,51 +22,41 @@ using System.Xml;
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace NAnt.Contrib.NAntAddin.Nodes
-{
-	/// <summary>
-	/// Tree Node that represents an NAnt include task.
-	/// </summary>
-	/// <remarks>None.</remarks>
-	[NAntTask("include", "Include an External .build File", "includetask.bmp")]
-	public class NAntIncludeTaskNode : NAntTaskNode
-	{
-		/// <summary>
-		/// Creates a new <see cref="NAntIncludeTaskNode"/>.
-		/// </summary>
-		/// <param name="TaskElement">The task's XML element.</param>
-		/// <param name="ParentElement">The parent XML element of the task.</param>
-		/// <remarks>None.</remarks>
-		public NAntIncludeTaskNode(XmlElement TaskElement, XmlElement ParentElement) 
-			: base(TaskElement, ParentElement)
-		{	
-		}
+namespace NAnt.Contrib.NAntAddin.Nodes {
+    /// <summary>
+    /// Tree Node that represents an NAnt include task.
+    /// </summary>
+    /// <remarks>None.</remarks>
+    [NAntTask("include", "Include an External .build File", "includetask.bmp")]
+    public class NAntIncludeTaskNode : NAntTaskNode {
+        /// <summary>
+        /// Creates a new <see cref="NAntIncludeTaskNode"/>.
+        /// </summary>
+        /// <param name="TaskElement">The task's XML element.</param>
+        /// <param name="ParentElement">The parent XML element of the task.</param>
+        /// <remarks>None.</remarks>
+        public NAntIncludeTaskNode(XmlElement TaskElement, XmlElement ParentElement) 
+            : base(TaskElement, ParentElement) {
+        }
 
-		/// <summary>
-		/// Gets or sets the .build file to include.
-		/// </summary>
-		/// <remarks>The .build file to include.</remarks>
-		/// <example>None.</example>
-		[Description("The .build file to include."),Category("Data")]
-		public string BuildFile
-		{
-			get
-			{
-				return TaskElement.GetAttribute("buildfile");
-			}
-
-			set
-			{
-				if (value == "")
-				{
-					TaskElement.RemoveAttribute("buildfile");
-				}
-				else
-				{
-					TaskElement.SetAttribute("buildfile", value);
-				}
-				Save();
-			}
-		}
-	}
+        /// <summary>
+        /// Gets or sets the .build file to include.
+        /// </summary>
+        /// <remarks>The .build file to include.</remarks>
+        /// <example>None.</example>
+        [Description("The .build file to include."),Category("Data")]
+        public string BuildFile {
+            get {
+                return TaskElement.GetAttribute("buildfile");
+            }
+            set {
+                if (value == "") {
+                    TaskElement.RemoveAttribute("buildfile");
+                } else {
+                    TaskElement.SetAttribute("buildfile", value);
+                }
+                Save();
+            }
+        }
+    }
 }

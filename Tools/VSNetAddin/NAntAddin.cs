@@ -78,7 +78,7 @@ namespace NAnt.Contrib.NAntAddin {
         private static extern bool CloseHandle(int handle);
 
         /// <summary>
-        ///	Initializes a new instance of the <see cref="Addin"/> class.
+        /// Initializes a new instance of the <see cref="Addin"/> class.
         /// </summary>
         public Addin() {
         }

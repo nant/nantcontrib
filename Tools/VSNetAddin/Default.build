@@ -75,8 +75,8 @@
   <!--* Clean the outputs                                             *-->
   <!--*****************************************************************-->
   <target name="clean" description="Deletes Build Output" depends="prepare">
-	<exec program="regsvr32" commandline="/u /s ${dest.dir}\VSUserControlHost.dll" failonerror="false" />
-	<regasm assembly="${dest.dir}\${product.name}.dll" unregister="true" silent="true" failonerror="false" />
+    <exec program="regsvr32" commandline="/u /s ${dest.dir}\VSUserControlHost.dll" failonerror="false" />
+    <regasm assembly="${dest.dir}\${product.name}.dll" unregister="true" silent="true" failonerror="false" />
     <delete dir="${addinbuild.dir}" failonerror="false" />
   </target>
 
@@ -193,7 +193,7 @@
   <!--*****************************************************************-->
   <target name="resources.compile" description="Compiles Addin Resources" depends="addin.compile">
     <property name="resources.dir" value="NAntAddinResources" />
-	<property name="resources.dest.dir" value="${dest.dir}\1033" />
+    <property name="resources.dest.dir" value="${dest.dir}\1033" />
       <mkdir dir="${resources.dest.dir}" />
       <cl outputdir="${resources.dest.dir}">
       <includedirs>

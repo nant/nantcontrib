@@ -22,128 +22,101 @@ using System.Xml;
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace NAnt.Contrib.NAntAddin.Nodes
-{
-	/// <summary>
-	/// Tree Node that represents an NAnt link task.
-	/// </summary>
-	/// <remarks>None.</remarks>
-	[NAntTask("link", "Link Files", "linktask.bmp")]
-	public class NAntLinkerTaskNode : NAntTaskNode
-	{
-		/// <summary>
-		/// Creates a new <see cref="NAntLinkerTaskNode"/>.
-		/// </summary>
-		/// <param name="TaskElement">The task's XML element.</param>
-		/// <param name="ParentElement">The parent XML element of the task.</param>
-		/// <remarks>None.</remarks>
-		public NAntLinkerTaskNode(XmlElement TaskElement, XmlElement ParentElement) 
-			: base(TaskElement, ParentElement)
-		{
-		}
+namespace NAnt.Contrib.NAntAddin.Nodes {
+    /// <summary>
+    /// Tree Node that represents an NAnt link task.
+    /// </summary>
+    /// <remarks>None.</remarks>
+    [NAntTask("link", "Link Files", "linktask.bmp")]
+    public class NAntLinkerTaskNode : NAntTaskNode {
+        /// <summary>
+        /// Creates a new <see cref="NAntLinkerTaskNode"/>.
+        /// </summary>
+        /// <param name="TaskElement">The task's XML element.</param>
+        /// <param name="ParentElement">The parent XML element of the task.</param>
+        /// <remarks>None.</remarks>
+        public NAntLinkerTaskNode(XmlElement TaskElement, XmlElement ParentElement) 
+            : base(TaskElement, ParentElement) {
+        }
 
-		/// <summary>
-		/// Gets or sets options to pass to the compiler.
-		/// </summary>
-		/// <value>Options to pass to the compiler.</value>
-		/// <remarks>None.</remarks>
-		[Description("Options to pass to the compiler."),Category("Data")]
-		public string Options
-		{
-			get
-			{
-				return TaskElement.GetAttribute("options");
-			}
+        /// <summary>
+        /// Gets or sets options to pass to the compiler.
+        /// </summary>
+        /// <value>Options to pass to the compiler.</value>
+        /// <remarks>None.</remarks>
+        [Description("Options to pass to the compiler."),Category("Data")]
+        public string Options {
+            get {
+                return TaskElement.GetAttribute("options");
+            }
+            set {
+                if (value == "") {
+                    TaskElement.RemoveAttribute("options");
+                } else {
+                    TaskElement.SetAttribute("options", value);
+                }
+                Save();
+            }
+        }
 
-			set
-			{
-				if (value == "")
-				{
-					TaskElement.RemoveAttribute("options");
-				}
-				else
-				{
-					TaskElement.SetAttribute("options", value);
-				}
-				Save();
-			}
-		}
+        /// <summary>
+        /// Gets or sets the output file name.
+        /// </summary>
+        /// <value>The output file name.</value>
+        /// <remarks>None.</remarks>
+        [Description("The output file name."),Category("Data")]
+        public string Output {
+            get {
+                return TaskElement.GetAttribute("output");
+            }
+            set {
+                if (value == "") {
+                    TaskElement.RemoveAttribute("output");
+                } else {
+                    TaskElement.SetAttribute("output", value);
+                }
+                Save();
+            }
+        }
 
-		/// <summary>
-		/// Gets or sets the output file name.
-		/// </summary>
-		/// <value>The output file name.</value>
-		/// <remarks>None.</remarks>
-		[Description("The output file name."),Category("Data")]
-		public string Output
-		{
-			get
-			{
-				return TaskElement.GetAttribute("output");
-			}
+        /// <summary>
+        /// Gets or sets source files to link.
+        /// </summary>
+        /// <value>Source files to link.</value>
+        /// <remarks>None.</remarks>
+        [Description("Source files to link."),Category("Data")]
+        public Sources Sources {
+            get {
+                Sources sources = new Sources(TaskElement, this);
+                if (Parent == null) {
+                    return (Sources)NAntReadOnlyNodeBuilder.GetReadOnlyNode(sources);
+                }
+                return sources;
+            }
+            set {
+                value.AppendToTask(TaskElement, "sources");
+                Save();
+            }
+        }
 
-			set
-			{
-				if (value == "")
-				{
-					TaskElement.RemoveAttribute("output");
-				}
-				else
-				{
-					TaskElement.SetAttribute("output", value);
-				}
-				Save();
-			}
-		}
-
-		/// <summary>
-		/// Gets or sets source files to link.
-		/// </summary>
-		/// <value>Source files to link.</value>
-		/// <remarks>None.</remarks>
-		[Description("Source files to link."),Category("Data")]
-		public Sources Sources
-		{
-			get
-			{
-				Sources sources = new Sources(TaskElement, this);
-				if (Parent == null)
-				{
-					return (Sources)NAntReadOnlyNodeBuilder.GetReadOnlyNode(sources);
-				}
-				return sources;
-			}
-
-			set
-			{
-				value.AppendToTask(TaskElement, "sources");
-				Save();
-			}
-		}
-
-		/// <summary>
-		/// Gets or sets directories in which to search for library files.
-		/// </summary>
-		/// <value>Directories in which to search for library files.</value>
-		/// <remarks>None.</remarks>
-		[Description("Directories in which to search for library files."),Category("Data")]
-		public LibDirs LibDirs
-		{
-			get
-			{
-				LibDirs libDirs = new LibDirs(TaskElement, this);
-				if (Parent == null)
-				{
-					return (LibDirs)NAntReadOnlyNodeBuilder.GetReadOnlyNode(libDirs);
-				}
-				return libDirs;
-			}
-
-			set
-			{
-				value.AppendToTask(TaskElement, "libdirs");
-				Save();
-			}
-		}
-	}
+        /// <summary>
+        /// Gets or sets directories in which to search for library files.
+        /// </summary>
+        /// <value>Directories in which to search for library files.</value>
+        /// <remarks>None.</remarks>
+        [Description("Directories in which to search for library files."),Category("Data")]
+        public LibDirs LibDirs {
+            get {
+                LibDirs libDirs = new LibDirs(TaskElement, this);
+                if (Parent == null) {
+                    return (LibDirs)NAntReadOnlyNodeBuilder.GetReadOnlyNode(libDirs);
+                }
+                return libDirs;
+            }
+            set {
+                value.AppendToTask(TaskElement, "libdirs");
+                Save();
+            }
+        }
+    }
 }

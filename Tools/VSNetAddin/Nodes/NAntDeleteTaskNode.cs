@@ -22,103 +22,81 @@ using System.Xml;
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace NAnt.Contrib.NAntAddin.Nodes
-{
-	/// <summary>
-	/// Tree Node that represents an NAnt delete task.
-	/// </summary>
-	/// <remarks>None.</remarks>
-	[NAntTask("delete", "Delete Files", "deletetask.bmp")]
-	public class NAntDeleteTaskNode : NAntTaskNode
-	{
-		/// <summary>
-		/// Creates a new <see cref="NAntDeleteTaskNode"/>.
-		/// </summary>
-		/// <param name="TaskElement">The task's XML element.</param>
-		/// <param name="ParentElement">The parent XML element of the task.</param>
-		/// <remarks>None.</remarks>
-		public NAntDeleteTaskNode(XmlElement TaskElement, XmlElement ParentElement) 
-			: base(TaskElement, ParentElement)
-		{
-		}
+namespace NAnt.Contrib.NAntAddin.Nodes {
+    /// <summary>
+    /// Tree Node that represents an NAnt delete task.
+    /// </summary>
+    /// <remarks>None.</remarks>
+    [NAntTask("delete", "Delete Files", "deletetask.bmp")]
+    public class NAntDeleteTaskNode : NAntTaskNode {
+        /// <summary>
+        /// Creates a new <see cref="NAntDeleteTaskNode"/>.
+        /// </summary>
+        /// <param name="TaskElement">The task's XML element.</param>
+        /// <param name="ParentElement">The parent XML element of the task.</param>
+        /// <remarks>None.</remarks>
+        public NAntDeleteTaskNode(XmlElement TaskElement, XmlElement ParentElement) 
+            : base(TaskElement, ParentElement) {
+        }
 
-		/// <summary>
-		/// Gets or sets the directory to delete.
-		/// </summary>
-		/// <value>The directory to delete.</value>
-		/// <remarks>None.</remarks>
-		[Description("The directory to delete."),Category("Data")]
-		public string Dir
-		{
-			get
-			{
-				return TaskElement.GetAttribute("dir");
-			}
+        /// <summary>
+        /// Gets or sets the directory to delete.
+        /// </summary>
+        /// <value>The directory to delete.</value>
+        /// <remarks>None.</remarks>
+        [Description("The directory to delete."),Category("Data")]
+        public string Dir {
+            get {
+                return TaskElement.GetAttribute("dir");
+            }
+            set {
+                if (value == "") {
+                    TaskElement.RemoveAttribute("dir");
+                } else {
+                    TaskElement.SetAttribute("dir", value);
+                }
+                Save();
+            }
+        }
 
-			set
-			{
-				if (value == "")
-				{
-					TaskElement.RemoveAttribute("dir");
-				}
-				else
-				{
-					TaskElement.SetAttribute("dir", value);
-				}
-				Save();
-			}
-		}
+        /// <summary>
+        /// Gets or sets the file to delete.
+        /// </summary>
+        /// <value>The file to delete.</value>
+        /// <remarks>None.</remarks>
+        [Description("The file to delete."),Category("Data")]
+        public string File {
+            get {
+                return TaskElement.GetAttribute("file");
+            }
+            set {
+                if (value == "") {
+                    TaskElement.RemoveAttribute("file");
+                } else {
+                    TaskElement.SetAttribute("file", value);
+                }
+                Save();
+            }
+        }
 
-		/// <summary>
-		/// Gets or sets the file to delete.
-		/// </summary>
-		/// <value>The file to delete.</value>
-		/// <remarks>None.</remarks>
-		[Description("The file to delete."),Category("Data")]
-		public string File
-		{
-			get
-			{
-				return TaskElement.GetAttribute("file");
-			}
-
-			set
-			{
-				if (value == "")
-				{
-					TaskElement.RemoveAttribute("file");
-				}
-				else
-				{
-					TaskElement.SetAttribute("file", value);
-				}
-				Save();
-			}
-		}
-
-		/// <summary>
-		/// Gets or sets the files and/or directories to delete.
-		/// </summary>
-		/// <value>The files and/or directories to delete.</value>
-		/// <remarks>None.</remarks>
-		[Description("Files and/or directories to delete."),Category("Data")]
-		public FileSet FileSet
-		{
-			get
-			{
-				FileSet fileSet = new FileSet(TaskElement, this);
-				if (Parent == null)
-				{
-					return (FileSet)NAntReadOnlyNodeBuilder.GetReadOnlyNode(fileSet);
-				}
-				return fileSet;
-			}
-
-			set
-			{
-				value.AppendToTask(TaskElement, "fileset");
-				Save();
-			}
-		}
-	}
+        /// <summary>
+        /// Gets or sets the files and/or directories to delete.
+        /// </summary>
+        /// <value>The files and/or directories to delete.</value>
+        /// <remarks>None.</remarks>
+        [Description("Files and/or directories to delete."),Category("Data")]
+        public FileSet FileSet {
+            get {
+                FileSet fileSet = new FileSet(TaskElement, this);
+                if (Parent == null) {
+                    return (FileSet)NAntReadOnlyNodeBuilder.GetReadOnlyNode(fileSet);
+                }
+                return fileSet;
+            }
+            set {
+                value.AppendToTask(TaskElement, "fileset");
+                Save();
+            }
+        }
+    }
 }

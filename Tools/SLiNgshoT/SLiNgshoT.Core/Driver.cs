@@ -20,351 +20,297 @@ using System.Collections;
 using System.IO;
 using System.Reflection;
 
-namespace SLiNgshoT.Core
-{
-	public class Driver
-	{
-		public static IList GetOutputFormats()
-		{
-			ArrayList outputFormats = new ArrayList();
+namespace SLiNgshoT.Core {
+    public class Driver {
+        public static IList GetOutputFormats() {
+            ArrayList outputFormats = new ArrayList();
 
-			Assembly assembly = typeof(Driver).Assembly;
+            Assembly assembly = typeof(Driver).Assembly;
 
-			foreach (Type type in assembly.GetTypes())
-			{
-				if (type.GetInterface(typeof(SolutionWriter).FullName) != null)
-				{
-					OutputFormatAttribute outputFormat = Attribute.GetCustomAttribute(type, typeof(OutputFormatAttribute)) as OutputFormatAttribute;
+            foreach (Type type in assembly.GetTypes()) {
+                if (type.GetInterface(typeof(SolutionWriter).FullName) != null) {
+                    OutputFormatAttribute outputFormat = Attribute.GetCustomAttribute(type, typeof(OutputFormatAttribute)) as OutputFormatAttribute;
 
-					if (outputFormat != null)
-					{
-						outputFormats.Add(outputFormat.Name);
-					}
-				}
-			}
+                    if (outputFormat != null) {
+                        outputFormats.Add(outputFormat.Name);
+                    }
+                }
+            }
 
-			outputFormats.Sort();
+            outputFormats.Sort();
 
-			return outputFormats;
-		}
+            return outputFormats;
+        }
 
-		private static Type GetSolutionWriterImplementation(string format)
-		{
-			Assembly assembly = typeof(Driver).Assembly;
+        private static Type GetSolutionWriterImplementation(string format) {
+            Assembly assembly = typeof(Driver).Assembly;
 
-			foreach (Type type in assembly.GetTypes())
-			{
-				if (type.GetInterface(typeof(SolutionWriter).FullName) != null)
-				{
-					OutputFormatAttribute outputFormat = Attribute.GetCustomAttribute(type, typeof(OutputFormatAttribute)) as OutputFormatAttribute;
+            foreach (Type type in assembly.GetTypes()) {
+                if (type.GetInterface(typeof(SolutionWriter).FullName) != null) {
+                    OutputFormatAttribute outputFormat = Attribute.GetCustomAttribute(type, typeof(OutputFormatAttribute)) as OutputFormatAttribute;
 
-					if (outputFormat != null && outputFormat.Name == format)
-					{
-						return type;
-					}
-				}
-			}
+                    if (outputFormat != null && outputFormat.Name == format) {
+                        return type;
+                    }
+                }
+            }
 
-			return null;
-		}
+            return null;
+        }
 
-		public static OutputParameterAttribute[] GetOutputParameters(string format)
-		{
-			Type type = GetSolutionWriterImplementation(format);
+        public static OutputParameterAttribute[] GetOutputParameters(string format) {
+            Type type = GetSolutionWriterImplementation(format);
 
-			if (type != null)
-			{
-				object[] outputParameterAttributes = type.GetCustomAttributes(typeof(OutputParameterAttribute), true);
-				OutputParameterAttribute[] outputParameters = new OutputParameterAttribute[outputParameterAttributes.Length];
+            if (type != null) {
+                object[] outputParameterAttributes = type.GetCustomAttributes(typeof(OutputParameterAttribute), true);
+                OutputParameterAttribute[] outputParameters = new OutputParameterAttribute[outputParameterAttributes.Length];
 
-				for (int i = 0; i < outputParameterAttributes.Length; ++i)
-				{
-					outputParameters[i] = outputParameterAttributes[i] as OutputParameterAttribute;
-				}
+                for (int i = 0; i < outputParameterAttributes.Length; ++i) {
+                    outputParameters[i] = outputParameterAttributes[i] as OutputParameterAttribute;
+                }
 
-				return outputParameters;
-			}
+                return outputParameters;
+            }
 
-			return new OutputParameterAttribute[0];
-		}
+            return new OutputParameterAttribute[0];
+        }
 
-		public static void ParseArgs(string[] args, out string format, out string solution, Hashtable parameters, Hashtable uriMap)
-		{
-			format = null;
-			solution = null;
+        public static void ParseArgs(string[] args, out string format, out string solution, Hashtable parameters, Hashtable uriMap) {
+            format = null;
+            solution = null;
 
-			for (int i = 0; i < args.Length; ++i)
-			{
-				string arg = args[i];
+            for (int i = 0; i < args.Length; ++i) {
+                string arg = args[i];
 
-				if (arg[0] == '/' || arg[0] == '-')
-				{
-					string argName = arg.Substring(1);
-					
-					switch (argName)
-					{
-						case "sln":
+                if (arg[0] == '/' || arg[0] == '-') {
+                    string argName = arg.Substring(1);
+
+                    switch (argName) {
+                        case "sln":
                             solution = args[++i];
-							break;
-						case "map":
-							if (i + 2 < args.Length)
-							{
-								string uriPrefix = args[++i];
-								string filePrefix = args[++i];
-								uriMap.Add(uriPrefix, filePrefix);
-							}
-							else
-							{
-								Console.Error.WriteLine("not enough arguments left for -map option");
-							}
-							break;
-						default:
-							format = argName;
-							break;
-					}
-				}
-				else
-				{
-					int indexOfEquals = arg.IndexOf('=');
+                            break;
+                        case "map":
+                            if (i + 2 < args.Length) {
+                                string uriPrefix = args[++i];
+                                string filePrefix = args[++i];
+                                uriMap.Add(uriPrefix, filePrefix);
+                            }
+                            else {
+                                Console.Error.WriteLine("not enough arguments left for -map option");
+                            }
+                            break;
+                        default:
+                            format = argName;
+                            break;
+                    }
+                }
+                else {
+                    int indexOfEquals = arg.IndexOf('=');
 
-					if (indexOfEquals != -1)
-					{
-						string name = arg.Substring(0, indexOfEquals);
-						string value = arg.Substring(indexOfEquals + 1);
-						parameters.Add(name, value);
-					}
-					else
-					{
-						Console.Error.WriteLine("unknown argument: {0}", arg);
-					}
-				}
-			}
-		}
+                    if (indexOfEquals != -1) {
+                        string name = arg.Substring(0, indexOfEquals);
+                        string value = arg.Substring(indexOfEquals + 1);
+                        parameters.Add(name, value);
+                    }
+                    else {
+                        Console.Error.WriteLine("unknown argument: {0}", arg);
+                    }
+                }
+            }
+        }
 
-		public static string FindSolution(string directory)
-		{
-			string[] files = Directory.GetFiles(directory, "*.sln");
+        public static string FindSolution(string directory) {
+            string[] files = Directory.GetFiles(directory, "*.sln");
 
-			if (files.Length == 0)
-			{
-				throw new ApplicationException(String.Format("{0} does not contain any '.sln' files", directory));
-			}
-			else if (files.Length > 1)
-			{
-				throw new ApplicationException(String.Format("{0} contains too many '.sln' files", directory));
-			}
+            if (files.Length == 0) {
+                throw new ApplicationException(String.Format("{0} does not contain any '.sln' files", directory));
+            }
+            else if (files.Length > 1) {
+                throw new ApplicationException(String.Format("{0} contains too many '.sln' files", directory));
+            }
 
-			return files[0];
-		}
+            return files[0];
+        }
 
-		public static void WriteSolution(
-			SolutionWriter writer, 
-			TextWriter textWriter, 
+        public static void WriteSolution(
+            SolutionWriter writer, 
+            TextWriter textWriter, 
             string sln, 
-			Hashtable parameters, 
-			Hashtable uriMap)
-		{
-			writer.SetOutput(textWriter);
-			writer.SetParameters(parameters);
+            Hashtable parameters, 
+            Hashtable uriMap) {
+            writer.SetOutput(textWriter);
+            writer.SetParameters(parameters);
 
-			Solution solution = new Solution();
-			solution.Read(sln, uriMap);
+            Solution solution = new Solution();
+            solution.Read(sln, uriMap);
 
-			writer.WriteStartSolution(solution);
+            writer.WriteStartSolution(solution);
 
-			foreach (Project project in solution.GetProjects())
-			{
-				IList sourceFiles = project.GetSourceFiles();
+            foreach (Project project in solution.GetProjects()) {
+                IList sourceFiles = project.GetSourceFiles();
 
-				if (sourceFiles.Count > 0)
-				{
-					writer.WriteStartProjectSourceFiles(project);
+                if (sourceFiles.Count > 0) {
+                    writer.WriteStartProjectSourceFiles(project);
 
-					foreach (File file in sourceFiles)
-					{
-						writer.WriteProjectSourceFile(file);
-					}
+                    foreach (File file in sourceFiles) {
+                        writer.WriteProjectSourceFile(file);
+                    }
 
-					writer.WriteEndProjectSourceFiles();
-				}
-
-				IList resXFiles = project.GetResXResourceFiles();
-
-				if (resXFiles.Count > 0)
-				{
-					writer.WriteStartProjectResXResourceFiles(project);
-
-					foreach (File file in resXFiles)
-					{
-						writer.WriteProjectResXResourceFile(file);
-					}
-
-					writer.WriteEndProjectResXResourceFiles();
-				}
-
-				IList resourceFiles = project.GetNonResXResourceFiles();
-
-				if (resourceFiles.Count > 0)
-				{
-					writer.WriteStartProjectNonResXResourceFiles(project);
-
-					foreach (File file in resourceFiles)
-					{
-						writer.WriteProjectNonResXResourceFile(file);
-					}
-
-					writer.WriteEndProjectNonResXResourceFiles();
-				}
-			}
-
-			foreach (Project project in solution.GetProjects())
-			{
-				if (project.CountFiles("Compile") > 0)
-				{
-					writer.WriteStartProject(project);
-
-					writer.WriteStartProjectDependencies();
-
-					foreach (Project dependency in solution.GetDependencies(project))
-					{
-						writer.WriteProjectDependency(dependency);
-					}
-
-					foreach (Reference reference in project.GetReferences())
-					{
-						if (reference.Type == "Project")
-						{
-							writer.WriteProjectDependency(solution.GetProject(reference.Value));
-						}
-					}
-
-					foreach (File file in project.GetFiles())
-					{
-						if (!file.RelativePath.EndsWith(".licx"))
-						{
-							writer.WriteProjectDependency(file);
-						}
-					}
-
-					writer.WriteEndProjectDependencies();
-
-					IList resXFiles = project.GetResXResourceFiles();
-
-					if (resXFiles.Count > 0)
-					{
-						writer.WriteStartResXFiles();
-
-						foreach (File file in resXFiles)
-						{
-							writer.WriteResXFile(file);
-						}
-
-						writer.WriteEndResXFiles();
-					}
-
-					writer.WriteStartAssembly();
-
-					IList sourceFiles = project.GetSourceFiles();
-
-					if (sourceFiles.Count > 0)
-					{
-						writer.WriteStartSourceFiles();
-
-						foreach (File file in sourceFiles)
-						{
-							writer.WriteSourceFile(file);
-						}
-
-						writer.WriteEndSourceFiles();
-					}
-
-					writer.WriteStartReferences();
-
-					// Write out the standard system references.
-
-					foreach (Reference reference in project.GetSystemReferences())
-					{
-						if (reference != null)
-						{
-              // assume it's another project in sln and/or copy-local
-              string path = reference.Value + ".dll";
-              bool inBuildPath = true;
-              if ( !reference.CopyLocal && (reference.Type == "AssemblyName") )
-              {
-                inBuildPath = false;
-                if ( reference.SourcePath != string.Empty ) 
-                {
-                  path = reference.SourcePath;
+                    writer.WriteEndProjectSourceFiles();
                 }
-                if ( ! Path.IsPathRooted( path ) ) 
-                {
-                  path = Path.GetFullPath( solution.SolutionDirectory + "\\" 
-                    + project.RelativePath + "\\" + path );
+
+                IList resXFiles = project.GetResXResourceFiles();
+
+                if (resXFiles.Count > 0) {
+                    writer.WriteStartProjectResXResourceFiles(project);
+
+                    foreach (File file in resXFiles) {
+                        writer.WriteProjectResXResourceFile(file);
+                    }
+
+                    writer.WriteEndProjectResXResourceFiles();
                 }
-              }
-              writer.WriteReference( path , inBuildPath );
-						}
-					}
 
-					// Write out the project references.
+                IList resourceFiles = project.GetNonResXResourceFiles();
 
-					foreach (Project referencedProject in project.GetReferencedProjects())
-					{
-						writer.WriteReference(referencedProject);
-					}
+                if (resourceFiles.Count > 0) {
+                    writer.WriteStartProjectNonResXResourceFiles(project);
 
-					writer.WriteEndReferences();
+                    foreach (File file in resourceFiles) {
+                        writer.WriteProjectNonResXResourceFile(file);
+                    }
 
-					writer.WriteStartResources();
+                    writer.WriteEndProjectNonResXResourceFiles();
+                }
+            }
 
-					foreach (File file in project.GetResXResourceFiles())
-					{
-						string path =
-							project.RootNamespace +
-							"." +
-							Path.GetFileNameWithoutExtension(file.RelativePath) +
-							".resources";
+            foreach (Project project in solution.GetProjects()) {
+                if (project.CountFiles("Compile") > 0) {
+                    writer.WriteStartProject(project);
 
-						writer.WriteResource(path, null, true);
-					}
+                    writer.WriteStartProjectDependencies();
 
-					foreach (File file in project.GetNonResXResourceFiles())
-					{
-						writer.WriteResource(
-							file.RelativePathFromSolutionDirectory,
-							file.ResourceName,
-							false);
-					}
+                    foreach (Project dependency in solution.GetDependencies(project)) {
+                        writer.WriteProjectDependency(dependency);
+                    }
 
-					writer.WriteEndResources();
+                    foreach (Reference reference in project.GetReferences()) {
+                        if (reference.Type == "Project") {
+                            writer.WriteProjectDependency(solution.GetProject(reference.Value));
+                        }
+                    }
 
-					writer.WriteEndAssembly();
+                    foreach (File file in project.GetFiles()) {
+                        if (!file.RelativePath.EndsWith(".licx")) {
+                            writer.WriteProjectDependency(file);
+                        }
+                    }
 
-					// Write out the project references so that they can be copied.
+                    writer.WriteEndProjectDependencies();
 
-					writer.WriteStartCopyProjectAssemblies();
+                    IList resXFiles = project.GetResXResourceFiles();
 
-					foreach (Project referencedProject in project.GetReferencedProjects())
-					{
-						writer.WriteCopyProjectAssembly(referencedProject);
-					}
+                    if (resXFiles.Count > 0) {
+                        writer.WriteStartResXFiles();
 
-					writer.WriteEndCopyProjectAssemblies();
+                        foreach (File file in resXFiles) {
+                            writer.WriteResXFile(file);
+                        }
 
-					writer.WriteEndProject();
-				}
-			}
+                        writer.WriteEndResXFiles();
+                    }
 
-			writer.WriteStartCleanTarget();
+                    writer.WriteStartAssembly();
 
-			foreach (Project project in solution.GetProjects())
-			{
-				writer.WriteCleanProject(project);
-			}
+                    IList sourceFiles = project.GetSourceFiles();
 
-			writer.WriteEndCleanTarget();
+                    if (sourceFiles.Count > 0) {
+                        writer.WriteStartSourceFiles();
 
-			writer.WriteEndSolution();
-		}
-	}
+                        foreach (File file in sourceFiles) {
+                            writer.WriteSourceFile(file);
+                        }
+
+                        writer.WriteEndSourceFiles();
+                    }
+
+                    writer.WriteStartReferences();
+
+                    // Write out the standard system references.
+
+                    foreach (Reference reference in project.GetSystemReferences()) {
+                        if (reference != null) {
+                            // assume it's another project in sln and/or copy-local
+                            string path = reference.Value + ".dll";
+                            bool inBuildPath = true;
+                            if ( !reference.CopyLocal && (reference.Type == "AssemblyName") ) {
+                                inBuildPath = false;
+                                if ( reference.SourcePath != string.Empty ) {
+                                    path = reference.SourcePath;
+                                }
+                                if ( ! Path.IsPathRooted( path ) ) {
+                                    path = Path.GetFullPath( solution.SolutionDirectory + "\\" 
+                                        + project.RelativePath + "\\" + path );
+                                }
+                            }
+                            writer.WriteReference( path , inBuildPath );
+                        }
+                    }
+
+                    // Write out the project references.
+
+                    foreach (Project referencedProject in project.GetReferencedProjects()) {
+                        writer.WriteReference(referencedProject);
+                    }
+
+                    writer.WriteEndReferences();
+
+                    writer.WriteStartResources();
+
+                    foreach (File file in project.GetResXResourceFiles()) {
+                        string path =
+                            project.RootNamespace +
+                            "." +
+                            Path.GetFileNameWithoutExtension(file.RelativePath) +
+                            ".resources";
+
+                        writer.WriteResource(path, null, true);
+                    }
+
+                    foreach (File file in project.GetNonResXResourceFiles()) {
+                        writer.WriteResource(
+                            file.RelativePathFromSolutionDirectory,
+                            file.ResourceName,
+                            false);
+                    }
+
+                    writer.WriteEndResources();
+
+                    writer.WriteEndAssembly();
+
+                    // Write out the project references so that they can be copied.
+
+                    writer.WriteStartCopyProjectAssemblies();
+
+                    foreach (Project referencedProject in project.GetReferencedProjects()) {
+                        writer.WriteCopyProjectAssembly(referencedProject);
+                    }
+
+                    writer.WriteEndCopyProjectAssemblies();
+
+                    writer.WriteEndProject();
+                }
+            }
+
+            writer.WriteStartCleanTarget();
+
+            foreach (Project project in solution.GetProjects()) {
+                writer.WriteCleanProject(project);
+            }
+
+            writer.WriteEndCleanTarget();
+
+            writer.WriteEndSolution();
+        }
+    }
 }

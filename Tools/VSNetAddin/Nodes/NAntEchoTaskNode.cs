@@ -22,51 +22,41 @@ using System.Xml;
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace NAnt.Contrib.NAntAddin.Nodes
-{
-	/// <summary>
-	/// Tree Node that represents an NAnt echo task.
-	/// </summary>
-	/// <remarks>None.</remarks>
-	[NAntTask("echo", "Display a Build Message", "echotask.bmp")]
-	public class NAntEchoTaskNode : NAntTaskNode
-	{
-		/// <summary>
-		/// Creates a new <see cref="NAntEchoTaskNode"/>.
-		/// </summary>
-		/// <param name="TaskElement">The task's XML element.</param>
-		/// <param name="ParentElement">The parent XML element of the task.</param>
-		/// <remarks>None.</remarks>
-		public NAntEchoTaskNode(XmlElement TaskElement, XmlElement ParentElement) 
-			: base(TaskElement, ParentElement)
-		{	
-		}
+namespace NAnt.Contrib.NAntAddin.Nodes {
+    /// <summary>
+    /// Tree Node that represents an NAnt echo task.
+    /// </summary>
+    /// <remarks>None.</remarks>
+    [NAntTask("echo", "Display a Build Message", "echotask.bmp")]
+    public class NAntEchoTaskNode : NAntTaskNode {
+        /// <summary>
+        /// Creates a new <see cref="NAntEchoTaskNode"/>.
+        /// </summary>
+        /// <param name="TaskElement">The task's XML element.</param>
+        /// <param name="ParentElement">The parent XML element of the task.</param>
+        /// <remarks>None.</remarks>
+        public NAntEchoTaskNode(XmlElement TaskElement, XmlElement ParentElement) 
+            : base(TaskElement, ParentElement) {
+        }
 
-		/// <summary>
-		/// Gets or sets the message to be displayed at build time.
-		/// </summary>
-		/// <value>The message to be displayed at build time.</value>
-		/// <remarks>None.</remarks>
-		[Description("The message displayed at build time."),Category("Data")]
-		public string Message
-		{
-			get
-			{
-				return TaskElement.GetAttribute("message");
-			}
-
-			set
-			{
-				if (value == "")
-				{
-					TaskElement.RemoveAttribute("message");
-				}
-				else
-				{
-					TaskElement.SetAttribute("message", value);
-				}
-				Save();
-			}
-		}
-	}
+        /// <summary>
+        /// Gets or sets the message to be displayed at build time.
+        /// </summary>
+        /// <value>The message to be displayed at build time.</value>
+        /// <remarks>None.</remarks>
+        [Description("The message displayed at build time."),Category("Data")]
+        public string Message {
+            get {
+                return TaskElement.GetAttribute("message");
+            }
+            set {
+                if (value == "") {
+                    TaskElement.RemoveAttribute("message");
+                } else {
+                    TaskElement.SetAttribute("message", value);
+                }
+                Save();
+            }
+        }
+    }
 }

@@ -22,72 +22,59 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.XPath;
 
-namespace SLiNgshoT.Core
-{
-	/// <summary>Represents a file in a project.</summary>
-	public class File
-	{
-		private Project _Project;
-		private XPathNavigator _Navigator;
+namespace SLiNgshoT.Core {
+    /// <summary>Represents a file in a project.</summary>
+    public class File {
+        private Project _Project;
+        private XPathNavigator _Navigator;
 
-		internal File(Project project, XPathNavigator navigator)
-		{
-			_Project = project;
-			_Navigator = navigator.Clone();
-		}
+        internal File(Project project, XPathNavigator navigator) {
+            _Project = project;
+            _Navigator = navigator.Clone();
+        }
 
-		/// <summary>Gets the relative path to the file (from the
-		/// project directory).</summary>
-		public string RelativePath
-		{
-			get
-			{
-				return (string)_Navigator.Evaluate("string(@RelPath)");
-			}
-		}
+        /// <summary>Gets the relative path to the file (from the
+        /// project directory).</summary>
+        public string RelativePath {
+            get {
+                return (string)_Navigator.Evaluate("string(@RelPath)");
+            }
+        }
 
-		/// <summary>Gets the BuildAction for the file.</summary>
-		/// <value>"Compile", "EmbeddedResource", or "Content"</value>
-		public string BuildAction
-		{
-			get
-			{
-				return (string)_Navigator.Evaluate("string(@BuildAction)");
-			}
-		}
+        /// <summary>Gets the BuildAction for the file.</summary>
+        /// <value>"Compile", "EmbeddedResource", or "Content"</value>
+        public string BuildAction {
+            get {
+                return (string)_Navigator.Evaluate("string(@BuildAction)");
+            }
+        }
 
-		/// <summary>Gets relative path to the file (from the solution
-		/// directory).</summary>
-		public string RelativePathFromSolutionDirectory
-		{
-			get
-			{
-				return Path.Combine(_Project.RelativePath, RelativePath);
-			}
-		}
+        /// <summary>Gets relative path to the file (from the solution
+        /// directory).</summary>
+        public string RelativePathFromSolutionDirectory {
+            get {
+                return Path.Combine(_Project.RelativePath, RelativePath);
+            }
+        }
 
-		/// <summary>Gets the absolute path to the file.</summary>
-		public string AbsolutePath
-		{
-			get
-			{
-				return Path.Combine(
-					_Project.Solution.SolutionDirectory,
-					RelativePathFromSolutionDirectory);
-			}
-		}
+        /// <summary>Gets the absolute path to the file.</summary>
+        public string AbsolutePath {
+            get {
+                return Path.Combine(
+                    _Project.Solution.SolutionDirectory,
+                    RelativePathFromSolutionDirectory);
+            }
+        }
 
-		/// <summary>Gets the "default" name for this resource.</summary>
-		/// <remarks>This is usually the RootNamespace plus the relative
-		/// path to the file with all backslashes replaced with dots.</remarks>
-		public string ResourceName
-		{
-			get
-			{
-				return _Project.RootNamespace +
-					"." +
-					RelativePath.Replace('\\', '.');
-			}
-		}
-	}
+        /// <summary>Gets the "default" name for this resource.</summary>
+        /// <remarks>This is usually the RootNamespace plus the relative
+        /// path to the file with all backslashes replaced with dots.</remarks>
+        public string ResourceName {
+            get {
+                return _Project.RootNamespace +
+                    "." +
+                    RelativePath.Replace('\\', '.');
+            }
+        }
+    }
 }

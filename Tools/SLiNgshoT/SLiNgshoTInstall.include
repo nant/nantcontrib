@@ -60,15 +60,14 @@
     <!--*****************************************************************-->
     <!--* Sets the version of output to slingshot.version               *-->
     <!--*****************************************************************-->
-	<target name="getSlingshotVersion" description="Sets the version of output to slingshot.version" >
-		<script language="C#">
-		<code><![CDATA[
-		public static void ScriptMain(Project project) {
-			string buildPath = Path.Combine(project.BaseDirectory, project.Properties["build.dir"]);
-			project.Properties["slingshot.version"] = System.Diagnostics.FileVersionInfo.GetVersionInfo(Path.Combine(buildPath, "SLiNgshoT.Core.dll")).FileVersion.ToString();
-		}
-		]]></code>
-		</script>        
-	</target>
-    
+    <target name="getSlingshotVersion" description="Sets the version of output to slingshot.version" >
+        <script language="C#">
+        <code><![CDATA[
+        public static void ScriptMain(Project project) {
+            string buildPath = Path.Combine(project.BaseDirectory, project.Properties["build.dir"]);
+            project.Properties["slingshot.version"] = System.Diagnostics.FileVersionInfo.GetVersionInfo(Path.Combine(buildPath, "SLiNgshoT.Core.dll")).FileVersion.ToString();
+        }
+        ]]></code>
+        </script>
+    </target>
 </project>

@@ -18,65 +18,63 @@
 using System.Collections;
 using System.IO;
 
-namespace SLiNgshoT.Core
-{
-	public interface SolutionWriter
-	{
-		void SetOutput(TextWriter output);
-		void SetParameters(Hashtable parameters);
+namespace SLiNgshoT.Core {
+    public interface SolutionWriter {
+        void SetOutput(TextWriter output);
+        void SetParameters(Hashtable parameters);
 
-		void WriteStartSolution(Solution solution);
+        void WriteStartSolution(Solution solution);
 
-		void WriteStartProjectSourceFiles(Project project);
-		void WriteProjectSourceFile(File file);
-		void WriteEndProjectSourceFiles();
+        void WriteStartProjectSourceFiles(Project project);
+        void WriteProjectSourceFile(File file);
+        void WriteEndProjectSourceFiles();
 
-		void WriteStartProjectResXResourceFiles(Project project);
-		void WriteProjectResXResourceFile(File file);
-		void WriteEndProjectResXResourceFiles();
+        void WriteStartProjectResXResourceFiles(Project project);
+        void WriteProjectResXResourceFile(File file);
+        void WriteEndProjectResXResourceFiles();
 
-		void WriteStartProjectNonResXResourceFiles(Project project);
-		void WriteProjectNonResXResourceFile(File file);
-		void WriteEndProjectNonResXResourceFiles();
+        void WriteStartProjectNonResXResourceFiles(Project project);
+        void WriteProjectNonResXResourceFile(File file);
+        void WriteEndProjectNonResXResourceFiles();
 
-		void WriteStartProject(Project project);
+        void WriteStartProject(Project project);
 
-		void WriteStartProjectDependencies();
-		void WriteProjectDependency(Project project);
-		void WriteProjectDependency(File file);
-		void WriteEndProjectDependencies();
+        void WriteStartProjectDependencies();
+        void WriteProjectDependency(Project project);
+        void WriteProjectDependency(File file);
+        void WriteEndProjectDependencies();
 
-		void WriteStartResXFiles();
-		void WriteResXFile(File file);
-		void WriteEndResXFiles();
+        void WriteStartResXFiles();
+        void WriteResXFile(File file);
+        void WriteEndResXFiles();
 
-		void WriteStartAssembly();
+        void WriteStartAssembly();
 
-		void WriteStartSourceFiles();
-		void WriteSourceFile(File file);
-		void WriteEndSourceFiles();
+        void WriteStartSourceFiles();
+        void WriteSourceFile(File file);
+        void WriteEndSourceFiles();
 
-		void WriteStartReferences();
-		void WriteReference(string name, bool built);
-		void WriteReference(Project project);
-		void WriteEndReferences();
+        void WriteStartReferences();
+        void WriteReference(string name, bool built);
+        void WriteReference(Project project);
+        void WriteEndReferences();
 
-		void WriteStartResources();
-		void WriteResource(string path, string name, bool built);
-		void WriteEndResources();
+        void WriteStartResources();
+        void WriteResource(string path, string name, bool built);
+        void WriteEndResources();
 
-		void WriteStartCopyProjectAssemblies();
-		void WriteCopyProjectAssembly(Project project);
-		void WriteEndCopyProjectAssemblies();
+        void WriteStartCopyProjectAssemblies();
+        void WriteCopyProjectAssembly(Project project);
+        void WriteEndCopyProjectAssemblies();
 
-		void WriteEndAssembly();
+        void WriteEndAssembly();
 
-		void WriteEndProject();
+        void WriteEndProject();
 
-		void WriteStartCleanTarget();
-		void WriteCleanProject(Project project);
-		void WriteEndCleanTarget();
+        void WriteStartCleanTarget();
+        void WriteCleanProject(Project project);
+        void WriteEndCleanTarget();
 
-		void WriteEndSolution();
-	}
+        void WriteEndSolution();
+    }
 }
