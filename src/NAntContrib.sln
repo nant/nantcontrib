@@ -39,10 +39,8 @@ Global
 		{7B7D512B-FDF9-4F39-9FA2-6986D76F6C13}.Release.Build.0 = Release|.NET
 	EndGlobalSection
 	GlobalSection(SolutionItems) = postSolution
-		..\Tools\VSNetAddin\Default.build = ..\Tools\VSNetAddin\Default.build
 		..\NAntContrib.build = ..\NAntContrib.build
 		..\NAntContribInstall.include = ..\NAntContribInstall.include
-		..\nightly.xml = ..\nightly.xml
 		..\Tools\SLiNgshoT\SLiNgshoT.build = ..\Tools\SLiNgshoT\SLiNgshoT.build
 		..\Tools\SLiNgshoT\SLiNgshoTInstall.include = ..\Tools\SLiNgshoT\SLiNgshoTInstall.include
 	EndGlobalSection
