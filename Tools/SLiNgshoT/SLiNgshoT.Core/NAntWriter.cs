@@ -230,10 +230,7 @@ namespace SLiNgshoT.Core {
 
                 string documentationFile = Path.GetFileName(project.GetRelativePathToDocumentationFile(configuration.Name));
 
-                if (documentationFile == null || documentationFile.Length == 0) {
-                    WriteProperty("doc", "");
-                }
-                else {
+                if (documentationFile != null && documentationFile.Length != 0) {
                     WriteProperty("doc", "${build.dir}\\" + Path.GetFileName(project.GetRelativePathToDocumentationFile(configuration.Name)));
                 }
                 WriteProperty( "warninglevel", configuration.WarningLevel );
@@ -290,8 +287,7 @@ namespace SLiNgshoT.Core {
                 writer.WriteStartElement("vbc");
                 writer.WriteAttributeString("rootnamespace", project.RootNamespace);
                 writer.WriteAttributeString("imports", project.GetImports());
-            }
-            else {
+            } else {
                 // default to 'csc'
                 writer.WriteStartElement("csc");
                 writer.WriteAttributeString("unsafe", "${unsafe}");
