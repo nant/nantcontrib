@@ -73,6 +73,8 @@ namespace NAnt.Contrib.Util
       public IDataReader Execute(string sql)
       {
          OleDbCommand command = new OleDbCommand(sql, _connection);
+         if ( _transaction != null )
+            command.Transaction = _transaction;
          return command.ExecuteReader();
       }
 

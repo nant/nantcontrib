@@ -52,6 +52,7 @@ namespace NAnt.Contrib.Util
    {
       private StringCollection _statements;
       private string _delimiter;
+      private Regex _regex;
 
       /// <summary>
       /// Number of statements in the list
@@ -76,11 +77,14 @@ namespace NAnt.Contrib.Util
          _statements = new StringCollection();
 
          if ( style == DelimiterStyle.Line ) {
-            _delimiter = "^" + delimiter + "$";
+            _delimiter = "[\n\r]+" + delimiter + "[\n\r]+";
+            _regex = new Regex(_delimiter, RegexOptions.Multiline);
          } else {
             _delimiter = delimiter;
+            _regex = new Regex(_delimiter);
          }
       }
+
 
       /// <summary>
       /// Parses the Sql into the internal list using the specified delimiter
@@ -89,25 +93,26 @@ namespace NAnt.Contrib.Util
       /// <param name="sql"></param>
       public void ParseSql(string sql)
       {
-         StringReader reader = new StringReader(sql);
-         string line = null;
-         while ( (line = reader.ReadLine()) != null ) {
-            line = line.Trim();
-            if ( line == string.Empty ) {
-               continue;
-            }
-            if ( line.StartsWith("//") || line.StartsWith("--") ) {
-               continue;
-            }
-            string[] tokens = Regex.Split(line, _delimiter);
-            foreach ( string t in tokens ) {
-               if ( t != string.Empty ) {
-                  _statements.Add(t);
-               }
+         string strippedSql = StripComments(ExpandProps(sql));
+
+         string[] tokens = _regex.Split(strippedSql);
+         foreach ( string token in tokens )
+         {
+            string ttoken = token.Trim();
+            if ( ttoken != string.Empty ) { 
+//               Console.WriteLine("*******\n{0}\n*********", ttoken);
+               _statements.Add(ttoken);
             }
          }
       }
-  
+
+
+      /// <summary>
+      /// Parses the contents of the file into the 
+      /// internal list using the specified delimiter
+      /// and delimiter style
+      /// </summary>
+      /// <param name="file">File name</param>
       public void ParseSqlFromFile(string file)
       {
          string statements;
@@ -121,40 +126,7 @@ namespace NAnt.Contrib.Util
                reader.Close();
          }
       }
-/*
-      /// <summary>
-      /// Creates a new SqlStatementList initialized from
-      /// the contents of a string
-      /// </summary>
-      /// <param name="statements">A string containing all sql statements</param>
-      /// <param name="delimiter">String that separates statements from each other</param>
-      /// <returns>The new instance</returns>
-      public static SqlStatementList FromString(string statements, string delimiter)
-      {
-         return new SqlStatementList(statements, delimiter);
-      }
 
-      /// <summary>
-      /// Creates a new SqlStatementList initialized from
-      /// the contents of a file
-      /// </summary>
-      /// <param name="file">Path of file containing all sql statements</param>
-      /// <param name="delimiter">String that separates statements from each other</param>
-      /// <returns>The new instance</returns>
-      public static SqlStatementList FromFile(string file, string delimiter)
-      {
-         string statements;
-         StreamReader reader = null;
-         try {
-            reader = new StreamReader(File.OpenRead(file));
-            statements = reader.ReadToEnd();
-            return new SqlStatementList(statements, delimiter);
-         } finally {
-            if ( reader != null )
-               reader.Close();
-         }
-      }
-*/
       /// <summary>
       /// Allows foreach().
       /// </summary>
@@ -163,6 +135,48 @@ namespace NAnt.Contrib.Util
       {
          return ((IEnumerable)_statements).GetEnumerator();
       }
+
+
+      /// <summary>
+      /// Strips all single line comments 
+      /// in the specified sql
+      /// </summary>
+      /// <param name="sql"></param>
+      /// <returns></returns>
+      private string StripComments(string sql)
+      {
+         StringReader reader = new StringReader(sql);
+         StringBuilder newSql = new StringBuilder("");
+
+         string line = null;
+         while ( (line = reader.ReadLine()) != null ) 
+         {
+            line = line.Trim();
+            if ( line == string.Empty ) {
+               continue;
+            }
+            if ( line.StartsWith("//") || line.StartsWith("--") ) {
+               continue;
+            }
+
+            newSql.Append(line + Environment.NewLine);
+         }
+
+         return newSql.ToString();
+      }
+
+      /// <summary>
+      /// Expands project properties in the
+      /// sql string
+      /// </summary>
+      /// <param name="sql"></param>
+      /// <returns></returns>
+      private string ExpandProps(string sql)
+      {
+         // TODO: Add property expansion!
+         return sql;
+      }
+
       
    } // class SqlStatementList
 

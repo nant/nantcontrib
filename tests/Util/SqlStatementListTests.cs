@@ -40,7 +40,9 @@ namespace NAnt.Contrib.Tests.Util
       const string STATEMENT_1 = "select * from tables";
       const string STATEMENT_2 = "insert into tables values(1,2,3)";
       const string STATEMENT_3 = "drop tables";
+      const string STATEMENT_4 = "insert into tables\r\nvalues(1234)";
       const string DELIMITER = ";";
+      const string DELIMITER2 = "GO";
 
       public SqlStatementListTests(string name)
          : base(name)
@@ -85,6 +87,22 @@ namespace NAnt.Contrib.Tests.Util
 
          Assertion.AssertEquals(1, list.Count);
          Assertion.AssertEquals(STATEMENT_1, list[0]);
+      }
+
+      public void TestMultiLineStatements()
+      {
+         string statements = STATEMENT_1 + "\n" + DELIMITER2  + "\r\n" 
+                           + STATEMENT_2 + "\r\n" + STATEMENT_4
+                           + "\r\n" + DELIMITER2 + "\n " + STATEMENT_3;
+
+         SqlStatementList list = new SqlStatementList(DELIMITER2, DelimiterStyle.Line);
+         list.ParseSql(statements);
+         
+         Assertion.AssertEquals(3, list.Count);
+
+         Assertion.AssertEquals(STATEMENT_1, list[0]);
+         Assertion.AssertEquals(STATEMENT_2 + "\r\n" + STATEMENT_4, list[1]);
+         Assertion.AssertEquals(STATEMENT_3, list[2]);
       }
 
    } // class SqlStatementListTests
