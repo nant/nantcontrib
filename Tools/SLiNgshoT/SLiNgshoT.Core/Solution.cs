@@ -72,9 +72,9 @@ namespace SLiNgshoT.Core
 
 				string line = streamReader.ReadLine();
 
-				if (line != "Microsoft Visual Studio Solution File, Format Version 7.00")
+				if (!line.StartsWith("Microsoft Visual Studio Solution File, Format Version"))
 				{
-					throw new ApplicationException("this is not a 'Microsoft Visual Studio Solution File, Format Version 7.00' file");
+					throw new ApplicationException("this is not a 'Microsoft Visual Studio Solution File' file");
 				}
 
 				bool projectDependencies = false;
