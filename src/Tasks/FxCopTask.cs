@@ -28,24 +28,26 @@ using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks {
     /// <summary>
-    /// Analyzes managed code assemblies (code that targets the .NET Framework common language runtime) and reports 
-    /// information about the assemblies, such as possible design, localization, performance, and security 
-    /// improvements.
+    /// Analyzes managed code assemblies and reports information about the 
+    /// assemblies, such as possible design, localization, performance, and 
+    /// security improvements.
     /// </summary>
     /// <remarks>
-    /// NOTE: This task relies on the fxcopcmd.exe file being in your path variable.  You can download the latest
-    /// fxcop from: http://www.gotdotnet.com/team/fxcop/
+    ///   <note>
+    ///   this task relies on fxcopcmd.exe being in your PATH environment variable.  
+    ///   You can download the latest FxCop from <see href="http://www.gotdotnet.com/team/fxcop/" />.
+    ///   </note>
     /// </remarks>
     /// <example>
     ///   <code>
     ///     <![CDATA[
     /// <fxcop directOutputToConsole="true" projectFile="${build.dir}\Sample.fxcop">
-    ///  <targets>
-    ///        <include name="${build.dir}\bin\*.dll" />
-    ///  </targets>
-    ///  <rules>
-    ///        <include name="${build.dir}\rules\*.dll" />
-    ///  </rules>
+    ///     <targets>
+    ///         <include name="${build.dir}\bin\*.dll" />
+    ///     </targets>
+    ///     <rules>
+    ///         <include name="${build.dir}\rules\*.dll" />
+    ///     </rules>
     /// </fxcop>
     ///     ]]>
     ///   </code>
