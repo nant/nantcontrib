@@ -1,408 +1,396 @@
 <VisualStudioProject>
-    <CSHARP 
-        ProjectType="Local" 
-        ProductVersion="7.0.9466" 
-        SchemaVersion="1.0" 
-        ProjectGuid="{CFBA0DE3-2B01-4C75-B615-4ACBA502F71C}">
+    <CSHARP
+        ProjectType = "Local"
+        ProductVersion = "7.0.9466"
+        SchemaVersion = "1.0"
+        ProjectGuid = "{CFBA0DE3-2B01-4C75-B615-4ACBA502F71C}"
+    >
         <Build>
-            <Settings 
-                ApplicationIcon="" 
-                AssemblyKeyContainerName="" 
-                AssemblyName="NAntContrib"
-                AssemblyOriginatorKeyFile="" 
-                DefaultClientScript="JScript" 
-                DefaultHTMLPageLayout="Grid"
-                DefaultTargetSchema="IE50" 
-                DelaySign="false" 
-                OutputType="Library" 
-                RootNamespace="NAnt.Contrib"
-                StartupObject="">
-                <Config 
-                    Name="Debug" 
-                    AllowUnsafeBlocks="false" 
-                    BaseAddress="285212672" 
-                    CheckForOverflowUnderflow="false"
-                    ConfigurationOverrideFile="" 
-                    DefineConstants="DEBUG;TRACE" 
-                    DocumentationFile=""
-                    DebugSymbols="true" 
-                    FileAlignment="4096" 
-                    IncrementalBuild="true" 
-                    Optimize="false"
-                    OutputPath="..\build\" 
-                    RegisterForComInterop="false" 
-                    RemoveIntegerChecks="false"
-                    TreatWarningsAsErrors="false" 
-                    WarningLevel="4" />
-                <Config 
-                    Name="Release" 
-                    AllowUnsafeBlocks="false" 
-                    BaseAddress="285212672" 
-                    CheckForOverflowUnderflow="false"
-                    ConfigurationOverrideFile="" 
-                    DefineConstants="TRACE" 
-                    DocumentationFile="" 
-                    DebugSymbols="false"
-                    FileAlignment="4096" 
-                    IncrementalBuild="true" 
-                    Optimize="true" 
-                    OutputPath="bin\Release\"
-                    RegisterForComInterop="false" 
-                    RemoveIntegerChecks="false" 
-                    TreatWarningsAsErrors="false"
-                    WarningLevel="4" 
+            <Settings
+                ApplicationIcon = ""
+                AssemblyKeyContainerName = ""
+                AssemblyName = "NAntContrib"
+                AssemblyOriginatorKeyFile = ""
+                DefaultClientScript = "JScript"
+                DefaultHTMLPageLayout = "Grid"
+                DefaultTargetSchema = "IE50"
+                DelaySign = "false"
+                OutputType = "Library"
+                RootNamespace = "NAnt.Contrib"
+                StartupObject = ""
+            >
+                <Config
+                    Name = "Debug"
+                    AllowUnsafeBlocks = "false"
+                    BaseAddress = "285212672"
+                    CheckForOverflowUnderflow = "false"
+                    ConfigurationOverrideFile = ""
+                    DefineConstants = "DEBUG;TRACE"
+                    DocumentationFile = ""
+                    DebugSymbols = "true"
+                    FileAlignment = "4096"
+                    IncrementalBuild = "true"
+                    Optimize = "false"
+                    OutputPath = "..\build\"
+                    RegisterForComInterop = "false"
+                    RemoveIntegerChecks = "false"
+                    TreatWarningsAsErrors = "false"
+                    WarningLevel = "4"
+                />
+                <Config
+                    Name = "Release"
+                    AllowUnsafeBlocks = "false"
+                    BaseAddress = "285212672"
+                    CheckForOverflowUnderflow = "false"
+                    ConfigurationOverrideFile = ""
+                    DefineConstants = "TRACE"
+                    DocumentationFile = ""
+                    DebugSymbols = "false"
+                    FileAlignment = "4096"
+                    IncrementalBuild = "true"
+                    Optimize = "true"
+                    OutputPath = "bin\Release\"
+                    RegisterForComInterop = "false"
+                    RemoveIntegerChecks = "false"
+                    TreatWarningsAsErrors = "false"
+                    WarningLevel = "4"
                 />
             </Settings>
             <References>
-                <Reference 
-                    Name="mscorlib" 
-                    AssemblyName="mscorlib" 
+                <Reference
+                    Name = "mscorlib"
+                    AssemblyName = "mscorlib"
                 />
-                <Reference 
-                    Name="System" 
-                    AssemblyName="System" 
+                <Reference
+                    Name = "System"
+                    AssemblyName = "System"
                 />
-                <Reference 
-                    Name="SourceSafe.Interop" 
-                    AssemblyName="SourceSafe.Interop" 
-                    HintPath="..\bin\SourceSafe.Interop.dll" 
+                <Reference
+                    Name = "SourceSafe.Interop"
+                    AssemblyName = "SourceSafe.Interop"
+                    HintPath = "..\bin\SourceSafe.Interop.dll"
                 />
-                <Reference 
-                    Name="Interop.WindowsInstaller" 
-                    AssemblyName="Interop.WindowsInstaller"
-                    HintPath="..\bin\Interop.WindowsInstaller.dll" 
+                <Reference
+                    Name = "Interop.WindowsInstaller"
+                    AssemblyName = "Interop.WindowsInstaller"
+                    HintPath = "..\bin\Interop.WindowsInstaller.dll"
                 />
-                <Reference 
-                    Name="CollectionGen" 
-                    AssemblyName="CollectionGen" 
-                    HintPath="..\bin\CollectionGen.dll" 
+                <Reference
+                    Name = "CollectionGen"
+                    AssemblyName = "CollectionGen"
+                    HintPath = "..\bin\CollectionGen.dll"
                 />
-                <Reference 
-                    Name="System.Data" 
-                    AssemblyName="System.Data" 
-                    HintPath="G:\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.Data.dll" 
+                <Reference
+                    Name = "System.Data"
+                    AssemblyName = "System.Data"
+                    HintPath = "G:\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.Data.dll"
                 />
-                <Reference 
-                    Name="System.XML" 
-                    AssemblyName="System.Xml" 
-                    HintPath="G:\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.XML.dll" 
+                <Reference
+                    Name = "System.XML"
+                    AssemblyName = "System.Xml"
+                    HintPath = "G:\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.XML.dll"
                 />
-                <Reference 
-                    Name="System.Web" 
-                    AssemblyName="System.Web" 
-                    HintPath="G:\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.Web.dll" 
+                <Reference
+                    Name = "System.Web"
+                    AssemblyName = "System.Web"
+                    HintPath = "G:\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.Web.dll"
                 />
-                <Reference 
-                    Name="Interop.StarTeam" 
-                    AssemblyName="Interop.StarTeam" 
-                    HintPath="..\bin\Interop.StarTeam.dll" 
+                <Reference
+                    Name = "Interop.StarTeam"
+                    AssemblyName = "Interop.StarTeam"
+                    HintPath = "..\bin\Interop.StarTeam.dll"
                 />
-                <Reference 
-                    Name="SLiNgshoT.Core" 
-                    Project="{3F533CCA-9C8F-4D84-8C1A-1F6D89CB5912}"
-                    Package="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}" 
+                <Reference
+                    Name = "SLiNgshoT.Core"
+                    Project = "{3F533CCA-9C8F-4D84-8C1A-1F6D89CB5912}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
-                <Reference 
-                    Name="NAnt.DotNetTasks" 
-                    AssemblyName="NAnt.DotNetTasks" 
-                    HintPath="..\NAntRelease\bin\NAnt.DotNetTasks.dll" 
+                <Reference
+                    Name = "NAnt.DotNetTasks"
+                    AssemblyName = "NAnt.DotNetTasks"
+                    HintPath = "..\NAntRelease\bin\NAnt.DotNetTasks.dll"
                 />
-                <Reference 
-                    Name="NAnt.Core" 
-                    AssemblyName="NAnt.Core" 
-                    HintPath="..\NAntRelease\bin\NAnt.Core.dll" 
+                <Reference
+                    Name = "NAnt.Core"
+                    AssemblyName = "NAnt.Core"
+                    HintPath = "..\NAntRelease\bin\NAnt.Core.dll"
                 />
-                <Reference 
-                    Name="System.DirectoryServices" 
-                    AssemblyName="System.DirectoryServices"
-                    HintPath="..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.DirectoryServices.dll" 
+                <Reference
+                    Name = "System.DirectoryServices"
+                    AssemblyName = "System.DirectoryServices"
+                    HintPath = "..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.DirectoryServices.dll"
                 />
-                <Reference 
-                    Name="Interop.MsmMergeTypeLib" 
-                    AssemblyName="Interop.MsmMergeTypeLib"
-                    HintPath="..\bin\Interop.MsmMergeTypeLib.dll" 
+                <Reference
+                    Name = "Interop.MsmMergeTypeLib"
+                    AssemblyName = "Interop.MsmMergeTypeLib"
+                    HintPath = "..\bin\Interop.MsmMergeTypeLib.dll"
                 />
             </References>
         </Build>
         <Files>
             <Include>
                 <File
-                    RelPath="AssemblyInfo.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
-                />
-                <File
-                    RelPath="CommonAssemblyInfo.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
-                />
-                <File
-                    RelPath="Tasks\ADSIBaseTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
-                />
-                <File
-                    RelPath="Tasks\ADSIGetPropertyTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
-                 />
-                <File
-                    RelPath="Tasks\ADSISetPropertyTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
-                />
-                <File
-                    RelPath="Tasks\AstyleTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
-                />
-                <File
-                    RelPath="Tasks\ChecksumTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
-                />
-                <File
-                    RelPath="Tasks\CodeStatsTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
-                />
-                <File
-                    RelPath="Tasks\COMRegisterTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
-                />
-                <File
-                    RelPath="Tasks\ConcatTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
-                />
-                <File
-                    RelPath="Tasks\DiscoTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
-                />
-		<File
-                    RelPath = "FxCopTask.cs"
+                    RelPath = "AssemblyInfo.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\GacTaskBase.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "CommonAssemblyInfo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\GacInstallTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\ADSIBaseTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\GacUninstallTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\ADSIGetPropertyTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\SchemeType.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\ADSISetPropertyTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Types\Assembly.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\AstyleTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Types\AssemblySet.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\ChecksumTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Types\GacReference.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\CodeStatsTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\GacTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\COMRegisterTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\HxCompTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\ConcatTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\HxRegTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\DiscoTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\MgmtClassGenTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\FxCopTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\NAnt.xsd"
-                    BuildAction="Content"
+                    RelPath = "Tasks\GacInstallTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\NGenTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\GacTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\NUnitReportTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\GacTaskBase.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\RecordTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\GacUninstallTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\RegasmTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\HxCompTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\SchemaValidatedTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\HxRegTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\ScpTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\MgmtClassGenTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\SlingshotTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\NAnt.xsd"
+                    BuildAction = "Content"
                 />
                 <File
-                    RelPath="Tasks\SqlTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\NGenTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\TypedCollectionTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\NUnitReportTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\ValidateXmlTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\RecordTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\Vb6Task.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\RegasmTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\VersionTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\SchemaValidatedTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\WsdlTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\SchemeType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\XsdTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\ScpTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\Grep\GrepTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\SlingshotTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\Grep\LineCounter.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\SqlTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\Grep\Match.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\TypedCollectionTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\Grep\MatchCollection.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\ValidateXmlTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\Grep\Pattern.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\Vb6Task.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\Msi\InstallerCreationCommand.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\VersionTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\Msi\InstallerDatabase.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\WsdlTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\Msi\InstallerRecordReader.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\XsdTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\Msi\InstallerSearchClause.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\Grep\GrepTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\Msi\InstallerTable.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\Grep\LineCounter.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\Msi\InstallerTaskBase.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\Grep\Match.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\Msi\MsiCreationCommand.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\Grep\MatchCollection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\Msi\MsiTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\Grep\Pattern.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\Msi\MsiTask.xsd"
-                    BuildAction="Content"
+                    RelPath = "Tasks\Msi\InstallerCreationCommand.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\Msi\MsiTask.xsx"
-                    DependentUpon="MsiTask.xsd"
-                    BuildAction="None"
+                    RelPath = "Tasks\Msi\InstallerDatabase.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\Msi\MsmCreationCommand.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\Msi\InstallerRecordReader.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\Msi\MsmTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\Msi\InstallerSearchClause.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\Msi\TypeLibRecord.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\Msi\InstallerTable.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Msi\InstallerTaskBase.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Msi\MsiCreationCommand.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Msi\MsiTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Msi\MsiTask.xsd"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Tasks\Msi\MsiTask.xsx"
+                    DependentUpon = "MsiTask.xsd"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Tasks\Msi\MsmCreationCommand.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Msi\MsmTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Msi\TypeLibRecord.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Tasks\Perforce\P4Add.cs"
@@ -600,34 +588,34 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\SourceSafe\AddTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\SourceSafe\AddTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\SourceSafe\BaseTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\SourceSafe\BaseTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\SourceSafe\CheckinTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\SourceSafe\CheckinTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\SourceSafe\CheckoutTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\SourceSafe\CheckoutTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\SourceSafe\DiffTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\SourceSafe\DiffTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\SourceSafe\GetTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\SourceSafe\GetTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Tasks\SourceSafe\History.cs"
@@ -635,54 +623,54 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\SourceSafe\LabelTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\SourceSafe\LabelTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\SourceSafe\UndoCheckoutTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\SourceSafe\UndoCheckoutTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\StarTeam\LabelTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\StarTeam\LabelTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\StarTeam\StarTeamAutoLabel.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\StarTeam\StarTeamAutoLabel.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\StarTeam\StarTeamCheckin.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\StarTeam\StarTeamCheckin.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\StarTeam\StarTeamCheckout.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\StarTeam\StarTeamCheckout.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\StarTeam\StarTeamLabel.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\StarTeam\StarTeamLabel.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\StarTeam\StarTeamList.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\StarTeam\StarTeamList.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\StarTeam\StarTeamTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\StarTeam\StarTeamTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\StarTeam\TreeBasedTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\StarTeam\TreeBasedTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Tasks\SurroundSCM\SSCMBatch.cs"
@@ -730,9 +718,9 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\Svn\AbstractSvnTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\Svn\AbstractSvnTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Tasks\Svn\SvnCheckoutTask.cs"
@@ -740,9 +728,9 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Tasks\Svn\SvnTask.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Tasks\Svn\SvnTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Tasks\Svn\SvnUpdateTask.cs"
@@ -770,39 +758,54 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Types\Filter.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Types\Assembly.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Types\FilterCollection.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Types\AssemblySet.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Types\FilterSet.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Types\Filter.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Types\FilterSetCollection.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Types\FilterCollection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Types\SchemaElement.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Types\FilterSet.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Types\XmlSchemaReference.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Types\FilterSetCollection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Types\XmlSchemaReferenceCollection.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Types\GacReference.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Types\SchemaElement.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Types\XmlSchemaReference.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Types\XmlSchemaReferenceCollection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Types\PVCS\Entity.cs"
@@ -815,44 +818,45 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Util\ChecksumHelper.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Util\ChecksumHelper.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Util\FileLogListener.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Util\FileLogListener.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Util\FileUtils.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Util\FileUtils.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Util\SqlHelper.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Util\SqlHelper.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Util\SqlStatementAdapter.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Util\SqlStatementAdapter.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="Util\SqlStatementList.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
+                    RelPath = "Util\SqlStatementList.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath="xsl\NUnitSummary.xsl"
-                    BuildAction="Content"
+                    RelPath = "xsl\NUnitSummary.xsl"
+                    BuildAction = "Content"
                 />
                 <File
-                    RelPath="xsl\toolkit.xsl"
-                    BuildAction="Content"
+                    RelPath = "xsl\toolkit.xsl"
+                    BuildAction = "Content"
                 />
             </Include>
         </Files>
     </CSHARP>
 </VisualStudioProject>
+
