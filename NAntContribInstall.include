@@ -264,7 +264,7 @@
             </directories>
 
             <environment>
-                <variable name="PATH" append="'[D__NANT_BIN]'" component="C__NAnt_Bin" />
+                <variable name="PATH" append="[D__NANT_BIN]" component="C__NAnt_Bin" />
             </environment>
             
             <components>
