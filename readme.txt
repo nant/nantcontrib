@@ -1,27 +1,43 @@
-Welcome to NAntContrib
+NAntContrib
 
-In NAntContrib you will find many cool things.
-/tasks
-/Tools/
-And build files to create MSI distributions.
+What is it?
+-----------
+NAntContrib is the project for tasks and tools that haven't made it into the main NAnt distribution 
+yet or for whatever reason don't belong there.
+
+
+How to use NAntContrib tasks in NAnt?
+-------------------------------------
+In order to use NAntContrib tasks in NAnt, you should use the NAnt's <loadtasks> task.
+
+For example :
+
+<project name="NAntContrib" default"test">
+	<target name="test">
+		<loadtasks assembly="c:/NAntContrib/bin/NAnt.Contrib.Tasks.dll" />
+		...
+	</target>
+</project>
+
 
 How to build.
+-------------
+To build NAntContrib, the following procedure should be followed:
 
-1) get and build NAnt from cvs. http://sourceforge.net/cvs/?group_id=31650
-	- change to the nant directory
-	- build using the command: 
+1) Download and extract a binary distribution of NAnt from http://nant.sourceforge.net
 
-		bin\NAnt.exe package
+2) Change to the NAntContrib directory
 
-	NOTE: You may need to run vcvars32.bat to set your path correctly to run the unit tests.
+3) Run NAntContrib.build using the version of NAnt that you downloaded.
 
-2) run NAntContrib.build referencing the version of NAnt just built.
-	- change to the NAntContrib directory
-	- build using the command
+	eg.  c:\NAnt\bin\NAnt.exe -D:nant.dir=c:\NAnt -f:NAntContrib.build
 
-		nant -D:nant.dir=H:\cvs\nant\build\net-1.1.win32\nant-0.85-debug -f:NAntContrib.build
+Note: 
 
-	NOTE: nant.dir should point to the build directory from step 1, just above bin. This will obviously 
-	be different on your installation.
+These instructions only apply to the source distribution of NAntContrib, as the binary distribution 
+contains pre-built assemblies.
 
 
+Documentation
+-------------
+Documentation is available in HTML format, in the doc/ directory.
