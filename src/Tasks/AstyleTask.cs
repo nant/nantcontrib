@@ -281,6 +281,40 @@ namespace NAnt.Contrib.Tasks {
         }
 
         /// <summary>
+        /// Indicate that tabs should be used to indent sources.  The number 
+        /// specified indicates the maximum number of spaces the tab character
+        /// will represent.
+        /// </summary>
+        [TaskAttribute("indent-num-tabs", Required=false)]
+        public int IndentNumTabs {
+            get {
+                return Convert.ToInt32(((Option) this.CommandOptions["indent-num-tabs"]).Value, 
+                    CultureInfo.InvariantCulture);
+            }
+            set {
+                this.SetCommandOption("indent-num-tabs", string.Format(CultureInfo.InvariantCulture,
+                    "indent=tabs={0}", value), true);
+            }
+        }
+
+        /// <summary>
+        /// Indent using tab characters. Treat each tab as # spaces. Uses tabs as 
+        /// indents in areas '--indent=tab' prefers to use spaces, such as 
+        /// inside multi-line statements.
+        /// </summary>
+        [TaskAttribute("indent-num-tabs-force", Required=false)]
+        public int IndentNumTabsForce {
+            get {
+                return Convert.ToInt32(((Option) this.CommandOptions["indent-num-tabs-force"]).Value,
+                    CultureInfo.InvariantCulture);
+            }
+            set {
+                this.SetCommandOption("indent-num-tabs-force", string.Format(CultureInfo.InvariantCulture,
+                    "force-indent=tab={0}", value), true);
+            }
+        }
+
+        /// <summary>
         /// <see langword="true" /> to convert tabs to spaces.
         /// </summary>
         [TaskAttribute("convert-tabs", Required=false)]
