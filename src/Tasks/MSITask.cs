@@ -22,7 +22,6 @@
 
 using System;
 using System.IO;
-using System.Xml;
 using System.Text;
 using Microsoft.Win32;
 using System.Reflection;
@@ -30,6 +29,7 @@ using System.Diagnostics;
 using System.ComponentModel;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Xml;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 
@@ -51,11 +51,7 @@ namespace NAnt.Contrib.Tasks
     [SchemaValidator(typeof(msi))]
     public class MSITask : SchemaValidatedTask
     {
-        XmlNodeList _componentNodes;
-        XmlNodeList _keyNodes;
-        XmlNodeList _mergeModules;
-        XmlNodeList _envVariables;
-        XmlNodeList _searchNodes;
+        msi msi;
 
         Hashtable files = new Hashtable();
         Hashtable featureComponents = new Hashtable();
@@ -63,22 +59,20 @@ namespace NAnt.Contrib.Tasks
         ArrayList typeLibRecords = new ArrayList();
         Hashtable typeLibComponents = new Hashtable();
 
-        msi msi;
-
         string[] commonFolderNames = new string[]
         {
-	        "AdminToolsFolder", "AppDataFolder",
-	        "CommonAppDataFolder", "CommonFiles64Folder",
-	        "CommonFilesFolder", "DesktopFolder",
-	        "FavoritesFolder", "FontsFolder",
-	        "LocalAppDataFolder", "MyPicturesFolder",
-	        "PersonalFolder", "ProgramFiles64Folder",
-	        "ProgramFilesFolder", "ProgramMenuFolder",
-	        "SendToFolder", "StartMenuFolder",
-	        "StartupFolder", "System16Folder",
-	        "System64Folder", "SystemFolder",
-	        "TempFolder", "TemplateFolder",
-	        "WindowsFolder", "WindowsVolume"
+            "AdminToolsFolder", "AppDataFolder",
+            "CommonAppDataFolder", "CommonFiles64Folder",
+            "CommonFilesFolder", "DesktopFolder",
+            "FavoritesFolder", "FontsFolder",
+            "LocalAppDataFolder", "MyPicturesFolder",
+            "PersonalFolder", "ProgramFiles64Folder",
+            "ProgramFilesFolder", "ProgramMenuFolder",
+            "SendToFolder", "StartMenuFolder",
+            "StartupFolder", "System16Folder",
+            "System64Folder", "SystemFolder",
+            "TempFolder", "TemplateFolder",
+            "WindowsFolder", "WindowsVolume"
         };
 
         /// <summary>
@@ -89,31 +83,9 @@ namespace NAnt.Contrib.Tasks
         /// <remarks>None.</remarks>
         protected override void InitializeTask(XmlNode TaskNode)
         {
-            try
-            {
-                base.InitializeTask(TaskNode);
-            }
-            catch (SchemaValidationException sve)
-            {
-                Log.WriteLine(LogPrefix + "ERROR: " + sve.Message);
-            }
+            base.InitializeTask(TaskNode);
 
             msi = (msi)SchemaObject;
-
-            _componentNodes = TaskNode.Clone().SelectNodes("components/component");
-            ExpandPropertiesInNodes(_componentNodes);
-
-            _searchNodes = TaskNode.Clone().SelectNodes("search/key");
-            ExpandPropertiesInNodes(_searchNodes);
-
-            _keyNodes = TaskNode.Clone().SelectNodes("registry/key");
-            ExpandPropertiesInNodes(_keyNodes);
-
-            _mergeModules = TaskNode.Clone().SelectNodes("mergemodules/merge");
-            ExpandPropertiesInNodes(_mergeModules);
-
-            _envVariables = TaskNode.Clone().SelectNodes("environment/variable");
-            ExpandPropertiesInNodes(_envVariables);
         }
 
         /// <summary>
@@ -425,34 +397,34 @@ namespace NAnt.Contrib.Tasks
         /// <returns>True if successful.</returns>
         private bool LoadBanner(Database Database)
         {
-	        // Try to open the Banner
-	        if (msi.banner != null)
-	        {
-		        string bannerFile = Path.Combine(Project.BaseDirectory, msi.banner);
-		        if (File.Exists(bannerFile))
-		        {
-			        View bannerView = Database.OpenView("SELECT * FROM `Binary` WHERE `Name`='bannrbmp'");
-			        bannerView.Execute(null);
-			        Record bannerRecord = bannerView.Fetch();
-			        if (Verbose)
-			        {
-				        Log.WriteLine(LogPrefix + "Storing Banner: " + bannerFile + ".");
-			        }
+            // Try to open the Banner
+            if (msi.banner != null)
+            {
+                string bannerFile = Path.Combine(Project.BaseDirectory, msi.banner);
+                if (File.Exists(bannerFile))
+                {
+                    View bannerView = Database.OpenView("SELECT * FROM `Binary` WHERE `Name`='bannrbmp'");
+                    bannerView.Execute(null);
+                    Record bannerRecord = bannerView.Fetch();
+                    if (Verbose)
+                    {
+                        Log.WriteLine(LogPrefix + "Storing Banner: " + bannerFile + ".");
+                    }
 
-			        // Write the Banner file to the MSI database
-			        bannerRecord.SetStream(2, bannerFile);
-			        bannerView.Modify(MsiViewModify.msiViewModifyUpdate, bannerRecord);
-			        bannerView.Close();
-		        }
-		        else
-		        {
-			        Log.WriteLine(LogPrefix + 
-				        "ERROR: Unable to open Banner Image:\n\n\t" + 
-				        bannerFile + "\n\n");
-			        return false;
-		        }
-	        }
-	        return true;
+                    // Write the Banner file to the MSI database
+                    bannerRecord.SetStream(2, bannerFile);
+                    bannerView.Modify(MsiViewModify.msiViewModifyUpdate, bannerRecord);
+                    bannerView.Close();
+                }
+                else
+                {
+                    Log.WriteLine(LogPrefix + 
+                        "ERROR: Unable to open Banner Image:\n\n\t" + 
+                        bannerFile + "\n\n");
+                    return false;
+                }
+            }
+            return true;
         }
 
         /// <summary>
@@ -462,34 +434,34 @@ namespace NAnt.Contrib.Tasks
         /// <returns>True if successful.</returns>
         private bool LoadBackground(Database Database)
         {
-	        // Try to open the Background
-	        if (msi.background != null)
-	        {
-		        string bgFile = Path.Combine(Project.BaseDirectory, msi.background);
-		        if (File.Exists(bgFile))
-		        {
-			        View bgView = Database.OpenView("SELECT * FROM `Binary` WHERE `Name`='dlgbmp'");
-			        bgView.Execute(null);
-			        Record bgRecord = bgView.Fetch();
-			        if (Verbose)
-			        {
-				        Log.WriteLine(LogPrefix + "Storing Background: " + bgFile + ".");
-			        }
+            // Try to open the Background
+            if (msi.background != null)
+            {
+                string bgFile = Path.Combine(Project.BaseDirectory, msi.background);
+                if (File.Exists(bgFile))
+                {
+                    View bgView = Database.OpenView("SELECT * FROM `Binary` WHERE `Name`='dlgbmp'");
+                    bgView.Execute(null);
+                    Record bgRecord = bgView.Fetch();
+                    if (Verbose)
+                    {
+                        Log.WriteLine(LogPrefix + "Storing Background: " + bgFile + ".");
+                    }
 
-			        // Write the Background file to the MSI database
-			        bgRecord.SetStream(2, bgFile);
-			        bgView.Modify(MsiViewModify.msiViewModifyUpdate, bgRecord);
-			        bgView.Close();
-		        }
-		        else
-		        {
-			        Log.WriteLine(LogPrefix + 
-				        "ERROR: Unable to open Background Image:\n\n\t" + 
-				        bgFile + "\n\n");
-			        return false;
-		        }
-	        }
-	        return true;
+                    // Write the Background file to the MSI database
+                    bgRecord.SetStream(2, bgFile);
+                    bgView.Modify(MsiViewModify.msiViewModifyUpdate, bgRecord);
+                    bgView.Close();
+                }
+                else
+                {
+                    Log.WriteLine(LogPrefix + 
+                        "ERROR: Unable to open Background Image:\n\n\t" + 
+                        bgFile + "\n\n");
+                    return false;
+                }
+            }
+            return true;
         }
 
         /// <summary>
@@ -499,52 +471,52 @@ namespace NAnt.Contrib.Tasks
         /// <returns>True if successful.</returns>
         private bool LoadLicense(Database Database)
         {
-	        // Try to open the License
-	        if (msi.license != null)
-	        {
-		        string licFile = Path.Combine(Project.BaseDirectory, msi.license);
-		        if (File.Exists(licFile))
-		        {
-			        View licView = Database.OpenView("SELECT * FROM `Control` WHERE `Control`='AgreementText'");
-			        licView.Execute(null);
-			        Record licRecord = licView.Fetch();
-			        if (Verbose)
-			        {
-				        Log.WriteLine(LogPrefix + "Storing License: " + licFile + ".");
-			        }
-			        StreamReader licReader = null;
-			        try
-			        {
-				        licReader = File.OpenText(licFile);
-				        licRecord.set_StringData(10, licReader.ReadToEnd());
-				        licView.Modify(MsiViewModify.msiViewModifyUpdate, licRecord);
-			        }
-			        catch (IOException)
-			        {
-				        Log.WriteLine(LogPrefix + 
-					        "ERROR: Unable to open License File:\n\n\t" + 
-					        licFile + "\n\n");
-				        return false;
-			        }
-			        finally
-			        {
-				        licView.Close();
+            // Try to open the License
+            if (msi.license != null)
+            {
+                string licFile = Path.Combine(Project.BaseDirectory, msi.license);
+                if (File.Exists(licFile))
+                {
+                    View licView = Database.OpenView("SELECT * FROM `Control` WHERE `Control`='AgreementText'");
+                    licView.Execute(null);
+                    Record licRecord = licView.Fetch();
+                    if (Verbose)
+                    {
+                        Log.WriteLine(LogPrefix + "Storing License: " + licFile + ".");
+                    }
+                    StreamReader licReader = null;
+                    try
+                    {
+                        licReader = File.OpenText(licFile);
+                        licRecord.set_StringData(10, licReader.ReadToEnd());
+                        licView.Modify(MsiViewModify.msiViewModifyUpdate, licRecord);
+                    }
+                    catch (IOException)
+                    {
+                        Log.WriteLine(LogPrefix + 
+                            "ERROR: Unable to open License File:\n\n\t" + 
+                            licFile + "\n\n");
+                        return false;
+                    }
+                    finally
+                    {
+                        licView.Close();
 
-				        if (licReader != null)
-				        {
-					        licReader.Close();
-				        }
-			        }
-		        }
-		        else
-		        {
-			        Log.WriteLine(LogPrefix + 
-				        "ERROR: Unable to open License File:\n\n\t" + 
-				        licFile + "\n\n");
-			        return false;
-		        }
-	        }
-	        return true;
+                        if (licReader != null)
+                        {
+                            licReader.Close();
+                        }
+                    }
+                }
+                else
+                {
+                    Log.WriteLine(LogPrefix + 
+                        "ERROR: Unable to open License File:\n\n\t" + 
+                        licFile + "\n\n");
+                    return false;
+                }
+            }
+            return true;
         }
 
         /// <summary>
@@ -556,49 +528,49 @@ namespace NAnt.Contrib.Tasks
         /// <returns>True if successful.</returns>
         private bool LoadProperties(Database Database, Type InstallerType, Object InstallerObject)
         {
-	        // Select the "Property" Table
-	        View propView = Database.OpenView("SELECT * FROM `Property`");
+            // Select the "Property" Table
+            View propView = Database.OpenView("SELECT * FROM `Property`");
 
-	        // Add properties from Task definition
-	        foreach (property property in msi.properties)
-	        {
-		        // Insert the Property
-		        Record recProp = (Record)InstallerType.InvokeMember(
-			        "CreateRecord", 
-			        BindingFlags.InvokeMethod, 
-			        null, InstallerObject, 
-			        new object[] { 2 });
+            // Add properties from Task definition
+            foreach (property property in msi.properties)
+            {
+                // Insert the Property
+                Record recProp = (Record)InstallerType.InvokeMember(
+                    "CreateRecord", 
+                    BindingFlags.InvokeMethod, 
+                    null, InstallerObject, 
+                    new object[] { 2 });
 
-		        string name = property.name;
-		        string sValue = property.value;
+                string name = property.name;
+                string sValue = property.value;
 
-		        if (name == null || name == "")
-		        {
-			        Log.WriteLine(LogPrefix + 
-				        "ERROR: Property with no name attribute detected.");
-			        return false;
-		        }
+                if (name == null || name == "")
+                {
+                    Log.WriteLine(LogPrefix + 
+                        "ERROR: Property with no name attribute detected.");
+                    return false;
+                }
 
-		        if (sValue == null || sValue == "")
-		        {
-			        Log.WriteLine(LogPrefix + 
-				        "ERROR: Property " + name + 
-				        " has no value.");
-			        return false;
-		        }
+                if (sValue == null || sValue == "")
+                {
+                    Log.WriteLine(LogPrefix + 
+                        "ERROR: Property " + name + 
+                        " has no value.");
+                    return false;
+                }
 
-		        recProp.set_StringData(1, name);
-		        recProp.set_StringData(2, sValue);
-		        propView.Modify(MsiViewModify.msiViewModifyInsert, recProp);
+                recProp.set_StringData(1, name);
+                recProp.set_StringData(2, sValue);
+                propView.Modify(MsiViewModify.msiViewModifyInsert, recProp);
 
-		        if (Verbose)
-		        {
-			        Log.WriteLine(LogPrefix + "Setting Property: " + name);
-		        }
+                if (Verbose)
+                {
+                    Log.WriteLine(LogPrefix + "Setting Property: " + name);
+                }
 
                 propView.Close();
-	        }
-	        return true;
+            }
+            return true;
         }
 
         /// <summary>
@@ -615,186 +587,128 @@ namespace NAnt.Contrib.Tasks
         /// <param name="ProgIdView">View containing the ProgId table.</param>
         /// <returns>True if successful.</returns>
         private bool LoadComponents(Database Database, Type InstallerType, Object InstallerObject, 
-	        ref int LastSequence, View MsiAssemblyView, View MsiAssemblyNameView, 
-	        View DirectoryView, View ClassView, View ProgIdView)
+            ref int LastSequence, View MsiAssemblyView, View MsiAssemblyNameView, 
+            View DirectoryView, View ClassView, View ProgIdView)
         {
-	        // Open the "Component" Table
-	        View compView = Database.OpenView("SELECT * FROM `Component`");
+            // Open the "Component" Table
+            View compView = Database.OpenView("SELECT * FROM `Component`");
 
-	        // Open the "File" Table
-	        View fileView = Database.OpenView("SELECT * FROM `File`");
+            // Open the "File" Table
+            View fileView = Database.OpenView("SELECT * FROM `File`");
 
-	        // Open the "FeatureComponents" Table
-	        View featCompView = Database.OpenView("SELECT * FROM `FeatureComponents`");
+            // Open the "FeatureComponents" Table
+            View featCompView = Database.OpenView("SELECT * FROM `FeatureComponents`");
 
-	        // Open the "SelfReg" Table
-	        View selfRegView = Database.OpenView("SELECT * FROM `SelfReg`");
+            // Open the "SelfReg" Table
+            View selfRegView = Database.OpenView("SELECT * FROM `SelfReg`");
 
-	        // Add components from Task definition
-	        int componentIndex = 0;
-	        foreach (XmlNode compNode in _componentNodes)
-	        {
-		        XmlElement compElem = (XmlElement)compNode;
+            // Add components from Task definition
+            int componentIndex = 0;
 
-		        string name = compElem.GetAttribute("name");
-		        if (name == null || name == "")
-		        {
-			        Log.WriteLine(LogPrefix + 
-				        "ERROR: Component with no name attribute detected.");
-			        return false;
-		        }
+            if (msi.components != null)
+            {
+                foreach (MSIComponent component in msi.components)
+                {
+                    // Insert the Component
+                    Record recComp = (Record)InstallerType.InvokeMember(
+                        "CreateRecord", 
+                        BindingFlags.InvokeMethod, 
+                        null, InstallerObject, 
+                        new object[] { 6 });
 
-		        string attr = compElem.GetAttribute("attr");
+                    recComp.set_StringData(1, component.name);
+                    recComp.set_StringData(2, component.id);
+                    recComp.set_StringData(3, component.directory.name);            		
+                    recComp.set_IntegerData(4, component.attr);
 
-		        string directory = null;
-		        XmlNode dirNode = compElem.SelectSingleNode("directory/@ref");
-		        if (dirNode != null)
-		        {
-			        directory = dirNode.Value;
-		        }
+                    if (Verbose)
+                    {
+                        Log.WriteLine(LogPrefix + "Component: " + component.name);
+                    }
 
-		        if (directory == null || directory == "")
-		        {
-			        Log.WriteLine(LogPrefix + 
-				        "ERROR: Component " + name + 
-				        " needs to specify a directory.");
-			        return false;
-		        }
+                    featureComponents.Add(component.name, component.feature.name);
 
-		        string keyFile = null;
-		        XmlNode keyFileNode = compElem.SelectSingleNode("key/@file");
-		        if (keyFileNode != null)
-		        {
-			        keyFile = keyFileNode.Value;
-		        }
-		        if (keyFile == null || keyFile == "")
-		        {
-			        Log.WriteLine(
-				        LogPrefix + "ERROR: Component " + name + 
-				        " needs to specify a key.");
-			        return false;
-		        }
+                    componentIndex++;
 
-		        string id = compElem.GetAttribute("id");
-		        if (id == null)
-		        {
-			        Log.WriteLine(
-				        LogPrefix + "ERROR: Component " + name + 
-				        " needs to specify an id.");
-			        return false;
-		        }
+                    bool success = AddFiles(Database, DirectoryView, component, 
+                        fileView, InstallerType, InstallerObject, 
+                        component.directory.name, component.name, ref componentIndex, 
+                        ref LastSequence, MsiAssemblyView, MsiAssemblyNameView, 
+                        compView, featCompView, ClassView, ProgIdView, selfRegView);
 
-		        // Insert the Component
-		        Record recComp = (Record)InstallerType.InvokeMember(
-			        "CreateRecord", 
-			        BindingFlags.InvokeMethod, 
-			        null, InstallerObject, 
-			        new object[] { 6 });
+                    if (!success)
+                    {
+                        return success;
+                    }
 
-		        recComp.set_StringData(1, name);
-		        recComp.set_StringData(2, id);
-		        recComp.set_StringData(3, directory);
-        		
-		        recComp.set_StringData(4, 
-			        (attr == null || attr == "") ? "0" : 
-			        Int32.Parse(attr).ToString());
+                    if (files.Contains(component.directory + "|" + component.key.file))
+                    {
+                        string keyFileName = (string)files[component.directory + "|" + component.key.file];
+                        if (keyFileName == "KeyIsDotNetAssembly")
+                        {
+                            Log.WriteLine(LogPrefix + "ERROR: Cannot specify key '" + component.key.file + 
+                                "' for component '" + component.name + "'. File has been detected as " + 
+                                "being a COM component or Microsoft.NET assembly and is " + 
+                                "being registered with its own component. Please specify " + 
+                                "a different file in the same directory for this component's key.");
+                            return false;
+                        }
+                        else
+                        {
+                            recComp.set_StringData(6, keyFileName);
+                            compView.Modify(MsiViewModify.msiViewModifyInsert, recComp);
+                        }
+                    }
+                    else
+                    {
+                        Log.WriteLine(
+                            LogPrefix + "ERROR: KeyFile \"" + component.key.file + 
+                            "\" not found in Component \"" + component.name + "\".");
+                        return false;
+                    }
+                }
 
-		        recComp.set_StringData(5, compElem.GetAttribute("condition"));
+                // Add featureComponents from Task definition
+                IEnumerator keyEnum = featureComponents.Keys.GetEnumerator();
+                while (keyEnum.MoveNext())
+                {
+                    string component = Project.ExpandProperties((string)keyEnum.Current);
+                    string feature = Project.ExpandProperties((string)featureComponents[component]);
 
-		        if (Verbose)
-		        {
-			        Log.WriteLine(LogPrefix + "Component: " + name);
-		        }
+                    if (feature == null)
+                    {
+                        Log.WriteLine(LogPrefix + 
+                            "ERROR: Component " + component + 
+                            " mapped to nonexistent feature.");
+                        return false;
+                    }
+            		
+                    // Insert the FeatureComponent
+                    Record recFeatComps = (Record)InstallerType.InvokeMember(
+                        "CreateRecord", 
+                        BindingFlags.InvokeMethod, 
+                        null, InstallerObject, 
+                        new object[] { 2 });
 
-		        components.Add(name, directory);
+                    recFeatComps.set_StringData(1, feature);
+                    recFeatComps.set_StringData(2, component);
+                    featCompView.Modify(MsiViewModify.msiViewModifyInsert, recFeatComps);
 
-		        XmlNodeList featureComponentNodes = compElem.SelectNodes("feature");
-		        foreach (XmlNode featureComponentNode in featureComponentNodes)
-		        {
-			        XmlElement featureComponentElem = (XmlElement)featureComponentNode;
-			        featureComponents.Add(name, featureComponentElem.GetAttribute("ref"));
-		        }
-
-		        componentIndex++;
-
-		        bool success = AddFiles(Database, DirectoryView, compElem, 
-                    fileView, InstallerType, InstallerObject, 
-			        directory, name, ref componentIndex, 
-			        ref LastSequence, MsiAssemblyView, MsiAssemblyNameView, 
-			        compView, featCompView, ClassView, ProgIdView, selfRegView);
-
-		        if (!success)
-		        {
-			        return success;
-		        }
-
-		        if (files.Contains(directory + "|" + keyFile))
-		        {
-			        string keyFileName = (string)files[directory + "|" + keyFile];
-			        if (keyFileName == "KeyIsDotNetAssembly")
-			        {
-				        Log.WriteLine(LogPrefix + "ERROR: Cannot specify key '" + keyFile + 
-					        "' for component '" + name + "'. File has been detected as " + 
-					        "being a COM component or Microsoft.NET assembly and is " + 
-					        "being registered with its own component. Please specify " + 
-					        "a different file in the same directory for this component's key.");
-				        return false;
-			        }
-			        else
-			        {
-				        recComp.set_StringData(6, keyFileName);
-				        compView.Modify(MsiViewModify.msiViewModifyInsert, recComp);
-			        }
-		        }
-		        else
-		        {
-			        Log.WriteLine(
-				        LogPrefix + "ERROR: KeyFile \"" + keyFile + 
-				        "\" not found in Component \"" + name + "\".");
-			        return false;
-		        }
-	        }
-
-	        // Add featureComponents from Task definition
-	        IEnumerator keyEnum = featureComponents.Keys.GetEnumerator();
-	        while (keyEnum.MoveNext())
-	        {
-		        string component = Project.ExpandProperties((string)keyEnum.Current);
-		        string feature = Project.ExpandProperties((string)featureComponents[component]);
-
-		        if (feature == null)
-		        {
-			        Log.WriteLine(LogPrefix + 
-				        "ERROR: Component " + component + 
-				        " mapped to nonexistent feature.");
-			        return false;
-		        }
-        		
-		        // Insert the FeatureComponent
-		        Record recFeatComps = (Record)InstallerType.InvokeMember(
-			        "CreateRecord", 
-			        BindingFlags.InvokeMethod, 
-			        null, InstallerObject, 
-			        new object[] { 2 });
-
-		        recFeatComps.set_StringData(1, feature);
-		        recFeatComps.set_StringData(2, component);
-		        featCompView.Modify(MsiViewModify.msiViewModifyInsert, recFeatComps);
-
-		        if (Verbose)
-		        {
-			        Log.WriteLine(LogPrefix + 
-				        "Mapping \"" + feature + 
-				        "\" to \"" + component + "\".");
-		        }
-	        }
+                    if (Verbose)
+                    {
+                        Log.WriteLine(LogPrefix + 
+                            "Mapping \"" + feature + 
+                            "\" to \"" + component + "\".");
+                    }
+                }
+            }
 
             compView.Close();
             fileView.Close();
             featCompView.Close();
             selfRegView.Close();
 
-	        return true;
+            return true;
         }
 
         /// <summary>
@@ -808,8 +722,8 @@ namespace NAnt.Contrib.Tasks
         private bool LoadDirectories(Database Database, Type InstallerType, 
             Object InstallerObject, out View DirectoryView)
         {
-	        // Open the "Directory" Table
-	        DirectoryView = Database.OpenView("SELECT * FROM `Directory`");
+            // Open the "Directory" Table
+            DirectoryView = Database.OpenView("SELECT * FROM `Directory`");
 
             ArrayList directoryList = new ArrayList(msi.directories);       
 
@@ -819,37 +733,37 @@ namespace NAnt.Contrib.Tasks
             targetDir.foldername = "SourceDir";
             directoryList.Add(targetDir);
 
-	        // Insert the Common Directories
-	        for (int i = 0; i < commonFolderNames.Length; i++)
-	        {
+            // Insert the Common Directories
+            for (int i = 0; i < commonFolderNames.Length; i++)
+            {
                 MSIRootDirectory commonDir = new MSIRootDirectory();
                 commonDir.name = commonFolderNames[i];
                 commonDir.root = "TARGETDIR";
                 commonDir.foldername = ".";
-		        directoryList.Add(commonDir);
-	        }
+                directoryList.Add(commonDir);
+            }
 
             MSIRootDirectory[] directories = new MSIRootDirectory[directoryList.Count];
             directoryList.CopyTo(directories);
             msi.directories = directories;
 
-	        int depth = 1;
+            int depth = 1;
 
-	        // Add directories from Task definition
+            // Add directories from Task definition
             foreach (MSIRootDirectory directory in msi.directories)
             {
-		        bool result = AddDirectory(Database, 
-			        DirectoryView, null, InstallerType, 
-			        InstallerObject, directory, depth);
+                bool result = AddDirectory(Database, 
+                    DirectoryView, null, InstallerType, 
+                    InstallerObject, directory, depth);
 
-		        if (!result)
-		        {
+                if (!result)
+                {
                     DirectoryView.Close();
-			        return result;
-		        }
-	        }
+                    return result;
+                }
+            }
 
-	        return true;
+            return true;
         }
 
         /// <summary>
@@ -865,33 +779,33 @@ namespace NAnt.Contrib.Tasks
         /// <returns></returns>
         private bool AddDirectory(Database Database, View DirectoryView, 
             string ParentDirectory, 
-	        Type InstallerType, object InstallerObject, 
-	        MSIDirectory Directory, int Depth)
+            Type InstallerType, object InstallerObject, 
+            MSIDirectory Directory, int Depth)
         {
-	        string newParent = ParentDirectory;
+            string newParent = ParentDirectory;
             if (Directory is MSIRootDirectory)
             {
                 newParent = ((MSIRootDirectory)Directory).root;
             }
 
-	        // Insert the Directory
-	        Record recDir = (Record)InstallerType.InvokeMember(
-		        "CreateRecord", 
-		        BindingFlags.InvokeMethod, 
-		        null, InstallerObject, new object[] { 3 });
+            // Insert the Directory
+            Record recDir = (Record)InstallerType.InvokeMember(
+                "CreateRecord", 
+                BindingFlags.InvokeMethod, 
+                null, InstallerObject, new object[] { 3 });
 
-	        recDir.set_StringData(1, Directory.name);
-	        recDir.set_StringData(2, newParent);
+            recDir.set_StringData(1, Directory.name);
+            recDir.set_StringData(2, newParent);
         	
-	        StringBuilder relativePath = new StringBuilder();
+            StringBuilder relativePath = new StringBuilder();
 
-	        GetRelativePath(Database, InstallerType, InstallerObject, 
+            GetRelativePath(Database, InstallerType, InstallerObject, 
                 Directory.name, ParentDirectory, Directory.foldername, 
                 relativePath, DirectoryView);
 
-	        string basePath = Path.Combine(Project.BaseDirectory, msi.sourcedir);
-	        string fullPath = Path.Combine(basePath, relativePath.ToString());
-	        string path = GetShortPath(fullPath) + "|" + Directory.foldername;
+            string basePath = Path.Combine(Project.BaseDirectory, msi.sourcedir);
+            string fullPath = Path.Combine(basePath, relativePath.ToString());
+            string path = GetShortPath(fullPath) + "|" + Directory.foldername;
 
             if (relativePath.ToString() == "")
             {
@@ -903,15 +817,15 @@ namespace NAnt.Contrib.Tasks
                 return false;
             }
 
-	        if (Verbose)
-	        {
-		        Log.WriteLine(LogPrefix + "Directory: " + 
-			        Path.Combine(Project.BaseDirectory, relativePath.ToString()));
-	        }
+            if (Verbose)
+            {
+                Log.WriteLine(LogPrefix + "Directory: " + 
+                    Path.Combine(Project.BaseDirectory, relativePath.ToString()));
+            }
         	
-	        recDir.set_StringData(3, path);
+            recDir.set_StringData(3, path);
 
-	        DirectoryView.Modify(MsiViewModify.msiViewModifyInsert, recDir);
+            DirectoryView.Modify(MsiViewModify.msiViewModifyInsert, recDir);
 
             if (Directory.directory != null)
             {
@@ -929,7 +843,7 @@ namespace NAnt.Contrib.Tasks
                     }
                 }
             }
-	        return true;
+            return true;
         }
 
         /// <summary>
@@ -942,24 +856,24 @@ namespace NAnt.Contrib.Tasks
         /// <returns>True if successful.</returns>
         private bool LoadMedia(Database Database, Type InstallerType, Object InstallerObject, int LastSequence)
         {
-	        // Open the "Media" Table
-	        View mediaView = Database.OpenView("SELECT * FROM `Media`");
+            // Open the "Media" Table
+            View mediaView = Database.OpenView("SELECT * FROM `Media`");
 
-	        // Insert the Disk
-	        Record recMedia = (Record)InstallerType.InvokeMember(
-		        "CreateRecord", 
-		        BindingFlags.InvokeMethod, 
-		        null, InstallerObject, 
-		        new object[] { 6 });
+            // Insert the Disk
+            Record recMedia = (Record)InstallerType.InvokeMember(
+                "CreateRecord", 
+                BindingFlags.InvokeMethod, 
+                null, InstallerObject, 
+                new object[] { 6 });
 
-	        recMedia.set_StringData(1, "1");
-	        recMedia.set_StringData(2, LastSequence.ToString());
-	        recMedia.set_StringData(4, "#" + Path.GetFileNameWithoutExtension(msi.output) + ".cab");
-	        mediaView.Modify(MsiViewModify.msiViewModifyInsert, recMedia);
+            recMedia.set_StringData(1, "1");
+            recMedia.set_StringData(2, LastSequence.ToString());
+            recMedia.set_StringData(4, "#" + Path.GetFileNameWithoutExtension(msi.output) + ".cab");
+            mediaView.Modify(MsiViewModify.msiViewModifyInsert, recMedia);
 
-	        mediaView.Close();
+            mediaView.Close();
 
-	        return true;
+            return true;
         }
 
         /// <summary>
@@ -994,10 +908,10 @@ namespace NAnt.Contrib.Tasks
                 }
             }
 
-	        SummaryInfo summaryInfo = Database.get_SummaryInformation(200);
-	        summaryInfo.set_Property(2, productName.value);
-	        summaryInfo.set_Property(3, productName.value);
-	        summaryInfo.set_Property(4, manufacturer.value);
+            SummaryInfo summaryInfo = Database.get_SummaryInformation(200);
+            summaryInfo.set_Property(2, productName.value);
+            summaryInfo.set_Property(3, productName.value);
+            summaryInfo.set_Property(4, manufacturer.value);
 
             if (keywords != null)
             {
@@ -1008,13 +922,13 @@ namespace NAnt.Contrib.Tasks
                 summaryInfo.set_Property(6, comments.value);
             }
 
-	        summaryInfo.set_Property(9, "{"+Guid.NewGuid().ToString().ToUpper()+"}");
-	        summaryInfo.set_Property(14, 200);
-	        summaryInfo.set_Property(15, 2);
+            summaryInfo.set_Property(9, "{"+Guid.NewGuid().ToString().ToUpper()+"}");
+            summaryInfo.set_Property(14, 200);
+            summaryInfo.set_Property(15, 2);
         	
-	        summaryInfo.Persist();
+            summaryInfo.Persist();
 
-	        return true;
+            return true;
         }
 
         /// <summary>
@@ -1029,42 +943,29 @@ namespace NAnt.Contrib.Tasks
             // Open the "Environment" Table
             View envView = Database.OpenView("SELECT * FROM `Environment`");
 
-            foreach (XmlNode varNode in _envVariables)
+            if (msi.environment != null)
             {
-                XmlElement varElem = (XmlElement)varNode;
-
-                string varName = varElem.GetAttribute("name");
-
-                XmlElement compElem = (XmlElement)varElem.SelectSingleNode("component");
-                if (compElem == null)
+                foreach (variable variable in msi.environment)
                 {
-                    Log.WriteLine(LogPrefix + 
-                        "ERROR: Environment variable " + 
-                        varName + " must specify a component");
-                    return false;
+                    // Insert the Varible
+                    Record recVar = (Record)InstallerType.InvokeMember(
+                        "CreateRecord", 
+                        BindingFlags.InvokeMethod, 
+                        null, InstallerObject, 
+                        new object[] { 4 });
+
+                    recVar.set_StringData(1, "_" + Guid.NewGuid().ToString().ToUpper().Replace("-", null));
+                    recVar.set_StringData(2, variable.name);
+
+                    if (variable.append != null && variable.append != "")
+                    {
+                        recVar.set_StringData(3, "[~];" + variable.append);
+                    }
+
+                    recVar.set_StringData(4, variable.component.name);
+
+                    envView.Modify(MsiViewModify.msiViewModifyInsert, recVar);
                 }
-
-                string varComp = compElem.GetAttribute("ref");
-
-                // Insert the Varible
-                Record recVar = (Record)InstallerType.InvokeMember(
-                    "CreateRecord", 
-                    BindingFlags.InvokeMethod, 
-                    null, InstallerObject, 
-                    new object[] { 4 });
-
-                recVar.set_StringData(1, "_" + Guid.NewGuid().ToString().ToUpper().Replace("-", null));
-                recVar.set_StringData(2, varName);
-
-                string appendStr = varElem.GetAttribute("append");
-                if (appendStr != null && appendStr != "")
-                {
-                    recVar.set_StringData(3, "[~];" + appendStr);
-                }
-
-                recVar.set_StringData(4, varComp);
-
-                envView.Modify(MsiViewModify.msiViewModifyInsert, recVar);
             }
             envView.Close();
 
@@ -1080,28 +981,28 @@ namespace NAnt.Contrib.Tasks
         /// <returns>True if successful.</returns>
         private bool LoadFeatures(Database Database, Type InstallerType, Object InstallerObject)
         {
-	        // Open the "Feature" Table
-	        View featView = Database.OpenView("SELECT * FROM `Feature`");
+            // Open the "Feature" Table
+            View featView = Database.OpenView("SELECT * FROM `Feature`");
 
-	        // Add features from Task definition
-	        int order = 1;
-	        int depth = 1;
+            // Add features from Task definition
+            int order = 1;
+            int depth = 1;
         	
             foreach (MSIFeature feature in msi.features)
             {
-		        bool result = AddFeature(featView, null, InstallerType, 
-			        InstallerObject, feature, depth, order);
+                bool result = AddFeature(featView, null, InstallerType, 
+                    InstallerObject, feature, depth, order);
 
-		        if (!result)
-		        {
+                if (!result)
+                {
                     featView.Close();
-			        return result;
-		        }
-		        order++;
-	        }
+                    return result;
+                }
+                order++;
+            }
 
             featView.Close();
-	        return true;
+            return true;
         }
 
         /// <summary>
@@ -1115,53 +1016,53 @@ namespace NAnt.Contrib.Tasks
         /// <param name="Depth">The tree depth of this feature.</param>
         /// <param name="Order">The tree order of this feature.</param>
         private bool AddFeature(View FeatureView, string ParentFeature, 
-	        Type InstallerType, Object InstallerObject, 
-	        MSIFeature Feature, int Depth, int Order)
+            Type InstallerType, Object InstallerObject, 
+            MSIFeature Feature, int Depth, int Order)
         {
-	        string directory = null;	        
-	        if (Feature.directory != null)
-	        {
-		        directory = Feature.directory.name;
-	        }
-	        else
-	        {
-		        bool foundComponent = false;
+            string directory = null;	        
+            if (Feature.directory != null)
+            {
+                directory = Feature.directory.name;
+            }
+            else
+            {
+                bool foundComponent = false;
         		
-		        IEnumerator featComps = featureComponents.Keys.GetEnumerator();
+                IEnumerator featComps = featureComponents.Keys.GetEnumerator();
         		
-		        while (featComps.MoveNext())
-		        {
-			        string componentName = (string)featComps.Current;
-			        string featureName = (string)featureComponents[componentName];
+                while (featComps.MoveNext())
+                {
+                    string componentName = (string)featComps.Current;
+                    string featureName = (string)featureComponents[componentName];
 
-			        if (featureName == Feature.name)
-			        {
-				        directory = (string)components[componentName];
-				        foundComponent = true;
-			        }
-		        }
+                    if (featureName == Feature.name)
+                    {
+                        directory = (string)components[componentName];
+                        foundComponent = true;
+                    }
+                }
 
-		        if (!foundComponent)
-		        {
-			        Log.WriteLine(
-				        LogPrefix + "ERROR: Feature " + Feature.name + 
-				        " needs to be assigned a component or directory.");
-			        return false;
-		        }
-	        }
+                if (!foundComponent)
+                {
+                    Log.WriteLine(
+                        LogPrefix + "ERROR: Feature " + Feature.name + 
+                        " needs to be assigned a component or directory.");
+                    return false;
+                }
+            }
 
-	        // Insert the Feature
-	        Record recFeat = (Record)InstallerType.InvokeMember(
-		        "CreateRecord", 
-		        BindingFlags.InvokeMethod, 
-		        null, InstallerObject, 
-		        new object[] { 8 });
+            // Insert the Feature
+            Record recFeat = (Record)InstallerType.InvokeMember(
+                "CreateRecord", 
+                BindingFlags.InvokeMethod, 
+                null, InstallerObject, 
+                new object[] { 8 });
 
-	        recFeat.set_StringData(1, Feature.name);
-	        recFeat.set_StringData(2, ParentFeature);
-	        recFeat.set_StringData(3, Feature.title);
-	        recFeat.set_StringData(4, Feature.description);
-	        recFeat.set_IntegerData(5, Feature.display);
+            recFeat.set_StringData(1, Feature.name);
+            recFeat.set_StringData(2, ParentFeature);
+            recFeat.set_StringData(3, Feature.title);
+            recFeat.set_StringData(4, Feature.description);
+            recFeat.set_IntegerData(5, Feature.display);
 
             if (!Feature.typical)
             {
@@ -1172,15 +1073,15 @@ namespace NAnt.Contrib.Tasks
                 recFeat.set_StringData(6, "3");
             }
         	
-	        recFeat.set_StringData(7, directory);
-	        recFeat.set_IntegerData(8, Feature.attr);
+            recFeat.set_StringData(7, directory);
+            recFeat.set_IntegerData(8, Feature.attr);
 
-	        FeatureView.Modify(MsiViewModify.msiViewModifyInsert, recFeat);
+            FeatureView.Modify(MsiViewModify.msiViewModifyInsert, recFeat);
 
-	        if (Verbose)
-	        {
-		        Log.WriteLine(LogPrefix + "Feature: " + Feature.name);
-	        }
+            if (Verbose)
+            {
+                Log.WriteLine(LogPrefix + "Feature: " + Feature.name);
+            }
 
             if (Feature.feature != null)
             {
@@ -1199,7 +1100,7 @@ namespace NAnt.Contrib.Tasks
                     newOrder++;
                 }
             }
-	        return true;
+            return true;
         }
 
         [DllImport("kernel32")]
@@ -1214,7 +1115,7 @@ namespace NAnt.Contrib.Tasks
         /// </summary>
         /// <param name="Database">The MSI database.</param>
         /// <param name="DirectoryView">The MSI database view.</param>
-        /// <param name="ComponentElem">The Component's XML Element.</param>
+        /// <param name="Component">The Component's XML Element.</param>
         /// <param name="FileView">The MSI database view.</param>
         /// <param name="InstallerType">The MSI Installer type.</param>
         /// <param name="InstallerObject">The MSI Installer object.</param>
@@ -1230,21 +1131,15 @@ namespace NAnt.Contrib.Tasks
         /// <param name="ProgIdView">View containing the ProgId table.</param>
         /// <param name="SelfRegView">View containing the SelfReg table.</param>
         /// <returns>True if successful.</returns>
-        private bool AddFiles(Database Database, View DirectoryView, XmlElement ComponentElem, 
+        private bool AddFiles(Database Database, View DirectoryView, MSIComponent Component, 
             View FileView, Type InstallerType, Object InstallerObject, 
-	        string ComponentDirectory, string ComponentName, ref int ComponentCount, 
-	        ref int Sequence, View MsiAssemblyView, View MsiAssemblyNameView, 
-	        View ComponentView, View FeatureComponentView, View ClassView, View ProgIdView, 
-	        View SelfRegView)
+            string ComponentDirectory, string ComponentName, ref int ComponentCount, 
+            ref int Sequence, View MsiAssemblyView, View MsiAssemblyNameView, 
+            View ComponentView, View FeatureComponentView, View ClassView, View ProgIdView, 
+            View SelfRegView)
         {
-	        string component = ComponentName;
-
-            XmlElement fileSetElem = (XmlElement)ComponentElem.SelectSingleNode("fileset");
-            if (fileSetElem == null)
-            {
-                Log.WriteLine(LogPrefix + "component is missing a fileset child element.");
-                return false;
-            }
+            XmlElement fileSetElem = (XmlElement)((XmlElement)_xmlNode).SelectSingleNode(
+                "components/component[@id='" + Component.id + "']/fileset");
 
             FileSet componentFiles = new FileSet();
             componentFiles.Project = Project;
@@ -1252,7 +1147,7 @@ namespace NAnt.Contrib.Tasks
 
             MSIDirectory componentDirInfo = FindDirectory(ComponentDirectory);
         	
-	        StringBuilder relativePath = new StringBuilder();
+            StringBuilder relativePath = new StringBuilder();
 
             string newParent = null;
             if (componentDirInfo is MSIRootDirectory)
@@ -1264,36 +1159,47 @@ namespace NAnt.Contrib.Tasks
                 newParent = FindParent(ComponentDirectory);
             }
 
-	        GetRelativePath(Database, InstallerType, 
+            GetRelativePath(Database, InstallerType, 
                 InstallerObject, 
                 ComponentDirectory, 
-		        newParent, 
-		        componentDirInfo.foldername, 
-		        relativePath, DirectoryView);
+                newParent, 
+                componentDirInfo.foldername, 
+                relativePath, DirectoryView);
 
-	        string basePath = Path.Combine(Project.BaseDirectory, msi.sourcedir);
-	        string fullPath = Path.Combine(basePath, relativePath.ToString());
+            string basePath = Path.Combine(Project.BaseDirectory, msi.sourcedir);
+            string fullPath = Path.Combine(basePath, relativePath.ToString());
 
             for (int i = 0; i < componentFiles.FileNames.Count; i++)
             {
-		        // Insert the File
-		        Record recFile = (Record)InstallerType.InvokeMember(
-			        "CreateRecord", 
-			        BindingFlags.InvokeMethod, 
-			        null, InstallerObject, 
-			        new object[] { 8 });
+                // Insert the File
+                Record recFile = (Record)InstallerType.InvokeMember(
+                    "CreateRecord", 
+                    BindingFlags.InvokeMethod, 
+                    null, InstallerObject, 
+                    new object[] { 8 });
 
-		        string fileName = Path.GetFileName(componentFiles.FileNames[i]);
-		        string filePath = Path.Combine(fullPath, fileName);
+                string fileName = Path.GetFileName(componentFiles.FileNames[i]);
+                string filePath = Path.Combine(fullPath, fileName);
         		
-                XmlElement overrideElem = (XmlElement)ComponentElem.SelectSingleNode(
-                    "override[@file='" + fileName +"']");
+                MSIFileOverride fileOverride = null;
 
-                string fileId = overrideElem == null ? 
+                if (Component.forceid != null)
+                {
+                    foreach (MSIFileOverride curOverride in Component.forceid)
+                    {
+                        if (curOverride.file == fileName)
+                        {
+                            fileOverride = curOverride;
+                            break;
+                        }
+                    }
+                }
+
+                string fileId = fileOverride == null ? 
                     "_" + Guid.NewGuid().ToString().ToUpper().Replace("-", null) :
-                    overrideElem.GetAttribute("id");
+                    fileOverride.id;
 
-		        files.Add(ComponentDirectory + "|" + fileName, fileId);
+		        files.Add(Component.directory + "|" + fileName, fileId);
 		        recFile.set_StringData(1, fileId);
         	
 		        if (File.Exists(filePath))
@@ -1547,7 +1453,7 @@ namespace NAnt.Contrib.Tasks
 		        if (!isAssembly && !filePath.EndsWith(".tlb") 
                     || componentFiles.FileNames.Count == 1)
 		        {
-			        recFile.set_StringData(2, component);
+			        recFile.set_StringData(2, Component.name);
 		        }
 
 		        recFile.set_StringData(3, GetShortFile(filePath) + "|" + fileName);
@@ -1577,98 +1483,79 @@ namespace NAnt.Contrib.Tasks
 	        // Open the "Registry" Table
 	        RegistryView = Database.OpenView("SELECT * FROM `Registry`");
 
-	        foreach(XmlNode keyNode in _keyNodes)
-	        {
-		        XmlElement keyElem = (XmlElement)keyNode;
-		        string root = keyElem.GetAttribute("root");
-		        string path = keyElem.GetAttribute("path");
+            if (msi.registry != null)
+            {
+                foreach (MSIRegistryKey key in msi.registry)
+                {
+                    int rootKey = -1;
+                    switch (key.root.ToString())
+                    {
+                        case "classes":
+                        {
+                            rootKey = 0;
+                            break;
+                        }
+                        case "user":
+                        {
+                            rootKey = 1;
+                            break;
+                        }
+                        case "machine":
+                        {
+                            rootKey = 2;
+                            break;
+                        }
+                        case "users":
+                        {
+                            rootKey = 3;
+                            break;
+                        }
+                    }
 
-		        int rootKey = -1;
-		        switch (root)
-		        {
-			        case "classes":
-			        {
-				        rootKey = 0;
-				        break;
-			        }
-			        case "user":
-			        {
-				        rootKey = 1;
-				        break;
-			        }
-			        case "machine":
-			        {
-				        rootKey = 2;
-				        break;
-			        }
-			        case "users":
-			        {
-				        rootKey = 3;
-				        break;
-			        }
-		        }
+                    foreach (MSIRegistryKeyValue value in key.value)
+                    {
+                        // Insert the Value
+                        Record recVal = (Record)InstallerType.InvokeMember(
+                            "CreateRecord", 
+                            BindingFlags.InvokeMethod, 
+                            null, InstallerObject, 
+                            new object[] { 6 });
 
-		        string componentName = null;
-        		
-		        XmlNode compNameNode = keyElem.SelectSingleNode("component/@ref");
-		        if (compNameNode != null)
-		        {
-			        componentName = compNameNode.Value;
-		        }
+                        recVal.set_StringData(1, "_" + 
+                            Guid.NewGuid().ToString().ToUpper().Replace("-", null));
+                        recVal.set_StringData(2, rootKey.ToString());
+                        recVal.set_StringData(3, key.path);
+                        recVal.set_StringData(4, value.name);
 
-		        if (componentName == null || componentName == "")
-		        {
-			        Log.WriteLine(
-				        LogPrefix + "ERROR: No component specified for key: " + path);
-			        return false;
-		        }
+                        if (Verbose)
+                        {
+                            Log.WriteLine(LogPrefix + "Storing Value: " + 
+                                key.path + @"\" + value.name);
+                        }
 
-		        XmlNodeList values = keyNode.SelectNodes("value");
-		        if (values != null)
-		        {
-			        foreach (XmlNode valueNode in values)
-			        {
-				        XmlElement valueElem = (XmlElement)valueNode;
+                        if (value.value != null && value.value != "")
+                        {
+                            recVal.set_StringData(5, value.value);
+                        }
+                        else if (value.dword != null && value.dword != "")
+                        {
+                            string sDwordMsi = "#" + Int32.Parse(value.dword);
+                            recVal.set_StringData(5, sDwordMsi);
+                        }
+                        else
+                        {
+                            string val1 = value.Value.Replace(",", null);
+                            string val2 = val1.Replace(" ", null);
+                            string val3 = val2.Replace("\n", null);
+                            string val4 = val3.Replace("\r", null);
+                            recVal.set_StringData(5, "#x" + val4);
+                        }
 
-				        // Insert the Value
-				        Record recVal = (Record)InstallerType.InvokeMember(
-					        "CreateRecord", 
-					        BindingFlags.InvokeMethod, 
-					        null, InstallerObject, 
-					        new object[] { 6 });
-
-				        recVal.set_StringData(1, "_" + 
-					        Guid.NewGuid().ToString().ToUpper().Replace("-", null));
-				        recVal.set_StringData(2, rootKey.ToString());
-				        recVal.set_StringData(3, path);
-				        recVal.set_StringData(4, valueElem.GetAttribute("name"));
-
-				        string sValue = valueElem.GetAttribute("value");
-				        string sDword = valueElem.GetAttribute("dword");
-
-				        if (sValue != null & sValue != "")
-				        {
-					        recVal.set_StringData(5, sValue);
-				        }
-				        else if (sDword != null && sDword != "")
-				        {
-					        string sDwordMsi = "#" + Int32.Parse(sDword);
-					        recVal.set_StringData(5, sDwordMsi);
-				        }
-				        else
-				        {
-					        string val1 = valueElem.InnerText.Replace(",", null);
-					        string val2 = val1.Replace(" ", null);
-					        string val3 = val2.Replace("\n", null);
-					        string val4 = val3.Replace("\r", null);
-					        recVal.set_StringData(5, "#x" + val4);
-				        }
-
-				        recVal.set_StringData(6, componentName);
-				        RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recVal);
-			        }
-		        }
-	        }
+                        recVal.set_StringData(6, key.component.name);
+                        RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recVal);
+                    }
+                }
+            }
 
 	        return true;
         }
@@ -1708,121 +1595,79 @@ namespace NAnt.Contrib.Tasks
             Object InstallerObject)
         {
             // Add properties from Task definition
-            foreach (XmlNode keyNode in _searchNodes)
+            if (msi.search != null)
             {
-                XmlElement keyElem = (XmlElement)keyNode;
-
-                string type = keyElem.GetAttribute("type");
-
-                if (type == null || type == "")
+                foreach (MSISearchKey key in msi.search)
                 {
-                    Log.WriteLine(LogPrefix + 
-                        "ERROR: Search key with no type attribute detected.");
-                    return false;
-                }
-                switch (type)
-                {
-                    case "registry":
+                    switch (key.type.ToString())
                     {
-
-                        // Select the "RegLocator" Table
-                        View regLocatorView = Database.OpenView("SELECT * FROM `RegLocator`");
-                        string root = keyElem.GetAttribute("root");
-                        string path = keyElem.GetAttribute("path");
-
-                        int rootKey = -1;
-                        switch (root)
+                        case "registry":
                         {
-                            case "classes":
-                            {
-                                rootKey = 0;
-                                break;
-                            }
-                            case "user":
-                            {
-                                rootKey = 1;
-                                break;
-                            }
-                            case "machine":
-                            {
-                                rootKey = 2;
-                                break;
-                            }
-                            case "users":
-                            {
-                                rootKey = 3;
-                                break;
-                            }
-                        }
+                            // Select the "RegLocator" Table
+                            View regLocatorView = Database.OpenView("SELECT * FROM `RegLocator`");
 
-                        if (path == null || path == "")
+                            int rootKey = -1;
+                            switch (key.root.ToString())
+                            {
+                                case "classes":
+                                {
+                                    rootKey = 0;
+                                    break;
+                                }
+                                case "user":
+                                {
+                                    rootKey = 1;
+                                    break;
+                                }
+                                case "machine":
+                                {
+                                    rootKey = 2;
+                                    break;
+                                }
+                                case "users":
+                                {
+                                    rootKey = 3;
+                                    break;
+                                }
+                            }
+
+                            if (key.value != null)
+                            {
+                                foreach (MSISearchKeyValue value in key.value)
+                                {
+                                    string signature = "SIG_" + value.setproperty;
+
+                                    // Insert the signature to the RegLocator Table
+                                    Record recRegLoc = (Record)InstallerType.InvokeMember(
+                                        "CreateRecord", 
+                                        BindingFlags.InvokeMethod, 
+                                        null, InstallerObject, 
+                                        new object[] { 5 });
+
+                                    recRegLoc.set_StringData(1, signature);
+                                    recRegLoc.set_StringData(2, rootKey.ToString());
+                                    recRegLoc.set_StringData(3, key.path);
+                                    recRegLoc.set_StringData(4, value.name);
+                                    recRegLoc.set_StringData(5, "msidbLocatorTypeRawValue");
+
+                                    regLocatorView.Modify(MsiViewModify.msiViewModifyInsert, recRegLoc);
+
+                                    if (Verbose)
+                                    {
+                                        Log.WriteLine(LogPrefix + "Setting Registry Location: " + signature);
+                                    }
+                                }
+                            }
+                            regLocatorView.Close();
+
+                            break;
+                        }
+                        case "file":
                         {
-                            Log.WriteLine(LogPrefix + 
-                                "ERROR: Search key with no path attribute detected.");
-                            return false;
+                            break;
                         }
-
-                        XmlNodeList values = keyNode.SelectNodes("value");
-                        if (values != null)
-                        {
-                            foreach (XmlNode valueNode in values)
-                            {
-                                XmlElement valueElem = (XmlElement)valueNode;
-
-                                string propRef = null;
-                                XmlNode propNode = valueElem.SelectSingleNode("@ref");
-                                if (propNode != null)
-                                {
-                                    propRef = propNode.Value;
-                                }
-
-                                if (propRef == null || propRef == "")
-                                {
-                                    Log.WriteLine(LogPrefix + 
-                                        "ERROR: Search key with no ref attribute detected.");
-                                    return false;
-                                }
-                                string signature = "SIG_" + propRef;
-                                string name = valueElem.GetAttribute("name");
-                                if (name == null || name == "")
-                                {
-                                    Log.WriteLine(LogPrefix + 
-                                        "ERROR: Search key with no name attribute detected.");
-                                    return false;
-                                }
-
-
-                                // Insert the signature to the RegLocator Table
-                                Record recRegLoc = (Record)InstallerType.InvokeMember(
-                                    "CreateRecord", 
-                                    BindingFlags.InvokeMethod, 
-                                    null, InstallerObject, 
-                                    new object[] { 5 });
-
-                                recRegLoc.set_StringData(1, signature);
-                                recRegLoc.set_StringData(2, rootKey.ToString());
-                                recRegLoc.set_StringData(3, path);
-                                recRegLoc.set_StringData(4, name);
-                                recRegLoc.set_StringData(5, "msidbLocatorTypeRawValue");
-
-                                regLocatorView.Modify(MsiViewModify.msiViewModifyInsert, recRegLoc);
-
-                                if (Verbose)
-                                {
-                                    Log.WriteLine(LogPrefix + "Setting Registry Location: " + signature);
-                                }
-                            }
-                        }
-                        regLocatorView.Close();
-
-                        break;
-                    }
-                    case "file":
-                    {
-                        break;
                     }
                 }
-
             }
             return true;
         }
@@ -1838,72 +1683,49 @@ namespace NAnt.Contrib.Tasks
                 Object InstallerObject)
             {
                 // Add properties from Task definition
-                foreach (XmlNode keyNode in _searchNodes)
+                if (msi.search != null)
                 {
-                    XmlElement keyElem = (XmlElement)keyNode;
-
-                    string type = keyElem.GetAttribute("type");
-
-                    if (type == null || type == "")
+                    foreach (MSISearchKey key in msi.search)
                     {
-                        Log.WriteLine(LogPrefix + 
-                            "ERROR: Search key with no type attribute detected.");
-                        return false;
-                    }
-                    switch (type)
-                    {
-                        case "registry":
+                        switch (key.type.ToString())
                         {
-
-                            // Select the "AppSearch" Table
-                            View appSearchView = Database.OpenView("SELECT * FROM `AppSearch`");
-                            XmlNodeList values = keyNode.SelectNodes("value");
-                            if (values != null)
+                            case "registry":
                             {
-                                foreach (XmlNode valueNode in values)
+                                // Select the "AppSearch" Table
+                                View appSearchView = Database.OpenView("SELECT * FROM `AppSearch`");
+                                
+                                if (key.value != null)
                                 {
-                                    XmlElement valueElem = (XmlElement)valueNode;
-
-                                    string propRef = null;
-                                    XmlNode propNode = valueElem.SelectSingleNode("@ref");
-                                    if (propNode != null)
+                                    foreach (MSISearchKeyValue value in key.value)
                                     {
-                                        propRef = propNode.Value;
-                                    }
+                                        string signature = "SIG_" + value.setproperty;
 
-                                    if (propRef == null || propRef == "")
-                                    {
-                                        Log.WriteLine(LogPrefix + 
-                                            "ERROR: Search key with no ref attribute detected.");
-                                        return false;
-                                    }
-                                    string signature = "SIG_" + propRef;
+                                        // Insert the Property/Signature into AppSearch Table
+                                        Record recAppSearch = (Record)InstallerType.InvokeMember(
+                                            "CreateRecord", 
+                                            BindingFlags.InvokeMethod, 
+                                            null, InstallerObject, 
+                                            new object[] { 2 });
 
-                                    // Insert the Property/Signature into AppSearch Table
-                                    Record recAppSearch = (Record)InstallerType.InvokeMember(
-                                        "CreateRecord", 
-                                        BindingFlags.InvokeMethod, 
-                                        null, InstallerObject, 
-                                        new object[] { 2 });
+                                        recAppSearch.set_StringData(1, value.setproperty);
+                                        recAppSearch.set_StringData(2, signature);
 
-                                    recAppSearch.set_StringData(1, propRef);
-                                    recAppSearch.set_StringData(2, signature);
+                                        appSearchView.Modify(MsiViewModify.msiViewModifyInsert, recAppSearch);
 
-                                    appSearchView.Modify(MsiViewModify.msiViewModifyInsert, recAppSearch);
-
-                                    if (Verbose)
-                                    {
-                                        Log.WriteLine(LogPrefix + "Setting App Search: " + propRef);
+                                        if (Verbose)
+                                        {
+                                            Log.WriteLine(LogPrefix + "Setting App Search: " + value.setproperty);
+                                        }
                                     }
                                 }
-                            }
-                            appSearchView.Close();
+                                appSearchView.Close();
 
-                            break;
-                        }
-                        case "file":
-                        {
-                            break;
+                                break;
+                            }
+                            case "file":
+                            {
+                                break;
+                            }
                         }
                     }
                 }
@@ -2539,38 +2361,32 @@ namespace NAnt.Contrib.Tasks
             /// <returns>True if successful.</returns>
             private bool LoadMergeModules(string Database, string TempPath)
             {
-                MsmMergeClass merge = new MsmMergeClass();
+                MsmMergeClass mergeClass = new MsmMergeClass();
 
                 int index = 1;
 
-                foreach (XmlNode mergeModuleNode in _mergeModules)
+                if (msi.mergemodules != null)
                 {
-                    XmlElement mergeElem = (XmlElement)mergeModuleNode;
-                    XmlElement modulesElem = (XmlElement)mergeElem.SelectSingleNode("modules");
-
-                    if (modulesElem != null)
+                    foreach (merge merge in msi.mergemodules)
                     {
-                        string featureName = mergeElem.GetAttribute("feature");
-
-                        if (featureName == null || featureName == "")
-                        {
-                            Log.WriteLine(LogPrefix + "ERROR: merge element must specify a feature attribute.");
-                            return false;
-                        }
+                        NAntFileSet modules = merge.modules;
 
                         FileSet mergeSet = new FileSet();
                         mergeSet.Project = Project;
+
+                        XmlElement modulesElem = (XmlElement)((XmlElement)_xmlNode).SelectSingleNode(
+                            "mergemodules/merge[@feature='" + merge.feature + "']/modules");
                         mergeSet.Initialize(modulesElem);
 
                         foreach (string mergeModule in mergeSet.FileNames)
                         {
                             Log.WriteLine(LogPrefix + "Merging {0}", Path.GetFileName(mergeModule) + ".");
                             
-                            merge.OpenModule(mergeModule, 1033);
+                            mergeClass.OpenModule(mergeModule, 1033);
 
                             try
                             {
-                                merge.OpenDatabase(Database);
+                                mergeClass.OpenDatabase(Database);
                             }
                             catch (FileLoadException fle)
                             {
@@ -2578,20 +2394,20 @@ namespace NAnt.Contrib.Tasks
                                 return false;
                             }
 
-                            merge.Merge(featureName, null);
+                            mergeClass.Merge(merge.feature, null);
 
                             string moduleCab = Path.Combine(Path.GetDirectoryName(Database), 
                                 "mergemodule" + index + ".cab");
 
                             index++;
 
-                            merge.ExtractCAB(moduleCab);
+                            mergeClass.ExtractCAB(moduleCab);
 
                             if (File.Exists(moduleCab))
                             {
                                 // Create the CabFile
                                 ProcessStartInfo processInfo = new ProcessStartInfo();
-            	
+                
                                 processInfo.Arguments = "-o X " + 
                                     moduleCab + " " + Path.Combine(msi.sourcedir, @"Temp\");
 
@@ -2632,8 +2448,8 @@ namespace NAnt.Contrib.Tasks
                                 File.Delete(moduleCab);
                             }
 
-                            merge.CloseModule();
-                            merge.CloseDatabase(true);
+                            mergeClass.CloseModule();
+                            mergeClass.CloseDatabase(true);
                         }
                     }
                 }
