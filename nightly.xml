@@ -9,16 +9,10 @@
     <include buildfile="nantcontrib.build" />
     <!-- determine path for nightly build dist packages on sf.net relative to web path -->
     <property name="nightly.builds.path" value="nightly/${build.date}-${project.version}" />
-    <!-- retrieve system information and environment variables -->
-    <sysinfo />
     <!-- setup property that holds partial path to be used by scp -->
-    <property name="serverpart" value="${sys.env.USERNAME}@${sf.net.ssh.server}:${sf.net.web.path}" />
-    <target name="nightly" depends="set-net-1.0-framework-configuration">
-        <property name="NAntReleaseEXE" value="${path::combine(nant.dir, 'bin/nant.exe')}" />
-        <if test="${not file::exists(NAntReleaseEXE)}">
-            <fail message="Please pass a valid NAnt installation directory on the commandline using a nant.dir property." />
-        </if>
-        <exec program="${NAntReleaseEXE}">
+    <property name="serverpart" value="${environment::get-user-name() + '@' + sf.net.ssh.server + ':' + sf.net.web.path}" />
+    <target name="nightly" depends="set-net-1.0-framework-configuration, check-nant-dir">
+        <exec program="${nant.exe}">
             <arg value="-buildfile:nightly.xml" />
             <arg value="-D:nant.dir=${nant.dir}" />
             <arg value="-t:${framework::get-target-framework()}" />

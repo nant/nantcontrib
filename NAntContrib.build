@@ -43,7 +43,31 @@
     </target>
     
     <!-- build tasks -->
-    <target name="init" description="Initializes build properties">
+    <target name="check-nant-dir">
+        <!-- check if location of nant was explicitly set -->
+        <if test="${not property::exists('nant.dir')}">
+            <!-- 
+                if NAnt location was not explicitly set, then assume that the
+                the parent directory of the NAnt base directory is what we're
+                looking for 
+            -->
+            <echo message="NAnt base directory=${nant::get-base-directory()}" level="Verbose" />
+            <property name="nant.dir" value="${directory::get-parent-directory(nant::get-base-directory())}" />
+        </if>
+        <!-- ensure "nant.dir" directory exists -->
+        <if test="${not directory::exists(nant.dir)}">
+            <fail>The specified NAnt directory (${nant.dir}) does not exist.</fail>
+        </if>
+        <echo message="NAnt installation directory=${nant.dir}" level="Verbose" />
+        <!-- path of NAnt executable -->
+        <property name="nant.exe" value="${path::combine(nant.dir, 'bin/NAnt.exe')}" />
+        <!-- ensure "nant.dir" directory contains bin/NAnt.exe -->
+        <if test="${not file::exists(path::combine(nant.dir, 'bin/NAnt.exe'))}">
+            <fail>Please pass a valid NAnt installation directory on the commandline using a &quot;nant.dir&quot; property (eg. NAnt.exe -D:nant.dir=c:\nant-0.85).</fail>
+        </if>
+    </target>
+    
+    <target name="init" description="Initializes build properties" depends="check-nant-dir">
         <call target="${project.config}" />
         <call target="set-framework-configuration" />
         <if test="${not property::exists('nant.dir')}">
