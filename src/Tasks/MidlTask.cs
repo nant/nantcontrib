@@ -31,8 +31,7 @@ using SourceForge.NAnt.Attributes;
 using SourceForge.NAnt;
 using SourceForge.NAnt.Tasks;
 
-namespace NAnt.Contrib.Tasks 
-{ 
+namespace NAnt.Contrib.Tasks {
 
    /// <summary>
    /// This tasks allows you to run MIDL.exe.
@@ -66,8 +65,7 @@ namespace NAnt.Contrib.Tasks
    ///   ]]></code>
    /// </example>
    [TaskName("midl")]
-   public class MidlTask : ExternalProgramBase
-   {
+   public class MidlTask : ExternalProgramBase {
       const string PROG_FILE_NAME = "midl.exe";
 
       #region Private Variables
@@ -93,9 +91,9 @@ namespace NAnt.Contrib.Tasks
       #endregion // Private Variables
 
       /// <summary>
-      /// The /acf switch allows the user to supply an 
-      /// explicit ACF file name. The switch also 
-      /// allows the use of different interface names in 
+      /// The /acf switch allows the user to supply an
+      /// explicit ACF file name. The switch also
+      /// allows the use of different interface names in
       /// the IDL and ACF files.
       /// </summary>
       [TaskAttribute("acf")]
@@ -105,9 +103,9 @@ namespace NAnt.Contrib.Tasks
       }
 
       /// <summary>
-      /// The /align switch is functionally the same as the 
-      /// MIDL /Zp option and is recognized by the MIDL compiler 
-      /// solely for backward compatibility with MkTypLib. 
+      /// The /align switch is functionally the same as the
+      /// MIDL /Zp option and is recognized by the MIDL compiler
+      /// solely for backward compatibility with MkTypLib.
       /// </summary>
       /// <remarks>The alignment value can be 1, 2, 4, or 8.</remarks>
       [TaskAttribute("align")]
@@ -117,9 +115,9 @@ namespace NAnt.Contrib.Tasks
       }
 
       /// <summary>
-      /// The /app_config switch selects application-configuration 
-      /// mode, which allows you to use some ACF keywords in the 
-      /// IDL file. With this MIDL compiler switch, you can omit 
+      /// The /app_config switch selects application-configuration
+      /// mode, which allows you to use some ACF keywords in the
+      /// IDL file. With this MIDL compiler switch, you can omit
       /// the ACF and specify an interface in a single IDL file.
       /// </summary>
       [TaskAttribute("app_config"), BooleanValidator()]
@@ -129,9 +127,9 @@ namespace NAnt.Contrib.Tasks
       }
 
       /// <summary>
-      /// The /char switch helps to ensure that the MIDL compiler 
-      /// and C compiler operate together correctly for all char 
-      /// and small types. 
+      /// The /char switch helps to ensure that the MIDL compiler
+      /// and C compiler operate together correctly for all char
+      /// and small types.
       /// </summary>
       /// <remarks>Can be one of signed | unsigned | ascii7 </remarks>
       [TaskAttribute("char")]
@@ -141,7 +139,7 @@ namespace NAnt.Contrib.Tasks
       }
 
       /// <summary>
-      /// The /client switch directs the MIDL compiler to generate 
+      /// The /client switch directs the MIDL compiler to generate
       /// client-side C source files for an RPC interface
       /// </summary>
       /// <remarks>can be one of stub | none</remarks>
@@ -152,8 +150,8 @@ namespace NAnt.Contrib.Tasks
       }
 
       /// <summary>
-      /// The /cstub switch specifies the name of the client 
-      /// stub file for an RPC interface. 
+      /// The /cstub switch specifies the name of the client
+      /// stub file for an RPC interface.
       /// </summary>
       [TaskAttribute("cstub")]
       public string CStub {
@@ -162,9 +160,9 @@ namespace NAnt.Contrib.Tasks
       }
 
       /// <summary>
-      /// The /dlldata switch is used to specify the file 
-      /// name for the generated dlldata file for a proxy 
-      /// DLL. The default file name Dlldata.c is used if 
+      /// The /dlldata switch is used to specify the file
+      /// name for the generated dlldata file for a proxy
+      /// DLL. The default file name Dlldata.c is used if
       /// the /dlldata switch is not specified.
       /// </summary>
       [TaskAttribute("dlldata")]
@@ -174,8 +172,8 @@ namespace NAnt.Contrib.Tasks
       }
 
       /// <summary>
-      /// The /env switch selects the 
-      /// environment in which the application runs. 
+      /// The /env switch selects the
+      /// environment in which the application runs.
       /// </summary>
       /// <remarks>It can take the values win32 and win64</remarks>
       [TaskAttribute("env")]
@@ -185,9 +183,9 @@ namespace NAnt.Contrib.Tasks
       }
 
       /// <summary>
-      /// The /Oi switch directs the MIDL compiler to 
-      /// use a fully-interpreted marshaling method. 
-      /// The /Oic and /Oicf switches provide additional 
+      /// The /Oi switch directs the MIDL compiler to
+      /// use a fully-interpreted marshaling method.
+      /// The /Oic and /Oicf switches provide additional
       /// performance enhancements.
       /// </summary>
       /// <remarks>
@@ -205,7 +203,7 @@ namespace NAnt.Contrib.Tasks
       }
 
       /// <summary>
-      /// The /tlb switch specifies a file name 
+      /// The /tlb switch specifies a file name
       /// for the type library generated by the MIDL compiler.
       /// </summary>
       [TaskAttribute("tlb", Required=true)]
@@ -215,38 +213,38 @@ namespace NAnt.Contrib.Tasks
       }
 
       /// <summary>
-      /// The /header switch specifies the name of the header file. 
+      /// The /header switch specifies the name of the header file.
       /// </summary>
-      [TaskAttribute("header", Required=true)]
+      [TaskAttribute("header")]
       public string Header {
          get { return _header; }
          set { _header = value; }
       }
 
       /// <summary>
-      /// The /iid switch specifies the name of the 
-      /// interface identifier file for a COM interface, 
-      /// overriding the default name obtained by 
+      /// The /iid switch specifies the name of the
+      /// interface identifier file for a COM interface,
+      /// overriding the default name obtained by
       /// adding _i.c to the IDL file name.
       /// </summary>
-      [TaskAttribute("iid", Required=true)]
+      [TaskAttribute("iid")]
       public string Iid {
          get { return _iid; }
          set { _iid = value; }
       }
 
       /// <summary>
-      /// The /proxy switch specifies the name of 
-      /// the interface proxy file for a COM interface. 
+      /// The /proxy switch specifies the name of
+      /// the interface proxy file for a COM interface.
       /// </summary>
-      [TaskAttribute("proxy", Required=true)]
+      [TaskAttribute("proxy")]
       public string Proxy {
          get { return _proxy; }
          set { _proxy = value; }
       }
 
       /// <summary>
-      /// Name of .IDL file to process. 
+      /// Name of .IDL file to process.
       /// </summary>
       [TaskAttribute("filename", Required=true)]
       public string Filename {
@@ -255,7 +253,7 @@ namespace NAnt.Contrib.Tasks
       }
 
       /// <summary>
-      /// Additional options to pass to midl.exe. 
+      /// Additional options to pass to midl.exe.
       /// </summary>
       [OptionSetAttribute("options")]
       public OptionSet Options {
@@ -289,20 +287,20 @@ namespace NAnt.Contrib.Tasks
       ///Initializes task and ensures the supplied attributes are valid.
       ///</summary>
       ///<param name="taskNode">Xml node used to define this task instance.</param>
-      protected override void InitializeTask(System.Xml.XmlNode taskNode) 
+      protected override void InitializeTask(System.Xml.XmlNode taskNode)
       {
       }
 
       /// <summary>
       /// This is where the work is done
       /// </summary>
-      protected override void ExecuteTask() 
+      protected override void ExecuteTask()
       {
          if ( NeedsCompiling() )
          {
             string rspFile = Path.GetTempFileName();
             StreamWriter writer = new StreamWriter(rspFile);
-            
+
             using ( writer ) {
                WriteRSP(writer);
             }
@@ -325,10 +323,10 @@ namespace NAnt.Contrib.Tasks
       /// Check output files to see if we need rebuilding.
       /// </summary>
       /// <returns>true if a rebuild is needed</returns>
-      protected bool NeedsCompiling() 
+      protected bool NeedsCompiling()
       {
-         // 
-         // we should check out against all four 
+         //
+         // we should check out against all four
          // output file
          //
          if ( NeedsCompiling(_tlb) )
@@ -366,7 +364,7 @@ namespace NAnt.Contrib.Tasks
       {
          writer.WriteLine("/nologo");
          writer.WriteLine("/env " + _env);
-         
+
          if ( _acf != null )
             writer.WriteLine("/acf ", _acf);
          if ( _align != null )
@@ -388,22 +386,22 @@ namespace NAnt.Contrib.Tasks
             writer.WriteLine("/tlb " + _tlb);
          if ( _header != null )
             writer.WriteLine("/header " + _header);
-         if ( _iid != null ) 
+         if ( _iid != null )
             writer.WriteLine("/iid " + _iid);
-         if ( _proxy != null ) 
+         if ( _proxy != null )
             writer.WriteLine("/proxy " + _proxy);
 
          foreach ( OptionValue define in _defines ) {
             if ( define.Value == null )
                writer.WriteLine("/D " + define.Name);
-            else 
+            else
                writer.WriteLine("/D " + define.Name + "=" + define.Value);
          }
 
          foreach ( OptionValue option in _options ) {
             if ( option.Value == null )
                writer.WriteLine(option.Name);
-            else 
+            else
                writer.WriteLine(option.Name + " " + option.Value);
          }
 
