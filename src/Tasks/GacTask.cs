@@ -1,7 +1,6 @@
 //
 // NAntContrib
-// Copyright (C) 2001-2002 Gerry Shaw
-//
+// Copyright (C) 2001-2004 Gerry Shaw
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -17,74 +16,145 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-
 // Bill Baker (bill.baker@epigraph.com)
 // Gerry Shaw (gerry_shaw@yahoo.com)
 
 using System;
+using System.Globalization;
 using System.IO;
 
 using NAnt.Core;
-using NAnt.Core.Types;
-using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
+using NAnt.Core.Tasks;
+using NAnt.Core.Types;
 
 namespace NAnt.Contrib.Tasks {
-
-
-    /// <summary>Manipulates the contents of the global assembly cache.</summary>
+    /// <summary>
+    /// Manipulates the contents of the global assembly cache.
+    /// </summary>
     /// <remarks>
-    ///   <para>This tasks provides some of the same functionality as the gacutil tool provided in the .NET SDK.</para>
-    ///   <para>Specifically, the gac task allows you to install assemblies into the cache and remove them from the cache.</para>
-    ///   <para>Refer to the <a href="ms-help://MS.NETFrameworkSDK/cptools/html/cpgrfglobalassemblycacheutilitygacutilexe.htm">Global Assembly Cache Tool (Gacutil.exe)</a> for more information.</para>
+    ///   <para>
+    ///   This tasks provides some of the same functionality as the gacutil tool 
+    ///   provided in the .NET Framework SDK.
+    ///   </para>
+    ///   <para>
+    ///   Specifically, the <see cref="GacTask" /> allows you to install assemblies 
+    ///   into the cache and remove them from the cache.
+    ///   </para>
+    ///   <para>
+    ///   Refer to the <see href="ms-help://MS.NETFrameworkSDK/cptools/html/cpgrfglobalassemblycacheutilitygacutilexe.htm">
+    ///   Global Assembly Cache Tool (Gacutil.exe)</see> for more information.
+    ///   </para>
     /// </remarks>
     /// <example>
-    ///   <para>Inserts the file mydll.dll into the global assembly cache.</para>
-    ///   <code>&lt;gac assembly=mydll.dll"/&gt;</code>
-    ///   <para>Removes the assembly hello from the global assembly cache and the native image cache.</para>
-    ///   <code>&lt;gac assembly="hello" uninstall="true"/&gt;</code>
-    ///   <para>Note that the previous command might remove more than one assembly from the assembly cache because the assembly name is not fully specified. For example, if both version 1.0.0.0 and 3.2.2.1 of hello are installed in the cache, the command gacutil /u hello removes both of the assemblies.</para>
-    ///   <para>Use the following example to avoid removing more than one assembly. This command removes only the hello assembly that matches the fully specified version number, culture, and public key.</para>
-    ///   <code>&lt;gac assembly='hello,Version=1.0.0.1,Culture="de",PublicKeyToken=45e343aae32233ca' uninstall="true"/&gt;</code>
+    ///   <para>
+    ///   Inserts assembly <c>mydll.dll</c> into the global assembly cache.
+    ///   </para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <gac assembly="mydll.dll" action="install" />
+    ///     ]]>
+    ///   </code>
+    /// </example>
+    /// <example>
+    ///   <para>
+    ///   Removes the assembly <c>hello</c> from the global assembly cache and 
+    ///   the native image cache.
+    ///   </para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <gac assembly="hello" action="uninstall" />
+    ///     ]]>
+    ///   </code>
+    ///   <para>
+    ///   Note that the previous command might remove more than one assembly 
+    ///   from the assembly cache because the assembly name is not fully 
+    ///   specified. For example, if both version 1.0.0.0 and 3.2.2.1 of 
+    ///   <c>hello</c> are installed in the cache, both of the assemblies will 
+    ///   be removed from the global assembly cache.
+    ///   </para>
+    /// </example>
+    /// <example>
+    ///   <para>
+    ///   Use the following example to avoid removing more than one assembly. 
+    ///   This command removes only the hello assembly that matches the fully 
+    ///   specified version number, culture, and public key.
+    ///   </para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <gac assembly="hello,Version=1.0.0.1,Culture=de,PublicKeyToken=45e343aae32233ca" action="uninstall" />
+    ///     ]]>
+    ///   </code>
     /// </example>
     [TaskName("gac")]
     [ProgramLocation(LocationType.FrameworkSdkDir)]
     public class GacTask : ExternalProgramBase {
+        /// <summary>
+        /// Defines the actions that can be performed on an assembly using the
+        /// <see cref="GacTask" />.
+        /// </summary>
         public enum ActionTypes {
+            /// <summary>
+            /// Installs an assembly into the global assembly cache.
+            /// </summary>
             install,
+
+            /// <summary>
+            /// Installs an assembly into the global assembly cache. If an assembly 
+            /// with the same name already exists in the global assembly cache, it is 
+            /// overwritten.
+            /// </summary>
             overwrite,
-            uninstall };
 
-        ActionTypes _action = ActionTypes.install;
-        string _assemblyName = null;
-        FileSet _assemblies = new FileSet();
-        bool _silent = false;
+            /// <summary>
+            /// Uninstalls an assembly from the global assembly cache.
+            /// </summary>
+            uninstall
+        };
 
-        /// <summary>The name of a file that contains an assembly manifest.</summary>
+        #region Private Instance Fields
+
+        private ActionTypes _action = ActionTypes.install;
+        private string _assemblyName;
+        private FileSet _assemblies = new FileSet();
+
+        #endregion Private Instance Fields
+
+        #region Public Instance Properties
+
+        /// <summary>
+        /// The name of a file that contains an assembly manifest.
+        /// </summary>
         [TaskAttribute("assembly")]
         public string AssemblyName {
             get { return _assemblyName; }
             set { _assemblyName = value; }
         }
 
-        /// <summary>Defines the action to take with the assembly. Supported actions are: <c>install</c>, <c>overwrite</c>, and <c>uninstall</c>.</summary>
+        /// <summary>
+        /// Defines the action to take with the assembly - either 
+        /// <see cref="ActionTypes.install" />, <see cref="ActionTypes.overwrite" /> 
+        /// or <see cref="ActionTypes.uninstall" />. The default is 
+        /// <see cref="ActionTypes.install" />.
+        /// </summary>
         [TaskAttribute("action")]
-        public ActionTypes ActionType { get { return _action; } set { _action = value; }}
+        public ActionTypes ActionType {
+            get { return _action; }
+            set { _action = value; }
+        }
 
-        /// <summary>Fileset are used to define multiple assemblies.</summary>
+        /// <summary>
+        /// Fileset are used to define multiple assemblies.
+        /// </summary>
         [BuildElement("assemblies")]
-        public FileSet CopyFileSet      {
+        public FileSet AssemblyFileSet {
             get { return _assemblies; }
             set { _assemblies = value; }
         }
 
-        /// <summary>Quiet mode.</summary>
-        [TaskAttribute("silent")]
-        [BooleanValidator()]
-        public bool Silent {
-            get { return _silent; }
-            set { _silent = value; }
-        }
+        #endregion Public Instance Properties
+
+        #region Override implementation of ExternalProgramBase
 
         public override string ExeName {
             get { return "gacutil"; }
@@ -92,12 +162,16 @@ namespace NAnt.Contrib.Tasks {
 
         public override string ProgramArguments {
             get {
-                string prefix = Silent ? "/silent" : "/nologo";
+                // suppresses display of the logo banner
+                string prefix = "/nologo";
+                if (!Verbose) {
+                    prefix += " /silent";
+                }
                 switch (ActionType) {
                     case ActionTypes.install:
-                        return String.Format("{0} /i {1}", prefix, AssemblyName);
+                        return string.Format(CultureInfo.InvariantCulture, "{0} /i \"{1}\"", prefix, AssemblyName);
                     case ActionTypes.overwrite:
-                        return String.Format("{0} /if {1}", prefix, AssemblyName);
+                        return string.Format(CultureInfo.InvariantCulture, "{0} /if \"{1}\"", prefix, AssemblyName);
                     case ActionTypes.uninstall:
                         // uninstalling does not work with a filename, but with an assemblyname
                         string assembly = AssemblyName;
@@ -106,18 +180,20 @@ namespace NAnt.Contrib.Tasks {
                             // strip of the path and extension
                             assembly = fi.Name.Substring(0, (fi.Name.Length - fi.Extension.Length));
                         }
-                        return String.Format("{0} /u {1}", prefix, assembly);
+                        return string.Format(CultureInfo.InvariantCulture, "{0} /u \"{1}\"", prefix, assembly);
                     default:
-                        return "";
+                        throw new BuildException(string.Format(CultureInfo.InvariantCulture, 
+                            "Unknown action '{0}'.", ActionType.ToString(CultureInfo.InvariantCulture)),
+                            Location);
                 }
             }
         }
 
         protected override void ExecuteTask() {
-            if ( (_assemblyName != null) && (_assemblies.FileNames.Count != 0)) {
-                throw new BuildException("Cannot use both the \"assembly\" attribute and a \"assemblies\" fileset",Location);
-            } else if ( (_assemblyName == null) && (_assemblies.FileNames.Count == 0)) {
-                throw new BuildException("Specify either an \"assembly\" attribute or a \"assemblies\" fileset", Location);
+            if (AssemblyName != null && AssemblyFileSet.FileNames.Count != 0) {
+                throw new BuildException("Cannot use both the \"assembly\" attribute and a \"assemblies\" fileset.", Location);
+            } else if (AssemblyName == null && AssemblyFileSet.FileNames.Count == 0) {
+                throw new BuildException("Specify either an \"assembly\" attribute or a \"assemblies\" fileset.", Location);
             }
             string msg = "";
             switch (ActionType) {
@@ -131,20 +207,18 @@ namespace NAnt.Contrib.Tasks {
                     msg = "Uninstalling";
                     break;
             }
-            if (_assemblies.FileNames.Count != 0) {
-                //multiple assemblies
-                Log(Level.Info, LogPrefix + "{0} {1} assemblies", msg, _assemblies.FileNames.Count);
-                foreach (string assemblyName in _assemblies.FileNames) {
+            if (AssemblyFileSet.FileNames.Count != 0) {
+                Log(Level.Info, LogPrefix + "{0} {1} assemblies.", msg, AssemblyFileSet.FileNames.Count);
+                foreach (string assemblyName in AssemblyFileSet.FileNames) {
                     AssemblyName = assemblyName;
                     base.ExecuteTask();
                 }
             } else {
-
-                // If the user wants to see the actual command the -verbose flag
-                // will cause ExternalProgramBase to display the actual call.
-                Log(Level.Info, LogPrefix + "{0} {1}", msg, AssemblyName);
+                Log(Level.Info, LogPrefix + "{0} assembly '{1}'.", msg, AssemblyName);
                 base.ExecuteTask();
             }
         }
+
+        #endregion Override implementation of ExternalProgramBase
     }
 }
