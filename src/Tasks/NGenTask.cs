@@ -29,18 +29,21 @@ using NAnt.Core;
 using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
 
-namespace NAnt.Contrib.Tasks
-{
-    /// <summary>Pre-translates native code for an
-    /// assembly containing IL (Intermediary Language
-    /// bytecode) on the Windows platform.</summary>
+namespace NAnt.Contrib.Tasks {
+    /// <summary>
+    /// Pre-translates native code for an assembly containing IL (Intermediary 
+    /// Language bytecode) on the Windows platform.
+    /// </summary>
     /// <example>
-    ///   <code><![CDATA[<ngen assembly="MyAssembly.dll" />]]></code>
+    ///   <code>
+    ///     <![CDATA[
+    /// <ngen assembly="MyAssembly.dll" />
+    ///     ]]>
+    ///   </code>
     /// </example>
     [TaskName("ngen")]
     [ProgramLocation(LocationType.FrameworkDir)]
-    public class NGenTask : ExternalProgramBase
-    {
+    public class NGenTask : ExternalProgramBase {
         private string _args;
         string _assembly = null;
         bool _show = false;
