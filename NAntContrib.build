@@ -56,6 +56,7 @@
         <csc target="library" output="${build.dir}\${project.FormalName}.Tasks.dll" debug="${debug}" doc="${build.dir}\${project.FormalName}.xml">
             <sources basedir="${src.dir}">
                 <includes name="**/*.cs"/>
+                <excludes name="Tasks/TaskDefTask.cs"/>
             </sources>
             <references>
                 <includes name="${nant-bin.dir}\NAnt.Core.dll"/>
