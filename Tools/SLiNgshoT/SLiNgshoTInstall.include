@@ -44,13 +44,13 @@
                 <component name="SlingshotFiles_${SLiNgshoT.id}" id="{D63F2198-582D-47b5-B5B3-7C4E6A9F23B4}" attr="2" directory="NANT_NANTFOLDER">
                     <key file="SLiNgshoT.exe" />
                     <fileset basedir="${installsource.dir}\NAnt">
-                        <includes name="SLiNgshoT.exe" />
+                        <include name="SLiNgshoT.exe" />
                     </fileset>
                 </component>
                 <component name="SlingshotLibFiles_${SLiNgshoT.id}" id="{80265672-EC2C-4f30-9E48-7FF11CBC565C}" attr="2" directory="NANT_NANTFOLDER">
                     <key file="SLiNgshoT.Core.dll" />
                     <fileset basedir="${installsource.dir}\NAnt">
-                        <includes name="SLiNgshoT.Core.dll" />
+                        <include name="SLiNgshoT.Core.dll" />
                     </fileset>
                 </component>
             </components>
