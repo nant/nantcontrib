@@ -82,7 +82,7 @@ namespace NAnt.Contrib.Tasks.CodeStatsTask {
         /// <summary>
         /// The file set to work on
         /// </summary>
-        [FileSet("fileset")]
+        [BuildElement("fileset")]
         public FileSet TargetFileSet {
             get { return _fileset; }
             set { _fileset = value; }

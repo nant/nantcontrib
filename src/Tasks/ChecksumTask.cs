@@ -87,7 +87,7 @@ namespace NAnt.Contrib.Tasks
       /// <summary>
       /// Set of files to use as input
       /// </summary>
-      [FileSet("fileset")]
+      [BuildElement("fileset")]
       public FileSet FileSet {
          get { return _fileset; }
          set { _fileset = value; }

@@ -70,12 +70,15 @@ namespace NAnt.Contrib.Tasks {
             set { _fileName = value; }
         }
 
-        /// <summary>All files in this fileset will be run thru the collection generator.</summary>
-        [FileSet("fileset")]
+        /// <summary>
+        /// All files in this fileset will be run thru the collection generator.
+        /// </summary>
+        [BuildElement("fileset")]
         public FileSet TypedCollFileSet {
             get { return _fileset; }
             set { _fileset = value; }
         }
+
         protected override void ExecuteTask() {
             // add the shortcut filename to the file set
             if (FileName != null) {

@@ -101,7 +101,7 @@ namespace NAnt.Contrib.Tasks {
         }
         
         /// <summary>the set of files to register..</summary>
-        [FileSet("fileset")]
+        [BuildElement("fileset")]
         public FileSet COMRegisterFileSet { 
             get { return _fileset; } 
             set { _fileset = value; }

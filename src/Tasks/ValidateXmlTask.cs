@@ -73,9 +73,9 @@ namespace NAnt.Contrib.Tasks
       private SchemaSet _schemas = new SchemaSet();
 
       /// <summary>
-      /// Set of XML files to use as input
+      /// Set of XML files to use as input.
       /// </summary>
-      [FileSet("files", Required=true)]
+      [BuildElement("files", Required=true)]
       public FileSet XmlFiles {
          get { return _xmlFiles; }
          set { _xmlFiles = value; }

@@ -72,7 +72,7 @@ namespace NAnt.Contrib.Tasks {
         public ActionTypes ActionType { get { return _action; } set { _action = value; }}
 
         /// <summary>Fileset are used to define multiple assemblies.</summary>
-        [FileSet("assemblies")]
+        [BuildElement("assemblies")]
         public FileSet CopyFileSet      {
             get { return _assemblies; }
             set { _assemblies = value; }
