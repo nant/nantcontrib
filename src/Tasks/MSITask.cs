@@ -104,14 +104,29 @@ namespace NAnt.Contrib.Tasks
             // Open the Template MSI File
             Module tasksModule = Assembly.GetExecutingAssembly().GetModule("NAnt.Contrib.Tasks.dll");
             
-            string source = Path.GetDirectoryName(
-                tasksModule.FullyQualifiedName) + "\\MSITaskTemplate.msi";
+            string source = Path.Combine(Path.GetDirectoryName(tasksModule.FullyQualifiedName), "MSITaskTemplate.msi");
+            if (msi.template != null)
+            {
+                source = Path.Combine(Project.BaseDirectory, msi.template);
+            }
+            if (!File.Exists(source))
+            {
+                throw new BuildException(LogPrefix + 
+                    "ERROR: Unable to find template file: " + source);
+            }
+            
+            string dest = Path.Combine(Project.BaseDirectory, Path.Combine(msi.sourcedir, msi.output));
 
-            string dest = Path.Combine(Project.BaseDirectory, 
-                Path.Combine(msi.sourcedir, msi.output));
-
-            string errors = Path.GetDirectoryName(
-                tasksModule.FullyQualifiedName) + "\\MSITaskErrors.mst";
+            string errors = Path.Combine(Path.GetDirectoryName(tasksModule.FullyQualifiedName), "MSITaskErrors.mst");
+            if (msi.errortemplate != null)
+            {
+                errors = Path.Combine(Project.BaseDirectory, msi.errortemplate);
+            }
+            if (!File.Exists(errors))
+            {
+                throw new BuildException(LogPrefix + 
+                    "ERROR: Unable to find error template file: " + errors);
+            }
 
             string tempPath = Path.Combine(Project.BaseDirectory, 
                 Path.Combine(msi.sourcedir, @"Temp"));
@@ -394,6 +409,13 @@ namespace NAnt.Contrib.Tasks
                     throw new BuildException();
                 }
 
+                // Load ActionText
+                if (!LoadActionText(d, msiType, obj))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    throw new BuildException();
+                }
+                
                 // Load the application mappings
                 if (!LoadAppMappings(d, msiType, obj))
                 {
@@ -592,7 +614,7 @@ namespace NAnt.Contrib.Tasks
                 }
                 else
                 {
-                    Log(Level.Info, LogPrefix + 
+                    Log(Level.Error, LogPrefix + 
                         "ERROR: Unable to open Banner Image:\n\n\t" + 
                         bannerFile + "\n\n");
                     return false;
@@ -804,9 +826,10 @@ namespace NAnt.Contrib.Tasks
                         new object[] { 6 });
 
                     recComp.set_StringData(1, component.name);
-                    recComp.set_StringData(2, component.id);
+                    recComp.set_StringData(2, component.id.ToUpper());
                     recComp.set_StringData(3, component.directory);
                     recComp.set_IntegerData(4, component.attr);
+                    recComp.set_IntegerData(5, component.condition);
 
                     featureComponents.Add(component.name, component.feature);
 
@@ -1175,6 +1198,8 @@ namespace NAnt.Contrib.Tasks
         {
             // Open the "Feature" Table
             View featView = Database.OpenView("SELECT * FROM `Feature`");
+            // Open the "Condition" Table
+            View conditionView = Database.OpenView("SELECT * FROM `Condition`");
 
             // Add features from Task definition
             int order = 1;
@@ -1187,7 +1212,7 @@ namespace NAnt.Contrib.Tasks
             
             foreach (MSIFeature feature in msi.features)
             {
-                bool result = AddFeature(featView, null, InstallerType, 
+                bool result = AddFeature(featView, conditionView, null, InstallerType, 
                     InstallerObject, feature, depth, order);
 
                 if (!result)
@@ -1199,21 +1224,25 @@ namespace NAnt.Contrib.Tasks
             }
 
             featView.Close();
+            conditionView.Close();
+
             featView = null;
+            conditionView = null;
             return true;
         }
 
         /// <summary>
         /// Adds a feature record to the Features table.
         /// </summary>
-        /// <param name="FeatureView">The MSI database view.</param>
+        /// <param name="FeatureView">The MSI database view for Feature table.</param>
+        /// <param name="ConditionView">The MSI database view for Condition table.</param>
         /// <param name="ParentFeature">The name of this feature's parent.</param>
         /// <param name="InstallerType">The MSI Installer type.</param>
         /// <param name="InstallerObject">The MSI INstaller object.</param>
         /// <param name="Feature">This Feature's Schema element.</param>
         /// <param name="Depth">The tree depth of this feature.</param>
         /// <param name="Order">The tree order of this feature.</param>
-        private bool AddFeature(View FeatureView, string ParentFeature, 
+        private bool AddFeature(View FeatureView, View ConditionView, string ParentFeature, 
             Type InstallerType, Object InstallerObject, 
             MSIFeature Feature, int Depth, int Order)
         {
@@ -1281,6 +1310,42 @@ namespace NAnt.Contrib.Tasks
                 Log(Level.Info, "\t" + Feature.name);
             }
 
+            // Add feature conditions
+            if (Feature.conditions != null)
+            {
+                if (Verbose)
+                {
+                    Log(Level.Info, "\t\tAdding Feature Conditions...");
+                }
+
+                foreach (MSIFeatureCondition featureCondition in Feature.conditions)
+                { 
+                    try
+                    {
+                        // Insert the feature's condition
+                        Record recCondition = (Record)InstallerType.InvokeMember(
+                            "CreateRecord", 
+                            BindingFlags.InvokeMethod, 
+                            null, InstallerObject, 
+                            new object[] { 3 });
+
+                        recCondition.set_StringData(1, Feature.name);
+                        recCondition.set_IntegerData(2, featureCondition.level);
+                        recCondition.set_StringData(3, featureCondition.expression);
+                        ConditionView.Modify(MsiViewModify.msiViewModifyMerge, recCondition);
+                    }
+                    catch (Exception e)
+                    {
+                        Log(Level.Info, "\nError adding feature condition: " + e.ToString());
+                    }
+                }    
+
+                if (Verbose)
+                {
+                    Log(Level.Info, "Done");
+                }
+            }
+            
             if (Feature.feature != null)
             {
                 foreach (MSIFeature childFeature in Feature.feature)
@@ -1288,7 +1353,7 @@ namespace NAnt.Contrib.Tasks
                     int newDepth = Depth + 1;
                     int newOrder = 1;
 
-                    bool result = AddFeature(FeatureView, Feature.name, InstallerType, 
+                    bool result = AddFeature(FeatureView, ConditionView, Feature.name, InstallerType, 
                         InstallerObject, childFeature, newDepth, newOrder);
 
                     if (!result)
@@ -1397,6 +1462,10 @@ namespace NAnt.Contrib.Tasks
                     "_" + Guid.NewGuid().ToString().ToUpper().Replace("-", null) :
                     fileOverride.id;
 
+                // If the user specifies forceid & specified a file attribute, use it.  Otherwise use the 
+                // fileattr assigned to the component.
+                int fileAttr = ((fileOverride == null) || (fileOverride.attr == 0)) ? Component.fileattr : fileOverride.attr;
+                
                 files.Add(Component.directory + "|" + fileName, fileId);
                 recFile.set_StringData(1, fileId);
             
@@ -1434,9 +1503,18 @@ namespace NAnt.Contrib.Tasks
                 //
                 bool isAssembly = false;
                 Assembly fileAssembly = null;
+                string fileVersion = "";
+                try
+                {
+                    FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(filePath);
+                    fileVersion = fileVersionInfo.FileVersion;
+                }
+                catch (Exception) {}
+
                 try
                 {
                     fileAssembly = Assembly.LoadFrom(filePath);
+                    fileVersion = fileAssembly.GetName().Version.ToString();
                     isAssembly = true;
                 }
                 catch (Exception) {}
@@ -1464,8 +1542,8 @@ namespace NAnt.Contrib.Tasks
                         recComp.set_StringData(1, asmCompName);
                         recComp.set_StringData(2, newCompId);
                         recComp.set_StringData(3, ComponentDirectory);
-                        recComp.set_StringData(4, "2");
-                        recComp.set_StringData(5, null);
+                        recComp.set_StringData(4, Component.attr);
+                        recComp.set_StringData(5, Component.condition);
                         recComp.set_StringData(6, fileId);
                         ComponentView.Modify(MsiViewModify.msiViewModifyMerge, recComp);
 
@@ -1654,10 +1732,21 @@ namespace NAnt.Contrib.Tasks
                     recFile.set_StringData(2, Component.name);
                 }
 
+                // Set the file version equal to the override value, if present
+                if ((fileOverride != null) && (fileOverride.version != null) && (fileOverride.version != ""))
+                {
+                    fileVersion = fileOverride.version;
+                }
+
+                if (!IsVersion(ref fileVersion))
+                {
+                    fileVersion = null;
+                }
+                
                 recFile.set_StringData(3, GetShortFile(filePath) + "|" + fileName);
-                recFile.set_StringData(5, null);    // Version
-                recFile.set_StringData(6, null);
-                recFile.set_StringData(7, "512");
+                recFile.set_StringData(5, fileVersion);
+                recFile.set_StringData(6, null);  // Language
+                recFile.set_StringData(7, fileAttr);
                 
                 Sequence++;
                 
@@ -1667,6 +1756,38 @@ namespace NAnt.Contrib.Tasks
             return true;
         }
 
+        /// <summary>
+        /// Determines if the supplied version string is valid.  A valid version string should look like:
+        /// 1
+        /// 1.1
+        /// 1.1.1
+        /// 1.1.1.1
+        /// </summary>
+        /// <param name="fileVersion">The version string to verify.</param>
+        /// <returns></returns>
+        private bool IsVersion(ref string Version)
+        {
+            // For cases of 5,5,2,2
+            Version = Version.Trim().Replace(",", ".");
+            Version = Version.Replace(" ", "");
+            string[] versionParts = Version.Split('.');
+            bool result = true;
+
+            foreach (string versionPart in versionParts)
+            {
+                try
+                {
+                    int iVersionPart = Convert.ToInt32(versionPart);
+                }
+                catch (Exception)
+                {
+                    result = false;
+                    break;
+                }
+            }
+            return result;
+        }
+        
         /// <summary>
         /// Loads records for the Registry table.
         /// </summary>
@@ -2462,10 +2583,11 @@ namespace NAnt.Contrib.Tasks
                     new object[] { columnList.Count });                    
                 try
                 {
+                    // Go through each element defining row data
                     foreach(MSITableRowColumnData columnData in row.columns)
                     {
-
                         // Create the record and add it
+                        // Check to see if the current element equals a specified column.
                         foreach (MSIRowColumnData columnInfo in columnList)
                         {
                             if (columnInfo.name == columnData.name)
@@ -2478,6 +2600,11 @@ namespace NAnt.Contrib.Tasks
                                 {
                                     newRec.SetStream((columnInfo.id + 1), columnData.value);
                                 }
+                                else if (columnInfo.type == "guid")
+                                {
+                                    // Guids must have all uppercase letters
+                                    newRec.set_StringData((columnInfo.id + 1), columnData.value.ToUpper());
+                                }
                                 else
                                 {
                                     newRec.set_StringData((columnInfo.id + 1), columnData.value);
@@ -2488,9 +2615,9 @@ namespace NAnt.Contrib.Tasks
                     }                
                     tableView.Modify(MsiViewModify.msiViewModifyMerge, newRec);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    Log(Level.Info, LogPrefix + "Incorrect row data format.");
+                    Log(Level.Info, LogPrefix + "Incorrect row data format.\n\n" + e.ToString());
                 }
             }
             tableView.Close();
@@ -2580,11 +2707,11 @@ namespace NAnt.Contrib.Tasks
             // Create the CabFile
             ProcessStartInfo processInfo = new ProcessStartInfo();
             
-            processInfo.Arguments = "-p -r -P " + 
-                Path.Combine(msi.sourcedir, "Temp") + @"\ N " + 
-                Path.Combine(msi.sourcedir,  
-                Path.GetFileNameWithoutExtension(msi.output) + ".cab") + " " +
-                Path.Combine(msi.sourcedir, "Temp") + @"\*";
+            string shortCabDir = GetShortDir(Path.Combine(Project.BaseDirectory, msi.sourcedir));
+            string cabFile = shortCabDir + @"\" + Path.GetFileNameWithoutExtension(msi.output) + ".cab";
+            string tempDir = Path.Combine(msi.sourcedir, "Temp");
+            
+            processInfo.Arguments = "-p -r -P " + tempDir + @"\ N " + cabFile + " " + tempDir + @"\*";
 
             processInfo.CreateNoWindow = false;
             processInfo.WindowStyle = ProcessWindowStyle.Hidden;
@@ -2729,6 +2856,36 @@ namespace NAnt.Contrib.Tasks
             return shortPathSegments[shortPathSegments.Length-1];
         }
 
+        /// <summary>
+        /// Retrieves a DOS 8.3 filename for a complete directory.
+        /// </summary>
+        /// <param name="LongPath">The path to shorten.</param>
+        /// <returns>The new shortened path.</returns>
+        private string GetShortDir(string LongPath)
+        {
+            if (LongPath.Length <= 8)
+            {
+                return LongPath;
+            }
+
+            StringBuilder shortPath = new StringBuilder(255);
+            int result = GetShortPathName(LongPath, shortPath, shortPath.Capacity);
+            
+            Uri shortPathUri = null;
+            try
+            {
+                shortPathUri = new Uri("file://" + shortPath.ToString());
+            }
+            catch (Exception)
+            {
+                Log(Level.Error, LogPrefix + "ERROR: Directory " + 
+                    LongPath + " not found.");
+                return "MsiTaskPathNotFound";
+            }
+
+            return shortPath.ToString();
+        }
+        
         /// <summary>
         /// Retrieves the relative path of a file based on 
         /// the component it belongs to and its entry in 
@@ -3319,7 +3476,7 @@ namespace NAnt.Contrib.Tasks
 
                         if (binary.name.Length > nameColSize)
                         {
-                            Log(Level.Error, LogPrefix + 
+                            Log(Level.Warning, LogPrefix + 
                                 "WARNING: Binary key name longer than " + nameColSize + " characters:\n\tName: " + 
                                 binary.name + "\n\tLength: " + binary.name.Length.ToString());
 
@@ -3422,47 +3579,78 @@ namespace NAnt.Contrib.Tasks
         {
             if (msi.controls != null)
             {
-
-                // Open the Control Table
-                View controlView = Database.OpenView("SELECT * FROM `Control`");
-
                 if (Verbose)
                 {
-                    Log(Level.Info, LogPrefix + "Adding Dialog Controls:");
+                    Log(Level.Info, LogPrefix + "Dialog Controls:");
                 }
-                
+ 
+                View controlView;
+
                 foreach (MSIControl control in msi.controls)
                 {
-                    if (Verbose)
+                    if (control.remove)
                     {
-                        Log(Level.Info, "\t" + control.name);
+                        if (Verbose)
+                        {
+                            Log(Level.Info, "\tRemoving: " + control.name);
+                        }
+
+                        // Open Control table
+                        controlView = Database.OpenView("SELECT * FROM `Control` WHERE `Dialog_`='" + control.dialog + "' AND `Control`='" + control.name + "' AND `Type`='" + control.type + "' AND `X`=" + control.x + " AND `Y`=" + control.y + " AND `Width`=" + control.width + " AND `Height`=" + control.height + " AND `Attributes`=" + control.attr);
+                        controlView.Execute(null);
+
+                        try
+                        {
+                            Record recControl = controlView.Fetch();
+                            controlView.Modify(MsiViewModify.msiViewModifyDelete, recControl);                        
+                        }
+                        catch (Exception)
+                        {
+                            Log(Level.Error, LogPrefix + 
+                                "ERROR: Control not found.\n\nSELECT * FROM `Control` WHERE `Dialog_`='" + control.dialog + "' AND `Control`='" + control.name + "' AND `Type`='" + control.type + "' AND `X`='" + control.x + "' AND `Y`='" + control.y + "' AND `Width`='" + control.width + "' AND `Height`='" + control.height + "' AND `Attributes`='" + control.attr + "'");
+                            return false;
+                        }
+                        finally
+                        {
+                            controlView.Close();
+                            controlView = null;
+                        }
                     }
+                    else
+                    {
+                        if (Verbose)
+                        {
+                            Log(Level.Info, "\tAdding:   " + control.name);
+                        }
+                        // Open the Control Table
+                        controlView = Database.OpenView("SELECT * FROM `Control`");
 
-                    // Insert the control
-                    Record recControl = (Record)InstallerType.InvokeMember(
-                        "CreateRecord", 
-                        BindingFlags.InvokeMethod, 
-                        null, InstallerObject, 
-                        new object[] { 12 });
+                        // Insert the control
+                        Record recControl = (Record)InstallerType.InvokeMember(
+                            "CreateRecord", 
+                            BindingFlags.InvokeMethod, 
+                            null, InstallerObject, 
+                            new object[] { 12 });
 
-                    recControl.set_StringData(1, control.dialog);
-                    recControl.set_StringData(2, control.name);
-                    recControl.set_StringData(3, control.type);
-                    recControl.set_IntegerData(4, control.x);
-                    recControl.set_IntegerData(5, control.y);
-                    recControl.set_IntegerData(6, control.width);
-                    recControl.set_IntegerData(7, control.height);
-                    recControl.set_IntegerData(8, control.attr);
-                    recControl.set_StringData(9, control.property);
-                    recControl.set_StringData(10, control.text);
-                    recControl.set_StringData(11, control.nextcontrol);
-                    recControl.set_StringData(12, control.help);
+                        recControl.set_StringData(1, control.dialog);
+                        recControl.set_StringData(2, control.name);
+                        recControl.set_StringData(3, control.type);
+                        recControl.set_IntegerData(4, control.x);
+                        recControl.set_IntegerData(5, control.y);
+                        recControl.set_IntegerData(6, control.width);
+                        recControl.set_IntegerData(7, control.height);
+                        recControl.set_IntegerData(8, control.attr);
+                        recControl.set_StringData(9, control.property);
+                        recControl.set_StringData(10, control.text);
+                        recControl.set_StringData(11, control.nextcontrol);
+                        recControl.set_StringData(12, control.help);
                     
-                    controlView.Modify(MsiViewModify.msiViewModifyMerge, recControl);
-                }
+                        controlView.Modify(MsiViewModify.msiViewModifyMerge, recControl);
 
-                controlView.Close();
-                controlView = null;
+                        controlView.Close();
+                        controlView = null;
+                    }
+                }
             }
             return true;
         }
@@ -3478,9 +3666,7 @@ namespace NAnt.Contrib.Tasks
         {
             if (msi.controlconditions != null)
             {
-
-                // Open the ControlCondition Table
-                View controlConditionView = Database.OpenView("SELECT * FROM `ControlCondition`");
+                View controlConditionView;
 
                 if (Verbose)
                 {
@@ -3489,28 +3675,60 @@ namespace NAnt.Contrib.Tasks
                 
                 foreach (MSIControlCondition controlCondition in msi.controlconditions)
                 {
-                    if (Verbose)
+                    if (controlCondition.remove)
                     {
-                        Log(Level.Info, "\t" + controlCondition.control);
+                        if (Verbose)
+                        {
+                            Log(Level.Info, "\tRemoving: " + controlCondition.control);
+                        }
+
+                        controlConditionView = Database.OpenView("SELECT * FROM `ControlCondition` WHERE `Dialog_`='" + controlCondition.dialog + "' AND `Control_`='" + controlCondition.control + "' AND `Action`='" + controlCondition.action + "' AND `Condition`='" + controlCondition.condition + "'");
+                        controlConditionView.Execute(null);
+
+                        try
+                        {
+                            Record recControlCondition = controlConditionView.Fetch();
+                            controlConditionView.Modify(MsiViewModify.msiViewModifyDelete, recControlCondition);                        
+                        }
+                        catch (Exception)
+                        {
+                            Log(Level.Error, LogPrefix + 
+                                "ERROR: Control Condition not found.\n\nSELECT * FROM `ControlCondition` WHERE `Dialog_`='" + controlCondition.dialog + "' AND `Control_`='" + controlCondition.control + "' AND `Action`='" + controlCondition.action + "' AND `Condition`='" + controlCondition.condition + "'");
+                            return false;
+                        }
+                        finally
+                        {
+                            controlConditionView.Close();
+                            controlConditionView = null;
+                        }
                     }
+                    else
+                    {
+                        if (Verbose)
+                        {
+                            Log(Level.Info, "\tAdding:   " + controlCondition.control);
+                        }
 
-                    // Insert the condition
-                    Record recControlCondition = (Record)InstallerType.InvokeMember(
-                        "CreateRecord", 
-                        BindingFlags.InvokeMethod, 
-                        null, InstallerObject, 
-                        new object[] { 4 });
+                        controlConditionView = Database.OpenView("SELECT * FROM `ControlCondition`");
 
-                    recControlCondition.set_StringData(1, controlCondition.dialog);
-                    recControlCondition.set_StringData(2, controlCondition.control);
-                    recControlCondition.set_StringData(3, controlCondition.action);
-                    recControlCondition.set_StringData(4, controlCondition.condition);
+                        // Insert the condition
+                        Record recControlCondition = (Record)InstallerType.InvokeMember(
+                            "CreateRecord", 
+                            BindingFlags.InvokeMethod, 
+                            null, InstallerObject, 
+                            new object[] { 4 });
+
+                        recControlCondition.set_StringData(1, controlCondition.dialog);
+                        recControlCondition.set_StringData(2, controlCondition.control);
+                        recControlCondition.set_StringData(3, controlCondition.action);
+                        recControlCondition.set_StringData(4, controlCondition.condition);
                     
-                    controlConditionView.Modify(MsiViewModify.msiViewModifyMerge, recControlCondition);
-                }
+                        controlConditionView.Modify(MsiViewModify.msiViewModifyMerge, recControlCondition);
 
-                controlConditionView.Close();
-                controlConditionView = null;
+                        controlConditionView.Close();
+                        controlConditionView = null;
+                    }
+                }           
             }
             return true;
         }
@@ -3551,9 +3769,7 @@ namespace NAnt.Contrib.Tasks
                     }
                     if (controlEvent.remove)
                     {
-                        controlEventView = Database.OpenView("SELECT * FROM `ControlEvent` WHERE `Dialog_`='" + controlEvent.dialog + "' AND `Control_`='" + controlEvent.control + "' AND `Event`='" + controlEvent.name + "' AND `Argument`='" + controlEvent
-
-.argument + "' AND `Condition`='" + controlEvent.condition + "'");
+                        controlEventView = Database.OpenView("SELECT * FROM `ControlEvent` WHERE `Dialog_`='" + controlEvent.dialog + "' AND `Control_`='" + controlEvent.control + "' AND `Event`='" + controlEvent.name + "' AND `Argument`='" + controlEvent.argument + "' AND `Condition`='" + controlEvent.condition + "'");
                         controlEventView.Execute(null);
                         try
                         {
@@ -3726,6 +3942,61 @@ namespace NAnt.Contrib.Tasks
             return true;
         }
 
+        /// <summary>
+        /// Loads records for the ActionText table.  Allows users to specify descriptions/templates for actions.
+        /// </summary>
+        /// <param name="Database">The MSI database.</param>
+        /// <param name="InstallerType">The MSI Installer type.</param>
+        /// <param name="InstallerObject">The MSI Installer object.</param>
+        /// <returns>True if successful.</returns>
+        private bool LoadActionText(Database Database, Type InstallerType, Object InstallerObject)
+        {
+            if (msi.actiontext != null)
+            {
+                if (Verbose)
+                {
+                    Log(Level.Info, LogPrefix + "Adding ActionText:");
+                }
+
+                // Open the actiontext table
+                View actionTextView = Database.OpenView("SELECT * FROM `ActionText`");
+
+                foreach (MSIActionTextAction action in msi.actiontext)
+                {
+                    if (Verbose)
+                    {
+                        Log(Level.Info, "\t" + action.name);
+                    }
+
+                    try
+                    {
+                        // Insert the record to the respective table
+                        Record recAction = (Record)InstallerType.InvokeMember(
+                            "CreateRecord", 
+                            BindingFlags.InvokeMethod, 
+                            null, InstallerObject, 
+                            new object[] { 3 });
+
+                        recAction.set_StringData(1, action.name);
+                        recAction.set_StringData(2, action.description);
+                        recAction.set_StringData(3, action.template);
+                        actionTextView.Modify(MsiViewModify.msiViewModifyMerge, recAction);
+                    }
+                    catch (Exception e)
+                    {
+                        Log(Level.Warning, LogPrefix + "Warning: Action text for \"" + action.name + "\" already exists in database.");
+                        if (Verbose)
+                        {
+                            Log(Level.Error, LogPrefix + e.ToString());
+                        }
+                    }
+                }
+                actionTextView.Close();
+                actionTextView = null;
+            }
+            return true;
+        }
+        
         /// <summary>
         /// Loads records for the _AppMappings table.
         /// </summary>
