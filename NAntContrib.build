@@ -143,7 +143,6 @@
 
     <!-- Build the unit tests library -->
     <target name="buildtests" depends="build" description="Compiles the NUnit Tests">
-        
         <!-- copy NAnt assemblies needed for the tests to run -->
         <copy todir="${build.dir}/bin">
             <fileset basedir="${nant.dir}/bin" failonempty="true">
@@ -155,6 +154,7 @@
             </fileset>
         </copy>
         
+        <!-- compile the test assembly -->
         <csc target="library" warnaserror="true" nowarn="1591" debug="${build.debug}" define="${current.build.defines}" output="${build.dir}/bin/${project.FormalName}.Tests.dll">
             <sources basedir="${tests.dir}">
                 <includes name="**/*.cs" />
@@ -171,7 +171,7 @@
 
     <!-- Perform unit tests. -->
     <target name="test" depends="buildtests init" description="run unit tests">
-        <!-- make copy of NAnt configuration file -->    
+        <!-- make copy of NAnt configuration file -->
         <copy file="${nant.location}nant.exe.config" tofile="${nant.location}nant.tests.config" />
         
         <!-- make sure the config file is writable -->
@@ -242,6 +242,7 @@
                  </documenter>
             </documenters>
         </ndoc>
+        
         <!-- delete everything but the .chm -->
         <delete>
             <fileset basedir="${build.dir}/doc/sdk">
@@ -249,6 +250,7 @@
                 <excludes name="NAntContrib-SDK.chm" />
             </fileset>
         </delete>
+        
         <!-- copy images and stylesheet so we can preview userdoc and have it look right -->
         <copy todir="${build.dir}/doc/help">
             <fileset basedir="doc/help">
