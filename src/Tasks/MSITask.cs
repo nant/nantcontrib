@@ -323,7 +323,7 @@ namespace NAnt.Contrib.Tasks
 
             string errors = Path.GetDirectoryName(
                 tasksModule.FullyQualifiedName) + "\\MSITaskErrors.mst";
-			
+		
             // Copy the Template MSI File
             try
             {
@@ -332,7 +332,7 @@ namespace NAnt.Contrib.Tasks
             catch (IOException)
             {
                 Log.WriteLine(LogPrefix + 
-                    "Error: file in use or cannot be copied to output.");
+                    "ERROR: file in use or cannot be copied to output.");
                 return;
             }
 
@@ -342,6 +342,8 @@ namespace NAnt.Contrib.Tasks
             string cabFile = Path.Combine(Project.BaseDirectory, 
                 Path.Combine(SourceDirectory, 
                 Path.GetFileNameWithoutExtension(Output) + @".cab"));
+
+            CleanOutput(cabFile, tempPath);
 
             try
             {
@@ -367,7 +369,7 @@ namespace NAnt.Contrib.Tasks
                 }
                 catch (Exception e)
                 {
-                    Log.WriteLine(LogPrefix + "Error: " + e.Message);
+                    Log.WriteLine(LogPrefix + "ERROR: " + e.Message);
                     CleanOutput(cabFile, tempPath);
 
                     return;
@@ -504,7 +506,7 @@ namespace NAnt.Contrib.Tasks
                 }
                 catch (Exception e)
                 {
-                    Log.WriteLine(LogPrefix + "Error: " + e.Message);
+                    Log.WriteLine(LogPrefix + "ERROR: " + e.Message);
                     CleanOutput(cabFile, tempPath);
                     return;
                 }
@@ -530,7 +532,7 @@ namespace NAnt.Contrib.Tasks
                 }
                 catch (Exception e)
                 {
-                    Log.WriteLine(LogPrefix + "Error: " + e.Message);
+                    Log.WriteLine(LogPrefix + "ERROR: " + e.Message);
                     CleanOutput(cabFile, tempPath);
                     return;
                 }
@@ -569,7 +571,7 @@ namespace NAnt.Contrib.Tasks
                 }
                 catch (Exception e)
                 {
-                    Log.WriteLine(LogPrefix + "Error: " + e.Message);
+                    Log.WriteLine(LogPrefix + "ERROR: " + e.Message);
                     return;
                 }
                 Log.WriteLine("Done.");
@@ -590,8 +592,16 @@ namespace NAnt.Contrib.Tasks
         /// <param name="tempPath">The path to temporary files.</param>
         private void CleanOutput(string cabFile, string tempPath)
         {
-            File.Delete(cabFile);
-            Directory.Delete(tempPath, true);
+            try
+            {
+                File.Delete(cabFile);
+            }
+            catch (Exception) {}
+            try
+            {
+                Directory.Delete(tempPath, true);
+            }
+            catch (Exception) {}
         }
 
 		/// <summary>
@@ -623,7 +633,7 @@ namespace NAnt.Contrib.Tasks
 				else
 				{
 					Log.WriteLine(LogPrefix + 
-						"Error: Unable to open Banner Image:\n\n\t" + 
+						"ERROR: Unable to open Banner Image:\n\n\t" + 
 						bannerFile + "\n\n");
 					return false;
 				}
@@ -660,7 +670,7 @@ namespace NAnt.Contrib.Tasks
 				else
 				{
 					Log.WriteLine(LogPrefix + 
-						"Error: Unable to open Background Image:\n\n\t" + 
+						"ERROR: Unable to open Background Image:\n\n\t" + 
 						bgFile + "\n\n");
 					return false;
 				}
@@ -698,7 +708,7 @@ namespace NAnt.Contrib.Tasks
 					catch (IOException)
 					{
 						Log.WriteLine(LogPrefix + 
-							"Error: Unable to open License File:\n\n\t" + 
+							"ERROR: Unable to open License File:\n\n\t" + 
 							licFile + "\n\n");
 						return false;
 					}
@@ -715,7 +725,7 @@ namespace NAnt.Contrib.Tasks
 				else
 				{
 					Log.WriteLine(LogPrefix + 
-						"Error: Unable to open License File:\n\n\t" + 
+						"ERROR: Unable to open License File:\n\n\t" + 
 						licFile + "\n\n");
 					return false;
 				}
@@ -753,14 +763,14 @@ namespace NAnt.Contrib.Tasks
 				if (name == null || name == "")
 				{
 					Log.WriteLine(LogPrefix + 
-						"Error: Property with no name attribute detected.");
+						"ERROR: Property with no name attribute detected.");
 					return false;
 				}
 
 				if (sValue == null || sValue == "")
 				{
 					Log.WriteLine(LogPrefix + 
-						"Error: Property " + name + 
+						"ERROR: Property " + name + 
 						" has no value.");
 					return false;
 				}
@@ -820,7 +830,7 @@ namespace NAnt.Contrib.Tasks
 				if (name == null || name == "")
 				{
 					Log.WriteLine(LogPrefix + 
-						"Error: Component with no name attribute detected.");
+						"ERROR: Component with no name attribute detected.");
 					return false;
 				}
 
@@ -836,7 +846,7 @@ namespace NAnt.Contrib.Tasks
 				if (directory == null || directory == "")
 				{
 					Log.WriteLine(LogPrefix + 
-						"Error: Component " + name + 
+						"ERROR: Component " + name + 
 						" needs to specify a directory.");
 					return false;
 				}
@@ -850,7 +860,7 @@ namespace NAnt.Contrib.Tasks
 				if (keyFile == null || keyFile == "")
 				{
 					Log.WriteLine(
-						LogPrefix + "Error: Component " + name + 
+						LogPrefix + "ERROR: Component " + name + 
 						" needs to specify a key.");
 					return false;
 				}
@@ -859,7 +869,7 @@ namespace NAnt.Contrib.Tasks
 				if (id == null)
 				{
 					Log.WriteLine(
-						LogPrefix + "Error: Component " + name + 
+						LogPrefix + "ERROR: Component " + name + 
 						" needs to specify an id.");
 					return false;
 				}
@@ -908,12 +918,12 @@ namespace NAnt.Contrib.Tasks
 					return success;
 				}
 
-				if (files.Contains(keyFile))
+				if (files.Contains(directory + "|" + keyFile))
 				{
-					string keyFileName = (string)files[keyFile];
+					string keyFileName = (string)files[directory + "|" + keyFile];
 					if (keyFileName == "KeyIsDotNetAssembly")
 					{
-						Log.WriteLine(LogPrefix + "Error: Cannot specify key '" + keyFile + 
+						Log.WriteLine(LogPrefix + "ERROR: Cannot specify key '" + keyFile + 
 							"' for component '" + name + "'. File has been detected as " + 
 							"being a COM component or Microsoft.NET assembly and is " + 
 							"being registered with its own component. Please specify " + 
@@ -929,7 +939,7 @@ namespace NAnt.Contrib.Tasks
 				else
 				{
 					Log.WriteLine(
-						LogPrefix + "Error: KeyFile \"" + keyFile + 
+						LogPrefix + "ERROR: KeyFile \"" + keyFile + 
 						"\" not found in Component \"" + name + "\".");
 					return false;
 				}
@@ -945,7 +955,7 @@ namespace NAnt.Contrib.Tasks
 				if (feature == null)
 				{
 					Log.WriteLine(LogPrefix + 
-						"Error: Component " + component + 
+						"ERROR: Component " + component + 
 						" mapped to nonexistent feature.");
 					return false;
 				}
@@ -1045,7 +1055,7 @@ namespace NAnt.Contrib.Tasks
 			if (name == null || name == "")
 			{
 				Log.WriteLine(LogPrefix + 
-					"Error: Directory with no name attribute detected.");
+					"ERROR: Directory with no name attribute detected.");
 				return false;
 			}
 
@@ -1053,7 +1063,7 @@ namespace NAnt.Contrib.Tasks
 			if (sDefault == null || sDefault == "")
 			{
 				Log.WriteLine(LogPrefix + 
-					"Error: Directory " + name + 
+					"ERROR: Directory " + name + 
 					" needs to specify a foldername.");
 				return false;
 			}
@@ -1066,7 +1076,7 @@ namespace NAnt.Contrib.Tasks
 
 			if (assignedParent == null || assignedParent == "")
 			{
-				Log.WriteLine(LogPrefix + "Error: Directory " + name + " has no parent.");
+				Log.WriteLine(LogPrefix + "ERROR: Directory " + name + " has no parent.");
 				return false;
 			}
 
@@ -1132,6 +1142,11 @@ namespace NAnt.Contrib.Tasks
 			string basePath = Path.Combine(Project.BaseDirectory, _sourceDir);
 			string fullPath = Path.Combine(basePath, relativePath.ToString());
 			string path = GetShortPath(fullPath) + "|" + sDefault;
+
+            if (path == "MsiTaskPathNotFound")
+            {
+                return false;
+            }
 
 			if (Verbose)
 			{
@@ -1330,7 +1345,7 @@ namespace NAnt.Contrib.Tasks
 			if (name == null || name == "")
 			{
 				Log.WriteLine(LogPrefix + 
-					"Error: Feature with no name attribute detected.");
+					"ERROR: Feature with no name attribute detected.");
 				return false;
 			}
 
@@ -1361,7 +1376,7 @@ namespace NAnt.Contrib.Tasks
 				if (!foundComponent)
 				{
 					Log.WriteLine(
-						LogPrefix + "Error: Feature " + name + 
+						LogPrefix + "ERROR: Feature " + name + 
 						" needs to be assigned a component or directory.");
 					return false;
 				}
@@ -1503,7 +1518,7 @@ namespace NAnt.Contrib.Tasks
                     "_" + Guid.NewGuid().ToString().ToUpper().Replace("-", null) :
                     overrideElem.GetAttribute("id");
 
-				files.Add(fileName, fileId);
+				files.Add(ComponentDirectory + "|" + fileName, fileId);
 				recFile.set_StringData(1, fileId);
 			
 				if (File.Exists(filePath))
@@ -1699,8 +1714,8 @@ namespace NAnt.Contrib.Tasks
 						// File cant be a member of both components
                         if (componentFiles.FileNames.Count > 1)
                         {
-                            files.Remove(fileName);
-                            files.Add(fileName, "KeyIsDotNetAssembly");
+                            files.Remove(ComponentDirectory + "|" + fileName);
+                            files.Add(ComponentDirectory + "|" + fileName, "KeyIsDotNetAssembly");
                         }
 					}
 					else if (filePath.EndsWith(".tlb"))
@@ -1831,7 +1846,7 @@ namespace NAnt.Contrib.Tasks
 				if (componentName == null || componentName == "")
 				{
 					Log.WriteLine(
-						LogPrefix + "Error: No component specified for key: " + path);
+						LogPrefix + "ERROR: No component specified for key: " + path);
 					return false;
 				}
 
@@ -1929,7 +1944,7 @@ namespace NAnt.Contrib.Tasks
                 if (type == null || type == "")
                 {
                     Log.WriteLine(LogPrefix + 
-                        "Error: Search key with no type attribute detected.");
+                        "ERROR: Search key with no type attribute detected.");
                     return false;
                 }
                 switch (type)
@@ -1970,7 +1985,7 @@ namespace NAnt.Contrib.Tasks
                         if (path == null || path == "")
                         {
                             Log.WriteLine(LogPrefix + 
-                                "Error: Search key with no path attribute detected.");
+                                "ERROR: Search key with no path attribute detected.");
                             return false;
                         }
 
@@ -1991,7 +2006,7 @@ namespace NAnt.Contrib.Tasks
                                 if (propRef == null || propRef == "")
                                 {
                                     Log.WriteLine(LogPrefix + 
-                                        "Error: Search key with no ref attribute detected.");
+                                        "ERROR: Search key with no ref attribute detected.");
                                     return false;
                                 }
                                 string signature = "SIG_" + propRef;
@@ -1999,7 +2014,7 @@ namespace NAnt.Contrib.Tasks
                                 if (name == null || name == "")
                                 {
                                     Log.WriteLine(LogPrefix + 
-                                        "Error: Search key with no name attribute detected.");
+                                        "ERROR: Search key with no name attribute detected.");
                                     return false;
                                 }
 
@@ -2059,7 +2074,7 @@ namespace NAnt.Contrib.Tasks
                 if (type == null || type == "")
                 {
                     Log.WriteLine(LogPrefix + 
-                        "Error: Search key with no type attribute detected.");
+                        "ERROR: Search key with no type attribute detected.");
                     return false;
                 }
                 switch (type)
@@ -2086,7 +2101,7 @@ namespace NAnt.Contrib.Tasks
                                 if (propRef == null || propRef == "")
                                 {
                                     Log.WriteLine(LogPrefix + 
-                                        "Error: Search key with no ref attribute detected.");
+                                        "ERROR: Search key with no ref attribute detected.");
                                     return false;
                                 }
                                 string signature = "SIG_" + propRef;
@@ -2255,7 +2270,7 @@ namespace NAnt.Contrib.Tasks
 			else
 			{
 				Log.WriteLine(LogPrefix + 
-					"Error: Unable to open Cabinet file:\n\n\t" + 
+					"ERROR: Unable to open Cabinet file:\n\n\t" + 
 					cabFile + "\n\n");
 				return false;
 			}
@@ -2296,7 +2311,18 @@ namespace NAnt.Contrib.Tasks
 
 			StringBuilder shortPath = new StringBuilder(255);
 			int result = GetShortPathName(LongPath, shortPath, shortPath.Capacity);
-			Uri shortPathUri = new Uri("file://" + shortPath.ToString());
+			
+            Uri shortPathUri = null;
+            try
+            {
+                shortPathUri = new Uri("file://" + shortPath.ToString());
+            }
+            catch (Exception)
+            {
+                Log.WriteLine(LogPrefix + "ERROR: Directory " + 
+                    LongPath + " not found.");
+                return "MsiTaskPathNotFound";
+            }
 
 			string[] shortPathSegments = shortPathUri.Segments;
 			if (shortPathSegments.Length == 0)
@@ -2727,7 +2753,7 @@ namespace NAnt.Contrib.Tasks
 
                     if (featureName == null || featureName == "")
                     {
-                        Log.WriteLine(LogPrefix + "Error: merge element must specify a feature attribute.");
+                        Log.WriteLine(LogPrefix + "ERROR: merge element must specify a feature attribute.");
                         return false;
                     }
 
@@ -2796,7 +2822,7 @@ namespace NAnt.Contrib.Tasks
                             {
                                 Log.WriteLine();
                                 Log.WriteLine("Error extracting merge module cab file: " + moduleCab);
-                                Log.WriteLine("Application returned Error: " + process.ExitCode);
+                                Log.WriteLine("Application returned ERROR: " + process.ExitCode);
 
                                 File.Delete(moduleCab);
                                 return false;
