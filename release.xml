@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
 <project name="nant" default="build-release-self">
+    <!-- set base uri for linking to NAnt help -->
+    <property name="nant.base.uri" value="http://nant.sourceforge.net/help/" />
+    <!-- set name of sourceforge project server -->
     <property name="sf.net.ssh.server" value="shell1.sf.net" />
     <property name="sf.net.web.path" value="/home/groups/n/na/nantcontrib/htdocs" />
     <!-- include master build file -->
