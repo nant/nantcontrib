@@ -79,8 +79,14 @@ namespace SLiNgshoT.Core
 				return (bool)_Navigator.Evaluate("boolean(@DebugSymbols='true')");
 			}
 		}
-
-		public bool AllowUnsafeBlocks
+    public string WarningLevel
+    {
+      get
+      {
+        return (string)_Navigator.Evaluate("string(@WarningLevel)");
+      }
+    }
+    public bool AllowUnsafeBlocks
 		{
 			get
 			{

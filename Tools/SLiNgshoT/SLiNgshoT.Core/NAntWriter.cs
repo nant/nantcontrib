@@ -282,7 +282,7 @@ namespace SLiNgshoT.Core
         {
           WriteProperty("doc", "${build.dir}\\" + Path.GetFileName(project.GetRelativePathToDocumentationFile(configuration.Name)));
         }
-
+        WriteProperty( "warninglevel", configuration.WarningLevel );
         writer.WriteStartElement("call");
         writer.WriteAttributeString("target", project.Name);
         writer.WriteEndElement(); // call
@@ -359,6 +359,7 @@ namespace SLiNgshoT.Core
 
       writer.WriteAttributeString("define", "${define}");
       writer.WriteAttributeString("doc", "${doc}");
+      writer.WriteAttributeString("warninglevel", "${warninglevel}" );
 
       if (project.ProjectType.StartsWith("C#")) 
       {
