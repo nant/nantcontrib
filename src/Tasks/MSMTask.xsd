@@ -283,11 +283,11 @@
 		<xsd:attribute name="nullable" type="xsd:boolean" use="required" />
 		<xsd:attribute name="category" type="msm:MSMTableColumnCategoryType" use="optional" />
 		<xsd:attribute name="type" type="xsd:string" use="optional" />
-		<xsd:attribute name="key" type="xsd:boolean" use="optional" />
-		<xsd:attribute name="minvalue" type="xsd:integer" use="optional" />
-		<xsd:attribute name="maxvalue" type="xsd:integer" use="optional" />
+		<xsd:attribute name="key" type="xsd:boolean" use="optional" default="false" />
+		<xsd:attribute name="minvalue" type="xsd:int" use="optional" />
+		<xsd:attribute name="maxvalue" type="xsd:int" use="optional" />
 		<xsd:attribute name="keytable" type="xsd:string" use="optional" />
-		<xsd:attribute name="keycolumn" type="xsd:integer" use="optional" />
+		<xsd:attribute name="keycolumn" type="xsd:int" use="optional" />
 		<xsd:attribute name="set" type="xsd:string" use="optional" />
 		<xsd:attribute name="description" type="xsd:string" use="optional" />
 	</xsd:complexType>

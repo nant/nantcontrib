@@ -2541,14 +2541,28 @@ namespace NAnt.Contrib.Tasks {
 
                             recValidation.set_StringData(1, table.name);
                             recValidation.set_StringData(2, column.name);
-                            if (column.nullable)
-                                recValidation.set_StringData(3, "Y");
-                            else
-                                recValidation.set_StringData(3, "N");
-                            recValidation.set_StringData(4, column.minvalue);
-                            recValidation.set_StringData(5, column.maxvalue);
-                            recValidation.set_StringData(6, column.keytable);
-                            recValidation.set_StringData(7, column.keycolumn);
+							if (column.nullable)
+							{
+								if (column.key)
+								{
+									recValidation.set_StringData(3, "@");
+								}
+								else
+								{
+									recValidation.set_StringData(3, "Y");
+								}
+							}
+							else
+							{
+								recValidation.set_StringData(3, "N");
+							}
+							if (column.minvalueSpecified)
+								recValidation.set_IntegerData(4, column.minvalue);
+							if (column.maxvalueSpecified)
+								recValidation.set_IntegerData(5, column.maxvalue);
+							recValidation.set_StringData(6, column.keytable);
+							if (column.keycolumnSpecified)
+								recValidation.set_IntegerData(7, column.keycolumn);
 
 
                             if (!firstColumn)
@@ -2561,181 +2575,425 @@ namespace NAnt.Contrib.Tasks {
 
                             tableStructureColumns += column.name;
 
-                            switch(column.category.ToString())
-                            {
-                                case "Text":
-                                    if (column.type == null || column.type == "")
-                                        tableStructureColumnTypes += "s0";
-                                    recValidation.set_StringData(8, "Text");
-                                    currentColumn.type = "string";
-                                    break;
-                                case "UpperCase":
-                                    if (column.type == null || column.type == "")
-                                        tableStructureColumnTypes += "s72";
-                                    recValidation.set_StringData(8, "UpperCase");
-                                    currentColumn.type = "string";
-                                    break;
-                                case "LowerCase":
-                                    if (column.type == null || column.type == "")
-                                        tableStructureColumnTypes += "s72";
-                                    recValidation.set_StringData(8, "LowerCase");
-                                    currentColumn.type = "string";
-                                    break;
-                                case "Integer":
-                                    if (column.type == null || column.type == "")
-                                        tableStructureColumnTypes += "i2";
-                                    recValidation.set_StringData(8, "Integer");
-                                    currentColumn.type = "int";
-                                    break;
-                                case "DoubleInteger":
-                                    if (column.type == null || column.type == "")
-                                        tableStructureColumnTypes += "i4";
-                                    recValidation.set_StringData(8, "DoubleInteger");
-                                    currentColumn.type = "int";
-                                    break;
-                                case "Time/Date":
-                                    if (column.type == null || column.type == "")
-                                        tableStructureColumnTypes += "i4";
-                                    recValidation.set_StringData(8, "Time/Date");
-                                    currentColumn.type = "int";
-                                    break;
-                                case "Identifier":
-                                    if (column.type == null || column.type == "")
-                                        tableStructureColumnTypes += "s72";
-                                    recValidation.set_StringData(8, "Identifier");
-                                    currentColumn.type = "string";
-                                    break;
-                                case "Property":
-                                    if (column.type == null || column.type == "")
-                                        tableStructureColumnTypes += "s72";
-                                    recValidation.set_StringData(8, "Property");
-                                    currentColumn.type = "string";
-                                    break;
-                                case "Filename":
-                                    if (column.type == null || column.type == "")
-                                        tableStructureColumnTypes += "s255";
-                                    recValidation.set_StringData(8, "Filename");
-                                    currentColumn.type = "string";
-                                    break;
-                                case "WildCardFilename":
-                                    if (column.type == null || column.type == "")
-                                        tableStructureColumnTypes += "L0";
-                                    recValidation.set_StringData(8, "WildCardFilename");
-                                    currentColumn.type = "string";
-                                    break;
-                                case "Path":
-                                    if (column.type == null || column.type == "")
-                                        tableStructureColumnTypes += "s255";
-                                    recValidation.set_StringData(8, "Path");
-                                    currentColumn.type = "string";
-                                    break;
-                                case "Paths":
-                                    if (column.type == null || column.type == "")
-                                        tableStructureColumnTypes += "s255";
-                                    recValidation.set_StringData(8, "Paths");
-                                    currentColumn.type = "string";
-                                    break;
-                                case "AnyPath":
-                                    if (column.type == null || column.type == "")
-                                        tableStructureColumnTypes += "s255";
-                                    recValidation.set_StringData(8, "AnyPath");
-                                    currentColumn.type = "string";
-                                    break;
-                                case "DefaultDir":
-                                    if (column.type == null || column.type == "")
-                                        tableStructureColumnTypes += "l255";
-                                    recValidation.set_StringData(8, "DefaultDir");
-                                    currentColumn.type = "string";
-                                    break;
-                                case "RegPath":
-                                    if (column.type == null || column.type == "")
-                                        tableStructureColumnTypes += "l255";
-                                    recValidation.set_StringData(8, "RegPath");
-                                    currentColumn.type = "string";
-                                    break;
-                                case "Formatted":
-                                    if (column.type == null || column.type == "")
-                                        tableStructureColumnTypes += "s255";
-                                    recValidation.set_StringData(8, "Formatted");
-                                    currentColumn.type = "string";
-                                    break;
-                                case "Template":
-                                    if (column.type == null || column.type == "")
-                                        tableStructureColumnTypes += "L0";
-                                    recValidation.set_StringData(8, "Template");
-                                    currentColumn.type = "string";
-                                    break;
-                                case "Condition":
-                                    if (column.type == null || column.type == "")
-                                        tableStructureColumnTypes += "s255";
-                                    recValidation.set_StringData(8, "Condition");
-                                    currentColumn.type = "string";
-                                    break;
-                                case "GUID":
-                                    if (column.type == null || column.type == "")
-                                        tableStructureColumnTypes += "s38";
-                                    recValidation.set_StringData(8, "GUID");
-                                    currentColumn.type = "string";
-                                    break;
-                                case "Version":
-                                    if (column.type == null || column.type == "")
-                                        tableStructureColumnTypes += "s32";
-                                    recValidation.set_StringData(8, "Version");
-                                    currentColumn.type = "string";
-                                    break;
-                                case "Language":
-                                    if (column.type == null || column.type == "")
-                                        tableStructureColumnTypes += "s255";
-                                    recValidation.set_StringData(8, "Language");
-                                    currentColumn.type = "string";
-                                    break;
-                                case "Binary":
-                                    if (column.type == null || column.type == "")
-                                        tableStructureColumnTypes += "v0";
-                                    recValidation.set_StringData(8, "Binary");
-                                    currentColumn.type = "binary";
-                                    break;
-                                case "CustomSource":
-                                    if (column.type == null || column.type == "")
-                                        tableStructureColumnTypes += "s72";
-                                    recValidation.set_StringData(8, "CustomSource");
-                                    currentColumn.type = "string";
-                                    break;
-                                case "Cabinet":
-                                    if (column.type == null || column.type == "")
-                                        tableStructureColumnTypes += "S255";
-                                    recValidation.set_StringData(8, "Cabinet");
-                                    currentColumn.type = "string";
-                                    break;
-                                case "Shortcut":
-                                    if (column.type == null || column.type == "")
-                                        tableStructureColumnTypes += "s72";
-                                    recValidation.set_StringData(8, "Shortcut");
-                                    currentColumn.type = "string";
-                                    break;
-                                default:
-                                    if (column.type == null || column.type == "")
-                                    {
-                                        if (Verbose)
-                                        {
-                                            Log(Level.Info, " ");
-                                            Log(Level.Info, LogPrefix + "Must specify a valid category or type.  Defaulting to category type: s0");
-                                        }
-                                        tableStructureColumnTypes += "s0";
-                                        currentColumn.type = "string";
-                                    }
-                                    break;
-                            }
-                            if (column.type != null)
-                            {
-                                tableStructureColumnTypes += column.type;
-                                if (column.type.ToString().StartsWith("i"))
-                                    currentColumn.type = "int";
-                                else if(column.type.ToString().StartsWith("v"))
-                                    currentColumn.type = "binary";
-                                else
-                                    currentColumn.type = "string";
-                            }
+							switch(column.category.ToString())
+							{
+								case "Text":
+									if (column.type == null || column.type == "")
+									{
+										if (column.nullable)
+										{
+											tableStructureColumnTypes += "S0";
+										}
+										else
+										{
+											tableStructureColumnTypes += "s0";
+										}
+									}
+									recValidation.set_StringData(8, "Text");
+									currentColumn.type = "string";
+									break;
+								case "UpperCase":
+									if (column.type == null || column.type == "")
+									{
+										if (column.nullable)
+										{
+											tableStructureColumnTypes += "S72";
+										}
+										else
+										{
+											tableStructureColumnTypes += "s72";
+										}
+									}
+									recValidation.set_StringData(8, "UpperCase");
+									currentColumn.type = "string";
+									break;
+								case "LowerCase":
+									if (column.type == null || column.type == "")
+									{
+										if (column.nullable)
+										{
+											tableStructureColumnTypes += "S72";
+										}
+										else
+										{
+											tableStructureColumnTypes += "s72";
+										}
+									}
+									recValidation.set_StringData(8, "LowerCase");
+									currentColumn.type = "string";
+									break;
+								case "Integer":
+									if (column.type == null || column.type == "")
+									{
+										if (column.nullable)
+										{
+											tableStructureColumnTypes += "I2";
+										}
+										else
+										{
+											tableStructureColumnTypes += "i2";
+										}
+									}
+									if (!column.minvalueSpecified)
+										recValidation.set_IntegerData(4, -32767);
+									if (!column.maxvalueSpecified)
+										recValidation.set_IntegerData(5, 32767);
+									recValidation.set_StringData(8, null);
+									currentColumn.type = "int";
+									break;
+								case "DoubleInteger":
+									if (column.type == null || column.type == "")
+									{
+										if (column.nullable)
+										{
+											tableStructureColumnTypes += "I4";
+										}
+										else
+										{
+											tableStructureColumnTypes += "i4";
+										}
+									}
+									if (!column.minvalueSpecified)
+										recValidation.set_IntegerData(4, -2147483647);
+									if (!column.maxvalueSpecified)
+										recValidation.set_IntegerData(5, 2147483647);
+									recValidation.set_StringData(8, null);
+									currentColumn.type = "int";
+									break;
+								case "Time/Date":
+									if (column.type == null || column.type == "")
+									{
+										if (column.nullable)
+										{
+											tableStructureColumnTypes += "I4";
+										}
+										else
+										{
+											tableStructureColumnTypes += "i4";
+										}
+									}
+									if (!column.minvalueSpecified)
+										recValidation.set_IntegerData(4, 0);
+									if (!column.maxvalueSpecified)
+										recValidation.set_IntegerData(5, 2147483647);
+									recValidation.set_StringData(8, null);
+									currentColumn.type = "int";
+									break;
+								case "Identifier":
+									if (column.type == null || column.type == "")
+									{
+										if (column.nullable)
+										{
+											tableStructureColumnTypes += "S72";
+										}
+										else
+										{
+											tableStructureColumnTypes += "s72";
+										}
+									}
+									recValidation.set_StringData(8, "Identifier");
+									currentColumn.type = "string";
+									break;
+								case "Property":
+									if (column.type == null || column.type == "")
+									{
+										if (column.nullable)
+										{
+											tableStructureColumnTypes += "S72";
+										}
+										else
+										{
+											tableStructureColumnTypes += "s72";
+										}
+									}
+									recValidation.set_StringData(8, "Property");
+									currentColumn.type = "string";
+									break;
+								case "Filename":
+									if (column.type == null || column.type == "")
+									{
+										if (column.nullable)
+										{
+											tableStructureColumnTypes += "S255";
+										}
+										else
+										{
+											tableStructureColumnTypes += "s255";
+										}
+									}
+									recValidation.set_StringData(8, "Filename");
+									currentColumn.type = "string";
+									break;
+								case "WildCardFilename":
+									if (column.type == null || column.type == "")
+									{
+										if (column.nullable)
+										{
+											tableStructureColumnTypes += "L0";
+										}
+										else
+										{
+											tableStructureColumnTypes += "l0";
+										}
+									}
+									recValidation.set_StringData(8, "WildCardFilename");
+									currentColumn.type = "string";
+									break;
+								case "Path":
+									if (column.type == null || column.type == "")
+									{
+										if (column.nullable)
+										{
+											tableStructureColumnTypes += "S255";
+										}
+										else
+										{
+											tableStructureColumnTypes += "s255";
+										}
+									}
+									recValidation.set_StringData(8, "Path");
+									currentColumn.type = "string";
+									break;
+								case "Paths":
+									if (column.type == null || column.type == "")
+									{
+										if (column.nullable)
+										{
+											tableStructureColumnTypes += "S255";
+										}
+										else
+										{
+											tableStructureColumnTypes += "s255";
+										}
+									}
+									recValidation.set_StringData(8, "Paths");
+									currentColumn.type = "string";
+									break;
+								case "AnyPath":
+									if (column.type == null || column.type == "")
+									{
+										if (column.nullable)
+										{
+											tableStructureColumnTypes += "S255";
+										}
+										else
+										{
+											tableStructureColumnTypes += "s255";
+										}
+									}
+									recValidation.set_StringData(8, "AnyPath");
+									currentColumn.type = "string";
+									break;
+								case "DefaultDir":
+									if (column.type == null || column.type == "")
+									{
+										if (column.nullable)
+										{
+											tableStructureColumnTypes += "L255";
+										}
+										else
+										{
+											tableStructureColumnTypes += "l255";
+										}
+									}
+									recValidation.set_StringData(8, "DefaultDir");
+									currentColumn.type = "string";
+									break;
+								case "RegPath":
+									if (column.type == null || column.type == "")
+									{
+										if (column.nullable)
+										{
+											tableStructureColumnTypes += "L255";
+										}
+										else
+										{
+											tableStructureColumnTypes += "l255";
+										}
+									}
+									recValidation.set_StringData(8, "RegPath");
+									currentColumn.type = "string";
+									break;
+								case "Formatted":
+									if (column.type == null || column.type == "")
+									{
+										if (column.nullable)
+										{
+											tableStructureColumnTypes += "S255";
+										}
+										else
+										{
+											tableStructureColumnTypes += "s255";
+										}
+									}
+									recValidation.set_StringData(8, "Formatted");
+									currentColumn.type = "string";
+									break;
+								case "Template":
+									if (column.type == null || column.type == "")
+									{
+										if (column.nullable)
+										{
+											tableStructureColumnTypes += "L0";
+										}
+										else
+										{
+											tableStructureColumnTypes += "l0";
+										}
+									}
+									recValidation.set_StringData(8, "Template");
+									currentColumn.type = "string";
+									break;
+								case "Condition":
+									if (column.type == null || column.type == "")
+									{
+										if (column.nullable)
+										{
+											tableStructureColumnTypes += "S255";
+										}
+										else
+										{
+											tableStructureColumnTypes += "s255";
+										}
+									}
+									recValidation.set_StringData(8, "Condition");
+									currentColumn.type = "string";
+									break;
+								case "GUID":
+									if (column.type == null || column.type == "")
+									{
+										if (column.nullable)
+										{
+											tableStructureColumnTypes += "S38";
+										}
+										else
+										{
+											tableStructureColumnTypes += "s38";
+										}
+									}
+									recValidation.set_StringData(8, "GUID");
+									currentColumn.type = "string";
+									break;
+								case "Version":
+									if (column.type == null || column.type == "")
+									{
+										if (column.nullable)
+										{
+											tableStructureColumnTypes += "S32";
+										}
+										else
+										{
+											tableStructureColumnTypes += "s32";
+										}
+									}
+									recValidation.set_StringData(8, "Version");
+									currentColumn.type = "string";
+									break;
+								case "Language":
+									if (column.type == null || column.type == "")
+									{
+										if (column.nullable)
+										{
+											tableStructureColumnTypes += "S255";
+										}
+										else
+										{
+											tableStructureColumnTypes += "s255";
+										}
+									}
+									recValidation.set_StringData(8, "Language");
+									currentColumn.type = "string";
+									break;
+								case "Binary":
+									if (column.type == null || column.type == "")
+									{
+										if (column.nullable)
+										{
+											tableStructureColumnTypes += "V0";
+										}
+										else
+										{
+											tableStructureColumnTypes += "v0";
+										}
+									}
+									recValidation.set_StringData(8, "Binary");
+									currentColumn.type = "binary";
+									break;
+								case "CustomSource":
+									if (column.type == null || column.type == "")
+									{
+										if (column.nullable)
+										{
+											tableStructureColumnTypes += "S72";
+										}
+										else
+										{
+											tableStructureColumnTypes += "s72";
+										}
+									}
+									recValidation.set_StringData(8, "CustomSource");
+									currentColumn.type = "string";
+									break;
+								case "Cabinet":
+									if (column.type == null || column.type == "")
+									{
+										if (column.nullable)
+										{
+											tableStructureColumnTypes += "S255";
+										}
+										else
+										{
+											tableStructureColumnTypes += "s255";
+										}
+									}
+									recValidation.set_StringData(8, "Cabinet");
+									currentColumn.type = "string";
+									break;
+								case "Shortcut":
+									if (column.type == null || column.type == "")
+									{
+										if (column.nullable)
+										{
+											tableStructureColumnTypes += "S72";
+										}
+										else
+										{
+											tableStructureColumnTypes += "s72";
+										}
+									}
+									recValidation.set_StringData(8, "Shortcut");
+									currentColumn.type = "string";
+									break;
+								default:
+									if (column.type == null || column.type == "")
+									{
+										if (Verbose)
+										{
+											Log(Level.Info, " ");
+											Log(Level.Info, LogPrefix + "Must specify a valid category or type.  Defaulting to category type: s0");
+										}
+										if (column.nullable)
+										{
+											tableStructureColumnTypes += "S0";
+										}
+										else
+										{
+											tableStructureColumnTypes += "s0";
+										}
+										currentColumn.type = "string";
+									}
+									break;
+							}
+							if (column.type != null)
+							{
+								tableStructureColumnTypes += column.type;
+								if (column.type.ToString().ToLower().StartsWith("i"))
+									currentColumn.type = "int";
+								else if(column.type.ToString().ToLower().StartsWith("v"))
+									currentColumn.type = "binary";
+								else
+									currentColumn.type = "string";
+							}
 
                             recValidation.set_StringData(9, column.set);
                             recValidation.set_StringData(10, column.description);
@@ -2748,6 +3006,9 @@ namespace NAnt.Contrib.Tasks {
                             columnList.Add(currentColumn);
 
                         }
+
+						validationView.Close();
+						validationView = null;
 
                         // Create temp file.  Dump table structure contents into the file
                         // Then import the file.
@@ -2770,9 +3031,6 @@ namespace NAnt.Contrib.Tasks {
                         {
                             tableStream.Close();
                         }
-
-                        validationView.Close();
-                        validationView = null;
 
                         try
                         {
