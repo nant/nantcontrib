@@ -123,13 +123,13 @@ namespace NAnt.Contrib.Tasks.Perforce {
             arguments.Append("sync ");
 
             if (Force) {
-                arguments.Append( " -f");
+                arguments.Append("-f ");
             }
             if (View != null) {
-                arguments.Append(View);
+                arguments.Append(View + " ");
             }
             if (Label != null) {
-                arguments.Append(string.Format("@{0}", Label));
+                arguments.Append(string.Format("@{0} ", Label));
             }
 
            return arguments.ToString();
