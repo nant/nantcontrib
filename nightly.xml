@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="nant" default="nightly">
 
-	<target name="nightly"
+	<target name="nightly">
 		<property name="NAntReleaseEXE" value="${nant.dir}/bin/nant.exe"/>
 		<available property="NAntReleaseEXEExists" resource="${NAntReleaseEXE}" type="File"/>
 		<exec program="${NAntReleaseEXE}">
