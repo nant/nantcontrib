@@ -31,21 +31,22 @@ using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks
 {
-    /// <summary>Discovers the URLs of XML web services on a web server and saves documents 
-    /// related to them to the local disk. The resulting .discomap, .wsdl, and .xsd files 
-    /// can be used with the <see cref="WsdlTask"/> to produce web service clients and 
+    /// <summary>Discovers the URLs of XML web services on a web server and saves documents
+    /// related to them to the local disk. The resulting .discomap, .wsdl, and .xsd files
+    /// can be used with the <see cref="WsdlTask"/> to produce web service clients and
     /// and abstract web service servers using ASP.NET.</summary>
     /// <example>
     ///   <para>Generate a proxy class for a web service.</para>
-    ///   <code><![CDATA[<disco path="http://www.somewhere.com/myservice.wsdl" 
+    ///   <code><![CDATA[<disco path="http://www.somewhere.com/myservice.wsdl"
     ///     language="CS" namespace="MyCompany.MyService" outfile="MyService.cs" />]]></code>
     /// </example>
     [TaskName("disco")]
+    [ProgramLocation(LocationType.FrameworkSdkDir)]
     public class DicsoTask : ExternalProgramBase
     {
         private string _args;
         private string _path;
-        private bool _nologo;
+        private bool _nologo = true;
         private bool _nosave;
         private string _outputdir;
         private string _username;
@@ -58,14 +59,14 @@ namespace NAnt.Contrib.Tasks
 
         /// <summary>The URL or Path to discover.</summary>
         [TaskAttribute("path")]
-        public string Path 
+        public string Path
         {
             get { return _path; }
-            set { _path = value; } 
-        }     
+            set { _path = value; }
+        }
 
         /// <summary>Suppresses the banner.</summary>
-        [TaskAttribute("nologo")]        
+        [TaskAttribute("nologo")]
         [BooleanValidator()]
         public bool NoLogo
         {
@@ -74,7 +75,7 @@ namespace NAnt.Contrib.Tasks
         }
 
         /// <summary>Do not save the discovered documents to the local disk.</summary>
-        [TaskAttribute("nosave")]        
+        [TaskAttribute("nosave")]
         [BooleanValidator()]
         public bool NoSave
         {
@@ -83,88 +84,80 @@ namespace NAnt.Contrib.Tasks
         }
 
         /// <summary>The output directory to save discovered documents in.</summary>
-        [TaskAttribute("outputdir")]        
+        [TaskAttribute("outputdir")]
         public string OutputDir
         {
             get { return _outputdir; }
             set { _outputdir = value; }
         }
 
-        /// <summary>Username of an account with credentials to access a 
+        /// <summary>Username of an account with credentials to access a
         /// server that requires authentication.</summary>
-        [TaskAttribute("username")]        
+        [TaskAttribute("username")]
         public string Username
         {
             get { return _username; }
             set { _username = value; }
         }
 
-        /// <summary>Password of an account with credentials to access a 
+        /// <summary>Password of an account with credentials to access a
         /// server that requires authentication.</summary>
-        [TaskAttribute("password")]        
+        [TaskAttribute("password")]
         public string Password
         {
             get { return _password; }
             set { _password = value; }
         }
 
-        /// <summary>Domain of an account with credentials to access a 
+        /// <summary>Domain of an account with credentials to access a
         /// server that requires authentication.</summary>
-        [TaskAttribute("domain")]        
+        [TaskAttribute("domain")]
         public string Domain
         {
             get { return _domain; }
             set { _domain = value; }
         }
 
-        /// <summary>URL of a proxy server to use for HTTP requests. 
+        /// <summary>URL of a proxy server to use for HTTP requests.
         /// The default is to use the system proxy setting.</summary>
-        [TaskAttribute("proxy")]        
+        [TaskAttribute("proxy")]
         public string Proxy
         {
             get { return _proxy; }
             set { _proxy = value; }
         }
 
-        /// <summary>Username of an account with credentials to access a 
+        /// <summary>Username of an account with credentials to access a
         /// proxy that requires authentication.</summary>
-        [TaskAttribute("proxyusername")]        
+        [TaskAttribute("proxyusername")]
         public string ProxyUsername
         {
             get { return _proxyusername; }
             set { _proxyusername = value; }
         }
 
-        /// <summary>Password of an account with credentials to access a 
+        /// <summary>Password of an account with credentials to access a
         /// proxy that requires authentication.</summary>
-        [TaskAttribute("proxypassword")]        
+        [TaskAttribute("proxypassword")]
         public string ProxyPassword
         {
             get { return _proxypassword; }
             set { _proxypassword = value; }
         }
 
-        /// <summary>Domain of an account with credentials to access a 
+        /// <summary>Domain of an account with credentials to access a
         /// proxy that requires authentication.</summary>
-        [TaskAttribute("proxydomain")]        
+        [TaskAttribute("proxydomain")]
         public string ProxyDomain
         {
             get { return _proxydomain; }
             set { _proxydomain = value; }
         }
-        
-        public override string ProgramFileName
-        {
-            get
-            {
-                return "disco.exe";
-            }
-        }
 
         /// <summary>
         /// Arguments of program to execute
         /// </summary>
-        public override string ProgramArguments 
+        public override string ProgramArguments
         {
             get
             {
@@ -176,7 +169,7 @@ namespace NAnt.Contrib.Tasks
         ///Initializes task and ensures the supplied attributes are valid.
         ///</summary>
         ///<param name="taskNode">Xml node used to define this task instance.</param>
-        protected override void InitializeTask(System.Xml.XmlNode taskNode) 
+        protected override void InitializeTask(System.Xml.XmlNode taskNode)
         {
         }
 

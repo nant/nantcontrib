@@ -48,6 +48,7 @@ namespace NAnt.Contrib.Tasks {
     ///   <code>&lt;gac assembly='hello,Version=1.0.0.1,Culture="de",PublicKeyToken=45e343aae32233ca' uninstall="true"/&gt;</code>
     /// </example>
     [TaskName("gac")]
+    [ProgramLocation(LocationType.FrameworkSdkDir)]
     public class GacTask : ExternalProgramBase {
         public enum ActionTypes {
             install,
@@ -55,7 +56,7 @@ namespace NAnt.Contrib.Tasks {
             uninstall };
 
         ActionTypes _action = ActionTypes.install;
-        string _assemblyName = null;        
+        string _assemblyName = null;
         FileSet _assemblies = new FileSet();
         bool _silent = false;
 
@@ -72,8 +73,8 @@ namespace NAnt.Contrib.Tasks {
 
         /// <summary>Fileset are used to define multiple assemblies.</summary>
         [FileSet("assemblies")]
-        public FileSet CopyFileSet      { 
-            get { return _assemblies; } 
+        public FileSet CopyFileSet      {
+            get { return _assemblies; }
             set { _assemblies = value; }
         }
 
@@ -83,9 +84,9 @@ namespace NAnt.Contrib.Tasks {
         public bool Silent {
             get { return _silent; }
             set { _silent = value; }
-        }       
+        }
 
-        public override string ProgramFileName {
+        public override string ExeName {
             get { return "gacutil"; }
         }
 

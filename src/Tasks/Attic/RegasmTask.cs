@@ -52,6 +52,7 @@ namespace NAnt.Contrib.Tasks {
     ///   </code>
     /// </example>
     [TaskName("regasm")]
+    [ProgramLocation(LocationType.FrameworkDir)]
     public class RegasmTask : ExternalProgramBase {
 
         string _assemblyName = null;
@@ -131,10 +132,6 @@ namespace NAnt.Contrib.Tasks {
             set { _fileset = value; }
         }
         
-        public override string ProgramFileName {
-            get {return Name;}
-        }
-
         public override string ProgramArguments {
             get {
                 string args = "";

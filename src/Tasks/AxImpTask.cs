@@ -31,12 +31,13 @@ using NAnt.Core.Attributes;
 
 namespace NAnt.Optional.Tasks
 {
-    /// <summary>Generates a Windows Forms Control that wraps 
+    /// <summary>Generates a Windows Forms Control that wraps
     /// ActiveX Controls defined in an OCX.</summary>
     /// <example>
     ///   <code><![CDATA[<aximp ocx="MyControl.ocx" out="MyFormsControl.dll" />]]></code>
     /// </example>
     [TaskName("aximp")]
+    [ProgramLocation(LocationType.FrameworkSdkDir)]
     public class AxImpTask : ExternalProgramBase
     {
         private string _args;
@@ -47,31 +48,31 @@ namespace NAnt.Optional.Tasks
         string _keycontainer = null;
         bool _delaysign = false;
         bool _generatesource = false;
-        bool _nologo = false;
+        bool _nologo = true;
         bool _silent = false;
-        
+
         /// <summary>Filename of the .ocx file.</summary>
         [TaskAttribute("ocx", Required=true)]
         public string Ocx {
             get { return _ocx; }
-            set { _ocx = value; } 
+            set { _ocx = value; }
         }
 
         /// <summary>Filename of the generated assembly.</summary>
         [TaskAttribute("out")]
-        public string Out 
+        public string Out
         {
             get { return _out; }
-            set { _out = value; } 
+            set { _out = value; }
         }
 
         /// <summary>File containing strong name public key.</summary>
         [TaskAttribute("publickeyfile")]
-        public string PublicKeyFile 
+        public string PublicKeyFile
         {
             get { return _publickeyfile; }
-            set { _publickeyfile = value; } 
-        }      
+            set { _publickeyfile = value; }
+        }
 
         /// <summary>File containing strong name key pair.</summary>
         [TaskAttribute("keyfile")]
@@ -82,14 +83,14 @@ namespace NAnt.Optional.Tasks
 
         /// <summary>File of key container holding strong name key pair.</summary>
         [TaskAttribute("keycontainer")]
-        public string KeyContainer 
+        public string KeyContainer
         {
             get { return _keycontainer; }
             set { _keycontainer = value; }
         }
 
         /// <summary>Force strong name delay signing .</summary>
-        [TaskAttribute("delaysign")]        
+        [TaskAttribute("delaysign")]
         [BooleanValidator()]
         public bool DelaySign
         {
@@ -97,9 +98,9 @@ namespace NAnt.Optional.Tasks
             set { _delaysign = value; }
         }
 
-        /// <summary>If C# source code for the Windows 
+        /// <summary>If C# source code for the Windows
         /// Form wrapper should be generated.</summary>
-        [TaskAttribute("generatesource")]        
+        [TaskAttribute("generatesource")]
         [BooleanValidator()]
         public bool GenerateSource
         {
@@ -108,7 +109,7 @@ namespace NAnt.Optional.Tasks
         }
 
         /// <summary>Suppresses the banner.</summary>
-        [TaskAttribute("nologo")]        
+        [TaskAttribute("nologo")]
         [BooleanValidator()]
         public bool NoLogo
         {
@@ -117,26 +118,19 @@ namespace NAnt.Optional.Tasks
         }
 
         /// <summary>Prevents AxImp from displaying success message.</summary>
-        [TaskAttribute("silent")]        
+        [TaskAttribute("silent")]
         [BooleanValidator()]
         public bool Silent
         {
             get { return _silent; }
             set { _silent = value; }
         }
-        
-        public override string ProgramFileName
-        {
-            get
-            {
-                return "aximp.exe";
-            }
-        }
+
 
         /// <summary>
         /// Arguments of program to execute
         /// </summary>
-        public override string ProgramArguments 
+        public override string ProgramArguments
         {
             get
             {
@@ -148,7 +142,7 @@ namespace NAnt.Optional.Tasks
         ///Initializes task and ensures the supplied attributes are valid.
         ///</summary>
         ///<param name="taskNode">Xml node used to define this task instance.</param>
-        protected override void InitializeTask(System.Xml.XmlNode taskNode) 
+        protected override void InitializeTask(System.Xml.XmlNode taskNode)
         {
         }
 
@@ -160,22 +154,22 @@ namespace NAnt.Optional.Tasks
 
             if (DelaySign)
             {
-                arguments.Append("/delaysign ");
+                arguments.Append(" /delaysign ");
             }
 
             if (GenerateSource)
             {
-                arguments.Append("/source ");
+                arguments.Append(" /source ");
             }
 
             if (NoLogo)
             {
-                arguments.Append("/nologo ");
+                arguments.Append(" /nologo ");
             }
 
             if (Silent)
             {
-                arguments.Append("/silent ");
+                arguments.Append(" /silent ");
             }
 
             if (Out != null)
@@ -183,7 +177,7 @@ namespace NAnt.Optional.Tasks
                 arguments.Append(" /out:");
                 arguments.Append(Out);
             }
-            
+
             if (PublicKeyFile != null)
             {
                 arguments.Append(" /publickey:");

@@ -31,13 +31,14 @@ using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks
 {
-    /// <summary>Pre-translates native code for an 
-    /// assembly containing IL (Intermediary Language 
+    /// <summary>Pre-translates native code for an
+    /// assembly containing IL (Intermediary Language
     /// bytecode) on the Windows platform.</summary>
     /// <example>
     ///   <code><![CDATA[<ngen assembly="MyAssembly.dll" />]]></code>
     /// </example>
     [TaskName("ngen")]
+    [ProgramLocation(LocationType.FrameworkDir)]
     public class NGenTask : ExternalProgramBase
     {
         private string _args;
@@ -49,96 +50,79 @@ namespace NAnt.Contrib.Tasks
         bool _profiled = false;
         bool _nologo = false;
         bool _silent = false;
-        
+
         /// <summary>Assembly path or display name.</summary>
         [TaskAttribute("assembly", Required=true)]
         public string Assembly {
             get { return _assembly; }
-            set { _assembly = value; } 
+            set { _assembly = value; }
         }
 
         /// <summary>If existing images should be shown.</summary>
-        [TaskAttribute("show")]        
+        [TaskAttribute("show")]
         [BooleanValidator()]
-        public bool Show
-        {
+        public bool Show {
             get { return _show; }
             set { _show = value; }
         }
 
         /// <summary>If existing images should be deleted.</summary>
-        [TaskAttribute("delete")]        
+        [TaskAttribute("delete")]
         [BooleanValidator()]
-        public bool Delete
-        {
+        public bool Delete {
             get { return _delete; }
             set { _delete = value; }
         }
 
-        /// <summary>If an image should be generated which 
+        /// <summary>If an image should be generated which
         /// can be used under a debugger.</summary>
-        [TaskAttribute("debug")]        
+        [TaskAttribute("debug")]
         [BooleanValidator()]
-        public bool Debug
-        {
+        public bool Debug {
             get { return _debug; }
             set { _debug = value; }
         }
 
-        /// <summary>If an image should be generated which 
-        /// can be used under a debugger in optimized 
+        /// <summary>If an image should be generated which
+        /// can be used under a debugger in optimized
         /// debugging mode.</summary>
-        [TaskAttribute("debugoptimized")]        
+        [TaskAttribute("debugoptimized")]
         [BooleanValidator()]
-        public bool DebugOptimized
-        {
+        public bool DebugOptimized {
             get { return _debugoptimized; }
             set { _debugoptimized = value; }
         }
 
-        /// <summary>If an image should be generated which 
+        /// <summary>If an image should be generated which
         /// can be used under a profiler.</summary>
-        [TaskAttribute("profiled")]        
+        [TaskAttribute("profiled")]
         [BooleanValidator()]
-        public bool Profiled
-        {
+        public bool Profiled {
             get { return _profiled; }
             set { _profiled = value; }
         }
 
         /// <summary>Suppresses the banner.</summary>
-        [TaskAttribute("nologo")]        
+        [TaskAttribute("nologo")]
         [BooleanValidator()]
-        public bool NoLogo
-        {
+        public bool NoLogo {
             get { return _nologo; }
             set { _nologo = value; }
         }
 
         /// <summary>Prevents NGen from displaying success message.</summary>
-        [TaskAttribute("silent")]        
+        [TaskAttribute("silent")]
         [BooleanValidator()]
-        public bool Silent
-        {
+        public bool Silent {
             get { return _silent; }
             set { _silent = value; }
-        }
-        
-        public override string ProgramFileName
-        {
-            get
-            {
-                return Name;
-            }
         }
 
         /// <summary>
         /// Arguments of program to execute
         /// </summary>
-        public override string ProgramArguments 
-        {
-            get
-            {
+        public override string ProgramArguments {
+            get {
                 return _args;
             }
         }
@@ -147,59 +131,48 @@ namespace NAnt.Contrib.Tasks
         ///Initializes task and ensures the supplied attributes are valid.
         ///</summary>
         ///<param name="taskNode">Xml node used to define this task instance.</param>
-        protected override void InitializeTask(System.Xml.XmlNode taskNode) 
-        {
+        protected override void InitializeTask(System.Xml.XmlNode taskNode) {
         }
 
-        protected override void ExecuteTask()
-        {
+        protected override void ExecuteTask() {
             StringBuilder arguments = new StringBuilder();
 
-            if (NoLogo)
-            {
+            if (NoLogo){
                 arguments.Append("/nologo ");
             }
 
-            if (Silent)
-            {
+            if (Silent){
                 arguments.Append("/silent ");
             }
 
-            if (Show)
-            {
+            if (Show) {
                 arguments.Append("/show ");
             }
 
-            if (Delete)
-            {
+            if (Delete) {
                 arguments.Append("/delete ");
             }
 
-            if (Debug)
-            {
+            if (Debug) {
                 arguments.Append("/debug ");
             }
 
-            if (DebugOptimized)
-            {
+            if (DebugOptimized) {
                 arguments.Append("/debugopt ");
             }
 
-            if (Profiled)
-            {
+            if (Profiled) {
                 arguments.Append("/prof ");
             }
 
             arguments.Append(Assembly);
 
-            try
-            {
+            try  {
                 _args = arguments.ToString();
 
                 base.ExecuteTask();
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 throw new BuildException(LogPrefix + "ERROR: " + e);
             }
         }
