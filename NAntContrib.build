@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
-<project name="NAntContrib" default="build">
+<project name="NAntContrib" default="test">
+	<include buildfile="../properties.xml" failonerror="false"/>
+	
     <property name="project.name" value="nantcontrib"/>
     <property name="project.FormalName" value="NAnt.Contrib"/>
     <property name="project.version" value="0.8.4" overwrite="false" />
@@ -30,7 +32,7 @@
         <call target="${project.config}" />
         <call target="set-runtime-configuration" />
         <ifnot propertyexists="nant.dir">
-            <fail message="Please pass the folder containing the NAnt build on the commandline as a property (nant.dir)." />
+            <fail message="Please pass the folder containing the NAnt build on the commandline as a property (-D:nant.dir=???)." />
         </ifnot>
         <available property="NAntReleaseExists" resource="${nant.dir}" type="Directory"/>
         <ifnot propertyexists="NAntReleaseExists" propertytrue="NAntReleaseExists">
@@ -141,6 +143,7 @@
 
     <!-- Build the unit tests library -->
     <target name="buildtests" depends="build" description="Compiles the NUnit Tests">
+        
         <!-- copy NAnt assemblies needed for the tests to run -->
         <copy todir="${build.dir}/bin">
             <fileset basedir="${nant.dir}/bin" failonempty="true">
@@ -151,6 +154,7 @@
                 <includes name="log4net.dll" />
             </fileset>
         </copy>
+        
         <csc target="library" warnaserror="true" nowarn="1591" debug="${build.debug}" define="${current.build.defines}" output="${build.dir}/bin/${project.FormalName}.Tests.dll">
             <sources basedir="${tests.dir}">
                 <includes name="**/*.cs" />
