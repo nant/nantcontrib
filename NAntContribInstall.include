@@ -115,9 +115,7 @@
             background="${nantcontrib.Tools.InstallRequirements.dir}/installbg.bmp" 
             license="${nantcontrib.Tools.InstallRequirements.dir}/license.rtf" 
             debug="true" 
-            verbose="true"
         >
-        
             <properties>
                 <property name="ProductName" value="NAnt ${project.version}.${build.number}" />
                 <property name="ProductVersion" value="${project.version}.${build.number}" />
@@ -248,16 +246,12 @@
     <target name="nant.bin.msm">
         <property name="msm.id" value="${script::CreateIdGuid()}" />
         
-        <echo message="${nant.bin.dir}" />
-        <echo message="${nant.bin.keyfile}" />
-        
         <msm
             output="nant.bin.msm"
             sourcedir="${install.dir}"
             id="NAnt_Bin_Msm_${msm.id}"
             version="${project.version}.${build.number}"
             debug="true"
-            verbose="true"
         >
             <properties>
                 <property name="Manufacturer" value="The NAnt SourceForge Project"/>
@@ -293,7 +287,6 @@
             id="NAnt_Doc_Msm_${msm.id}"
             version="${project.version}.${build.number}"
             debug="true"
-            verbose="true"
         >
             <properties>
                 <property name="Manufacturer" value="The NAnt SourceForge Project"/>
@@ -360,7 +353,6 @@
             id="NAnt_Examples_Msm_${msm.id}"
             version="${project.version}.${build.number}"
             debug="true"
-            verbose="true"
         >
             <properties>
                 <property name="Manufacturer" value="The NAnt SourceForge Project"/>
@@ -426,7 +418,6 @@
             id="NAnt_Src_Msm_${msm.id}"
             version="${project.version}.${build.number}"
             debug="true"
-            verbose="true"
         >
             <properties>
                 <property name="Manufacturer" value="The NAnt SourceForge Project"/>
@@ -475,7 +466,6 @@
             id="NAntContrib_Bin_Msm_${msm.id}"
             version="${project.version}.${build.number}"
             debug="true"
-            verbose="true"
         >
             <properties>
                 <property name="Manufacturer" value="The NAnt SourceForge Project"/>
@@ -507,7 +497,6 @@
             id="NAntContrib_Doc_Msm_${msm.id}"
             version="${project.version}.${build.number}"
             debug="true"
-            verbose="true"
         >
             <properties>
                 <property name="Manufacturer" value="The NAnt SourceForge Project"/>
@@ -574,7 +563,6 @@
             id="NAntContrib_Src_Msm_${msm.id}"
             version="${project.version}.${build.number}"
             debug="true"
-            verbose="true"
         >
             <properties>
                 <property name="Manufacturer" value="The NAnt SourceForge Project"/>
