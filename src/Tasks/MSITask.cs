@@ -829,7 +829,7 @@ namespace NAnt.Contrib.Tasks
                     recComp.set_StringData(2, component.id.ToUpper());
                     recComp.set_StringData(3, component.directory);
                     recComp.set_IntegerData(4, component.attr);
-                    recComp.set_IntegerData(5, component.condition);
+                    recComp.set_StringData(5, component.condition);
 
                     featureComponents.Add(component.name, component.feature);
 
@@ -1406,6 +1406,7 @@ namespace NAnt.Contrib.Tasks
 
             FileSet componentFiles = new FileSet();
             componentFiles.Project = Project;
+            componentFiles.Parent = this;
             componentFiles.Initialize(fileSetElem);
 
             MSIDirectory componentDirInfo = FindDirectory(ComponentDirectory);
@@ -1542,7 +1543,7 @@ namespace NAnt.Contrib.Tasks
                         recComp.set_StringData(1, asmCompName);
                         recComp.set_StringData(2, newCompId);
                         recComp.set_StringData(3, ComponentDirectory);
-                        recComp.set_StringData(4, Component.attr);
+                        recComp.set_IntegerData(4, Component.attr);
                         recComp.set_StringData(5, Component.condition);
                         recComp.set_StringData(6, fileId);
                         ComponentView.Modify(MsiViewModify.msiViewModifyMerge, recComp);
@@ -1746,7 +1747,7 @@ namespace NAnt.Contrib.Tasks
                 recFile.set_StringData(3, GetShortFile(filePath) + "|" + fileName);
                 recFile.set_StringData(5, fileVersion);
                 recFile.set_StringData(6, null);  // Language
-                recFile.set_StringData(7, fileAttr);
+                recFile.set_IntegerData(7, fileAttr);
                 
                 Sequence++;
                 
@@ -2710,7 +2711,9 @@ namespace NAnt.Contrib.Tasks
             string shortCabDir = GetShortDir(Path.Combine(Project.BaseDirectory, msi.sourcedir));
             string cabFile = shortCabDir + @"\" + Path.GetFileNameWithoutExtension(msi.output) + ".cab";
             string tempDir = Path.Combine(msi.sourcedir, "Temp");
-            
+            if (tempDir.StartsWith(Project.BaseDirectory)) {
+                tempDir = tempDir.Substring(Project.BaseDirectory.Length+1);
+            }           
             processInfo.Arguments = "-p -r -P " + tempDir + @"\ N " + cabFile + " " + tempDir + @"\*";
 
             processInfo.CreateNoWindow = false;
@@ -2762,9 +2765,6 @@ namespace NAnt.Contrib.Tasks
 
             Log(Level.Info, "Done.");
             
-            string cabFile = Path.Combine(Project.BaseDirectory, Path.Combine(msi.sourcedir, 
-                Path.GetFileNameWithoutExtension(msi.output) + @".cab"));
-
             if (File.Exists(cabFile))
             {
                 View cabView = Database.OpenView("SELECT * FROM `_Streams`");
