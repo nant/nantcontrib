@@ -10,6 +10,7 @@
 
     <property name="src.dir" value="src"/>
     <property name="tests.dir" value="tests"/>
+    <property name="tools.dir" value="Tools"/>
 
     <!-- named project configurations (used by self-test and self-doc tasks) -->
     <target name="debug" description="Perform a 'debug' build">
@@ -39,7 +40,7 @@
     </target>
 
     <include buildfile="NAntContribInstall.include" />
-    <include buildfile="Tools/SLiNgshoT/SLiNgshoTInstall.include" />
+    <include buildfile="${tools.dir}/SLiNgshoT/SLiNgshoTInstall.include" />
 
     <!-- Clean the output of the current build configuration -->
     <target name="clean" depends="init" description="cleans up everything">
@@ -134,9 +135,9 @@
 
     <!-- Build the SLiNgshoT.Core.dll assemblies -->
     <target name="prepare.slingshot" depends="init" description="Compiles and copies the SLiNgshoT assemblies">
-        <nant buildfile="Tools/SLiNgshoT/SLiNgshoT.build" target="Release"/>
-        <copy file="Tools/SLiNgshoT/build/Release/SLiNgshoT.Core.dll" tofile="${build.dir}/bin/SLiNgshoT.Core.dll"/>
-        <copy file="Tools/SLiNgshoT/build/Release/SLiNgshoT.exe" tofile="${build.dir}/bin/SLiNgshoT.exe"/>
+        <nant buildfile="${tools.dir}/SLiNgshoT/SLiNgshoT.build" target="Release"/>
+        <copy file="${tools.dir}/SLiNgshoT/build/Release/SLiNgshoT.Core.dll" tofile="${build.dir}/bin/SLiNgshoT.Core.dll"/>
+        <copy file="${tools.dir}/SLiNgshoT/build/Release/SLiNgshoT.exe" tofile="${build.dir}/bin/SLiNgshoT.exe"/>
     </target>
 
     <!-- Build the unit tests library -->
@@ -253,8 +254,11 @@
             <fileset>
                 <includes name="${src.dir}/**" />
                 <includes name="${tests.dir}/**" />
+                <includes name="${tools.dir}/**" />
                 <includes name="*" />
 
+                <!-- exclude tools build directory -->
+                <excludes name="${tools.dir}/build/**" />
                 <!-- exclude nighlty build file -->
                 <excludes name="nightly.xml" />
                 <!-- exclude release build file -->
