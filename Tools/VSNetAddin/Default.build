@@ -425,11 +425,11 @@
 	    <value name="SatelliteDLLName" value="NAntAddinResources.dll" />
         <value name="SatelliteDLLPath" value="[ADDINFOLDER]" />
         <value name="FriendlyName" value="NAnt Addin" />
-	    <value name="Description" value="Integrates the NAnt build system with the Visual Studio.NET IDE." />
+	    <value name="Description" value="Integrates the NAnt build system with the Visual Studio .NET IDE." />
 	    <value name="CommandLineSafe" dword="00000000" />
 	    <value name="CommandPreload" dword="00000001" />
 	    <value name="LoadBehavior" dword="00000000" />
-	    <value name="AboutBoxDetails" value="NAnt Addin for Visual Studio.NET." />
+	    <value name="AboutBoxDetails" value="NAnt Addin for Visual Studio .NET" />
 	    <value name="AboutBoxIcon">
 <![CDATA[00,00,01,00,01,00,20,20,10,00,00,00,00,00,e8,02,00,00,16,00,
 00,00,28,00,00,00,20,00,00,00,40,00,00,00,01,00,04,00,00,00,00,00,00,02,00,
