@@ -155,8 +155,9 @@ namespace NAnt.Contrib.Tasks
                 catch (Exception e)
                 {                   
                     CleanOutput(cabFile, tempPath);
-                    throw new BuildException("ERROR: " + e.Message + "\n" + e.InnerException + "\n" + e.StackTrace);
-                }
+					System.Console.WriteLine(e.ToString());
+					throw new Win32Exception();
+				}
 
                 Log.WriteLine(LogPrefix + "Building MSM Database \"" + msm.output + "\".");
 
@@ -258,6 +259,21 @@ namespace NAnt.Contrib.Tasks
                     throw new BuildException();
                 }
 
+				try
+				{
+					// Commit the MSM Database
+					d.Commit();
+
+					GC.Collect();
+					GC.WaitForPendingFinalizers();
+				}
+				catch (Exception e)
+				{
+					CleanOutput(cabFile, tempPath);
+					System.Console.WriteLine(e.ToString());
+					throw new Win32Exception();
+				}
+
                 View directoryView, asmView, asmNameView, classView, progIdView;
 
                 // Load Directories
@@ -285,7 +301,33 @@ namespace NAnt.Contrib.Tasks
                     throw new BuildException();
                 }
 
-                // Load Dialog Data
+				try
+				{
+					directoryView.Close();
+					asmView.Close();
+					asmNameView.Close();
+					classView.Close();
+					progIdView.Close();
+					directoryView = null;
+					asmView = null;
+					asmNameView = null;
+					classView = null;
+					progIdView = null;
+
+					// Commit the MSM Database
+					d.Commit();
+
+					GC.Collect();
+					GC.WaitForPendingFinalizers();
+				}
+				catch (Exception e)
+				{
+					CleanOutput(cabFile, tempPath);
+					System.Console.WriteLine(e.ToString());
+					throw new Win32Exception();
+				}
+
+				// Load Dialog Data
                 if (!LoadDialog(d, msmType, obj))
                 {
                     CleanOutput(cabFile, tempPath);
@@ -329,7 +371,25 @@ namespace NAnt.Contrib.Tasks
                     throw new BuildException();
                 }
 
-                // Load Icon Data
+				try
+				{
+					registryView.Close();
+					registryView = null;
+
+					// Commit the MSM Database
+					d.Commit();
+
+					GC.Collect();
+					GC.WaitForPendingFinalizers();
+				}
+				catch (Exception e)
+				{
+					CleanOutput(cabFile, tempPath);
+					System.Console.WriteLine(e.ToString());
+					throw new Win32Exception();
+				}
+
+				// Load Icon Data
                 if (!LoadIcon(d, msmType, obj))
                 {
                     CleanOutput(cabFile, tempPath);
@@ -419,22 +479,8 @@ namespace NAnt.Contrib.Tasks
 
                 try
                 {
-                    directoryView.Close();
-                    registryView.Close();
-                    asmView.Close();
-                    asmNameView.Close();
-                    classView.Close();
-                    progIdView.Close();
-                    directoryView = null;
-                    registryView = null;
-                    asmView = null;
-                    asmNameView = null;
-                    classView = null;
-                    progIdView = null;
-
                     // Commit the MSM Database
                     d.Commit();
-                    d = null;
 
                     GC.Collect();
                     GC.WaitForPendingFinalizers();
@@ -442,28 +488,9 @@ namespace NAnt.Contrib.Tasks
                 catch (Exception e)
                 {
                     CleanOutput(cabFile, tempPath);
-                    throw new BuildException("ERROR: " + e.Message + "\n" + e.InnerException + "\n" + e.StackTrace);
-                }
-
-
-                try
-                {
-                    d = (Database)msmType.InvokeMember(
-                        "OpenDatabase", 
-                        BindingFlags.InvokeMethod, 
-                        null, obj, 
-                        new Object[]
-                        {
-                            dest, 
-                            MsiOpenDatabaseMode.msiOpenDatabaseModeDirect
-                        });
-
-                }
-                catch (Exception e)
-                {
-                    CleanOutput(cabFile, tempPath);
-                    throw new BuildException("ERROR: " + e.Message + "\n" + e.InnerException + "\n" + e.StackTrace);
-                }
+					System.Console.WriteLine(e.ToString());
+					throw new Win32Exception();
+				}
 
                 // Reorder Files
                 if (!ReorderFiles(d, ref lastSequence))
@@ -504,8 +531,9 @@ namespace NAnt.Contrib.Tasks
                 }
                 catch (Exception e)
                 {
-                    throw new BuildException("ERROR: " + e.Message + "\n" + e.InnerException + "\n" + e.StackTrace);
-                }
+					System.Console.WriteLine(e.ToString());
+					throw new Win32Exception();
+				}
                 Log.WriteLine("Done.");
             }
             catch (Exception e)

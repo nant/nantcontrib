@@ -158,7 +158,8 @@ namespace NAnt.Contrib.Tasks
                 catch (Exception e)
                 {
                     CleanOutput(cabFile, tempPath);
-                    throw new BuildException("ERROR: " + e.Message + "\n" + e.InnerException + "\n" + e.StackTrace);
+					System.Console.WriteLine(e.ToString());
+					throw new Win32Exception();
                 }
 
                 Log.WriteLine(LogPrefix + "Building MSI Database \"" + msi.output + "\".");
@@ -218,7 +219,22 @@ namespace NAnt.Contrib.Tasks
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }        
-        
+
+				try
+				{
+					// Commit the MSI Database
+					d.Commit();
+
+					GC.Collect();
+					GC.WaitForPendingFinalizers();
+				}
+				catch (Exception e)
+				{
+					CleanOutput(cabFile, tempPath);
+					System.Console.WriteLine(e.ToString());
+					throw new Win32Exception();
+				}
+				       
                 View directoryView, asmView, asmNameView, classView, progIdView;
 
                 // Load Directories
@@ -246,7 +262,34 @@ namespace NAnt.Contrib.Tasks
                     throw new BuildException();
                 }
 
-                // Load Features
+				try
+				{
+					directoryView.Close();
+					asmView.Close();
+					asmNameView.Close();
+					classView.Close();
+					progIdView.Close();
+
+					directoryView = null;
+					asmView = null;
+					asmNameView = null;
+					classView = null;
+					progIdView = null;
+
+					// Commit the MSI Database
+					d.Commit();
+
+					GC.Collect();
+					GC.WaitForPendingFinalizers();
+				}
+				catch (Exception e)
+				{
+					CleanOutput(cabFile, tempPath);
+					System.Console.WriteLine(e.ToString());
+					throw new Win32Exception();
+				}
+				
+				// Load Features
                 if (!LoadFeatures(d, msiType, obj))
                 {
                     CleanOutput(cabFile, tempPath);
@@ -297,7 +340,25 @@ namespace NAnt.Contrib.Tasks
                     throw new BuildException();
                 }
 
-                // Load Icon Data
+				try
+				{
+					registryView.Close();
+					registryView = null;
+
+					// Commit the MSI Database
+					d.Commit();
+
+					GC.Collect();
+					GC.WaitForPendingFinalizers();
+				}
+				catch (Exception e)
+				{
+					CleanOutput(cabFile, tempPath);
+					System.Console.WriteLine(e.ToString());
+					throw new Win32Exception();
+				}
+
+				// Load Icon Data
                 if (!LoadIcon(d, msiType, obj))
                 {
                     CleanOutput(cabFile, tempPath);
@@ -387,24 +448,9 @@ namespace NAnt.Contrib.Tasks
 
                 try
                 {
-                    directoryView.Close();
-                    registryView.Close();
-                    asmView.Close();
-                    asmNameView.Close();
-                    classView.Close();
-                    progIdView.Close();
-
-                    directoryView = null;
-                    registryView = null;
-                    asmView = null;
-                    asmNameView = null;
-                    classView = null;
-                    progIdView = null;
-
                     // Commit the MSI Database
                     d.Commit();
-
-                    d = null;
+					d = null;
 
                     GC.Collect();
                     GC.WaitForPendingFinalizers();
@@ -412,8 +458,9 @@ namespace NAnt.Contrib.Tasks
                 catch (Exception e)
                 {
                     CleanOutput(cabFile, tempPath);
-                    throw new BuildException("ERROR: " + e.Message + "\n" + e.InnerException + "\n" + e.StackTrace);
-                }
+					System.Console.WriteLine(e.ToString());
+					throw new Win32Exception();
+				}
 
                 // Load Merge Modules
                 if (!LoadMergeModules(dest, tempPath))
@@ -439,10 +486,11 @@ namespace NAnt.Contrib.Tasks
                 catch (Exception e)
                 {
                     CleanOutput(cabFile, tempPath);
-                    throw new BuildException("ERROR: " + e.Message + "\n" + e.InnerException + "\n" + e.StackTrace);
-                }
+					System.Console.WriteLine(e.ToString());
+					throw new Win32Exception();
+				}
 
-                // Reorder Files
+				// Reorder Files
                 if (!ReorderFiles(d, ref lastSequence))
                 {
                     CleanOutput(cabFile, tempPath);
@@ -481,8 +529,9 @@ namespace NAnt.Contrib.Tasks
                 }
                 catch (Exception e)
                 {
-                    throw new BuildException("ERROR: " + e.Message + "\n" + e.InnerException + "\n" + e.StackTrace);
-                }
+					System.Console.WriteLine(e.ToString());
+					throw new Win32Exception();
+				}
                 Log.WriteLine("Done.");
             }
             catch (Exception e)
