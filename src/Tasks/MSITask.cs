@@ -1829,7 +1829,16 @@ namespace NAnt.Contrib.Tasks
 	            Process process = new Process();
 	            process.StartInfo = processInfo;
 	            process.EnableRaisingEvents = true;
-	            process.Start();
+
+                try
+                {
+                    process.Start();
+                }
+                catch (Exception e)
+                {
+                    Log.WriteLine(LogPrefix + "ERROR: cabarc.exe is not in your path");
+                    return false;
+                }
 
 	            try
 	            {
@@ -2388,6 +2397,7 @@ namespace NAnt.Contrib.Tasks
 
                         XmlElement modulesElem = (XmlElement)((XmlElement)_xmlNode).SelectSingleNode(
                             "mergemodules/merge[@feature='" + merge.feature + "']/modules");
+                        
                         mergeSet.Initialize(modulesElem);
 
                         foreach (string mergeModule in mergeSet.FileNames)
@@ -2397,75 +2407,86 @@ namespace NAnt.Contrib.Tasks
                                 Log.WriteLine("\t" + Path.GetFileName(mergeModule));
                             }
                             
-                            mergeClass.OpenModule(mergeModule, 1033);
-
                             try
                             {
-                                mergeClass.OpenDatabase(Database);
-                            }
-                            catch (FileLoadException fle)
-                            {
-                                Log.WriteLine(fle.Message + " " + fle.FileName + " " + fle.StackTrace);
-                                return false;
-                            }
-
-                            mergeClass.Merge(merge.feature, null);
-
-                            string moduleCab = Path.Combine(Path.GetDirectoryName(Database), 
-                                "mergemodule" + index + ".cab");
-
-                            index++;
-
-                            mergeClass.ExtractCAB(moduleCab);
-
-                            if (File.Exists(moduleCab))
-                            {
-                                // Create the CabFile
-                                ProcessStartInfo processInfo = new ProcessStartInfo();
-                
-                                processInfo.Arguments = "-o X " + 
-                                    moduleCab + " " + Path.Combine(msi.sourcedir, @"Temp\");
-
-                                processInfo.CreateNoWindow = false;
-                                processInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                                processInfo.WorkingDirectory = msi.output;
-                                processInfo.FileName = "cabarc";
-
-                                Process process = new Process();
-                                process.StartInfo = processInfo;
-                                process.EnableRaisingEvents = true;
-                                process.Start();
+                                mergeClass.OpenModule(mergeModule, 1033);
 
                                 try
                                 {
-                                    process.WaitForExit();
+                                    mergeClass.OpenDatabase(Database);
                                 }
-                                catch (Exception e)
+                                catch (FileLoadException fle)
                                 {
-                                    Log.WriteLine();
-                                    Log.WriteLine("Error extracting merge module cab file: " + moduleCab);
-                                    Log.WriteLine("Error was: " + e.Message);
-
-                                    File.Delete(moduleCab);
+                                    Log.WriteLine(fle.Message + " " + fle.FileName + " " + fle.StackTrace);
                                     return false;
                                 }
+                            
+                                mergeClass.Merge(merge.feature, null);
 
-                                if (process.ExitCode != 0)
+                                string moduleCab = Path.Combine(Path.GetDirectoryName(Database), 
+                                    "mergemodule" + index + ".cab");
+
+                                index++;
+
+                                mergeClass.ExtractCAB(moduleCab);
+
+                                Process process = new Process();
+
+                                if (File.Exists(moduleCab))
                                 {
-                                    Log.WriteLine();
-                                    Log.WriteLine("Error extracting merge module cab file: " + moduleCab);
-                                    Log.WriteLine("Application returned ERROR: " + process.ExitCode);
+                                    // Create the CabFile
+                                    ProcessStartInfo processInfo = new ProcessStartInfo();
+                
+                                    processInfo.Arguments = "-o X " + 
+                                        moduleCab + " " + Path.Combine(msi.sourcedir, @"Temp\");
+
+                                    processInfo.CreateNoWindow = false;
+                                    processInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                                    processInfo.WorkingDirectory = msi.output;
+                                    processInfo.FileName = "cabarc";
+
+                                
+                                    process.StartInfo = processInfo;
+                                    process.EnableRaisingEvents = true;
+
+                                    process.Start();
+                            
+                                    try
+                                    {
+                                        process.WaitForExit();
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Log.WriteLine();
+                                        Log.WriteLine("Error extracting merge module cab file: " + moduleCab);
+                                        Log.WriteLine("Error was: " + e.Message);
+
+                                        File.Delete(moduleCab);
+                                        return false;
+                                    }
+
+                                    if (process.ExitCode != 0)
+                                    {
+                                        Log.WriteLine();
+                                        Log.WriteLine("Error extracting merge module cab file: " + moduleCab);
+                                        Log.WriteLine("Application returned ERROR: " + process.ExitCode);
+
+                                        File.Delete(moduleCab);
+                                        return false;
+                                    }
 
                                     File.Delete(moduleCab);
-                                    return false;
                                 }
-
-                                File.Delete(moduleCab);
                             }
-
-                            mergeClass.CloseModule();
-                            mergeClass.CloseDatabase(true);
+                            catch (Exception)
+                            {
+                                Log.WriteLine(LogPrefix + "ERROR: cabarc.exe is not in your path");
+                                Log.WriteLine(LogPrefix + "or file " + mergeModule + " is not found.");
+                                return false;
+                            }
                         }
+                        mergeClass.CloseModule();
+                        mergeClass.CloseDatabase(true);
                     }
                 }
 
