@@ -29,6 +29,7 @@ using System.Text;
 using NAnt.Core;
 using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
+using NAnt.Contrib.Types;
 
 namespace NAnt.Contrib.Tasks {
 	/// <summary>
@@ -52,19 +53,9 @@ namespace NAnt.Contrib.Tasks {
 		private bool _force;
 
 		/// <summary>
-		/// See <see cref="SchemeType"/>.
+		/// See <see cref="Reference"/>.
 		/// </summary>
-		private SchemeType _schemeType;
-
-		/// <summary>
-		/// See <see cref="SchemeId"/>.
-		/// </summary>
-		private string _schemeId;
-
-		/// <summary>
-		/// See <see cref="SchemeDescription"/>.
-		/// </summary>
-		private string _schemeDescription;
+		private GacReference _reference;
 
 		#endregion
 
@@ -80,47 +71,17 @@ namespace NAnt.Contrib.Tasks {
 		[TaskAttribute("force", Required = false)]
 		[BooleanValidator]
 		public virtual bool Force {
-			get {
-				return _force;
-			}
-			set {
-				_force = value;
-			}
+			get { return _force; }
+			set { _force = value; }
 		}
 
 		/// <summary>
-		/// The scheme type to use when working with GAC references. The default 
-		/// is <see cref="F:SchemeType.None" />, which means that references will 
-		/// not be used by the GAC task.
+		/// Specifies reference details to use when working with the GAC.
 		/// </summary>
-		[TaskAttribute("scheme-type", Required=false)]
-		public SchemeType SchemeType {
-			get { return _schemeType; }
-			set { _schemeType = value; }
-		}
-
-		/// <summary>
-		/// The scheme ID to use when working with GAC references. This is only 
-		/// relevant if a scheme type other than <see cref="F:SchemeType.None" />
-		/// is specified.
-		/// </summary>
-		[TaskAttribute("scheme-id", Required=false)]
-		[StringValidator(AllowEmpty = false)]
-		public string SchemeId {
-			get { return _schemeId; }
-			set { _schemeId = value; }
-		}
-
-		/// <summary>
-		/// The scheme description to use when working with GAC references. This 
-		/// is only relevant if a scheme type other than <see cref="F:SchemeType.None" />
-		/// is specified.
-		/// </summary>
-		[TaskAttribute("scheme-description", Required = false)]
-		[StringValidator(AllowEmpty = false)]
-		public string SchemeDescription {
-			get { return _schemeDescription; }
-			set { _schemeDescription = value; }
+		[BuildElement("reference", Required = false)]
+		public GacReference Reference {
+			get { return _reference; }
+			set { _reference = value; }
 		}
 
 		/// <summary>
@@ -142,7 +103,7 @@ namespace NAnt.Contrib.Tasks {
 		/// Specifies whether a reference was specified for the GAC task.
 		/// </summary>
 		protected bool ReferenceSpecified {
-			get { return (SchemeType != SchemeType.None); }
+			get { return (Reference != null); }
 		}
 
 		/// <summary>
@@ -160,7 +121,6 @@ namespace NAnt.Contrib.Tasks {
 		/// Constructs and initialises an instance of <c>GacTask</c>.
 		/// </summary>
 		public GacTaskBase() {
-			SchemeType = SchemeType.None;
 		}
 
 		/// <summary>
@@ -181,10 +141,10 @@ namespace NAnt.Contrib.Tasks {
 					retVal.Append(" /f");
 				}
 
-				if (ReferenceSpecified) {
+				if (ReferenceSpecified && Reference.If && !Reference.Unless) {
 					retVal.Append(" /r ");
 
-					switch (SchemeType) {
+					switch (Reference.SchemeType) {
 						case SchemeType.FilePath:
 							retVal.Append("FILEPATH");
 							break;
@@ -195,10 +155,10 @@ namespace NAnt.Contrib.Tasks {
 							retVal.Append("UNINSTALL_KEY");
 							break;
 						default:
-							throw new BuildException("Unknown SchemeType: " + SchemeType);
+							throw new BuildException("Unknown SchemeType: " + Reference.SchemeType);
 					}
 
-					retVal.Append(" \"").Append(SchemeId).Append("\" \"").Append(SchemeDescription).Append("\"");
+					retVal.Append(" \"").Append(Reference.SchemeId).Append("\" \"").Append(Reference.SchemeDescription).Append("\"");
 				}
 
 				//allow concrete task to append any arguments
@@ -233,7 +193,7 @@ namespace NAnt.Contrib.Tasks {
 			}
 
 			if (ReferenceSpecified) {
-				if (SchemeId == null) {
+				if (Reference.SchemeId == null) {
 					throw new BuildException("Must provide a schemeid when specifying a reference.");
 				}
 			}
