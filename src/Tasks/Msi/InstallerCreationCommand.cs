@@ -81,9 +81,9 @@ namespace NAnt.Contrib.Tasks.Msi {
             get { return task.Project; }
         }
 
-		protected XmlNamespaceManager NamespaceManager {
-			get { return task.NamespaceManager; }
-		}
+        protected XmlNamespaceManager NamespaceManager {
+            get { return task.NamespaceManager; }
+        }
 
         protected NAnt.Core.Location Location {
             get { return location; }
@@ -2069,7 +2069,7 @@ namespace NAnt.Contrib.Tasks.Msi {
 
             FileSet componentFiles = new FileSet();
             componentFiles.Project = Project;
-			componentFiles.NamespaceManager = NamespaceManager;
+            componentFiles.NamespaceManager = NamespaceManager;
             componentFiles.Parent = this;
             componentFiles.Initialize(fileSetElem);
 
@@ -2133,7 +2133,11 @@ namespace NAnt.Contrib.Tasks.Msi {
                 string componentFieldValue = null;
 
                 if (isAssembly || filePath.EndsWith(".tlb")) {
-                    string feature = (string)featureComponents[ComponentName];
+                    // The null GUID is authored into any field of a msm database that references a feature.  It gets replaced
+                    // with the guid of the feature assigned to the merge module.
+                    string feature = "00000000-0000-0000-0000-000000000000";
+                    if (featureComponents[ComponentName] != null)
+                        feature = (string)featureComponents[ComponentName];
 
                     string asmCompName = ComponentName;
 
@@ -2145,17 +2149,19 @@ namespace NAnt.Contrib.Tasks.Msi {
                         // Add a record for a new Component
                         componentTable.InsertRecord(asmCompName, newCompId, ComponentDirectory, Component.attr, Component.condition, fileId);
 
-                        // Map the new Component to the existing one's Feature
-                        featureComponentTable.InsertRecord((string)featureComponents[ComponentName], asmCompName);
-
                         if (modComponentTable != null) {
                             AddModuleComponentVirtual(database, modComponentTable, asmCompName);
                         }
+                        else {
+                            // Map the new Component to the existing one's Feature (FeatureComponents is only used in MSI databases)
+                            featureComponentTable.InsertRecord(feature, asmCompName);                        
+                        }
+
                     }
 
                     if (isAssembly) {
                         // Add a record for a new MsiAssembly
-                        msiAssemblyTable.InsertRecord(asmCompName, (string)featureComponents[ComponentName], fileId, fileId, 0);
+                        msiAssemblyTable.InsertRecord(asmCompName, feature, fileId, fileId, 0);
 
                         AddAssemblyManifestRecords(fileAssembly, msiAssemblyNameTable, asmCompName);
 
