@@ -427,6 +427,7 @@
                 <include name="doc/**/*" />
                 <include name="src/**/*" />
                 <include name="tests/**/*" />
+                <include name="Tools/**/*" />                
             </fileset>
         </zip>
         <echo message="Created a '${project.config}' source package at file://${project.zip-path.src}" />        
