@@ -174,16 +174,11 @@
             </fileset>
         </copy>
         <!-- compile the test assembly -->
-        <csc verbose="true" target="library" warnaserror="true" nowarn="1591" debug="${build.debug}" define="${current.build.defines}" output="${build.dir}/bin/${project.FormalName}.Tests.dll">
+        <csc target="library" warnaserror="true" nowarn="1591" debug="${build.debug}" define="${current.build.defines}" output="${build.dir}/bin/${project.FormalName}.Tests.dll">
             <sources>
                 <include name="${tests.dir}/**/*.cs" />
                 <!-- common assembly-level attributes -->
                 <include name="${src.dir}/CommonAssemblyInfo.cs" />
-                <!-- 
-                  tomasr@mvps.org: had to explicitly exclude it because it kept
-                  getting included. Don't know why.
-                -->
-                <exclude name="${src.dir}/AssemblyInfo.cs" />
 
                 <exclude name="${tests.dir}/tasks/SharePoint/*.cs"/>
             </sources>
