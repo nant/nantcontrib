@@ -2118,6 +2118,7 @@ namespace NAnt.Contrib.Tasks.Msi {
                 // fileattr assigned to the component.
                 int fileAttr = ((fileOverride == null) || (fileOverride.attr == 0)) ? Component.fileattr : fileOverride.attr;
 
+                // Used to determine the keyfile
                 files.Add(Component.directory + "|" + fileName, fileId);
 
                 string fileSize;
@@ -2149,7 +2150,16 @@ namespace NAnt.Contrib.Tasks.Msi {
                     isAssembly = true;
                 } catch {}
 
-                string componentFieldValue = null;
+                // Set the file version equal to the override value, if present
+                if ((fileOverride != null) && (fileOverride.version != null) && (fileOverride.version != "")) {
+                    fileVersion = fileOverride.version;
+                }
+
+                if (!IsVersion(ref fileVersion)) {
+                    fileVersion = null;
+                }
+
+                string componentFieldValue = Component.name;
 
                 if (isAssembly || filePath.EndsWith(".tlb")) {
                     // The null GUID is authored into any field of a msm database that references a feature.  It gets replaced
@@ -2160,7 +2170,7 @@ namespace NAnt.Contrib.Tasks.Msi {
 
                     string asmCompName = ComponentName;
 
-                    if (componentFiles.FileNames.Count > 1) {
+                    if ((componentFiles.FileNames.Count > 1) && !fileName.ToLower().Equals(Component.key.file.ToLower())) {
                         asmCompName = "C_" + fileId;
                         componentFieldValue = asmCompName;
                         string newCompId = CreateRegistryGuid();
@@ -2175,7 +2185,6 @@ namespace NAnt.Contrib.Tasks.Msi {
                             // Map the new Component to the existing one's Feature (FeatureComponents is only used in MSI databases)
                             featureComponentTable.InsertRecord(feature, asmCompName);                        
                         }
-
                     }
 
                     if (isAssembly) {
@@ -2203,10 +2212,10 @@ namespace NAnt.Contrib.Tasks.Msi {
                         }
 
                         // File can't be a member of both components
-                        if (componentFiles.FileNames.Count > 1) {
-                            files.Remove(ComponentDirectory + "|" + fileName);
-                            files.Add(ComponentDirectory + "|" + fileName, "KeyIsDotNetAssembly");
-                        }
+//                        if (componentFiles.FileNames.Count > 1) {
+//                            files.Remove(ComponentDirectory + "|" + fileName);
+//                            files.Add(ComponentDirectory + "|" + fileName, "KeyIsDotNetAssembly");
+//                        }
                     }
                     else if (filePath.EndsWith(".tlb")) {
                         typeLibComponents.Add(
@@ -2237,19 +2246,10 @@ namespace NAnt.Contrib.Tasks.Msi {
 
                 CopyToTempFolder(filePath, fileId);
 
-                if (!isAssembly && !filePath.EndsWith(".tlb")
-                    || componentFiles.FileNames.Count == 1) {
-                    componentFieldValue = Component.name;
-                }
-
-                // Set the file version equal to the override value, if present
-                if ((fileOverride != null) && (fileOverride.version != null) && (fileOverride.version != "")) {
-                    fileVersion = fileOverride.version;
-                }
-
-                if (!IsVersion(ref fileVersion)) {
-                    fileVersion = null;
-                }
+//                if (!isAssembly && !filePath.EndsWith(".tlb")
+//                    || componentFiles.FileNames.Count == 1) {
+//                    componentFieldValue = Component.name;
+//                }
 
                 // propagate language (if available) to File table to avoid 
                 // ICE60 verification warnings
