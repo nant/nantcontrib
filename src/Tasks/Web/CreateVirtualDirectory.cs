@@ -97,10 +97,30 @@ namespace NAnt.Contrib.Tasks.Web {
     /// </example>
     [TaskName("mkiisdir")]
     public class CreateVirtualDirectory : WebBase {
+        /// <summary>
+        /// The different ways a (virtual) directory in IIS can be configured 
+        /// as an application.
+        /// </summary>
         public enum AppType {
+            /// <summary>
+            /// Virtual directory is not configured as an application.
+            /// </summary>
             None = -1,
+
+            /// <summary>
+            /// Virtual directory is configured as an in-process application.
+            /// </summary>
             InProcess = 0,
+
+            /// <summary>
+            /// Virtual directory is configured as a pooled out-of-process 
+            /// application. For IIS4 this is the same as <see cref="AppType.OutOfProcess" />.
+            /// </summary>
             Pooled = 2,
+
+            /// <summary>
+            /// Virtual directory is configured as an out-of-process application.
+            /// </summary>
             OutOfProcess = 1
         }
 
