@@ -3107,13 +3107,14 @@ namespace NAnt.Contrib.Tasks
         /// <returns>True if successful.</returns>
         private bool LoadMergeModules(string Database, string TempPath)
         {
-            MsmMergeClass mergeClass = new MsmMergeClass();
-
-            int index = 1;
             // If <mergemodules>...</mergemodules> exists in the nant msi task
 
             if (msi.mergemodules != null)
             {
+                MsmMergeClass mergeClass = new MsmMergeClass();
+
+                int index = 1;
+
                 if (Verbose)
                 {
                     Log.WriteLine(LogPrefix + "Storing Merge Modules:");
