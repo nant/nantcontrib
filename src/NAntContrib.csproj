@@ -152,6 +152,11 @@
                     BuildAction="Compile"
                 />
                 <File
+                    RelPath="Tasks\AstyleTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
                     RelPath="Tasks\AxImpTask.cs"
                     SubType="Code"
                     BuildAction="Compile"
@@ -201,22 +206,85 @@
                     SubType="Code"
                     BuildAction="Compile"
                 />
-                <File RelPath="Tasks\MgmtClassGenTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\NAnt.xsd" BuildAction="Content" />
-                <File RelPath="Tasks\NGenTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\NUnitReportTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\RecordTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\RegasmTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\SchemaValidatedTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\ScpTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\SlingshotTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\SqlTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\TypedCollectionTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\ValidateXmlTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\Vb6Task.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\VersionTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\WsdlTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\XsdTask.cs" SubType="Code" BuildAction="Compile" />
+                <File
+                    RelPath="Tasks\MgmtClassGenTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\NAnt.xsd"
+                    BuildAction="Content"
+                />
+                <File
+                    RelPath="Tasks\NGenTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\NUnitReportTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\RecordTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\RegasmTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\SchemaValidatedTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\ScpTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\SlingshotTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\SqlTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\TypedCollectionTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\ValidateXmlTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\Vb6Task.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\VersionTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\WsdlTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\XsdTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
                 <File
                     RelPath="Tasks\Grep\GrepTask.cs"
                     SubType="Code"
@@ -307,6 +375,86 @@
                     BuildAction="Compile"
                 />
                 <File
+                    RelPath = "Tasks\Perforce\P4Add.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Perforce\P4Base.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Perforce\P4Change.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Perforce\P4Client.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Perforce\P4Delete.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Perforce\P4Edit.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Perforce\P4Info.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Perforce\P4Label.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Perforce\P4Labelsync.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Perforce\P4Print.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Perforce\P4Reopen.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Perforce\P4Revert.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Perforce\P4Set.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Perforce\P4Submit.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Perforce\P4Sync.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Perforce\Perforce.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath="Tasks\SourceSafe\AddTask.cs"
                     SubType="Code"
                     BuildAction="Compile"
@@ -341,14 +489,56 @@
                     SubType="Code"
                     BuildAction="Compile"
                 />
-                <File RelPath="Tasks\StarTeam\LabelTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\StarTeam\StarTeamAutoLabel.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\StarTeam\StarTeamCheckin.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\StarTeam\StarTeamCheckout.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\StarTeam\StarTeamLabel.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\StarTeam\StarTeamList.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\StarTeam\StarTeamTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\StarTeam\TreeBasedTask.cs" SubType="Code" BuildAction="Compile" />
+                <File
+                    RelPath="Tasks\StarTeam\LabelTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\StarTeam\StarTeamAutoLabel.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\StarTeam\StarTeamCheckin.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\StarTeam\StarTeamCheckout.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\StarTeam\StarTeamLabel.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\StarTeam\StarTeamList.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\StarTeam\StarTeamTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\StarTeam\TreeBasedTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\Svn\AbstractSvnTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Tasks\Svn\SvnTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
                 <File
                     RelPath="Types\Filter.cs"
                     SubType="Code"
