@@ -46,7 +46,8 @@ namespace NAnt.Contrib.Tasks.Web {
     public class VirtualDirectoryInfo : WebBase {
         protected override void ExecuteTask() {
             Log(Level.Info, "Retrieving settings of virtual directory '{0}'"
-                + " on '{1}'.", this.VirtualDirectory, this.Server);
+                + " on '{1}' (website: {2}).", this.VirtualDirectory, 
+                this.Server, this.Website);
 
             // ensure IIS is available on specified host and port
             this.CheckIISSettings();
@@ -54,7 +55,8 @@ namespace NAnt.Contrib.Tasks.Web {
             try {
                 DirectoryEntry folderRoot = new DirectoryEntry(this.ServerPath);
                 folderRoot.RefreshCache();
-                DirectoryEntry newVirDir = folderRoot.Children.Find(this.VirtualDirectory,folderRoot.SchemaClassName);
+                DirectoryEntry newVirDir = folderRoot.Children.Find(
+                    this.VirtualDirectory, folderRoot.SchemaClassName);
 
                 bool supportsPropertyEnumeration;
 
@@ -200,8 +202,8 @@ namespace NAnt.Contrib.Tasks.Web {
                 throw;
             } catch (Exception ex) {
                 throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                    "Error retrieving info for virtual directory '{0}' on '{1}'.", 
-                    this.VirtualDirectory, this.Server), Location, ex);
+                    "Error retrieving info for virtual directory '{0}' on '{1}' (website: {2}).", 
+                    this.VirtualDirectory, this.Server, this.Website), Location, ex);
             }
         }
     }

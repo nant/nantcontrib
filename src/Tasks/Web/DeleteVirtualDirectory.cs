@@ -59,8 +59,8 @@ namespace NAnt.Contrib.Tasks.Web {
     [TaskName("deliisdir")]
     public class DeleteVirtualDirectory : WebBase {
         protected override void ExecuteTask() {
-            Log(Level.Info, "Deleting virtual directory '{0}' on '{1}'.", 
-                this.VirtualDirectory, this.Server);
+            Log(Level.Info, "Deleting virtual directory '{0}' on '{1}' (website: {2}).", 
+                this.VirtualDirectory, this.Server, this.Website);
 
             // ensure IIS is available on specified host and port
             this.CheckIISSettings();
@@ -74,8 +74,8 @@ namespace NAnt.Contrib.Tasks.Web {
                 vdir.Parent.Children.Remove(vdir);
             } catch (Exception ex) {
                 throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                    "Error deleting virtual directory '{0}' on '{1}'.", 
-                    this.VirtualDirectory, this.Server), Location, ex);
+                    "Error deleting virtual directory '{0}' on '{1}' (website: {2}).", 
+                    this.VirtualDirectory, this.Server, this.Website), Location, ex);
             }
         }
     }

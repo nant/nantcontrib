@@ -9,7 +9,7 @@
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// Lesser General Public License for more details.x
 //
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
@@ -330,7 +330,7 @@ namespace NAnt.Contrib.Tasks.Web {
         /// <summary>
         /// Indicates whether SSL file permission processing maps a client 
         /// certificate to a Microsoft Windows ® operating system user-account. 
-        /// <see cref="AccessSSLNegotiateCert" /> must also be set to 
+        /// <see cref="AccessSslNegotiateCert" /> must also be set to 
         /// <see langword="true" /> for the mapping to occur. The default is
         /// <see langword="false" />.
         /// </summary>
@@ -353,8 +353,8 @@ namespace NAnt.Contrib.Tasks.Web {
         /// <summary>
         /// Indicates whether SSL file access processing requests a certificate 
         /// from the client. If the client provides no certificate, the connection 
-        /// is closed. <see cref="AccessSSLNegotiateCert" /> must also be set to 
-        /// <see langword="true" /> when using <see cref="AccessSSLRequireCert" />.
+        /// is closed. <see cref="AccessSslNegotiateCert" /> must also be set to 
+        /// <see langword="true" /> when using <see cref="AccessSslRequireCert" />.
         /// The default is <see langword="false" />.
         /// </summary>
         [TaskAttribute("accesssslrequirecert"),IisProperty]
@@ -488,7 +488,7 @@ namespace NAnt.Contrib.Tasks.Web {
         ///   <para>
         ///   ASP errors are written to the client browser and to the IIS log files 
         ///   by default. <see cref="AspLogErrorRequests" /> is set to <see langword="true" />
-        ///   by default, and is modified by <see cref="AspErrorsToNTLog" //> in 
+        ///   by default, and is modified by <see cref="AspErrorsToNTLog" /> in 
         ///   the following way:
         ///   </para>
         ///   <para>
@@ -574,7 +574,7 @@ namespace NAnt.Contrib.Tasks.Web {
         ///   <para>
         ///   ASP errors are written to the client browser and to the IIS log files 
         ///   by default. <see cref="AspLogErrorRequests" /> is set to <see langword="true" />
-        ///   by default, and is modified by <see cref="AspErrorsToNTLog" //> in 
+        ///   by default, and is modified by <see cref="AspErrorsToNTLog" /> in 
         ///   the following way:
         ///   </para>
         ///   <para>
@@ -931,8 +931,8 @@ namespace NAnt.Contrib.Tasks.Web {
         }
 
         /// <summary>
-        /// Enables or disables custom footers specified by the 
-        /// <see cref="DefaultDocFooter" />. The default is <see langword="false" />.
+        /// Enables or disables custom footers. The default is 
+        /// <see langword="false" />.
         /// </summary>
         [TaskAttribute("enabledocfooter"),IisProperty]
         public bool EnableDocFooter {
@@ -1015,7 +1015,8 @@ namespace NAnt.Contrib.Tasks.Web {
 
         protected override void ExecuteTask() {
             Log(Level.Info, "Creating/modifying virtual directory '{0}' on"
-                + " '{1}'.", this.VirtualDirectory, this.Server);
+                + " '{1}' (website: {2}).", this.VirtualDirectory, this.Server,
+                this.Website);
 
             // ensure IIS is available on specified host and port
             this.CheckIISSettings();
@@ -1026,15 +1027,15 @@ namespace NAnt.Contrib.Tasks.Web {
                 vdir.RefreshCache();
 
                 vdir.Properties["Path"].Value = DirPath.FullName;
-                this.CreateApplication(vdir);
-                this.SetIisProperties(vdir);
+                CreateApplication(vdir);
+                SetIisProperties(vdir);
   
                 vdir.CommitChanges();
                 vdir.Close();
             } catch (Exception ex) {
                 throw new BuildException(string.Format(CultureInfo.InvariantCulture, 
-                    "Error creating virtual directory '{0}' on '{1}'.", 
-                    this.VirtualDirectory, this.Server), Location, ex);
+                    "Error creating virtual directory '{0}' on '{1}' (website: {2}).", 
+                    this.VirtualDirectory, this.Server, this.Website), Location, ex);
             }
         }
 
@@ -1067,20 +1068,22 @@ namespace NAnt.Contrib.Tasks.Web {
         private void SetIisProperties(DirectoryEntry vdir) {
             XmlElement taskElement = (XmlElement)this.XmlNode;
             foreach(PropertyInfo prop in this.GetType().GetProperties()) {
-                if(!IsIisProperty(prop)) continue;
+                if (!IsIisProperty(prop)) {
+                    continue;
+                }
                 string propertyName = AttributeName(prop);
-                if( taskElement.HasAttribute(propertyName)) {
-                    Log(Level.Debug, "setting {0} = {1}",propertyName,prop.GetValue(this, null));
+                if (taskElement.HasAttribute(propertyName)) {
+                    Log(Level.Debug, "Setting {0} = {1}", propertyName, prop.GetValue(this, null));
                     vdir.Properties[propertyName][0] = prop.GetValue(this, null);
                 } 
             }
         }
 
         private void CreateApplication(DirectoryEntry vdir) {
-            Log(Level.Debug,"setting application type {0}",AppCreate);
-            if(AppCreate == AppType.None) {
+            Log(Level.Debug, "Setting application type \"{0}\".", AppCreate);
+            if (AppCreate == AppType.None) {
                 vdir.Invoke("AppDelete");
-            } else if(this.Version == IISVersion.Four) {
+            } else if (Version == IISVersion.Four) {
                 vdir.Invoke("AppCreate", AppCreate == AppType.InProcess);
             } else {
                 vdir.Invoke("AppCreate2", (int) AppCreate);

@@ -18,6 +18,7 @@
 // Brian Nantz (bcnantz@juno.com)
 // Gert Driesen (gert.driesen@ardatis.com)
 // Rutger Dijkstra (R.M.Dijkstra@eyetoeye.nl)
+// Payton Byrd (payton@paytonbyrd.com)
 
 using System;
 using System.Collections;
@@ -27,6 +28,7 @@ using System.IO;
 
 using NAnt.Core;
 using NAnt.Core.Attributes;
+using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks.Web {
     /// <summary>
@@ -54,6 +56,7 @@ namespace NAnt.Contrib.Tasks.Web {
         private string _serverName = "localhost";
         private string _serverInstance = "1";
         private IISVersion _iisVersion = IISVersion.None;
+        private string _website;
 
         #endregion Private Instance Fields
 
@@ -99,6 +102,20 @@ namespace NAnt.Contrib.Tasks.Web {
                     _serverPort = Convert.ToInt32(parts[1], CultureInfo.InvariantCulture);
                 }
             }
+        }
+
+        /// <summary>
+        /// The website on the IIS server.  
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This allows for targeting a specific virtual site on a physical box.
+        /// </para>
+        /// </remarks>
+        [TaskAttribute("website")]
+        public string Website {
+            get { return _website; }
+            set { _website = StringUtils.ConvertEmptyToNull(value); }
         }
 
         #endregion Public Instance Properties
@@ -226,8 +243,11 @@ namespace NAnt.Contrib.Tasks.Web {
         }
 
         private string FindServerInstance() {
+            bool foundWebsite = false;
             int maxBindingPriority = 0;
             string instance = null;
+            string serverComment = null;
+            string websiteDefinition = null;
             DirectoryEntry webServer = new DirectoryEntry(string.Format(CultureInfo.InvariantCulture, 
                 "IIS://{0}/W3SVC", _serverName));
             webServer.RefreshCache();
@@ -243,13 +263,43 @@ namespace NAnt.Contrib.Tasks.Web {
                         continue;
                     }
                     instance = website.Name;
-                    maxBindingPriority = bindingPriority;
+
+                    serverComment = (string) website.Properties["ServerComment"].Value;
+
+                    if (Website != null) {
+                        Log(Level.Verbose, "Examining website \"{0}\"...", serverComment);
+                        if (serverComment != null && serverComment == Website) {
+                            Log(Level.Verbose, "Found website \"{0}\".", Website);
+                            websiteDefinition = serverComment;
+                            maxBindingPriority = bindingPriority;
+                            foundWebsite = true;
+                            break;
+                        }
+                    } else {
+                        websiteDefinition = serverComment;
+                        maxBindingPriority = bindingPriority;
+                    }
                 }
                 website.Close();
+
+                if (foundWebsite) {
+                    break;
+                }
             }
             webServer.Close();
+
+            // fail build if website was specified, but not found
+            if (Website != null && !foundWebsite) {
+                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                    "The website named '{0}' does not exist.", 
+                    Website), Location);
+            }
+
+            Website = websiteDefinition;
+
             return instance;
         }
+
 
         #endregion Private Instance Methods
     }
