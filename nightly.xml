@@ -3,7 +3,7 @@
     <!-- set release type -->
     <property name="project.release.type" value="nightly" />
     <!-- set name of sourceforge project server -->
-    <property name="sf.net.ssh.server" value="shell1.sf.net" />
+    <property name="sf.net.ssh.server" value="shell1.sourceforge.net" />
     <property name="sf.net.web.path" value="/home/groups/n/na/nantcontrib/htdocs" />
     <!-- include master build file -->
     <include buildfile="nantcontrib.build" />
