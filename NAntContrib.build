@@ -8,7 +8,7 @@
 
     <property name="project.name" value="nantcontrib"/>
     <property name="project.FormalName" value="NAnt.Contrib"/>
-    <property name="project.version" value="0.1.0.0"/>
+    <property name="project.version" value="0.8.3.50100"/>
     
     <property name="project.config" value="debug"/>
 
