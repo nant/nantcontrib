@@ -26,28 +26,29 @@
   <!--* Build with -D:fromcontrib=true builds NAnt, NAntContib,       *-->
   <!--*   and VSNetAddin (Assumes NAnt & NAntContrib in same dir)     *-->
   <!--*                                                               *-->
-  <!--* Build with -D:fromcontrib=false (default) - VSNetAddin only   *-->                                                             
+  <!--* Build with -D:fromcontrib=false (default) - VSNetAddin only   *-->
   <!--*****************************************************************-->
   <property name="fromcontrib" value="false" />
 
   <!--*******************************************************************-->
   <!--
-  IMPORTANT: If you are having problems building, before anything else, 
-  make sure you have set the below 3 properties to where you have the 
-  Microsoft.NET Primary Interop Assemblies, Microsoft Visual Studio.NET, 
+  IMPORTANT: If you are having problems building, before anything else,
+  make sure you have set the below 3 properties to where you have the
+  Microsoft.NET Primary Interop Assemblies, Microsoft Visual Studio.NET,
   and Microsoft Help 2.0 SDK installed to.
   -->
   <!--
   <property name="dotnet.dir" value="C:\Program Files\Microsoft.NET" />
   <property name="vsnet.dir" value="C:\Program Files\Microsoft Visual Studio .NET" />
-  <property name="helpsdk.dir" value="C:\Program Files\Microsoft Help 2.0 SDK" />
   -->
-  
+  <property name="helpsdk.dir" value="C:\Program Files\Microsoft Help 2.0 SDK" />
+
+  <sysinfo />
   <readregistry property="dotnetlibs.dir" key="SOFTWARE\Microsoft\.NETFramework\AssemblyFolders\Primary Interop Assemblies\" hive="LocalMachine" />
   <readregistry property="vsnet.dir" key="SOFTWARE\Microsoft\VisualStudio\7.0\Setup\VS\ProductDir" hive="LocalMachine" />
-  
+
   <!--<property name="dotnetlibs.dir" value="${dotnet.dir}\Primary Interop Assemblies" />-->
-  
+
   <!--*******************************************************************-->
 
   <property name="product.name" value="NAntAddin" />
@@ -62,7 +63,7 @@
   <property name="nant.dir" value="..\..\..\NAnt" />
   <property name="nantbuild.dir" value="${nant.dir}\bin" />
   <property name="nantcontrib.dir" value="..\..\..\NAntContrib" />
-  
+
   <include buildfile="VSNetAddinInstall.include" />
 
   <!--*****************************************************************-->
@@ -112,7 +113,7 @@
     <echo message="*" />
     <echo message="*" />
     <echo message="**********************************************************************************" />
-    <sysinfo />  
+
   </target>
 
   <!--*****************************************************************-->
@@ -136,7 +137,7 @@
     <nant buildfile="${nantcontrib.dir}\NAntContrib.build" target="use" basedir="${nantcontrib.dir}" />
     <taskdef assembly="${nantcontrib.dir}\build\NAnt.Contrib.Tasks.dll"/>
   </target>
-  
+
 
   <!--*****************************************************************-->
   <!--* Compile the Addin                                             *-->
@@ -160,22 +161,22 @@
         <excludes name="SampleTaskNode/**" />
         <excludes name="build/**" />
       </sources>
-      <arg value="${buildlibs.arg}" />
       <references>
-        <includes name="System" />
-        <includes name="System.Design" />
-        <includes name="System.Drawing.Design" />
-        <includes name="System.Data" />
-        <includes name="System.Xml" />
-        <includes name="System.Windows.Forms" />
-        <includes name="System.Drawing" />
-        <includes name="Extensibility.dll" asis="true" />
-        <includes name="EnvDTE.dll" asis="true" />
-        <includes name="VSLangProj.dll" asis="true" />
-        <includes name="stdole.dll" asis="true" />
+        <includes name="System.dll" />
+        <includes name="System.Design.dll" />
+        <includes name="System.Drawing.Design.dll" />
+        <includes name="System.Data.dll" />
+        <includes name="System.Xml.dll" />
+        <includes name="System.Windows.Forms.dll" />
+        <includes name="System.Drawing.dll" />
+        <includes name="${vslibs.dir}/Extensibility.dll" />
+        <includes name="${vslibs.dir}/VSLangProj.dll"  />
+        <includes name="${dotnetlibs.dir}/stdole.dll"  />
+        <includes name="${nant.settings.currentframework.frameworkdirectory}/envdte.dll" />
         <includes name="office.dll" asis="true" />
-        <includes name="${nantbuild.dir}\NAnt.Core.dll" asis="true" />
-        <includes name="${dest.dir}\Interop.VSUserControlHostLib.dll" asis="true" />
+        <includes name="${nantbuild.dir}/NAnt.Core.dll" />
+        
+        <includes name="${dest.dir}\Interop.VSUserControlHostLib.dll" />
       </references>
     </csc>
     <delete>
@@ -215,11 +216,12 @@
       <arg value="/W3" />
       <arg value="/nologo" />
       <arg value="/c" />
-      <arg value="/Wp64" />
       <arg value="/ZI" />
       <arg value="/TP" />
-      <arg value="&quot;${resources.dir}\stdafx.cpp&quot;" />
-      <arg value="&quot;${resources.dir}\NAntAddinResources.cpp&quot;" />
+      <sources>
+        <includes name="${resources.dir}\stdafx.cpp" />
+        <includes name="${resources.dir}\NAntAddinResources.cpp" />
+      </sources>
     </cl>
     <rc rcfile="${resources.dir}\NAntAddinResources.rc" output="${resources.dest.dir}\NAntAddinResources.res"/>
     <link output="${resources.dest.dir}\NAntAddinResources.dll">
@@ -285,7 +287,7 @@
   <!--*******************************************************************-->
   <!--* Need to copy all tasks to VS.Net IDE directory for local addin  *-->
   <!--*******************************************************************-->
- 
+
     <delete dir="${vside.dir}\tasks" failonerror="false" />
     <mkdir dir="${vside.dir}\tasks" />
     <copy file="${nantbuild.dir}\NAnt.DotNetTasks.dll" todir="${vside.dir}\tasks" />
@@ -333,7 +335,7 @@
         string registerFileName = Path.Combine(project.BaseDirectory, "RegisterAddin.reg");
         StreamReader reader = File.OpenText(inputFileName);
         FileStream stream = null;
-        try {	
+        try {
           string contents = reader.ReadToEnd();
           string curPath = sourcePath.Replace(@"\", @"\\");
           string newContents = contents.Replace("%CURRENT_DIRECTORY%", curPath + @"\\");
