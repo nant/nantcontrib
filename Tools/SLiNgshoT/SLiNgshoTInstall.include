@@ -15,7 +15,7 @@
         
         <call target="getSlingshotVersion" />
     
-        <mkdir dir="${installsource.dir}\NAnt" failonerror="false" />
+        <mkdir dir="${installsource.dir}\NAnt" />
         <copy todir="${installsource.dir}\NAnt" file="${build.dir}\SLiNgshoT.Core.dll" />
         <copy todir="${installsource.dir}\NAnt" file="${build.dir}\SLiNgshoT.exe" />
 

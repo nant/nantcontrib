@@ -89,9 +89,13 @@
         <call target="Clean" />
     </target>
     <target name="Clean">
-        <delete file="${build.dir}\SLiNgshoT.exe" failonerror="false" />
-        <delete file="${build.dir}\SLiNgshoT.pdb" failonerror="false" />
-        <delete file="${build.dir}\SLiNgshoT.Core.dll" failonerror="false" />
-        <delete file="${build.dir}\SLiNgshoT.Core.pdb" failonerror="false" />
+        <delete>
+            <fileset basedir="${build.dir}">
+                <include name="SLiNgshoT.exe" />
+                <include name="SLiNgshoT.pdb" />
+                <include name="SLiNgshoT.Core.dll" />
+                <include name="SLiNgshoT.Core.pdb" />
+            </fileset>
+        </delete>
     </target>
 </project>

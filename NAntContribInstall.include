@@ -9,21 +9,23 @@
     <!--*****************************************************************-->
     <!--* Preparation for creating install packages                     *-->
     <!--*****************************************************************-->
-    <target name="install.prepare" description="Preparation for creating install packages" depends="package">       
+    <target name="install.prepare" description="Preparation for creating install packages" depends="package">
+        <!-- load NAntContrib extensions -->
+        <loadtasks assembly="${build.dir}/bin/NAnt.Contrib.Tasks.dll" />
         <!-- Properties that the user *could* specify via the command-line -->
-        <property name="nant.bin.dir" value="${nant.dir}/bin/" overwrite="false" />
-        <property name="nant.doc.dir" value="${nant.dir}/doc/" overwrite="false" />
-        <property name="nant.etc.dir" value="${nant.dir}/etc/" overwrite="false" />
-        <property name="nant.examples.dir" value="${nant.dir}/examples/" overwrite="false" />
-        <property name="nant.schema.dir" value="${nant.dir}/schema/" overwrite="false" />
-        <property name="nant.src.dir" value="${nant.dir}/src/" overwrite="false" />
-        <property name="nant.tests.dir" value="${nant.dir}/tests/" overwrite="false" />
+        <property name="nant.bin.dir" value="${nant.dir}/bin/" />
+        <property name="nant.doc.dir" value="${nant.dir}/doc/" />
+        <property name="nant.etc.dir" value="${nant.dir}/etc/" />
+        <property name="nant.examples.dir" value="${nant.dir}/examples/" />
+        <property name="nant.schema.dir" value="${nant.dir}/schema/" />
+        <property name="nant.src.dir" value="${nant.dir}/src/" />
+        <property name="nant.tests.dir" value="${nant.dir}/tests/" />
         
         <!-- NAnt specific properties -->
         <property name="nant.keyfile" value="NAnt.build" />
         <property name="nant.bin.keyfile" value="NAnt.exe.config" />
 
-        <property name="nant.doc.keyfile" value="index.html" />
+        <property name="nant.doc.keyfile" value="license.html" />
         <property name="nant.doc.help.dir" value="${nant.doc.dir}/help/" />
         <property name="nant.doc.help.keyfile" value="index.html" />
         <property name="nant.doc.sdk.dir" value="${nant.doc.dir}/sdk/" />
@@ -32,7 +34,7 @@
         <property name="nant.etc.keyfile" value="changelog.xsl" />
         <property name="nant.examples.keyfile" value="examples.build" />
 
-        <property name="nant.schema.keyfile" value="nant-0.85.xsd" />
+        <property name="nant.schema.keyfile" value="nant.xsd" />
         <property name="nant.src.keyfile" value="CommonAssemblyInfo.cs" />
         <property name="nant.tests.keyfile" value="NAnt.Tests.csproj" />
 
@@ -40,10 +42,10 @@
         <property name="nantcontrib.dir" value="${build.dir}" />
         <property name="nantcontrib.keyfile" value="NAntContrib.build" />
         <property name="nantcontrib.bin.dir" value="${nantcontrib.dir}/bin/" />
-        <property name="nantcontrib.bin.keyfile" value="NAnt.Contrib.Tasks.xml" />
+        <property name="nantcontrib.bin.keyfile" value="NAnt.Contrib.Tasks.dll" />
 
         <property name="nantcontrib.doc.dir" value="${nantcontrib.dir}/doc/" />
-        <property name="nantcontrib.doc.keyfile" value="index.html" />
+        <property name="nantcontrib.doc.keyfile" value="license.html" />
         <property name="nantcontrib.doc.help.dir" value="${nantcontrib.doc.dir}/help/" />
         <property name="nantcontrib.doc.help.keyfile" value="index.html" />
         <property name="nantcontrib.doc.sdk.dir" value="${nantcontrib.doc.dir}/sdk/" />
@@ -64,27 +66,23 @@
         <property name="nantcontrib.Tools.InstallRequirements.keyfile" value="license.rtf" />
 
         <script language="C#" prefix="script" >
-        <code><![CDATA[                
-      
-        [Function("CreateRegistryGuid")]
-        public string CreateRegistryGuid() {
-               
-            return "{"+Guid.NewGuid().ToString().ToUpper()+"}";
-       
-        }
-     
-        [Function("CreateIdGuid")]
-        public string CreateIdGuid() {
-               
-            return Guid.NewGuid().ToString().ToUpper().Replace("-","");
-       
-        }
-
-        ]]></code>
+            <code>
+                <![CDATA[
+                    [Function("CreateRegistryGuid")]
+                    public string CreateRegistryGuid() {
+                        return "{"+Guid.NewGuid().ToString().ToUpper()+"}";
+                    }
+                 
+                    [Function("CreateIdGuid")]
+                    public string CreateIdGuid() {
+                        return Guid.NewGuid().ToString().ToUpper().Replace("-","");
+                    }
+                ]]>
+            </code>
         </script>
 
-        <property name="install.dir" value="${build.dir}/Install" />        
-        <mkdir dir="${install.dir}" failonerror="false" />
+        <property name="install.dir" value="${build.dir}/Install" />
+        <mkdir dir="${install.dir}" />
 
         <if test="${not directory::exists(nant.doc.help.dir)}">
             <fail message="The NAnt help documents are required by the install but do not exist (${nant.doc.help.dir}).  Please run the nant 'package' task to generate them or specify their location with the 'nant.doc.dir' property." />
@@ -134,24 +132,24 @@
 <!-- TODO                
                     <directory name="D__NANT_ETC" foldername="etc" />
 -->                    
-                </directory>                
+                </directory>
             </directories>
             
-            <components>                
+            <components>
                 <component name="C__NAnt_Schema" id="{62F4F96C-E92B-420e-B6E5-E236C64A78AF}" attr="2" directory="D__NANT_SCHEMA" feature="F__Schema_NAnt">
                     <key file="${nant.schema.keyfile}" />
                     <fileset basedir="${nant.schema.dir}">
-                        <include name="*.*" />
+                        <include name="*" />
                     </fileset>
                 </component>
-<!-- TODO                
+<!-- TODO
                 <component name="C__NAnt_Etc" id="{32F1BC49-D390-4f70-8779-876CD5830C19}" attr="2" directory="D__NANT_ETC" feature="F__Etc_NAnt">
                     <key file="${nant.etc.keyfile}" />
                     <fileset basedir="${nant.etc.dir}">
-                        <include name="*.*" />
+                        <include name="*" />
                     </fileset>
                 </component>
--->                
+-->
             </components>
     
             <features>
@@ -248,7 +246,7 @@
     <target name="nant.mergemodules" depends="install.prepare nant.bin.msm nant.doc.msm nant.examples.msm nant.src.msm" />
 
     <target name="nant.bin.msm">
-        <property name="msm.id" value="${script::CreateIdGuid()}" overwrite="true" />
+        <property name="msm.id" value="${script::CreateIdGuid()}" />
         
         <echo message="${nant.bin.dir}" />
         <echo message="${nant.bin.keyfile}" />
@@ -279,7 +277,7 @@
                 <component name="C__NAnt_Bin" id="{692BAFB3-49F3-4d41-9AAB-177D672886E0}" attr="2" directory="D__NANT_BIN" keepsubdirs="true">
                     <key file="${nant.bin.keyfile}" />
                     <fileset basedir="${nant.bin.dir}">
-                        <include name="**/*.*" />
+                        <include name="**/*" />
                     </fileset>
                 </component>
             </components>
@@ -287,7 +285,7 @@
     </target>
 
     <target name="nant.doc.msm">
-        <property name="msm.id" value="${script::CreateIdGuid()}" overwrite="true" />
+        <property name="msm.id" value="${script::CreateIdGuid()}" />
         
         <msm
             output="nant.doc.msm"
@@ -319,19 +317,19 @@
                 <component name="C__NAnt_Doc" id="{228F97D7-1C6C-45ae-85CF-A0FF3599AB1A}" attr="2" directory="D__NANT_DOC_NANT" >
                     <key file="${nant.doc.keyfile}" />
                     <fileset basedir="${nant.doc.dir}">
-                        <include name="*.*" />
+                        <include name="*" />
                     </fileset>
                 </component>
                 <component name="C__NAnt_Doc_Help" id="{CE6712C4-1876-481e-9A45-4B88D081F4B1}" attr="2" directory="D__NANT_DOC_NANT_HELP" keepsubdirs="true">
                     <key file="${nant.doc.help.keyfile}" />
                     <fileset basedir="${nant.doc.help.dir}">
-                        <include name="**/*.*" />
+                        <include name="**/*" />
                     </fileset>
                 </component>
                 <component name="C__NAnt_Doc_Sdk" id="{0BAD7D5C-DB3F-4ca4-A994-C7308C7F8897}" attr="2" directory="D__NANT_DOC_NANT_SDK" >
                     <key file="${nant.doc.sdk.keyfile}" />
                     <fileset basedir="${nant.doc.sdk.dir}">
-                        <include name="*.*" />
+                        <include name="NAnt-SDK.chm" />
                     </fileset>
                 </component>
             </components>
@@ -349,12 +347,12 @@
                             component="C__NAnt_Doc_Sdk" target="[$C__NAnt_Doc_Sdk]\NAnt-SDK.chm" showcmd="3" >
                         <description>NAnt SDK Reference</description>
                 </shortcut>
-            </shortcuts>            
+            </shortcuts>
         </msm>
     </target>
         
     <target name="nant.examples.msm">
-        <property name="msm.id" value="${script::CreateIdGuid()}" overwrite="true" />
+        <property name="msm.id" value="${script::CreateIdGuid()}" />
         
         <msm
             output="nant.examples.msm"
@@ -381,7 +379,7 @@
                 <component name="C__NAnt_Examples" id="{CDEFCE03-37F9-4b2f-98C0-F7F2684DDB4D}" attr="2" directory="D__NANT_EXAMPLES" keepsubdirs="true">
                     <key file="${nant.examples.keyfile}" />
                     <fileset basedir="${nant.examples.dir}">
-                        <include name="**/*.*" />
+                        <include name="**/*" />
                     </fileset>
                 </component>
             </components>
@@ -414,13 +412,13 @@
                 <shortcut name="S__Examples_NAnt_UserTask" directory="D__NANTMENUFOLDER_EXAMPLES" filename="UserTask" 
                             component="C__NAnt_Examples" target="[D__NANT_EXAMPLES_USERTASK]" showcmd="3" >
                         <description>NAnt Example: UserTask</description>
-                </shortcut>                
+                </shortcut>
             </shortcuts>
         </msm>
     </target>
     
     <target name="nant.src.msm">
-        <property name="msm.id" value="${script::CreateIdGuid()}" overwrite="true" />
+        <property name="msm.id" value="${script::CreateIdGuid()}" />
         
         <msm
             output="nant.src.msm"
@@ -445,36 +443,31 @@
                 <component name="C__NAnt" id="{43D9E722-FF93-4a50-A6A8-D81EE66D2B0D}" attr="2" directory="D__NANT">
                     <key file="${nant.keyfile}" />
                     <fileset basedir="${nant.dir}">
-                        <include name="*.*" />
+                        <include name="*" />
                     </fileset>
                 </component>
 
                 <component name="C__NAnt_Src" id="{B3008ABA-2001-4f5c-A40D-859E4136E724}" attr="2" directory="D__NANT_SRC" keepsubdirs="true">
                     <key file="${nant.src.keyfile}" />
                     <fileset basedir="${nant.src.dir}">
-                        <include name="**/*.*" />
+                        <include name="**/*" />
                     </fileset>
                 </component>
 
                 <component name="C__NAnt_Tests" id="{377D8F16-5512-4f26-B0CE-43C1863BDEEA}" attr="2" directory="D__NANT_TESTS" keepsubdirs="true">
                     <key file="${nant.tests.keyfile}" />
                     <fileset basedir="${nant.tests.dir}">
-                        <include name="**/*.*" />
+                        <include name="**/*" />
                     </fileset>
                 </component>
-
             </components>
         </msm>
-    </target>   
-    
-    
-    
-     
-    
+    </target>
+
     <target name="nantcontrib.mergemodules" depends="install.prepare nantcontrib.bin.msm nantcontrib.doc.msm nantcontrib.src.msm" />
-    
+
     <target name="nantcontrib.bin.msm">
-        <property name="msm.id" value="${script::CreateIdGuid()}" overwrite="true" />
+        <property name="msm.id" value="${script::CreateIdGuid()}" />
         
         <msm
             output="nantcontrib.bin.msm"
@@ -498,7 +491,7 @@
                 <component name="C__NAntContrib_Bin" id="{0332B885-EA54-4714-8477-BD2D5C00D30A}" attr="2" directory="D__NANT_BIN" >
                     <key file="${nantcontrib.bin.keyfile}" />
                     <fileset basedir="${nantcontrib.bin.dir}">
-                        <include name="*.*" />
+                        <include name="*" />
                     </fileset>
                 </component>
             </components>
@@ -506,7 +499,7 @@
     </target>
     
     <target name="nantcontrib.doc.msm">
-        <property name="msm.id" value="${script::CreateIdGuid()}" overwrite="true" />
+        <property name="msm.id" value="${script::CreateIdGuid()}" />
         
         <msm
             output="nantcontrib.doc.msm"
@@ -531,26 +524,26 @@
                 </directory>
                 <directory name="D__NANTMENUFOLDER" foldername="NAnt" root="ProgramMenuFolder" >
                     <directory name="D__NANTMENUFOLDER_HELP" foldername="Help" />
-                </directory>                
+                </directory>
             </directories>
 
             <components>
                 <component name="C__NAntContrib_Doc" id="{6F57A6DD-7445-431b-BB50-7E7C822A2B9E}" attr="2" directory="D__NANT_DOC_NANTCONTRIB" >
                     <key file="${nantcontrib.doc.keyfile}" />
                     <fileset basedir="${nantcontrib.doc.dir}">
-                        <include name="*.*" />
+                        <include name="*" />
                     </fileset>
                 </component>
                 <component name="C__NAntContrib_Doc_Help" id="{D1737D81-6D40-4f2f-A9C9-26D045E12414}" attr="2" directory="D__NANT_DOC_NANTCONTRIB_HELP" keepsubdirs="true">
                     <key file="${nantcontrib.doc.help.keyfile}" />
                     <fileset basedir="${nantcontrib.doc.help.dir}">
-                        <include name="**/*.*" />
+                        <include name="**/*" />
                     </fileset>
                 </component>
                 <component name="C__NAntContrib_Doc_Sdk" id="{FB6EFAED-D966-4909-8EB5-B0F5702D364A}" attr="2" directory="D__NANT_DOC_NANTCONTRIB_SDK" >
                     <key file="${nantcontrib.doc.sdk.keyfile}" />
                     <fileset basedir="${nantcontrib.doc.sdk.dir}">
-                        <include name="*.*" />
+                        <include name="NAntContrib-SDK.chm" />
                     </fileset>
                 </component>
             </components>
@@ -573,7 +566,7 @@
     </target>
     
     <target name="nantcontrib.src.msm">
-        <property name="msm.id" value="${script::CreateIdGuid()}" overwrite="true" />
+        <property name="msm.id" value="${script::CreateIdGuid()}" />
         
         <msm
             output="nantcontrib.src.msm"
@@ -599,32 +592,30 @@
                 <component name="C__NAntContrib" id="{A892565E-BA43-43ed-AE0D-03E114C99043}" attr="2" directory="D__NANT" >
                     <key file="${nantcontrib.keyfile}" />
                     <fileset basedir="${nantcontrib.dir}">
-                        <include name="*.*" />
+                        <include name="*" />
                     </fileset>
                 </component>
                 <component name="C__NAntContrib_Src" id="{9459351A-EE7E-4ee0-9F44-76B361AAB660}" attr="2" directory="D__NANT_SRC" keepsubdirs="true">
                     <key file="${nantcontrib.src.keyfile}" />
                     <fileset basedir="${nantcontrib.src.dir}">
-                        <include name="**/*.*" />
+                        <include name="**/*" />
                     </fileset>
                 </component>
 
                 <component name="C__NAntContrib_Tests" id="{F754C239-B447-4273-8EA9-F9E4F40FE8D1}" attr="2" directory="D__NANT_TESTS" keepsubdirs="true">
                     <key file="${nantcontrib.tests.keyfile}" />
                     <fileset basedir="${nantcontrib.tests.dir}">
-                        <include name="**/*.*" />
+                        <include name="**/*" />
                     </fileset>
                 </component>
                 
                 <component name="C__NAntContrib_Tools" id="{DD5EB4C0-C2C9-4a33-8787-178E9749DCD8}" attr="2" directory="D__NANT_TOOLS" keepsubdirs="true">
                     <key file="${nantcontrib.Tools.keyfile}" />
                     <fileset basedir="${nantcontrib.Tools.dir}">
-                        <include name="**/*.*" />
+                        <include name="**/*" />
                     </fileset>
                 </component>
-
             </components>
         </msm>
     </target>
-    
 </project>
