@@ -56,7 +56,7 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         private string _path;
         private string _password = string.Empty;
         private string _user = string.Empty;
-        private string _version = string.Empty;
+        private string _version;
 
         #endregion Private Instance Fields
 
