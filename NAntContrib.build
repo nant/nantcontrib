@@ -130,6 +130,8 @@
             <sources>
                 <includes name="${src.dir}/**.cs" />
                 <includes name="${build.dir}/schema/**.cs" />
+                
+                <excludes name="${src.dir}/tasks/SharePoint/**.cs" />
             </sources>
             <references>
                 <includes name="${nant.dir}/bin/NAnt.Core.dll" />
@@ -175,6 +177,8 @@
                 <includes name="${tests.dir}/**/*.cs" />
                 <!-- common assembly-level attributes -->
                 <includes name="${src.dir}/CommonAssemblyInfo.cs" />
+                
+                <excludes name="${tests.dir}/tasks/SharePoint/**.cs"/>
             </sources>
             <references>
                  <includes name="${nant.dir}/lib/${framework::get-family(framework::get-target-framework())}/${framework::get-version(framework::get-target-framework())}/nunit.framework.dll" />
