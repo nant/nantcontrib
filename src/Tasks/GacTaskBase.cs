@@ -89,7 +89,7 @@ namespace NAnt.Contrib.Tasks {
 
 		/// <summary>
 		/// The scheme type to use when working with GAC references. The default is <c>None</c>, which means that references will not be used by
-		/// the GAC task. The default is <see cref="SchemeType">SchemeType.None</see>.
+		/// the GAC task. The default is <c>None</c>.
 		/// </summary>
 		[TaskAttribute("scheme-type", Required = false)]
 		public SchemeType SchemeType {
