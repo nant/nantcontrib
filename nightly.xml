@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="nant" default="nightly">
+<project name="nant" default="nightly-self">
 
 	<target name="nightly">
 		<property name="NAntReleaseEXE" value="${nant.dir}/bin/nant.exe"/>
