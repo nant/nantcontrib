@@ -23,9 +23,12 @@
 #endregion
 
 using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
+
 using SourceSafeTypeLib;
+
 using NAnt.Core;
 using NAnt.Core.Types;
 using NAnt.Core.Attributes;
@@ -43,14 +46,13 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
     ///   <code><![CDATA[
     ///     <vssadd dbpath="C:\SourceSafeFolder\srcsafe.ini" user="user1" password="" path="$/Somefolder">
     ///       <fileset basedir="C:\SourceFolder\">
-    ///         <includes name="*.dll"/>
+    ///         <include name="*.dll"/>
     ///       </fileset>
     ///     </vssadd>
     ///   ]]></code>
     /// </example>
     [TaskName("vssadd")]
     public class AddTask : BaseTask {
-
         #region Private Instance Fields
         
         private string _comment = "";
@@ -61,7 +63,7 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         #region Public Instance Properties
         
         /// <summary>
-        /// Places a comment on all files added into the SourceSafe repository.  Not Required.
+        /// Places a comment on all files added into the SourceSafe repository.
         /// </summary>
         [TaskAttribute("comment", Required = false)]
         public string Comment {
@@ -92,33 +94,37 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
 
             // Attempt to add each file to SourceSafe.  If file is already in SourceSafe
             // then log a message and continue otherwise throw an exception.
-            foreach( string currentFile in AddFileSet.FileNames ) {
+            foreach (string currentFile in AddFileSet.FileNames) {
                 try {
-                    IVSSItem actualProject = CreateProjectPath( currentFile );
+                    IVSSItem actualProject = CreateProjectPath(currentFile);
 
-                    if ( actualProject != null )
+                    if (actualProject != null) {
                         actualProject.Add(currentFile, Comment, 0);
-                    else
-                        Item.Add(currentFile, Comment, 0);
-
-                    Log(Level.Info, "Added File : " + currentFile);
-                } catch (System.Runtime.InteropServices.COMException e) {
-                    if (e.ErrorCode == FILE_ALREADY_ADDED) {
-                        Log(Level.Info, "File already added : " + currentFile);
-                        // just continue here
                     } else {
-                        throw new BuildException("Adding files to SourceSafe failed.", Location, e);
+                        Item.Add(currentFile, Comment, 0);
                     }
-                }
-                // All other exceptions
-                catch (Exception e) {
-                    throw new BuildException("Adding files to SourceSafe failed.", Location, e);
+
+                    Log(Level.Info, "Added file '{0}.", currentFile);
+                } catch (System.Runtime.InteropServices.COMException ex) {
+                    if (ex.ErrorCode == FILE_ALREADY_ADDED) {
+                        Log(Level.Warning, "File '{0}' was already added before.", currentFile);
+                    } else {
+                        throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                            "Failure adding '{0}' to SourceSafe.", currentFile),
+                            Location, ex);
+                    }
+                } catch (Exception ex) {
+                    throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                        "Failure adding '{0}' to SourceSafe.", currentFile),
+                        Location, ex);
                 }
             }
         }
         
         #endregion Override implementation of Task
-        
+
+        #region Protected Instance Methods
+
         /// <summary>
         /// Create project hierarchy in vss
         /// </summary>
@@ -126,16 +132,16 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         /// <returns></returns>
         protected IVSSItem CreateProjectPath( string file ) {
             //Determine relitivity using the base directory
-            if ( file.StartsWith(AddFileSet.BaseDirectory.FullName ) ) {
-                FileInfo fi = new FileInfo( file );
+            if (file.StartsWith(AddFileSet.BaseDirectory.FullName)) {
+                FileInfo fi = new FileInfo(file);
 
                 string relativePath, currentPath;
                 string[] projects;
                 IVSSItem currentItem = null;
 
-                relativePath = fi.DirectoryName.Replace( AddFileSet.BaseDirectory.FullName, "" ).Replace( '/', '\\' );
+                relativePath = fi.DirectoryName.Replace(AddFileSet.BaseDirectory.FullName, "").Replace('/', '\\');
 
-                if ( relativePath[0] == '\\' ) {
+                if (relativePath[0] == '\\') {
                     relativePath = relativePath.Substring( 1, relativePath.Length - 1);
                 }
 
@@ -158,7 +164,7 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
                     } catch {}
 
                     //Create it if it doesn't exist
-                    if ( newItem == null ) {
+                    if (newItem == null) {
                         newItem = currentItem.NewSubproject( project, "NAntContrib vssadd" );
                         Log(Level.Info, "Adding VSS Project : " + newPath);
                     }
@@ -167,8 +173,11 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
                     currentPath = newPath;
                 }
                 return currentItem;
-            } else
+            } else {
                 return null;
+            }
         }
+
+        #endregion Protected Instance Methods
     }
 }

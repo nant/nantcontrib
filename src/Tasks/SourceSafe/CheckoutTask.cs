@@ -23,7 +23,9 @@
 #endregion
 
 using System;
+
 using SourceSafeTypeLib;
+
 using NAnt.Core;
 using NAnt.Core.Attributes;
 
@@ -61,40 +63,51 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
     /// </example>
     [TaskName("vsscheckout")]
     public sealed class CheckoutTask : BaseTask {
-        private string _localpath = "";
-        private string _recursive = Boolean.TrueString;
-        private string _writable = Boolean.TrueString;
+        #region Private Instance Fields
+
+        private string _localPath;
+        private bool _recursive = true;
+        private bool _writable = true;
+
+        #endregion Private Instance Fields
+
+        #region Public Instance Properties
 
         /// <summary>
-        /// The absolute path to the local working directory. Required.
+        /// The absolute path to the local working directory.
         /// </summary>
         [TaskAttribute("localpath", Required=true)]
+        [StringValidator(AllowEmpty=false)]
         public string LocalPath {
-            get { return _localpath; }
-            set { _localpath = value; }
+            get { return _localPath; }
+            set { _localPath = value; }
         }
 
         /// <summary>
-        /// Determines whether to perform a recursive checkout. 
-        /// Default value is true when omitted.
+        /// Determines whether to perform a recursive checkout.
+        /// The default is <see langword="true" />.
         /// </summary>
         [TaskAttribute("recursive")]
         [BooleanValidator]
-        public string Recursive {
+        public bool Recursive {
             get { return _recursive; }
             set { _recursive = value; }
         }
 
         /// <summary>
         /// Determines whether to leave the file(s) as writable. 
-        /// Default value is true when omitted.
+        /// The default is <see langword="true" />.
         /// </summary>
         [TaskAttribute("writable")]
         [BooleanValidator]
-        public string Writable {
+        public bool Writable {
             get { return _writable; }
             set { _writable = value; }
         }
+
+        #endregion Public Instance Properties
+
+        #region Override implementation of Task
 
         protected override void ExecuteTask() {
             Open();
@@ -103,16 +116,19 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
              * GET, RECURS, USERO, CMPMETHOD, TIMESTAMP, EOL, REPLACE, 
              * FORCE, and CHKEXCLUSIVE
              */
-            int flags = (Convert.ToBoolean(_recursive) ? Convert.ToInt32(RecursiveFlag) : 0) |
-                (Convert.ToBoolean(_writable) ? Convert.ToInt32(VSSFlags.VSSFLAG_USERRONO) : Convert.ToInt32(VSSFlags.VSSFLAG_USERROYES));
+            int flags = (Recursive ? Convert.ToInt32(RecursiveFlag) : 0) |
+                (Writable ? Convert.ToInt32(VSSFlags.VSSFLAG_USERRONO) : Convert.ToInt32(VSSFlags.VSSFLAG_USERROYES));
 
             try {
-                Item.Checkout("", _localpath, flags);
-            } catch (Exception e) {
-                throw new BuildException("Checkout failed", Location, e);
+                Item.Checkout("", LocalPath, flags);
+            } catch (Exception ex) {
+                throw new BuildException("The check-out operation failed.", 
+                    Location, ex);
             }
 
-            Log(Level.Info, "Checked out " + Path);
+            Log(Level.Info, "Checked out '{0}'.", Path);
         }
+
+        #endregion Override implementation of Task
     }
 }

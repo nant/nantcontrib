@@ -63,50 +63,59 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
     /// </example>
     [TaskName("vsscheckin")]
     public sealed class CheckinTask : BaseTask {
+        #region Private Instance Fields
+
         private string _comment = "";
-        private string _localpath = "";
-        private string _recursive = Boolean.TrueString;
-        private string _writable = Boolean.FalseString;
+        private string _localPath;
+        private bool _recursive = true;
+        private bool _writable;
+
+        #endregion Private Instance Fields
+
+        #region Public Instance Properties
 
         /// <summary>
         /// The comment for the new version.
         /// </summary>
         [TaskAttribute("comment")]
-        public string Comment { 
+        public string Comment {
             get { return _comment; }
             set { _comment = value; }
         }
 
         /// <summary>
-        /// The absolute path to the local working directory. Required.
+        /// The absolute path to the local working directory.
         /// </summary>
         [TaskAttribute("localpath", Required=true)]
-        public string LocalPath { 
-            get { return _localpath; }
-            set { _localpath = value; }
+        [StringValidator(AllowEmpty=false)]
+        public string LocalPath {
+            get { return _localPath; }
+            set { _localPath = value; }
         }
 
         /// <summary>
         /// Determines whether to perform a recursive checkin. 
-        /// Default value is true when omitted.
+        /// The default is <see langword="true" />.
         /// </summary>
         [TaskAttribute("recursive")]
         [BooleanValidator()]
-        public string Recursive { 
+        public bool Recursive { 
             get { return _recursive; }
             set { _recursive = value; }
         }
 
         /// <summary>
         /// Determines whether to leave the file(s) as writable. 
-        /// Default value is false when omitted.
+        /// The default is <see langword="false" />.
         /// </summary>
         [TaskAttribute("writable")]
         [BooleanValidator()]
-        public string Writable { 
+        public bool Writable { 
             get { return _writable; }
             set { _writable = value; }
         }
+
+        #endregion Public Instance Properties
 
         protected override void ExecuteTask() {
             Open();
@@ -115,16 +124,17 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
              * RECURS, USERO, CMPMETHOD, TIMESTAMP, EOL, REPLACE, FORCE, 
              * KEEPCHECK, DEL, and UPD 
              */
-            int flags = (Convert.ToBoolean(_recursive) ? Convert.ToInt32(RecursiveFlag) : 0) | 
-                (Convert.ToBoolean(_writable) ? Convert.ToInt32(VSSFlags.VSSFLAG_USERRONO) : Convert.ToInt32(VSSFlags.VSSFLAG_USERROYES));
+            int flags = (Recursive ? Convert.ToInt32(RecursiveFlag) : 0) | 
+                (Writable ? Convert.ToInt32(VSSFlags.VSSFLAG_USERRONO) : Convert.ToInt32(VSSFlags.VSSFLAG_USERROYES));
 
             try {
-                Item.Checkin(_comment, _localpath, flags);
-            } catch (Exception e) {
-                throw new BuildException("check-in failed.", Location, e);
+                Item.Checkin(Comment, LocalPath, flags);
+            } catch (Exception ex) {
+                throw new BuildException("The check-in operation failed.", 
+                    Location, ex);
             }
 
-            Log(Level.Info, "Checked in " + Path);
+            Log(Level.Info, "Checked in '{0}'.", Path);
         }
 
     }

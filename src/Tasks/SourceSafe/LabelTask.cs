@@ -23,7 +23,10 @@
 #endregion
 
 using System;
+using System.Globalization;
+
 using SourceSafeTypeLib;
+
 using NAnt.Core;
 using NAnt.Core.Attributes;
 
@@ -59,8 +62,14 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
     /// </example>
     [TaskName("vsslabel")]
     public sealed class LabelTask : BaseTask {
+        #region Private Instance Fields
+
         private string _comment = "";
-        private string _label = "";
+        private string _label;
+
+        #endregion Private Instance Fields
+
+        #region Public Instance Properties
 
         /// <summary>
         /// The label comment.
@@ -72,24 +81,33 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         }
 
         /// <summary>
-        /// The value of the label. Required.
+        /// The name of the label.
         /// </summary>
         [TaskAttribute("label", Required=true)]
+        [StringValidator(AllowEmpty=false)]
         public string Label {
             get { return _label; }
             set { _label = value; }
         }
 
+        #endregion Public Instance Properties
+
+        #region Override implementation of Task
+
         protected override void ExecuteTask() {
             Open();
 
             try {
-                Item.Label(_label, _comment);
-            } catch (Exception e) {
-                throw new BuildException("label failed", Location, e);
+                Item.Label(Label, Comment);
+            } catch (Exception ex) {
+                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                    "Failed to apply label '{0}' to '{1}'.", Label, Path),
+                    Location, ex);
             }
 
-            Log(Level.Info, "Applied label \"" + _label + "\" to " + Path);
+            Log(Level.Info, "Applied label '{0}' to '{1}'.", _label, Path);
         }
+
+        #endregion Override implementation of Task
     }
 }

@@ -28,6 +28,7 @@ using System.Collections;
 using System.IO;
 
 using SourceSafeTypeLib;
+
 using NAnt.Core;
 using NAnt.Core.Attributes;
 
@@ -83,54 +84,58 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
     /// </example>
     [TaskName("vssget")]
     public sealed class GetTask : BaseTask {
+        #region Prviate Instance Fields
 
-        string _localpath = null;
-        string _recursive = Boolean.TrueString;
-        string _replace = Boolean.FalseString;
-        string _writable = Boolean.FalseString;
-        string _removeDeleted = Boolean.FalseString;
-        string _useModTime = Boolean.FalseString;
+        private string _localPath;
+        private bool _recursive = true;
+        private bool _replace;
+        private bool _writable;
+        private bool _removeDeleted;
+        private bool _useModTime;
+
+        #endregion Prviate Instance Fields
 
         private long _deleteCount = 0;
 
         /// <summary>
-        /// The absolute path to the local working directory. Required.
+        /// The absolute path to the local working directory.
         /// </summary>
         [TaskAttribute("localpath", Required=true)]
+        [StringValidator(AllowEmpty=false)]
         public string LocalPath {
-            get { return _localpath; }
-            set { _localpath = value; }
+            get { return _localPath; }
+            set { _localPath = value; }
         }
 
         /// <summary>
         /// Determines whether to perform the get recursively.
-        /// Default value is true when omitted.
+        /// The default is <see langword="true" />.
         /// </summary>
         [TaskAttribute("recursive")]
         [BooleanValidator()]
-        public string Recursive {
+        public bool Recursive {
             get { return _recursive; }
             set { _recursive = value; }
         }
 
         /// <summary>
         /// Determines whether to replace writable files.
-        /// Default value is false when omitted.
+        /// The default is <see langword="false" />.
         /// </summary>
         [TaskAttribute("replace")]
         [BooleanValidator()]
-        public string Replace {
+        public bool Replace {
             get { return _replace; }
             set { _replace = value; }
         }
 
         /// <summary>
-        /// Determines whether the files will be read-only.
-        /// Default value is false when omitted.
+        /// Determines whether the files will be writable.
+        /// The default is <see langword="false" />.
         /// </summary>
         [TaskAttribute("writable")]
         [BooleanValidator()]
-        public string Writable {
+        public bool Writable {
             get { return _writable; }
             set { _writable = value; }
         }
@@ -138,11 +143,11 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         /// <summary>
         /// Determines whether files marked "deleted" in the
         /// repository will be removed from the local copy.
-        /// Default value is false when omitted.
+        /// The default is <see langword="false" />.
         /// </summary>
         [TaskAttribute("removedeleted")]
         [BooleanValidator()]
-        public string RemoveDeleted {
+        public bool RemoveDeleted {
             get { return _removeDeleted; }
             set { _removeDeleted = value; }
         }
@@ -154,7 +159,7 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         /// </summary>
         [TaskAttribute("usemodtime")]
         [BooleanValidator()]
-        public string UseModificationTime {
+        public bool UseModificationTime {
             get { return _useModTime; }
             set { _useModTime = value; }
         }
@@ -165,20 +170,19 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
             /* -- Allowed flag categories --
              * RECURS, USERO, CMPMETHOD, TIMESTAMP, EOL, REPLACE, and FORCE
              */
-            int flags = (Convert.ToBoolean(_recursive) ? Convert.ToInt32(RecursiveFlag) : 0) |
-                (Convert.ToBoolean(_writable) ? Convert.ToInt32(VSSFlags.VSSFLAG_USERRONO) : Convert.ToInt32(VSSFlags.VSSFLAG_USERROYES)) |
-                (Convert.ToBoolean(_replace) ? Convert.ToInt32(VSSFlags.VSSFLAG_REPREPLACE) : 0) |
-                (Convert.ToBoolean(_useModTime) ? Convert.ToInt32(VSSFlags.VSSFLAG_TIMEMOD) : 0);
+            int flags = (Recursive ? Convert.ToInt32(RecursiveFlag) : 0) |
+                (Writable ? Convert.ToInt32(VSSFlags.VSSFLAG_USERRONO) : Convert.ToInt32(VSSFlags.VSSFLAG_USERROYES)) |
+                (Replace ? Convert.ToInt32(VSSFlags.VSSFLAG_REPREPLACE) : 0) |
+                (UseModificationTime ? Convert.ToInt32(VSSFlags.VSSFLAG_TIMEMOD) : 0);
+
+            Log(Level.Info, "Getting '{0}' to '{1}'...", Path, LocalPath);
 
             // Get the version to the local path
             try {
-                Item.Get(ref _localpath, flags);
+                Item.Get(ref _localPath, flags);
+            } catch (Exception ex) {
+                throw new BuildException("The get operation failed.", Location, ex);
             }
-            catch (Exception e) {
-                throw new BuildException("vssget failed", Location, e);
-            }
-
-            Log(Level.Info, "Put " + Path + " to " + _localpath);
 
             RemoveDeletedFromLocalImage();
         }
@@ -188,10 +192,10 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         /// the scan.
         /// </summary>
         public void RemoveDeletedFromLocalImage() {
-            if(Convert.ToBoolean(RemoveDeleted)) {
+            if(RemoveDeleted) {
                 Log(Level.Info, "Removing deleted files from local image...");
                 RemoveDeletedFromLocalImage(Item, LocalPath);
-                Log(Level.Info, string.Format("Removed: {0} deleted files from local image.", _deleteCount));
+                Log(Level.Info, "Removed {0} deleted files from local image.", _deleteCount);
             }
         }
 
@@ -217,8 +221,8 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
                     SetToWriteable(localPath);
                     Delete(localPath);
                 } else {
-                    if(IsProject(i) && DeletionIsRecursive()) {
-                        RemoveDeletedFromLocalImage(i, System.IO.Path.Combine(localPathPrefix, i.Name) );
+                    if(IsProject(i) && Recursive) {
+                        RemoveDeletedFromLocalImage(i, System.IO.Path.Combine(localPathPrefix, i.Name));
                     }
                 }
             }
@@ -261,7 +265,7 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
 
         private void Delete(string path) {
             _deleteCount++;
-            Log(Level.Verbose, "Deleting: " + path);
+            Log(Level.Verbose, "Deleting '{0}'.", path);
             if(IsDirectory(path)) {
                 Directory.Delete(path, true);
             } else {
@@ -271,10 +275,6 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
 
         private bool IsProject(IVSSItem item) {
             return item.Type == (int) VSSItemType.VSSITEM_PROJECT;
-        }
-
-        private bool DeletionIsRecursive() {
-            return Convert.ToBoolean(Recursive);
         }
     }
 }

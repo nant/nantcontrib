@@ -23,9 +23,14 @@
 #endregion
 
 using System;
+using System.Globalization;
+using System.IO;
+
 using SourceSafeTypeLib;
+
 using NAnt.Core;
 using NAnt.Core.Attributes;
+using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks.SourceSafe {
 
@@ -35,38 +40,49 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
     /// in a Visual Source Safe database.
     /// </summary>
     public abstract class BaseTask : Task {
+        #region Protected Static Fields
+
         // Flag required for performing a recursive action
         protected const VSSFlags RecursiveFlag = VSSFlags.VSSFLAG_RECURSYES | 
             VSSFlags.VSSFLAG_FORCEDIRNO;
 
-        VSSDatabase _database = null;
-        IVSSItem _item = null;
+        #endregion Protected Static Fields
 
-        string _dbpath = "";
-        string _path = "";
-        string _password = "";
-        string _user = "";
-        string _version = "";
+        #region Private Instance Fields
+
+        private VSSDatabase _database;
+        private IVSSItem _item;
+        private FileInfo _dbPath;
+        private string _path;
+        private string _password = string.Empty;
+        private string _user = string.Empty;
+        private string _version = string.Empty;
+
+        #endregion Private Instance Fields
+
+        #region Public Instance Properties
+
         /// <summary>
-        /// The absolute path to the folder that contains the srcsafe.ini. Required.
+        /// The path to the folder that contains "srcsafe.ini".
         /// </summary>
         [TaskAttribute("dbpath", Required=true)]
-        public string dbPath { 
-            get { return _dbpath; }
-            set { _dbpath = value; }
+        public FileInfo DBPath { 
+            get { return _dbPath; }
+            set { _dbPath = value; }
         }
         
         /// <summary>
-        /// The source safe project or file path, starting with "$/".  Required.
+        /// The source safe project or file path, starting with "$/".
         /// </summary>
         [TaskAttribute("path", Required=true)]
+        [StringValidator(AllowEmpty=false)]
         public string Path { 
             get { return _path; }
             set { _path = value; }
         }
 
         /// <summary>
-        /// The password to use to login to the Source Safe database.
+        /// The password to use to login to the SourceSafe database.
         /// </summary>
         [TaskAttribute("password")]
         public string Password {
@@ -75,7 +91,7 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         }
 
         /// <summary>
-        /// The user id to use to login to the Source Safe database. Required.
+        /// The user id to use to login to the SourceSafe database.
         /// </summary>
         [TaskAttribute("user", Required=true)]
         public string User { 
@@ -91,12 +107,23 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         [TaskAttribute("version")]
         public string Version { 
             get { return _version; } 
-            set { _version = value; }
+            set { _version = StringUtils.ConvertEmptyToNull(value); }
         }
 
-        public VSSDatabase Database { get { return _database; } set { _database = value; } }
-        public IVSSItem Item { get { return _item; } set { _item = value; } }
-        
+        public VSSDatabase Database {
+            get { return _database; }
+            set { _database = value; }
+        }
+
+        public IVSSItem Item {
+            get { return _item; }
+            set { _item = value; }
+        }
+
+        #endregion Public Instance Properties
+
+        #region Protected Instance Methods
+
         /// <summary>
         /// Opens the Source Safe database and sets the reference to the specified
         /// item and version.
@@ -104,23 +131,26 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         protected void Open() {
             try {
                 _database = new VSSDatabase();
-                _database.Open(_dbpath, _user, _password);
-            }
-            catch (Exception e) {
-                throw new BuildException("Failed to open database", Location, e);
+                _database.Open(DBPath.FullName, User, Password);
+            } catch (Exception ex) {
+                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                    "Failed to open database \"{0}\".", DBPath.FullName),
+                    Location, ex);
             }
 
             try {
-                // Get the reference to the specified project item 
+                // get the reference to the specified project item 
                 // and version
-                _item = _database.get_VSSItem(_path, false);
-                if (_version.Length > 0) {
-                    _item = _item.get_Version(_version);
+                _item = _database.get_VSSItem(Path, false);
+                if (Version != null) {
+                    _item = _item.get_Version(Version);
                 }
-            }
-            catch (Exception e) {
-                throw new BuildException("path and/or version not valid", Location, e);
+            } catch (Exception ex) {
+                throw new BuildException("The \"path\" and/or \"version\" is not valid.", 
+                    Location, ex);
             }
         }
+
+        #endregion Protected Instance Methods
     }
 }

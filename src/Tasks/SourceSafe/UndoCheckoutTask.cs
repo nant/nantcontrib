@@ -23,7 +23,9 @@
 #endregion
 
 using System;
+
 using SourceSafeTypeLib;
+
 using NAnt.Core;
 using NAnt.Core.Attributes;
 
@@ -59,8 +61,14 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
     /// </example>
     [TaskName("vssundocheckout")]
     public sealed class UndoCheckoutTask : BaseTask {
-        private string _recursive = Boolean.TrueString;
-        private string _localpath = ""; 
+        #region Private Instance Fields
+
+        private bool _recursive = true;
+        private string _localPath = "";
+
+        #endregion Private Instance Fields
+
+        #region Public Instance Properties
 
         /// <summary>
         /// The absolute path to the local working directory. This is required if you wish to 
@@ -68,34 +76,40 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         /// </summary>
         [TaskAttribute("localpath", Required=false)]
         public string LocalPath {
-            get { return _localpath; }
-            set { _localpath = value; }
+            get { return _localPath; }
+            set { _localPath = value; }
         }
 
         /// <summary>
-        /// Determines whether to perform a recursive UndoCheckOut. 
-        /// Default value is true when omitted.
+        /// Determines whether to perform a recursive undo of the checkout.
+        /// The default is <see langword="true" />.
         /// </summary>
         [TaskAttribute("recursive")]
         [BooleanValidator]
-        public string Recursive {
+        public bool Recursive {
             get { return _recursive; }
             set { _recursive = value; }
         }
 
+        #endregion Public Instance Properties
+
+        #region Override implementation of Task
+
         protected override void ExecuteTask() {
             Open();
-            
-            int flags = (Convert.ToBoolean(_recursive) ? Convert.ToInt32(RecursiveFlag) : 0);
+
+            int flags = (Recursive ? Convert.ToInt32(RecursiveFlag) : 0);
 
             try {
-                Log(Level.Info, "localpath : " + _localpath);
-                Item.UndoCheckout(_localpath,flags);
-            } catch (Exception e) {
-                throw new BuildException("UndoCheckout failed", Location, e);
+                Item.UndoCheckout(LocalPath, flags);
+            } catch (Exception ex) {
+                throw new BuildException("The undo check-out operation failed.", 
+                    Location, ex);
             }
 
-            Log(Level.Info, "UndoCheckOut " + Path);
+            Log(Level.Info, "Undo of check-out completed for '{0}'.", Path);
         }
+
+        #endregion Override implementation of Task
     }
 }
