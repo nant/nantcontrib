@@ -296,10 +296,12 @@
         <ndoc>
             <assemblies basedir="${build.dir}/bin" failonempty="true">
                 <include name="NAnt.Contrib.Tasks.dll" />
+                <!-- 
+                    we need to add the NAnt.Core assembly too in order to provide
+                    doc summaries and add links to NAnt types and tasks
+                -->
+                <include name="${nant.dir}/bin/NAnt.Core.dll" />
             </assemblies>
-            <referencepaths basedir="${nant.dir}">
-                <include name="bin" />
-            </referencepaths>
             <documenters>
                 <documenter name="NAnt">
                     <property name="OutputDirectory" value="${build.dir}/doc/help" />
