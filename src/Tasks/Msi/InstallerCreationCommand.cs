@@ -992,6 +992,10 @@ namespace NAnt.Contrib.Tasks.Msi {
 
                 int rootKey = -1;
                 switch (key.root.ToString()) {
+                    case "dependent": {
+                        rootKey = -1;
+                        break;
+                    }
                     case "classes": {
                         rootKey = 0;
                         break;
@@ -2048,7 +2052,6 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// <param name="fileTable">The MSI database view.</param>
         /// <param name="ComponentDirectory">The directory of this file's component.</param>
         /// <param name="ComponentName">The name of this file's component.</param>
-        /// <param name="ComponentCount">The index in the number of components of this file's component.</param>
         /// <param name="Sequence">The installation sequence number of this file.</param>
         /// <param name="msiAssemblyTable">View containing the MsiAssembly table.</param>
         /// <param name="msiAssemblyNameTable">View containing the MsiAssemblyName table.</param>
@@ -2059,7 +2062,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// <param name="selfRegTable">View containing the SelfReg table.</param>
         /// <param name="modComponentTable">ModuleComponent table.</param>
         private void AddFiles(InstallerDatabase database, InstallerTable directoryTable, MSIComponent Component,
-            InstallerTable fileTable, string ComponentDirectory, string ComponentName, ref int ComponentCount,
+            InstallerTable fileTable, string ComponentDirectory, string ComponentName, 
             ref int Sequence, InstallerTable msiAssemblyTable, InstallerTable msiAssemblyNameTable,
             InstallerTable componentTable, InstallerTable featureComponentTable, InstallerTable classTable, InstallerTable progIdTable,
             InstallerTable selfRegTable, InstallerTable modComponentTable) {
@@ -2160,8 +2163,14 @@ namespace NAnt.Contrib.Tasks.Msi {
                     }
 
                     if (isAssembly) {
+                        bool installToGAC = ((fileOverride == null) || (fileOverride.installtogac == false)) ? Component.installassembliestogac : fileOverride.installtogac;
                         // Add a record for a new MsiAssembly
-                        msiAssemblyTable.InsertRecord(asmCompName, feature, fileId, fileId, 0);
+                        if (installToGAC) {
+                            msiAssemblyTable.InsertRecord(asmCompName, feature, fileId, null, 0);
+                        }
+                        else {
+                            msiAssemblyTable.InsertRecord(asmCompName, feature, fileId, fileId, 0);
+                        }
 
                         AddAssemblyManifestRecords(fileAssembly, msiAssemblyNameTable, asmCompName);
 
@@ -2341,23 +2350,32 @@ namespace NAnt.Contrib.Tasks.Msi {
                     }
 
                     try {
-                        int componentIndex = 0;
-
                         foreach (MSIComponent component in msi.components) {
+                            string keyFileName = component.key.file;
+
+                            if (component.fileset == null) {
+                                // Make sure the keyfile maps to a valid registry entry
+                                if (((XmlElement)_xmlNode).SelectSingleNode("registry/key[@component='" + component.name + "']/value[@id='" + keyFileName + "']") == null) {
+                                    Log(Level.Warning, LogPrefix + "Component '{0}' does not map to a valid registry key.  Skipping...\n", component.name);
+                                    continue;
+                                }
+                            }
+
                             if (this is MsiCreationCommand)
                                 featureComponents.Add(component.name, component.feature);
 
                             AddModuleComponentVirtual(database, modComponentTable, component.name);
 
-                            componentIndex++;
+                            if (component.fileset != null) {
+                                AddFiles(database, directoryTable, component,
+                                    fileTable,
+                                    component.directory, component.name, 
+                                    ref LastSequence, msiAssemblyTable, msiAssemblyNameTable,
+                                    componentTable, featureComponentTable, classTable, progIdTable, selfRegTable, modComponentTable);
 
-                            AddFiles(database, directoryTable, component,
-                                fileTable,
-                                component.directory, component.name, ref componentIndex,
-                                ref LastSequence, msiAssemblyTable, msiAssemblyNameTable,
-                                componentTable, featureComponentTable, classTable, progIdTable, selfRegTable, modComponentTable);
+                                keyFileName = GetKeyFileName(component);
+                            }
 
-                            string keyFileName = GetKeyFileName(component);
                             // Insert the Component
                             componentTable.InsertRecord(component.name, component.id.ToUpper(),
                                 component.directory, component.attr, component.condition, keyFileName);

@@ -173,6 +173,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///         <term>msi:MSIRegistryKeyRoot</term>
         ///         <term>Valid input: 
         ///         <list type="bullet">
+        ///             <item><c>dependent</c> - If this is a per-user installation, the registry value is written under HKEY_CURRENT_USER.  If this is a per-machine installation, the registry value is written under HKEY_LOCAL_MACHINE. Note that a per-machine installation is specified by setting the ALLUSERS property to 1.</item>
         ///             <item><c>machine</c> represents HKEY_LOCAL_MACHINE</item>
         ///             <item><c>root</c> represents HKEY_CLASSES_ROOT</item>
         ///             <item><c>user</c> represents HKEY_CURRENT_USER</item>
@@ -871,6 +872,15 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///         will not be added to the msi. </term>
         ///         <term>False</term>
         ///     </item>
+        ///     <item>
+        ///         <term>installassembliestogac</term>
+        ///         <term>bool</term>
+        ///         <term>Used to determine if assemblies should be installed to the Global Assembly Cache.  
+        ///         If <c>true</c>, all assemblies in the fileset will be added to the GAC. If <c>false</c>, the assemblies will be installed
+        ///         to the specified directory (as a normal file would).  Note: If an assembly is specified to be installed into the GAC, it will not
+        ///         also be installed to the directory specified.</term>
+        ///         <term>False</term>
+        ///     </item>
         /// </list>
         /// <h3>Nested Elements:</h3>
         /// <h4>&lt;keyfile&gt;</h4>
@@ -887,7 +897,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///             <item>
         ///                 <term>file</term>
         ///                 <term>string</term>
-        ///                 <term>Name of the key (file) to use.  Also, this could be a registry key.</term>
+        ///                 <term>Name of the key (file) to use.  Also, this could be an id of a registry key value.</term>
         ///                 <term>True</term>
         ///             </item>
         ///         </list>
@@ -993,6 +1003,14 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///         will not be added to the msi.</term>
         ///                 <term>False</term>
         ///             </item>
+        ///             <item>
+        ///                 <term>installtogac</term>
+        ///                 <term>bool</term>
+        ///                 <term>If <c>true</c>, and if the file is an assembly, it will be installed to the GAC. If <c>false</c>, the file 
+        ///                 will be installed to the directory specified by the component.  Note: If an assembly is specified to 
+        ///                 be installed into the GAC, it will not also be installed to the directory specified.</term>
+        ///                 <term>False</term>
+        ///             </item>
         ///         </list>
         ///     </ul>
         /// <h4>&lt;/forceid&gt;</h4>
@@ -1008,6 +1026,38 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///         &lt;/fileset&gt;
         ///     &lt;/component&gt;
         /// &lt;/components&gt; 
+        ///     </code>
+        /// </example>
+        /// <example>
+        ///     <para>Install files to TARGETDIR and assemblies to the GAC (Global Assembly Cache).  Do not install MyOtherAssembly.dll to the GAC, but rather install it with the other files (to TARGETDIR)</para>
+        ///     <code>
+        /// &lt;components&gt;
+        ///     &lt;component name="C__MainFiles" id="{26AA7144-E683-441D-9843-3C79AEC1C636}" attr="2" directory="TARGETDIR" feature="F__MainFiles" installassembliestogac="true" &gt;
+        ///         &lt;key file="MyAssemblyName.xml" /&gt;
+        ///         &lt;fileset basedir="${install.dir}"&gt;
+        ///             &lt;includes name="*.*" /&gt;
+        ///         &lt;/fileset&gt;
+        ///         &lt;forceid file="MyOtherAssembly.dll" id="_4EB7CCB23D394958988ED817DA00B9D1" installtogac="false" /&gt;
+        ///     &lt;/component&gt;
+        /// &lt;/components&gt; 
+        ///     </code>
+        /// </example>
+        /// <example>
+        ///     <para>Assign a registry entry to a specific component.</para>
+        ///     <code>
+        /// &lt;components&gt;
+        ///     &lt;component name="C__RegistryEntry" id="{06C654AA-273D-4E39-885C-3E5225D9F336}" attr="4" directory="TARGETDIR" feature="F__DefaultFeature" &gt;
+        ///         &lt;key file="R__822EC365A8754FACBF6C713BFE4E57F0" /&gt;
+        ///     &lt;/component&gt;
+        /// &lt;/components&gt; 
+        /// .
+        /// .
+        /// .
+        /// &lt;registry&gt;
+        ///     &lt;key path="SOFTWARE\MyCompany\MyProduct\" root="machine" component="C__RegistryEntry"&gt;
+        ///          &lt;value id="R__822EC365A8754FACBF6C713BFE4E57F0" name="MyKeyName" value="MyKeyValue" /&gt;
+        ///     &lt;/key&gt;
+        /// &lt;/registry&gt;
         ///     </code>
         /// </example>
         /// </summary>
@@ -1651,6 +1701,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///            <term>msi:MSIRegistryKeyRoot</term>
         ///            <term>Valid input: 
         ///                <list type="bullet">
+        ///                       <item><c>dependent</c> - If this is a per-user installation, the registry value is written under HKEY_CURRENT_USER.  If this is a per-machine installation, the registry value is written under HKEY_LOCAL_MACHINE. Note that a per-machine installation is specified by setting the ALLUSERS property to 1.</item>
         ///                    <item><c>machine</c> represents HKEY_LOCAL_MACHINE</item>
         ///                    <item><c>root</c> represents HKEY_CLASSES_ROOT</item>
         ///                    <item><c>user</c> represents HKEY_CURRENT_USER</item>
