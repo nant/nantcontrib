@@ -32,13 +32,13 @@
     <target name="init" description="Initializes build properties">
         <call target="${project.config}" />
         <call target="set-runtime-configuration" />
-        <ifnot propertyexists="nant.dir">
+        <if test="${not property::exists('nant.dir')}">
             <fail message="Please pass the folder containing the NAnt build on the commandline as a property (-D:nant.dir=???)." />
-        </ifnot>
+        </if>
         <available property="NAntReleaseExists" resource="${nant.dir}" type="Directory"/>
-        <ifnot propertyexists="NAntReleaseExists" propertytrue="NAntReleaseExists">
+        <if test="${not NAntReleaseExists}">
             <fail message="The specified folder containing the NAnt build (${nant.dir}) does not exist." />
-        </ifnot>
+        </if>
         <echo message="Using nant files from ${nant.dir}"/>
     </target>
 
@@ -93,19 +93,12 @@
     <!-- Bootstrap XML Schemas into assemblies for task validation -->
     <target name="compile.schemas" depends="compile.schematask" description="compiles Task XML Schemas into assemblies">
         <loadtasks assembly="${build.dir}/bin/NAnt.Xsd.Tasks.dll"/>
-        <if uptodatefile="${src.dir}/Tasks/MSITask.xsd">
-            <comparefiles basedir="${build.dir}/schema\MSI">
+        <if uptodatefile="${src.dir}/Tasks/Msi/MsiTask.xsd">
+            <comparefiles basedir="${build.dir}/schema/Msi">
                 <includes name="*" />
             </comparefiles>
-            <mkdir dir="${build.dir}/schema\MSI" />
-            <xsd schema="${src.dir}/Tasks/MSITask.xsd" language="CS" namespace="NAnt.Contrib.Schemas.MSI" nologo="true" outputdir="${build.dir}/schema/MSI" uri="NAnt.Contrib.Tasks.MSITask" />
-        </if>
-        <if uptodatefile="${src.dir}/Tasks/MSMTask.xsd">
-            <comparefiles basedir="${build.dir}/schema/MSM">
-                <includes name="*" />
-            </comparefiles>
-            <mkdir dir="${build.dir}/schema/MSM" />
-            <xsd schema="${src.dir}/Tasks/MSMTask.xsd" language="CS" namespace="NAnt.Contrib.Schemas.MSM" nologo="true" outputdir="${build.dir}/schema/MSM" uri="NAnt.Contrib.Tasks.MSMTask" />
+            <mkdir dir="${build.dir}/schema/Msi" />
+            <xsd schema="${src.dir}/Tasks/Msi/MsiTask.xsd" language="CS" namespace="NAnt.Contrib.Schemas.Msi" nologo="true" outputdir="${build.dir}/schema/Msi" uri="NAnt.Contrib.Tasks.Msi.MsiTask" />
         </if>
     </target>
 
@@ -205,9 +198,9 @@
     <!-- Build task and sdk documentation -->
     <target name="doc" depends="build" description="build documentation">
         <available property="NantDocumenterExists" resource="${nant.dir}/bin/NDoc.Documenter.NAnt.dll" type="File" />
-        <ifnot propertytrue="NantDocumenterExists">
+        <if test="${not NantDocumenterExists}">
             <fail message="NDoc.Documenter.NAnt.dll not found. Run the 'userdoc' target in your NAnt source tree" />
-        </ifnot>
+        </if>
         <ndoc>
             <assemblies basedir="${build.dir}/bin" failonempty="true">
                 <includes name="NAnt.Contrib.Tasks.dll" />
@@ -341,27 +334,27 @@
         <property name="current.runtime.${current.runtime.config}-${current.runtime.version}" value="true" />
     </target>
     <target name="set-runtime-configuration">
-        <ifnot propertyexists="current.runtime.config">
-            <ifnot propertyexists="nant.settings.currentframework">
+        <if test="${not property::exists('current.runtime.config')}">
+            <if test="${not property::exists('nant.settings.currentframework')}">
                 <fail message="No runtime configuration was specified and the default NAnt runtime is not available." />
-            </ifnot>
-            <ifnot targetexists="set-${nant.settings.currentframework}-runtime-configuration">
+            </if>
+            <if test="${not target::exists('set-'+nant.settings.currentframework+'-runtime-configuration')}">
                 <fail message="No runtime configuration was specified and the current runtime (${nant.settings.currentframework}) is not supported by NAnt." />
-            </ifnot>
+            </if>
             <call target="set-${nant.settings.currentframework}-runtime-configuration" />
-        </ifnot>
-        <ifnot propertyexists="current.runtime.version">
-            <ifnot propertyexists="nant.settings.currentframework">
+        </if>
+        <if test="${not property::exists('current.runtime.version')}">
+            <if test="${not property::exists('nant.settings.currentframework')}">
                 <fail message="No runtime configuration was specified and the default NAnt runtime is not available." />
-            </ifnot>
-            <ifnot targetexists="set-${nant.settings.currentframework}-runtime-configuration">
+            </if>
+            <if test="${not target::exists('set-'+nant.settings.currentframework+'-runtime-configuration')}">
                 <fail message="No runtime configuration was specified and the current runtime (${nant.settings.currentframework}) is not supported by NAnt." />
-            </ifnot>
+            </if>
             <call target="set-${nant.settings.currentframework}-runtime-configuration" />
-        </ifnot>
-        <ifnot targetexists="set-${current.runtime.config}-${current.runtime.version}-runtime-configuration">
+        </if>
+        <if test="${not target::exists('set-'+current.runtime.config+'-'+current.runtime.version+'-runtime-configuration')}">
             <fail message="The ${current.runtime.config}-${current.runtime.version} runtime is not supported by NAntContrib." />
-        </ifnot>
+        </if>
         <call target="set-${current.runtime.config}-${current.runtime.version}-runtime-configuration" />
     </target>
     <target name="set-net-1.0-runtime-configuration">
