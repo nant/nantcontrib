@@ -34,6 +34,14 @@
                     Directories containing spaces result in error 1639 during 
                     installation (bug <a href="https://sourceforge.net/tracker/?func=detail&amp;atid=474851&amp;aid=1107112&amp;group_id=54790">#1107112</a>).
                 </li>
+                <li>
+					Removed dependency of &lt;properties&gt; element 
+					(bug <a href="https://sourceforge.net/tracker/index.php?func=detail&aid=1149861&group_id=54790&atid=474851">#1149861</a>).
+                </li>
+                <li>
+					Cabarc process would fail with spaces in filename 
+					(bug <a href="https://sourceforge.net/tracker/?func=detail&atid=474851&aid=1153718&group_id=54790">#1153718</a>).
+				</li>
             </ul>
         </div>
         <h3>Changes</h3>
@@ -44,6 +52,17 @@
             <ul>
                 <li>
                     Added support for fileset references.
+                </li>
+                <li>
+					Added &lt;summaryinformation&gt; element to specify specific information for the summary information stream
+					(associated bug <a href="https://sourceforge.net/tracker/?func=detail&atid=474851&aid=1149861&group_id=54790">#1149861</a>).
+                </li>
+                <li>
+					FeatureComponents table is not removed from merge modules (even when empty)
+				</li>
+				<li>
+					Added support for file, ini, and component searches.  Depreciated the old syntax for registry searches.
+					(associated bug <a href="https://sourceforge.net/tracker/?func=detail&atid=474851&aid=1149948&group_id=54790">#1149948</a>).
                 </li>
             </ul>
         </div>
@@ -56,6 +75,13 @@
             <ul>
                 <li>
                     The special exception that is part of the NAntContrib license has been modified to avoid confusion.
+                </li>
+            </ul>
+            <h5><a class="heading">Build Script(s)</h5>
+            <ul>
+                <li>
+                    Removed single quotes around path variable in NAnt install  
+                    (bug <a href="https://sourceforge.net/tracker/?func=detail&atid=474851&aid=1153721&group_id=54790">#1153721</a>).
                 </li>
             </ul>
         </div>
