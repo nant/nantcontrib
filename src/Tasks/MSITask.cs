@@ -31,6 +31,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 
 using WindowsInstaller;
+using MsmMergeTypeLib;
 
 using SourceForge.NAnt;
 using SourceForge.NAnt.Tasks;
@@ -136,6 +137,7 @@ namespace NAnt.Contrib.Tasks
 		XmlNodeList _propertyNodes;
 		XmlNodeList _directoryNodes;
 		XmlNodeList _keyNodes;
+        XmlNodeList _mergeModules;
 
 		Hashtable directories = new Hashtable();
 		Hashtable files = new Hashtable();
@@ -145,8 +147,6 @@ namespace NAnt.Contrib.Tasks
 		Hashtable properties = new Hashtable();
 		ArrayList typeLibRecords = new ArrayList();
 		Hashtable typeLibComponents = new Hashtable();
-
-		FileSet _mergemodules = new FileSet();
 
 		string[] commonFolderNames = new string[]
 		{
@@ -266,16 +266,6 @@ namespace NAnt.Contrib.Tasks
 			}
 		}
 
-		/// <summary>The set of merge models to merge.</summary>
-		[FileSet("mergemodules")]
-		public FileSet MergeModules
-		{
-			get
-			{
-				return _mergemodules;
-			}
-		}
-
 		/// <summary>
 		/// Initialize taks and verify parameters.
 		/// </summary>
@@ -296,190 +286,243 @@ namespace NAnt.Contrib.Tasks
 
 			_keyNodes = TaskNode.Clone().SelectNodes("registry/key");
 			ExpandPropertiesInNodes(_keyNodes);
+
+            _mergeModules = TaskNode.Clone().SelectNodes("mergemodules/merge");
+            ExpandPropertiesInNodes(_mergeModules);
 		}
 
 		/// <summary>
 		/// Executes the Task.
 		/// </summary>
 		/// <remarks>None.</remarks>
-		protected override void ExecuteTask()
-		{
-			// Create WindowsInstaller.Installer
-			Type msiType = Type.GetTypeFromProgID("WindowsInstaller.Installer");
-			Object obj = Activator.CreateInstance(msiType);
+        protected override void ExecuteTask()
+        {
+            // Create WindowsInstaller.Installer
+            Type msiType = Type.GetTypeFromProgID("WindowsInstaller.Installer");
+            Object obj = Activator.CreateInstance(msiType);
 
-			// Open the Template MSI File
-			Module tasksModule = Assembly.GetExecutingAssembly().GetModule("NAnt.Contrib.Tasks.dll");
+            // Open the Template MSI File
+            Module tasksModule = Assembly.GetExecutingAssembly().GetModule("NAnt.Contrib.Tasks.dll");
 			
-			string source = Path.GetDirectoryName(
-				tasksModule.FullyQualifiedName) + "\\MSITaskTemplate.msi";
+            string source = Path.GetDirectoryName(
+                tasksModule.FullyQualifiedName) + "\\MSITaskTemplate.msi";
 
-			string dest = Path.Combine(Project.BaseDirectory, 
-				Path.Combine(SourceDirectory, Output));
+            string dest = Path.Combine(Project.BaseDirectory, 
+                Path.Combine(SourceDirectory, Output));
 
-			string errors = Path.GetDirectoryName(
-				tasksModule.FullyQualifiedName) + "\\MSITaskErrors.mst";
+            string errors = Path.GetDirectoryName(
+                tasksModule.FullyQualifiedName) + "\\MSITaskErrors.mst";
 			
-			// Copy the Template MSI File
-			try
-			{
-				File.Copy(source, dest, true);
-			}
-			catch (IOException)
-			{
-				Log.WriteLine(LogPrefix + 
-					"Error: file in use or cannot be copied to output.");
-				return;
-			}
+            // Copy the Template MSI File
+            try
+            {
+                File.Copy(source, dest, true);
+            }
+            catch (IOException)
+            {
+                Log.WriteLine(LogPrefix + 
+                    "Error: file in use or cannot be copied to output.");
+                return;
+            }
 
-			// Open the Output Database.
-			Database d = null;
-			try
-			{
-				d = (Database)msiType.InvokeMember(
-					"OpenDatabase", 
-					BindingFlags.InvokeMethod, 
-					null, obj, 
-					new Object[]
-					{
-						dest, 
-						MsiOpenDatabaseMode.msiOpenDatabaseModeDirect
-					});
+            // Open the Output Database.
+            Database d = null;
+            try
+            {
+                d = (Database)msiType.InvokeMember(
+                    "OpenDatabase", 
+                    BindingFlags.InvokeMethod, 
+                    null, obj, 
+                    new Object[]
+                    {
+                        dest, 
+                        MsiOpenDatabaseMode.msiOpenDatabaseModeDirect
+                    });
 
-				if (Debug == "true")
-				{
-					// If Debug is true, transform the error strings in
-					d.ApplyTransform(errors, MsiTransformError.msiTransformErrorNone);
-				}
-			}
-			catch (Exception e)
-			{
-				Log.WriteLine(LogPrefix + "Error: " + e.Message);
-				return;
-			}
+                if (Debug == "true")
+                {
+                    // If Debug is true, transform the error strings in
+                    d.ApplyTransform(errors, MsiTransformError.msiTransformErrorNone);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.WriteLine(LogPrefix + "Error: " + e.Message);
+                return;
+            }
 
-			Log.WriteLine(LogPrefix + "Building MSI Database \"" + Output + "\".");
+            Log.WriteLine(LogPrefix + "Building MSI Database \"" + Output + "\".");
 
-			// Load the Banner Image
-			if (!LoadBanner(d))
-			{
-				return;
-			}
+            // Load the Banner Image
+            if (!LoadBanner(d))
+            {
+                return;
+            }
 
-			// Load the Background Image
-			if (!LoadBackground(d))
-			{
-				return;
-			}
+            // Load the Background Image
+            if (!LoadBackground(d))
+            {
+                return;
+            }
 
-			// Load the License File
-			if (!LoadLicense(d))
-			{
-				return;
-			}
+            // Load the License File
+            if (!LoadLicense(d))
+            {
+                return;
+            }
 
-			// Load Properties
-			if (!LoadProperties(d, msiType, obj))
-			{
-				return;
-			}
+            // Load Properties
+            if (!LoadProperties(d, msiType, obj))
+            {
+                return;
+            }
 
-			// Load Directories
-			if (!LoadDirectories(d, msiType, obj))
-			{
-				return;
-			}
+            // Load Directories
+            if (!LoadDirectories(d, msiType, obj))
+            {
+                return;
+            }
 
-			View asmView, asmNameView, classView, progIdView;
+            View asmView, asmNameView, classView, progIdView;
 
-			// Load Assemblies
-			if (!LoadAssemblies(d, msiType, obj, out asmView, 
-				out asmNameView, out classView, out progIdView))
-			{
-				return;
-			}
+            // Load Assemblies
+            if (!LoadAssemblies(d, msiType, obj, out asmView, 
+                out asmNameView, out classView, out progIdView))
+            {
+                return;
+            }
 
-			int lastSequence = 0;
+            int lastSequence = 0;
 
-			// Load Components
-			if (!LoadComponents(d, msiType, obj, ref lastSequence, 
-				asmView, asmNameView, classView, progIdView))
-			{
-				return;
-			}
+            // Load Components
+            if (!LoadComponents(d, msiType, obj, ref lastSequence, 
+                asmView, asmNameView, classView, progIdView))
+            {
+                return;
+            }
 
-			// Load Features
-			if (!LoadFeatures(d, msiType, obj))
-			{
-				return;
-			}
+            // Load Features
+            if (!LoadFeatures(d, msiType, obj))
+            {
+                return;
+            }
 
-			View registryView;
+            View registryView;
 
-			// Load the Registry
-			if (!LoadRegistry(d, msiType, obj, out registryView))
-			{
-				return;
-			}
+            // Load the Registry
+            if (!LoadRegistry(d, msiType, obj, out registryView))
+            {
+                return;
+            }
 
-			// Load Media
-			if (!LoadMedia(d, msiType, obj, lastSequence))
-			{
-				return;
-			}
+            // Load TypeLibs
+            if (!LoadTypeLibs(d, msiType, obj, registryView))
+            {
+                return;
+            }
 
-			// Load TypeLibs
-			if (!LoadTypeLibs(d, msiType, obj, registryView))
-			{
-				return;
-			}
+            // Load Summary Information
+            if (!LoadSummaryInfo(d))
+            {
+                return;
+            }
 
-			// Load Summary Information
-			if (!LoadSummaryInfo(d))
-			{
-				return;
-			}
+            try
+            {
+                registryView.Close();
+                asmView.Close();
+                asmNameView.Close();
+                classView.Close();
+                progIdView.Close();
 
-			// Reorder Files
-			if (!ReorderFiles(d))
-			{
-				return;
-			}
+                registryView = null;
+                asmView = null;
+                asmNameView = null;
+                classView = null;
+                progIdView = null;
 
-			// Compress Files
-			if (!CreateCabFile(d, msiType, obj))
-			{
-				return;
-			}
+                // Commit the MSI Database
+                d.Commit();
 
-			Log.Write(LogPrefix + "Deleting Temporary Files...");
+                d = null;
 
-			string cabFile = Path.Combine(Project.BaseDirectory, 
-				Path.Combine(SourceDirectory, 
-				Path.GetFileNameWithoutExtension(Output) + @".cab"));
-			
-			File.Delete(cabFile);
+                GC.Collect();
+            }
+            catch (Exception e)
+            {
+                Log.WriteLine(LogPrefix + "Error: " + e.Message);
+                return;
+            }
 
-			Directory.Delete(
-				Path.Combine(Project.BaseDirectory, 
-				Path.Combine(SourceDirectory, @"Temp")), true);
+            string tempPath = Path.Combine(Project.BaseDirectory, 
+                Path.Combine(SourceDirectory, @"Temp"));
 
-			Log.WriteLine("Done.");
+            // Load Merge Modules
+            if (!LoadMergeModules(dest, tempPath))
+            {
+                return;
+            }
 
-			try
-			{
-				Log.Write(LogPrefix + "Saving MSI Database...");
+            try
+            {
+                d = (Database)msiType.InvokeMember(
+                    "OpenDatabase", 
+                    BindingFlags.InvokeMethod, 
+                    null, obj, 
+                    new Object[]
+                    {
+                        dest, 
+                        MsiOpenDatabaseMode.msiOpenDatabaseModeDirect
+                    });
+            }
+            catch (Exception e)
+            {
+                Log.WriteLine(LogPrefix + "Error: " + e.Message);
+                return;
+            }
 
-				// Commit the MSI Database
-				d.Commit();
-				d = null;
-			}
-			catch (Exception e)
-			{
-				Log.WriteLine(LogPrefix + "Error: " + e.Message);
-				return;
-			}
-			Log.WriteLine("Done.");
+            // Reorder Files
+            if (!ReorderFiles(d, ref lastSequence))
+            {
+                return;
+            }
+
+            // Load Media
+            if (!LoadMedia(d, msiType, obj, lastSequence))
+            {
+                return;
+            }
+
+            // Compress Files
+            if (!CreateCabFile(d, msiType, obj))
+            {
+                return;
+            }
+
+            Log.Write(LogPrefix + "Deleting Temporary Files...");
+
+            string cabFile = Path.Combine(Project.BaseDirectory, 
+                Path.Combine(SourceDirectory, 
+                Path.GetFileNameWithoutExtension(Output) + @".cab"));
+    		
+            File.Delete(cabFile);
+            Directory.Delete(tempPath, true);
+
+            Log.WriteLine("Done.");
+
+            try
+            {
+                Log.Write(LogPrefix + "Saving MSI Database...");
+
+                // Commit the MSI Database
+                d.Commit();
+            }
+            catch (Exception e)
+            {
+                Log.WriteLine(LogPrefix + "Error: " + e.Message);
+                return;
+            }
+            Log.WriteLine("Done.");
 		}
 
 		/// <summary>
@@ -663,6 +706,8 @@ namespace NAnt.Contrib.Tasks
 				{
 					Log.WriteLine(LogPrefix + "Setting Property: " + name);
 				}
+
+                propView.Close();
 			}
 			return true;
 		}
@@ -782,7 +827,7 @@ namespace NAnt.Contrib.Tasks
 
 				componentIndex++;
 
-				bool success = AddFiles(fileView, InstallerType, InstallerObject, 
+				bool success = AddFiles(compElem, fileView, InstallerType, InstallerObject, 
 					directory, name, ref componentIndex, 
 					ref LastSequence, MsiAssemblyView, MsiAssemblyNameView, 
 					compView, featCompView, ClassView, ProgIdView, selfRegView);
@@ -853,6 +898,11 @@ namespace NAnt.Contrib.Tasks
 				}
 			}
 
+            compView.Close();
+            fileView.Close();
+            featCompView.Close();
+            selfRegView.Close();
+
 			return true;
 		}
 
@@ -884,6 +934,7 @@ namespace NAnt.Contrib.Tasks
 				bool result = CacheDirectory(null, directoryElem);
 				if (!result)
 				{
+                    dirView.Close();
 					return result;
 				}
 			}
@@ -901,9 +952,13 @@ namespace NAnt.Contrib.Tasks
 
 				if (!result)
 				{
+                    dirView.Close();
 					return result;
 				}
 			}
+
+            dirView.Close();
+
 			return true;
 		}
 
@@ -1110,10 +1165,13 @@ namespace NAnt.Contrib.Tasks
 
 				if (!result)
 				{
+                    featView.Close();
 					return result;
 				}
 				order++;
 			}
+
+            featView.Close();
 			return true;
 		}
 
@@ -1237,6 +1295,7 @@ namespace NAnt.Contrib.Tasks
 		/// <summary>
 		/// Adds a file record to the Files table.
 		/// </summary>
+		/// <param name="ComponentElem">The Component's XML Element.</param>
 		/// <param name="FileView">The MSI database view.</param>
 		/// <param name="InstallerType">The MSI Installer type.</param>
 		/// <param name="InstallerObject">The MSI Installer object.</param>
@@ -1252,7 +1311,7 @@ namespace NAnt.Contrib.Tasks
 		/// <param name="ProgIdView">View containing the ProgId table.</param>
 		/// <param name="SelfRegView">View containing the SelfReg table.</param>
 		/// <returns>True if successful.</returns>
-		private bool AddFiles(View FileView, Type InstallerType, Object InstallerObject, 
+		private bool AddFiles(XmlElement ComponentElem, View FileView, Type InstallerType, Object InstallerObject, 
 			string ComponentDirectory, string ComponentName, ref int ComponentCount, 
 			ref int Sequence, View MsiAssemblyView, View MsiAssemblyNameView, 
 			View ComponentView, View FeatureComponentView, View ClassView, View ProgIdView, 
@@ -1283,7 +1342,13 @@ namespace NAnt.Contrib.Tasks
 
 				string fileName = Path.GetFileName(dirFiles[i]);
 				string filePath = Path.Combine(fullPath, fileName);
-				string fileId = "_" + Guid.NewGuid().ToString().ToUpper().Replace("-", null);
+				
+                XmlElement overrideElem = (XmlElement)ComponentElem.SelectSingleNode(
+                    "override[@file='" + fileName +"']");
+
+                string fileId = overrideElem == null ? 
+                    "_" + Guid.NewGuid().ToString().ToUpper().Replace("-", null) :
+                    overrideElem.GetAttribute("id");
 
 				files.Add(fileName, fileId);
 
@@ -1692,13 +1757,15 @@ namespace NAnt.Contrib.Tasks
 		/// </summary>
 		/// <param name="Database">The MSI database.</param>
 		/// <returns>True if successful</returns>
-		private bool ReorderFiles(Database Database)
+		private bool ReorderFiles(Database Database, ref int LastSequence)
 		{
 			string curPath = Path.Combine(Project.BaseDirectory, SourceDirectory);
 			string curTempPath = Path.Combine(curPath, "Temp");
 
-			string[] curDirFileNames = Directory.GetFiles(curTempPath);
-			int lastIndex = 1;
+			string[] curDirFileNames = Directory.GetFiles(curTempPath, "_*.*");
+            string[] curFileNames = Directory.GetFiles(curTempPath, "*.*");
+
+			LastSequence = 1;
 			foreach (string curDirFileName in curDirFileNames)
 			{
 				View curFileView = Database.OpenView(
@@ -1712,11 +1779,11 @@ namespace NAnt.Contrib.Tasks
 
 					if (recCurFile != null)
 					{
-						recCurFile.set_StringData(8, lastIndex.ToString());
+						recCurFile.set_StringData(8, LastSequence.ToString());
 						curFileView.Modify(MsiViewModify.msiViewModifyUpdate, recCurFile);
 						curFileView.Close();
 
-						lastIndex++;
+						LastSequence++;
 					}
 					else
 					{
@@ -1724,10 +1791,51 @@ namespace NAnt.Contrib.Tasks
 							Path.GetFileName(curDirFileName) + 
 							" not found during reordering.");
 
+                        curFileView.Close();
+
 						return false;
 					}
 				}
+
+                curFileView.Close();
 			}
+
+            foreach (string curDirFileName in curFileNames)
+            {
+                if (!Path.GetFileName(curDirFileName).StartsWith("_"))
+                {
+                    View curFileView = Database.OpenView(
+                        "SELECT * FROM `File` WHERE `File`='" + 
+                        Path.GetFileName(curDirFileName) + "'");
+
+                    if (curFileView != null)
+                    {
+                        curFileView.Execute(null);
+                        Record recCurFile = curFileView.Fetch();
+
+                        if (recCurFile != null)
+                        {
+                            recCurFile.set_StringData(8, LastSequence.ToString());
+                            curFileView.Modify(MsiViewModify.msiViewModifyUpdate, recCurFile);
+                            curFileView.Close();
+
+                            LastSequence++;
+                        }
+                        else
+                        {
+                            Log.WriteLine(LogPrefix + "File " + 
+                                Path.GetFileName(curDirFileName) + 
+                                " not found during reordering.");
+
+                            curFileView.Close();
+
+                            return false;
+                        }
+                    }
+                    curFileView.Close();
+                }
+            }
+
 			return true;
 		}
 
@@ -2040,8 +2148,8 @@ namespace NAnt.Contrib.Tasks
 											UCOMITypeInfo2 typeInfo2 = (UCOMITypeInfo2)typeInfo;
 											if (typeInfo2 != null)
 											{
-												try
-												{
+												//try
+												//{
 													object custData = new object();
 													Guid g = new Guid("0F21F359-AB84-41E8-9A78-36D110E6D2F9");
 													typeInfo2.GetCustData(ref g, out custData);
@@ -2109,8 +2217,8 @@ namespace NAnt.Contrib.Tasks
 														recRegTlbRec.set_StringData(5, null);
 														RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
 													}
-												}
-												catch (Exception) {}
+												//}
+												//catch (Exception) {}
 											}
 										}
 									}
@@ -2130,72 +2238,72 @@ namespace NAnt.Contrib.Tasks
 											UCOMITypeInfo2 typeInfo2 = (UCOMITypeInfo2)typeInfo;
 											if (typeInfo2 != null)
 											{
-												try
+												//try
+												//{
+												object custData = new object();
+												Guid g = new Guid("0F21F359-AB84-41E8-9A78-36D110E6D2F9");
+												typeInfo2.GetCustData(ref g, out custData);
+
+												if (custData != null)
 												{
-													object custData = new object();
-													Guid g = new Guid("0F21F359-AB84-41E8-9A78-36D110E6D2F9");
-													typeInfo2.GetCustData(ref g, out custData);
+													string className = (string)custData;
 
-													if (custData != null)
+													if (Verbose)
 													{
-														string className = (string)custData;
-
-														if (Verbose)
-														{
-															Log.WriteLine(LogPrefix + "Storing Interface " + className);
-														}
-
-														// Insert the Interface
-														Record recRegTlbRec = (Record)InstallerType.InvokeMember(
-															"CreateRecord", 
-															BindingFlags.InvokeMethod, 
-															null, InstallerObject, 
-															new object[] { 6 });
-
-														string typeLibComponent = (string)typeLibComponents[Path.GetFileName(tlbRecord.TypeLibFileName)];
-
-														recRegTlbRec.set_StringData(1, 
-															"_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
-														recRegTlbRec.set_IntegerData(2, 0);
-														recRegTlbRec.set_StringData(3,
-															@"Interface\" + iid);
-														recRegTlbRec.set_StringData(4, null);
-														recRegTlbRec.set_StringData(5, typeName);
-														recRegTlbRec.set_StringData(6, typeLibComponent);
-														RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
-
-														recRegTlbRec.set_StringData(1, 
-															"_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
-														recRegTlbRec.set_StringData(3,
-															@"Interface\" + iid + @"\TypeLib");
-														recRegTlbRec.set_StringData(4, "Version");
-														recRegTlbRec.set_StringData(5, "1.0");
-														RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
-
-														recRegTlbRec.set_StringData(1, 
-															"_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
-														recRegTlbRec.set_StringData(4, null);
-														recRegTlbRec.set_StringData(5, "{"+typeLibAttr.guid.ToString().ToUpper()+"}");
-														RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
-
-														recRegTlbRec.set_StringData(1, 
-															"_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
-														recRegTlbRec.set_StringData(3,
-															@"Interface\" + iid + @"\ProxyStubClsid32");
-														recRegTlbRec.set_StringData(4, null);
-														recRegTlbRec.set_StringData(5, "{00020424-0000-0000-C000-000000000046}");
-														RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
-
-														recRegTlbRec.set_StringData(1, 
-															"_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
-														recRegTlbRec.set_StringData(3,
-															@"Interface\" + iid + @"\ProxyStubClsid");
-														recRegTlbRec.set_StringData(4, null);
-														recRegTlbRec.set_StringData(5, "{00020424-0000-0000-C000-000000000046}");
-														RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+														Log.WriteLine(LogPrefix + "Storing Interface " + className);
 													}
+
+													// Insert the Interface
+													Record recRegTlbRec = (Record)InstallerType.InvokeMember(
+														"CreateRecord", 
+														BindingFlags.InvokeMethod, 
+														null, InstallerObject, 
+														new object[] { 6 });
+
+													string typeLibComponent = (string)typeLibComponents[Path.GetFileName(tlbRecord.TypeLibFileName)];
+
+													recRegTlbRec.set_StringData(1, 
+														"_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
+													recRegTlbRec.set_IntegerData(2, 0);
+													recRegTlbRec.set_StringData(3,
+														@"Interface\" + iid);
+													recRegTlbRec.set_StringData(4, null);
+													recRegTlbRec.set_StringData(5, typeName);
+													recRegTlbRec.set_StringData(6, typeLibComponent);
+													RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+
+													recRegTlbRec.set_StringData(1, 
+														"_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
+													recRegTlbRec.set_StringData(3,
+														@"Interface\" + iid + @"\TypeLib");
+													recRegTlbRec.set_StringData(4, "Version");
+													recRegTlbRec.set_StringData(5, "1.0");
+													RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+
+													recRegTlbRec.set_StringData(1, 
+														"_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
+													recRegTlbRec.set_StringData(4, null);
+													recRegTlbRec.set_StringData(5, "{"+typeLibAttr.guid.ToString().ToUpper()+"}");
+													RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+
+													recRegTlbRec.set_StringData(1, 
+														"_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
+													recRegTlbRec.set_StringData(3,
+														@"Interface\" + iid + @"\ProxyStubClsid32");
+													recRegTlbRec.set_StringData(4, null);
+													recRegTlbRec.set_StringData(5, "{00020424-0000-0000-C000-000000000046}");
+													RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+
+													recRegTlbRec.set_StringData(1, 
+														"_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
+													recRegTlbRec.set_StringData(3,
+														@"Interface\" + iid + @"\ProxyStubClsid");
+													recRegTlbRec.set_StringData(4, null);
+													recRegTlbRec.set_StringData(5, "{00020424-0000-0000-C000-000000000046}");
+													RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
 												}
-												catch (Exception) {}
+												//}
+												//catch (Exception) {}
 											}
 										}
 									}
@@ -2210,6 +2318,115 @@ namespace NAnt.Contrib.Tasks
 
 			return true;
 		}
+
+        /// <summary>
+        /// Merges Merge Modules into the MSI Database.
+        /// </summary>
+        /// <param name="Database">The MSI Database.</param>
+        /// <returns>True if successful.</returns>
+        private bool LoadMergeModules(string Database, string TempPath)
+        {
+            MsmMergeClass merge = new MsmMergeClass();
+
+            int index = 1;
+
+            foreach (XmlNode mergeModuleNode in _mergeModules)
+            {
+                XmlElement mergeElem = (XmlElement)mergeModuleNode;
+                XmlElement modulesElem = (XmlElement)mergeElem.SelectSingleNode("modules");
+
+                if (modulesElem != null)
+                {
+                    string featureName = mergeElem.GetAttribute("feature");
+
+                    if (featureName == null || featureName == "")
+                    {
+                        Log.WriteLine(LogPrefix + "Error: merge element must specify a feature attribute.");
+                        return false;
+                    }
+
+                    FileSet mergeSet = new FileSet();
+                    mergeSet.Project = Project;
+                    mergeSet.Initialize(modulesElem);
+
+                    foreach (string mergeModule in mergeSet.FileNames)
+                    {
+                        Log.WriteLine(LogPrefix + "Merging {0}", Path.GetFileName(mergeModule) + ".");
+                        
+                        merge.OpenModule(mergeModule, 1033);
+
+                        try
+                        {
+                            merge.OpenDatabase(Database);
+                        }
+                        catch (FileLoadException fle)
+                        {
+                            Log.WriteLine(fle.Message + " " + fle.FileName + " " + fle.StackTrace);
+                            return false;
+                        }
+
+                        merge.Merge(featureName, null);
+
+                        string moduleCab = Path.Combine(Path.GetDirectoryName(Database), 
+                            "mergemodule" + index + ".cab");
+
+                        index++;
+
+                        merge.ExtractCAB(moduleCab);
+
+                        if (File.Exists(moduleCab))
+                        {
+                            // Create the CabFile
+                            ProcessStartInfo processInfo = new ProcessStartInfo();
+			
+                            processInfo.Arguments = "-o X " + 
+                                moduleCab + " " + Path.Combine(SourceDirectory, @"Temp\");
+
+                            processInfo.CreateNoWindow = false;
+                            processInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                            processInfo.WorkingDirectory = Output;
+                            processInfo.FileName = "cabarc";
+
+                            Process process = new Process();
+                            process.StartInfo = processInfo;
+                            process.EnableRaisingEvents = true;
+                            process.Start();
+
+                            try
+                            {
+                                process.WaitForExit();
+                            }
+                            catch (Exception e)
+                            {
+                                Log.WriteLine();
+                                Log.WriteLine("Error extracting merge module cab file: " + moduleCab);
+                                Log.WriteLine("Error was: " + e.Message);
+
+                                File.Delete(moduleCab);
+                                return false;
+                            }
+
+                            if (process.ExitCode != 0)
+                            {
+                                Log.WriteLine();
+                                Log.WriteLine("Error extracting merge module cab file: " + moduleCab);
+                                Log.WriteLine("Application returned Error: " + process.ExitCode);
+
+                                File.Delete(moduleCab);
+                                return false;
+                            }
+
+                            File.Delete(moduleCab);
+                        }
+
+                        merge.CloseModule();
+                        merge.CloseDatabase(true);
+                    }
+                }
+            }
+
+            return true;
+        }
 
 		/// <summary>
 		/// Enumerates the registry to see if an assembly has been registered 
