@@ -4,7 +4,7 @@
 
     <property name="project.name" value="nantcontrib" />
     <property name="project.FormalName" value="NAnt.Contrib" />
-    <property name="project.version" value="0.84" overwrite="false" />
+    <property name="project.version" value="0.85" overwrite="false" />
 
     <!-- default configuration -->
     <property name="project.config" value="debug" /> <!-- debug|release -->
