@@ -47,12 +47,12 @@ namespace NAnt.Contrib.Tasks
 	///   <code>
 	///     <![CDATA[
 	/// <fxcop directOutputToConsole="true" projectFile="${build.dir}\Sample.fxcop">
-	///  <targetAssemblies>
+	///  <targets>
 	///		<include name="${build.dir}\bin\*.dll" />
-	///  </targetAssemblies>
-	///  <ruleLibraries>
+	///  </targets>
+	///  <rules>
 	///		<include name="${build.dir}\rules\*.dll" />
-	///  </ruleLibraries>
+	///  </rules>
 	/// </fxcop>
 	///     ]]>
 	///   </code>
@@ -148,7 +148,7 @@ namespace NAnt.Contrib.Tasks
 		/// <summary>
 		/// Specifies the target assembly to analyze.
 		/// </summary>
-		[BuildElement("targetAssemblies")]
+		[BuildElement("targets")]
 		public FileSet TargetAssemblies
 		{
 			get 
@@ -164,7 +164,7 @@ namespace NAnt.Contrib.Tasks
 		/// <summary>
 		/// Specifies the name of an analysis report or project file to import. Any messages in the imported file that are marked as excluded are not included in the analysis results.
 		/// </summary>
-		[BuildElement("importFiles")]
+		[BuildElement("imports")]
 		public FileSet ImportFiles
 		{
 			get
@@ -244,7 +244,7 @@ namespace NAnt.Contrib.Tasks
 		/// <summary>
 		/// Specifies the filename(s) of FxCop project file(s).
 		/// </summary>
-		[BuildElement("ruleLibraries")]
+		[BuildElement("rules")]
 		public FileSet RuleLibraries
 		{
 			get
