@@ -55,10 +55,10 @@ namespace Tests.NAnt.Contrib.Util {
             SqlStatementList list = new SqlStatementList(DELIMITER, DelimiterStyle.Normal);
             list.ParseSql(statements);
 
-            Assertion.AssertEquals(3, list.Count);
-            Assertion.AssertEquals(STATEMENT_1, list[0]);
-            Assertion.AssertEquals(STATEMENT_2, list[1]);
-            Assertion.AssertEquals(STATEMENT_3, list[2]);
+            Assert.AreEqual(3, list.Count);
+            Assert.AreEqual(STATEMENT_1, list[0]);
+            Assert.AreEqual(STATEMENT_2, list[1]);
+            Assert.AreEqual(STATEMENT_3, list[2]);
         }
 
         public void TestCommentStripping() {
@@ -69,9 +69,9 @@ namespace Tests.NAnt.Contrib.Util {
             SqlStatementList list = new SqlStatementList(DELIMITER, DelimiterStyle.Normal);
             list.ParseSql(statements);
 
-            Assertion.AssertEquals(2, list.Count);
-            Assertion.AssertEquals(STATEMENT_1, list[0]);
-            Assertion.AssertEquals(STATEMENT_1, list[1]);
+            Assert.AreEqual(2, list.Count);
+            Assert.AreEqual(STATEMENT_1, list[0]);
+            Assert.AreEqual(STATEMENT_1, list[1]);
         }
 
         public void TestIgnoreEmptyLines() {
@@ -80,8 +80,8 @@ namespace Tests.NAnt.Contrib.Util {
             SqlStatementList list = new SqlStatementList(DELIMITER, DelimiterStyle.Normal);
             list.ParseSql(statements);
 
-            Assertion.AssertEquals(1, list.Count);
-            Assertion.AssertEquals(STATEMENT_1, list[0]);
+            Assert.AreEqual(1, list.Count);
+            Assert.AreEqual(STATEMENT_1, list[0]);
         }
 
         public void TestGoLineBatch() {
@@ -100,11 +100,11 @@ namespace Tests.NAnt.Contrib.Util {
             SqlStatementList list = new SqlStatementList(goDelimiter, DelimiterStyle.Line);
             list.ParseSql(statements);
 
-            Assertion.AssertEquals(4, list.Count);
-            Assertion.AssertEquals("Statement 1", STATEMENT_1 + Environment.NewLine + STATEMENT_2 + Environment.NewLine, list[0]);
-            Assertion.AssertEquals("Statement 3.1", STATEMENT_3 + Environment.NewLine, list[1]);
-            Assertion.AssertEquals("Statement 3.2", STATEMENT_3 + Environment.NewLine, list[2]);
-            Assertion.AssertEquals("Comment", "-- " + STATEMENT_3 + Environment.NewLine, list[3]);
+            Assert.AreEqual(4, list.Count);
+            Assert.AreEqual(STATEMENT_1 + Environment.NewLine + STATEMENT_2 + Environment.NewLine, list[0], "Statement 1");
+            Assert.AreEqual(STATEMENT_3 + Environment.NewLine, list[1], "Statement 3.1");
+            Assert.AreEqual(STATEMENT_3 + Environment.NewLine, list[2], "Statement 3.2");
+            Assert.AreEqual("-- " + STATEMENT_3 + Environment.NewLine, list[3], "Comment");
         }
 
         public void TestDifferentGoDelimiters() {
@@ -124,11 +124,11 @@ namespace Tests.NAnt.Contrib.Util {
             SqlStatementList list = new SqlStatementList(goDelimiter1, DelimiterStyle.Line);
             list.ParseSql(statements);
 
-            Assertion.AssertEquals(4, list.Count);
-            Assertion.AssertEquals("Statement 1", STATEMENT_1 + Environment.NewLine + STATEMENT_2  + Environment.NewLine, list[0]);
-            Assertion.AssertEquals("Statement 3.1", STATEMENT_3 + Environment.NewLine, list[1]);
-            Assertion.AssertEquals("Statement 3.2", STATEMENT_3 + Environment.NewLine, list[2]);
-            Assertion.AssertEquals("Comment", "-- " + STATEMENT_3 + Environment.NewLine, list[3]);
+            Assert.AreEqual(4, list.Count);
+            Assert.AreEqual(STATEMENT_1 + Environment.NewLine + STATEMENT_2  + Environment.NewLine, list[0], "Statement 1");
+            Assert.AreEqual(STATEMENT_3 + Environment.NewLine, list[1], "Statement 3.1");
+            Assert.AreEqual(STATEMENT_3 + Environment.NewLine, list[2], "Statement 3.2");
+            Assert.AreEqual("-- " + STATEMENT_3 + Environment.NewLine, list[3], "Comment");
         }
 
         public void TestKeepLineFormatting() {
@@ -141,8 +141,8 @@ namespace Tests.NAnt.Contrib.Util {
             SqlStatementList list = new SqlStatementList(goDelimiter, DelimiterStyle.Line);
             list.ParseSql(statements);
 
-            Assertion.AssertEquals(1, list.Count);
-            Assertion.AssertEquals(statements, list[0]);
+            Assert.AreEqual(1, list.Count);
+            Assert.AreEqual(statements, list[0]);
         }
 
         public void TestPropertyReplacement() {
@@ -175,8 +175,8 @@ namespace Tests.NAnt.Contrib.Util {
 
                 list.ParseSql(inputStatements);
 
-                Assertion.AssertEquals(1, list.Count);
-                Assertion.AssertEquals(expectedStatements, list[0]);
+                Assert.AreEqual(1, list.Count);
+                Assert.AreEqual(expectedStatements, list[0]);
             } finally {
                 // make sure temp buildfile is deleted
                 if (buildFile != null) {
@@ -193,8 +193,8 @@ namespace Tests.NAnt.Contrib.Util {
             SqlStatementList list = new SqlStatementList(goDelimiter, DelimiterStyle.Line);
             list.ParseSql(statements);
 
-            Assertion.AssertEquals(1, list.Count);
-            Assertion.AssertEquals(statements, list[0]);
+            Assert.AreEqual(1, list.Count);
+            Assert.AreEqual(statements, list[0]);
         }
 
         private static string CreateFileWithContents(string contents) {
