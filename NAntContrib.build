@@ -479,6 +479,7 @@
         <zip zipfile="${project.zip-path.src}">
             <fileset basedir="${build.dir}" prefix="${project.zip.prefix}">
                 <include name="license.txt" />
+                <include name="readme.txt" />
                 <!-- build files -->
                 <include name="NAntContrib.build" />
                 <include name="NAntContribInstall.include" />
@@ -517,6 +518,7 @@
         <zip zipfile="${project.zip-path.bin}">
             <fileset basedir="${build.dir}" prefix="${project.zip.prefix}">
                 <include name="license.txt" />
+                <include name="readme.txt" />
                 <include name="bin/**/*" />
                 <!-- license & release notes -->
                 <include name="doc/*" />
