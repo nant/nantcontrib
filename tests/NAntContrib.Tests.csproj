@@ -72,11 +72,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Tasks\TlbImpTaskTest.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Util\SqlStatementListTests.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
