@@ -20,8 +20,8 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-[assembly: AssemblyTitle("NAnt.Contrib")]
-[assembly: AssemblyDescription("Additional NAnt Tasks")]
+[assembly: AssemblyTitle("NAnt.Contrib.Tests")]
+[assembly: AssemblyDescription("Unit Tests for NAnt.Contrib")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("")]
