@@ -25,6 +25,7 @@ using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
+using System.Text;
 
 using NAnt.Core;
 using NAnt.Core.Attributes;
@@ -81,24 +82,32 @@ namespace NAnt.Contrib.Tasks {
         // Typelib Imports
         //-----------------------------------------------------------------------------
         [DllImport("oleaut32.dll", EntryPoint="LoadTypeLib", CharSet=System.Runtime.InteropServices.CharSet.Auto, SetLastError=true)]
-        private static extern int LoadTypeLib(string filename, [MarshalAs(UnmanagedType.IUnknown)] ref object pTypeLib);
+        private static extern int LoadTypeLib(string filename, ref IntPtr pTypeLib);
 
         [DllImport("oleaut32.dll", EntryPoint="RegisterTypeLib", CharSet=System.Runtime.InteropServices.CharSet.Auto, SetLastError=true)]
-        private static extern int RegisterTypeLib([MarshalAs(UnmanagedType.IUnknown)] object pTypeLib, string fullpath, string helpdir);
-        
+        private static extern int RegisterTypeLib(IntPtr pTypeLib, string fullpath, string helpdir);
+
+        [DllImport("oleaut32.dll", EntryPoint="UnRegisterTypeLib", CharSet=System.Runtime.InteropServices.CharSet.Auto, SetLastError=true)]
+        private static extern int UnRegisterTypeLib (
+            ref Guid libID, 
+            short wVerMajor,
+            short wVerMinor, 
+            int lCID, 
+            SYSKIND tSysKind);
+
+
         //-----------------------------------------------------------------------------
         // Kernel 32 imports
         //-----------------------------------------------------------------------------
         [DllImport("kernel32.dll", SetLastError=true)]
         private static extern uint SetErrorMode(uint uMode);
  
-        [DllImport("Kernel32.dll", EntryPoint = "LoadLibrary", CharSet=System.Runtime.InteropServices.CharSet.Unicode, SetLastError=true)]
+        [DllImport("Kernel32.dll", EntryPoint="LoadLibrary", CharSet=System.Runtime.InteropServices.CharSet.Unicode, SetLastError=true)]
         private static extern IntPtr LoadLibrary(string fullpath);
         
         private const uint SEM_FAILCRITICALERRORS = 0x0001;
         private const uint SEM_NOGPFAULTERRORBOX = 0x0002;
         private const uint SEM_NOOPENFILEERRORBOX = 0x8000;
-        
         
         [DllImport("Kernel32.dll", SetLastError=true)]
         private static extern int FreeLibrary(IntPtr hModule);
@@ -106,6 +115,13 @@ namespace NAnt.Contrib.Tasks {
         [DllImport("Kernel32.dll", SetLastError=true)]
         private static extern IntPtr GetProcAddress(IntPtr handle, string lpprocname);
         
+        [DllImport("Kernel32.dll")]
+        public static extern int FormatMessage(int flags, IntPtr source, 
+            int messageId, int languageId, StringBuilder buffer, int size, 
+            IntPtr arguments);
+
+        private const int FORMAT_MESSAGE_FROM_SYSTEM = 0x00001000;
+
         private const int WIN32ERROR_ProcNotFound = 127;
         private const int WIN32ERROR_FileNotFound = 2;
 
@@ -237,9 +253,10 @@ namespace NAnt.Contrib.Tasks {
             try {
                 // Do the actual registration here
                 DynamicPInvoke.DynamicDllFuncInvoke(path, entryPoint);
-            } catch(Exception ex) {
+            } catch (TargetInvocationException ex) {
                 throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                    "Error while registering '{0}'", path), Location, ex);
+                    "Error while registering '{0}'", path), Location, 
+                    ex.InnerException);
             } finally {
                 if (handle.ToInt32() != 0) {
                     // need to call FreeLibrary a second time as the DynPInvoke added an extra ref
@@ -257,23 +274,49 @@ namespace NAnt.Contrib.Tasks {
         /// </summary>
         /// <param name="path"></param>
         private void RegisterTypelib(string path) {
-            object Typelib = new object();
+            IntPtr Typelib = new IntPtr(0);
             int error = 0;
 
             // Load typelib
-            LoadTypeLib(path, ref Typelib);
+            int result = LoadTypeLib(path, ref Typelib);
             error = Marshal.GetLastWin32Error();
 
-            if (error != 0 || Typelib == null) {
+            if (error != 0 || result != 0) {
+                int win32error = (error != 0) ? error : result;
                 throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                    "Error loading typelib '{0}'.", path), Location);
+                    "Error loading typelib '{0}' ({1}: {2}).", path, win32error,
+                    GetWin32ErrorMessage(win32error)), Location);
             }
 
             if (Unregister) {
-                // TODO need to get access to ITypeLib interface from c#
-                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                    "Error unregistering '{0}'. Unregistration of type libraries"
-                    + " is not supported at this time.", path), Location);
+                UCOMITypeLib typeLib = (UCOMITypeLib) Marshal.GetTypedObjectForIUnknown(
+                    Typelib, typeof(UCOMITypeLib));
+                // check for for win32 error
+                error = Marshal.GetLastWin32Error();
+                if (error != 0) {
+                    throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                        "Error retrieving information from typelib '{0}' ({1}: {2}).", 
+                        path, error, GetWin32ErrorMessage(error)), Location);
+                }
+
+                IntPtr libAttrPtr = new IntPtr(0);
+                typeLib.GetLibAttr(out libAttrPtr);
+                TYPELIBATTR typeLibAttr = (TYPELIBATTR) 
+                    Marshal.PtrToStructure(libAttrPtr, typeof(TYPELIBATTR));
+
+                // unregister type library
+                UnRegisterTypeLib(ref typeLibAttr.guid, typeLibAttr.wMajorVerNum, 
+                    typeLibAttr.wMinorVerNum, typeLibAttr.lcid, typeLibAttr.syskind);
+                // check for for win32 error
+                error = Marshal.GetLastWin32Error();
+                // release the TYPELIBATTR
+                typeLib.ReleaseTLibAttr(libAttrPtr);
+                if (error != 0) {
+                    // signal error
+                    throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                        "Typelib '{0}' could not be unregistered ({1}: {2}).", 
+                        path, error, GetWin32ErrorMessage(error)), Location);
+                }
             } else {
                 //Perform registration
                 RegisterTypeLib(Typelib, path, null);
@@ -281,7 +324,8 @@ namespace NAnt.Contrib.Tasks {
 
                 if (error != 0) {
                     throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                        "Error registering typelib '{0}'.", path), Location);
+                        "Error registering typelib '{0}' ({1}: {2}).", path, 
+                        error, GetWin32ErrorMessage(error)), Location);
                 }
             }
         } 
@@ -339,6 +383,23 @@ namespace NAnt.Contrib.Tasks {
         }
 
         #endregion Private Instance Methods
+
+        #region Private Static Methods
+
+        private static string GetWin32ErrorMessage(int error) {
+            StringBuilder sb = new StringBuilder(1024);
+
+            int retVal = FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, IntPtr.Zero, 
+                error, 0, sb, sb.Capacity, IntPtr.Zero);
+            if (retVal != 0) {
+                string message = sb.ToString();
+                return message.TrimEnd('\0', '\n', '\r');
+            } else {
+                return string.Empty;
+            }
+        }
+
+        #endregion Private Static Methods
 
         /// <summary>
         /// Helper class to synamically build an assembly with the correct 
