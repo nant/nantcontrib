@@ -28,17 +28,7 @@ namespace NAnt.Contrib.Tasks.Perforce {
     /// <summary>Base class for Perforce (P4) NAnt tasks. See individual task for example usage.
     /// </summary>
     /// <seealso cref="P4Sync">P4Sync
-    /// </seealso>
-    /// <seealso cref="P4Sync">P4Have
-    /// </seealso>
-    /// <seealso cref="P4Sync">P4Change
-    /// </seealso>
-    /// <seealso cref="P4Sync">P4Edit
-    /// </seealso>
-    /// <seealso cref="P4Submit">P4Submit
-    /// </seealso>
-    /// <seealso cref="P4Sync">P4Label
-    /// </seealso>   
+    /// </seealso>    
     public abstract class P4Base: ExternalProgramBase {
         
         #region Private Instance Fields
