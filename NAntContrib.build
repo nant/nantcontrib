@@ -327,8 +327,10 @@
         <copy todir="${build.dir}/doc/help">
             <fileset basedir="doc/help">
                 <include name="**/*" />
+                <exclude name="**/*.html" />
             </fileset>
         </copy>
+        
         <echo message="Preview task references: file://${build.dir}/doc/help/tasks/index.html"/>
     </target>
     <target name="package" depends="test doc" description="Creates a package zip file.">
@@ -368,7 +370,32 @@
         <copy todir="${build.dir}/doc">
             <fileset basedir="doc">
                 <include name="*" />
+                <exclude name="*.html" />
             </fileset>
+        </copy>
+
+        <!-- filter-copy static html pages -->
+        <copy todir="${build.dir}" overwrite="true">
+            <fileset>
+                <include name="doc/**/*.html" />
+            </fileset>
+            <filterchain encoding="utf-8">
+                <replacetokens>
+                    <token key="PRODUCT_VERSION" value="${project.version}" />
+                </replacetokens>
+                <!-- when NOT building a release package, add prelimary notice -->
+                <replacestring
+                    from="&lt;!-- @PRELIMINARY_NOTICE@ -->"
+                    to="&lt;p class=&quot;topicstatus&quot;>[This is preliminary documentation and subject to change.]&lt;/p>"
+                    unless="${project.release.type='release'}" 
+                />
+                <!-- when building a release package, remove the placeholder -->
+                <replacestring
+                    from="&lt;!-- @PRELIMINARY_NOTICE@ -->"
+                    to=""
+                    if="${project.release.type='release'}"
+                />
+            </filterchain>
         </copy>
 
         <!-- create zip file -->
