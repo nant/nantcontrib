@@ -129,7 +129,7 @@ namespace NAnt.Contrib.Tasks
         {
             get
             {
-                return "xsd.exe";
+                return "aximp.exe";
             }
         }
 
