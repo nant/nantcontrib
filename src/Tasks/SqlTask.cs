@@ -112,8 +112,11 @@ namespace NAnt.Contrib.Tasks {
         public string _embeddedSqlStatements;
         private bool _batch = true;
         private int _commandTimeout;
-        TextWriter _outputWriter;
+        private TextWriter _outputWriter;
         private bool _expandProps = true;
+        private bool _append;
+        private bool _showHeaders = true;
+        private string _quoteChar = string.Empty;
 
         #endregion Private Instance Fields
 
@@ -230,6 +233,38 @@ namespace NAnt.Contrib.Tasks {
             set { _useTransaction = value; }
         }
 
+        /// <summary>
+        /// Whether output should be appended to or overwrite
+        /// an existing file. The default is <see langword="false" />.
+        /// </summary>
+        [TaskAttribute("append")]
+        [BooleanValidator()]
+        public bool Append {
+            get { return _append; }
+            set { _append = value; }
+        }
+
+        /// <summary>
+        /// If set to <see langword="true" />, prints headers for result sets.
+        /// The default is <see langword="true" />.
+        /// </summary>
+        [TaskAttribute("showheaders")]
+        [BooleanValidator()]
+        public bool ShowHeaders {
+            get { return _showHeaders; }
+            set { _showHeaders = value; }
+        }
+
+        /// <summary>
+        /// The character(s) to surround result columns with when printing, the 
+        /// default is an empty string.
+        /// </summary>
+        [TaskAttribute("quotechar")]
+        public string QuoteChar {
+            get { return _quoteChar; }
+            set { _quoteChar = value; }
+        }
+
         #endregion Public Instance Properties
 
         #region Protected Instance Properties
@@ -268,7 +303,11 @@ namespace NAnt.Contrib.Tasks {
         protected override void ExecuteTask() {
             if (Output != null) {
                 try  {
-                    _outputWriter = new StreamWriter(File.OpenWrite(Output));
+                    if(Append) {
+                        _outputWriter = File.AppendText(Output);
+                    } else {
+                        _outputWriter = File.CreateText(Output);
+                    }
                 }  catch (IOException ex) {
                     throw new BuildException(string.Format(CultureInfo.InvariantCulture,
                         "Cannot open output file '{0}'.", Output), Location, ex);
@@ -391,31 +430,42 @@ namespace NAnt.Contrib.Tasks {
         private void ProcessResults(IDataReader results, TextWriter writer) {
             try {
                 do {
-                    // output header
-                    DataTable schema = results.GetSchemaTable();
-                    if (schema != null) {
-                        writer.WriteLine();
+                    if (ShowHeaders) {
+                        // output header
+                        DataTable schema = results.GetSchemaTable();
+                        if (schema != null) {
+                            writer.WriteLine();
 
-                        int totalHeaderSize = 0;
-                        foreach (DataRow row in schema.Rows) {
-                            string columnName = row["ColumnName"].ToString();
-                            writer.Write(columnName + new string(' ', 2));
-                            totalHeaderSize += columnName.Length + 2;
-                        }
+                            int totalHeaderSize = 0;
+                            foreach (DataRow row in schema.Rows) {
+                                string columnName = row["ColumnName"].ToString();
+                                writer.Write(columnName + new string(' ', 2));
+                                totalHeaderSize += columnName.Length + 2;
+                            }
 
-                        writer.WriteLine();
+                            writer.WriteLine();
 
-                        if (totalHeaderSize > 2) {
-                            writer.WriteLine(new String('-', totalHeaderSize - 2));
+                            if (totalHeaderSize > 2) {
+                                writer.WriteLine(new String('-', totalHeaderSize - 2));
+                            }
                         }
                     }
                 
                     // output results
                     while (results.Read()) {
-                        for (int i = 0; i < results.FieldCount; i++ ) {
-                            writer.Write(results[i].ToString() + new string(' ', 2));
+                        bool first = true;
+                        StringBuilder line = new StringBuilder(100);
+                        for (int i = 0; i < results.FieldCount; i++) {
+                            if (first) {
+                                first = false;
+                            } else {
+                                line.Append(", ");
+                            }
+                            line.Append(QuoteChar);
+                            line.Append(results[i].ToString());
+                            line.Append(QuoteChar);
                         }
-                        writer.WriteLine();
+                        writer.WriteLine(line.ToString());
                     }
                     writer.WriteLine();
                 } while (results.NextResult());
