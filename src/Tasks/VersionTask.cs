@@ -18,7 +18,7 @@
 // John Lam (jlam@iunknown.com)
 
 using System;
-using System.Diagnostics;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -27,65 +27,115 @@ using NAnt.Core;
 using NAnt.Core.Attributes;
 using NAnt.Core.Util;
 
-namespace NAnt.Contrib.Tasks {
+namespace NAnt.Contrib.Tasks 
+{
     /// <summary>
-    /// Increments a version number counter from a text file. The resulting 
-    /// version string is written back to the file and entered in a NAnt property 
-    /// defined by <c>prefix</c> + &quot;version&quot;.
+    /// Increments a four-part version number stored in a text file. The resulting 
+    /// version number is written back to the file and exposed using NAnt properties.
     /// </summary>
     /// <remarks>
-    ///   <para><c>buildtype</c> determines how the build number is generated:
-    ///   <list type="bullet">
-    ///    <item><term>monthday</term><description>use the # months since start of project * 100 + current day in month as build number</description></item>
-    ///    <item><term>increment</term><description>increment a build number stored in the build.number file in current directory</description></item>
-    ///    <item><term>noincrement</term><description>do not increment the build number - we use this if we need to update an existing build</description></item>
-    ///   </list></para>
-    ///   <para><c>revisiontype</c> determines how the revision number is generated:
-    ///   <list type="bullet">
-    ///    <item><term>automatic</term><description>use the # seconds since the start of today / 10</description></item>
-    ///    <item><term>increment</term><description>use the file version's revision number spec'd by the revisionbin attribute</description></item>
-    ///   </list></para>
+    ///   <para>
+    ///   The version number format in the text file is 
+    ///   Major.Minor.Build.Revision, e.g. 1.0.5.25.
+    ///   </para>
+    ///   <list type="table">
+    ///     <item>
+    ///       <term>Major</term>
+    ///       <description>Set in file.</description>
+    ///     </item>
+    ///     <item>
+    ///       <term>Minor</term>
+    ///       <description>Set in file.</description>
+    ///     </item>
+    ///     <item>
+    ///       <term>Build</term>
+    ///       <description>Can be incremented by setting the <see cref="BuildType" /> parameter.</description>
+    ///     </item>
+    ///     <item>
+    ///       <term>Revision</term>
+    ///       <description>Can be incremented by setting the <see cref="RevisionType" /> parameter.</description>
+    ///     </item>
+    ///   </list>
+    ///   <para>The following NAnt properties are created:</para>
+    ///   <list type="table"> 
+    ///     <item>
+    ///       <term><c>prefix</c>.version</term>
+    ///       <description>The complete version number, i.e. Major.Minor.Build.Revision</description>
+    ///     </item>
+    ///     <item>
+    ///       <term><c>prefix</c>.major</term>
+    ///       <description>The major component of the version number.</description>
+    ///     </item>
+    ///     <item>
+    ///       <term><c>prefix</c>.minor</term>
+    ///       <description>The minor component of the version number.</description>
+    ///     </item>
+    ///     <item>
+    ///       <term><c>prefix</c>.build</term>
+    ///       <description>The build component of the version number.</description>
+    ///     </item>
+    ///     <item>
+    ///       <term><c>prefix</c>.revision</term>
+    ///       <description>The revision component of the version number.</description>
+    ///     </item>
+    ///   </list>
     /// </remarks>
     [TaskName("version")]
     public class VersionTask : Task {
-        private struct VersionNumber {
-            public int Major;
-            public int Minor;
-            public int Build;
-            public int Revision;
+        /// <summary>
+        /// Defines possible algorithms to generate the build number.
+        /// </summary>
+        public enum BuildNumberAlgorithm {
+            /// <summary>
+            /// Use the number of months since start of project * 100 + current 
+            /// day in month as build number.
+            /// </summary>
+            MonthDay,
 
-            public VersionNumber(int major, int minor, int build, int revision) {
-                Major = major;
-                Minor = minor;
-                Build = build;
-                Revision = revision;
-            }
+            /// <summary>
+            /// Increment an existing build number.
+            /// </summary>
+            Increment,
+
+            /// <summary>
+            /// Use an existing build number (and do not increment it).
+            /// </summary>
+            NoIncrement
+        }
+
+        /// <summary>
+        /// Defines possible algorithms to generate the revision number.
+        /// </summary>
+        public enum RevisionNumberAlgorithm {
+            /// <summary>
+            /// Use the number of seconds since the start of today / 10.
+            /// </summary>
+            Automatic,
+
+            /// <summary>
+            /// Increment an existing revision number.
+            /// </summary>
+            Increment
         }
 
         #region Private Instance Fields
 
-        private string _revisionType = "automatic";
-        private string _prefix = "sys.";
-        private string _path = "build.number";
-        private string _buildType = "monthday";
+        private string _prefix = "buildnumber";
+        private BuildNumberAlgorithm _buildType = BuildNumberAlgorithm.MonthDay;
+        private RevisionNumberAlgorithm _revisionType = RevisionNumberAlgorithm.Automatic;
+        private FileInfo _path;
         private DateTime _startDate;
 
         #endregion Private Instance Fields
 
-        #region Private Static Fields
-
-        private const string _mask = @"([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)";
-        private const int _maskMatchCount = 5;
-
-        #endregion Private Static Fields
-
         #region Public Instance Properties
 
         /// <summary>
-        /// The string to prefix the property name with. The default is 
-        /// <c>'sys.'</c>.
+        /// The string to prefix the properties with. The default is 
+        /// <c>'buildnumber.'</c>.
         /// </summary>
         [TaskAttribute("prefix")]
+        [StringValidator(AllowEmpty=false)]
         public string Prefix {
             get { return _prefix; }
             set { _prefix = StringUtils.ConvertEmptyToNull(value); }
@@ -93,20 +143,13 @@ namespace NAnt.Contrib.Tasks {
 
         /// <summary>
         /// Start of project. Date from which to calculate build number. 
-        /// Required if &quot;monthday&quot; is used as <c>buildtype</c>.
+        /// Required if <see cref="BuildNumberAlgorithm.MonthDay" /> is used as 
+        /// <see cref="BuildType" />.
         /// </summary>
-        [TaskAttribute("startDate")]
-        public string StartDate {
-            get { return _startDate.ToString("G", DateTimeFormatInfo.InvariantInfo); }
-            set {
-                try {
-                    _startDate = Convert.ToDateTime(value);
-                } catch (FormatException ex) {
-                    throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, 
-                        "Invalid string representation {0} of a DateTime value.", value), 
-                        "StartDate", ex);
-                }
-            } 
+        [TaskAttribute("startdate")]
+        public DateTime StartDate {
+            get { return _startDate; }
+            set { _startDate = value; }
         }
 
         /// <summary>
@@ -114,116 +157,104 @@ namespace NAnt.Contrib.Tasks {
         /// file is <c>'build.number'</c> in the project base directory.
         /// </summary>
         [TaskAttribute("path")]
-        [StringValidator(AllowEmpty=false)]
-        public string Path {
-            get { return Project.GetFullPath(_path); }
-            set { _path = StringUtils.ConvertEmptyToNull(value); }
+        public FileInfo Path {
+            get { 
+                if (_path == null) {
+                    _path = new FileInfo(Project.GetFullPath("build.number"));
+                }
+                return _path;
+            }
+            set { _path = value; }
         }
 
         /// <summary>
-        /// Algorithm for generating build number. Valid values are &quot;monthday&quot;,
-        /// &quot;increment&quot; and &quot;noincrement&quot;. The default is &quot;monthday&quot;.
+        /// The algorithm for generating build number. The default is
+        /// <see cref="BuildNumberAlgorithm.MonthDay" />.
         /// </summary>
         [TaskAttribute("buildtype")]
-        public string BuildType {
+        public BuildNumberAlgorithm BuildType {
             get { return _buildType; }
-            set {
-                if (value == "monthday" || value == "increment" || value == "noincrement") {
-                    _buildType = value;
-                } else {
-                    throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                        "Invalid VersionType specified: {0} must be 'monthday', 'increment', or 'noincrement'", value),
-                        Location);
-                }
-            }
+            set { _buildType = value; }
         }
 
         /// <summary>
-        /// Algorithm for generating revision number. Valid values are &quot;automatic&quot; and
-        /// &quot;increment&quot;.
+        /// The algorithm for generating revision number. The default is
+        /// <see cref="RevisionNumberAlgorithm.Automatic" />.
         /// </summary>
         [TaskAttribute("revisiontype")]
-        public string RevisionType {
+        public RevisionNumberAlgorithm RevisionType {
             get { return _revisionType; }
-            set {
-                if (value == "automatic" || value == "increment") {
-                    _revisionType = value;
-                } else {
-                    throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                        "Invalid RevisionType specified: {0} must be 'automatic' or 'increment'", value),
-                        Location);
-                }
-            }
+            set { _revisionType = value; }
         }
 
         #endregion Public Instance Properties
 
         #region Override implementation of Task
 
-        protected override void ExecuteTask() {
-            // calculate new version number
-            string buildNumber = CalculateVersionNumber();
+        protected override void ExecuteTask()  {
+            Version version = CalculateVersion();
 
-            // expose version number as build property
-            Project.Properties[Prefix + "version"] = buildNumber;
+            Project.Properties[Prefix + ".version"] = version.ToString();
+            Project.Properties[Prefix + ".major"] = version.Major.ToString();
+            Project.Properties[Prefix + ".minor"] = version.Minor.ToString();
+            Project.Properties[Prefix + ".build"] = version.Build.ToString();
+            Project.Properties[Prefix + ".revision"] = version.Revision.ToString();
 
-            // output new version number in build log
-            Log(Level.Info, "Build number '{0}'.", buildNumber);
+            // write version back to file
+            WriteVersionToFile(version);
+
+            Log(Level.Info, "Build number '{0}'.", version.ToString());
         }
 
         #endregion Override implementation of Task
 
         #region Private Instance Methods
 
-        private string ReadVersionString() {
+        /// <summary>
+        /// Reads a version string from <see cref="Path" /> and returns it as a
+        /// <see cref="Version" /> instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Version" /> instance representing the version string in
+        /// <see cref="Path" />.
+        /// </returns>
+        private Version ReadVersionFromFile() {
+            string version = null;
+
+            // read the version string
             try {
-                using (StreamReader reader = new StreamReader(Path)) {
-                    return reader.ReadToEnd();
+                using (StreamReader reader = new StreamReader(Path.FullName)) {
+                    version = reader.ReadToEnd();
                 }
             } catch (Exception ex) {
                 throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                    "Unable to read version number from {0}.", Path), Location, 
-                    ex);
+                    "Unable to read version number from \"{0}\".", Path.FullName), 
+                    Location, ex);
+            }
+
+            // instantiate a Version instance from the version string
+            try {
+                return new Version(version);
+            } catch (Exception ex) {
+                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                    "Invalid version string \"{0}\" in file \"{1}\".", version,
+                    Path), Location, ex);
             }
         }
 
-        private void WriteVersionString(string buildString) {
+        /// <summary>
+        /// Writes the specified version to <see cref="Path" />.
+        /// </summary>
+        /// <param name="version">The version to write to <see cref="Path" />.</param>
+        private void WriteVersionToFile(Version version) {
             try {
-                using (StreamWriter writer = new StreamWriter(Path)) {
-                    writer.Write(buildString);
+                using (StreamWriter writer = new StreamWriter(Path.FullName)) {
+                    writer.Write(version.ToString());
                 }
             } catch (Exception ex) {
                 throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                    "Unable to write version number to {0}.", Path), Location, 
-                    ex);
-            }
-        }
-
-        private VersionNumber ParseVersionString(string versionString) {
-            Regex regex = new Regex(_mask);
-
-            if (regex != null) {
-                Match matches = regex.Match(versionString);
-                if (matches == null) {
-                    throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                        "Invalid build number string {0}.", versionString),
-                        Location);
-                }
-
-                if (_maskMatchCount != matches.Groups.Count) {
-                    throw new BuildException(string.Format(CultureInfo.InvariantCulture, 
-                        "Invalid build number string {0}.", versionString),
-                        Location);
-                }
-
-                return new VersionNumber(Convert.ToInt32(matches.Groups[1].Value),
-                    Convert.ToInt32(matches.Groups[2].Value),
-                    Convert.ToInt32(matches.Groups[3].Value),
-                    Convert.ToInt32(matches.Groups[4].Value));
-            } else {
-                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                    "Failed to create a regex object using mask {0}.", _mask),
-                    Location);
+                    "Unable to write version number to \"{0}\".", Path.FullName), 
+                    Location, ex);
             }
         }
 
@@ -236,28 +267,27 @@ namespace NAnt.Contrib.Tasks {
         /// </returns>
         private int CalculateMonthDayBuildNumber() {
             // we need to have a start date defined!
-            if (_startDate == DateTime.MinValue) {
-                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                    "Start date must be defined if using the month+day algorithm."),
-                    Location);
+            if (StartDate == DateTime.MinValue) {
+                throw new BuildException("\"startdate\" must be set when the"
+                    + "\"MonthDay\" algorithm is used.", Location);
             }
 
             DateTime today = DateTime.Now;
-            if (_startDate > today) {
+            if (StartDate > today) {
                 throw new BuildException("Start date cannot be in the future.",
                     Location);
             }
 
             // Calculate difference in years
-            int years = today.Year - _startDate.Year;
+            int years = today.Year - StartDate.Year;
 
             // Calculate difference in months
             int months;
-            if (today.Month < _startDate.Month) {
+            if (today.Month < StartDate.Month) {
                 --years;  // borrow from years
-                months = (today.Month + 12) - _startDate.Month;
+                months = (today.Month + 12) - StartDate.Month;
             } else {
-                months = today.Month - _startDate.Month;
+                months = today.Month - StartDate.Month;
             }
 
             months += years * 12;
@@ -268,63 +298,87 @@ namespace NAnt.Contrib.Tasks {
             return months * 100 + days;
         }
 
+        /// <summary>
+        /// Calculates the number of seconds since midnight. 
+        /// start date.
+        /// </summary>
+        /// <returns>
+        /// The number of seconds since midnight.
+        /// </returns>
         private int CalculateSecondsSinceMidnight() {
             DateTime today = DateTime.Now;
             return (today.Hour * 3600 + today.Minute * 60 + today.Second) / 10;
         }
 
+        /// <summary>
+        /// Calculates the build number of the version number based on 
+        /// <see cref="BuildType" />.
+        /// </summary>
+        /// <returns>
+        /// The build number.
+        /// </returns>
         private int CalculateBuildNumber(int currentBuildNumber) {
             switch (BuildType) {
-                case "monthday":
+                case BuildNumberAlgorithm.MonthDay:
                     return CalculateMonthDayBuildNumber();
-                case "increment":
+                case BuildNumberAlgorithm.Increment:
                     return currentBuildNumber + 1;
-                case "noincrement":
+                case BuildNumberAlgorithm.NoIncrement:
                     return currentBuildNumber;
                 default:
-                    throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                        "Invalid build type {0}.", BuildType), Location);
+                    throw new InvalidEnumArgumentException("BuildType",
+                        (int) BuildType, typeof(BuildNumberAlgorithm));
             }
         }
 
-        private string CalculateVersionNumber() {
-            // read the current version string from file
-            string versionString = ReadVersionString();
+        /// <summary>
+        /// Calculates the complete version.
+        /// </summary>
+        /// <returns>
+        /// The version.
+        /// </returns>
+        private Version CalculateVersion() {
+            Version version = ReadVersionFromFile();
 
-            // parse the version string 
-            VersionNumber versionNumber = ParseVersionString(versionString);
+            int newBuildNumber = CalculateBuildNumber(version.Build);
+            int newRevisionNumber = CalculateRevisionNumber(version, newBuildNumber);
 
-            // calculate the new build number
-            int newBuildNumber = CalculateBuildNumber(versionNumber.Build);
+            return new Version(version.Major, version.Minor, newBuildNumber, 
+                newRevisionNumber);
+        }
+
+        /// <summary>
+        /// Calculates the revision number of the version number based on RevisionType specified
+        /// </summary>
+        /// <returns>
+        /// The revision number.
+        /// </returns>
+        private int CalculateRevisionNumber(Version version, int newBuildNumber) {
+            int newRevsionNumber;
 
             // modify revision number according to revision type setting
-            if (RevisionType == "automatic") {
-                versionNumber.Revision = CalculateSecondsSinceMidnight();
-            } else {
-                if (newBuildNumber != versionNumber.Build) {
-                    // reset revision number to zero if the build number has 
-                    // changed
-                    versionNumber.Revision = 0;
-                } else {
-                    // increment the revision number if this is a revision of
-                    // the same build
-                    versionNumber.Revision += 1;
-                }
+            switch (RevisionType) {
+                case RevisionNumberAlgorithm.Automatic:
+                    newRevsionNumber = CalculateSecondsSinceMidnight();
+                    break;
+                case RevisionNumberAlgorithm.Increment:
+                    if (newBuildNumber != version.Build) {
+                        // reset revision number to zero if the build number
+                        // has changed
+                        newRevsionNumber = 0;
+                    } else {
+                        // increment the revision number if this is a revision
+                        // of the same build
+                        newRevsionNumber = version.Revision + 1;
+                    }
+                    break;
+                default:
+                    throw new InvalidEnumArgumentException("RevisionType",
+                        (int) RevisionType, typeof(RevisionNumberAlgorithm));
+
             }
 
-            // set build number
-            versionNumber.Build = newBuildNumber;
-
-            // generate new version string
-            string newVersionString = string.Format(CultureInfo.InvariantCulture, 
-                "{0}.{1}.{2}.{3}", versionNumber.Major, versionNumber.Minor, 
-                versionNumber.Build, versionNumber.Revision);
-
-            // write new version string back to file
-            WriteVersionString(newVersionString);
-
-            // return the new version string
-            return newVersionString;
+            return newRevsionNumber;
         }
 
         #endregion Private Instance Methods
