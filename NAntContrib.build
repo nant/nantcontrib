@@ -154,7 +154,7 @@
                 <include name="${src.dir}/Tasks/Msi/MsiTask.xsd" />
             </sourcefiles>
             <targetfiles basedir="${build.dir}/schema/Msi">
-                <include name="*.resources" />
+                <include name="MsiTask.cs" />
             </targetfiles>
         </uptodate>
         <if test="${not schema.uptodate}">
