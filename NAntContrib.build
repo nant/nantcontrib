@@ -6,9 +6,10 @@
 
     <property name="src.dir" value="src"/>
     <property name="build.dir" value="build"/>
-    <property name="dist.dir" value="bin"/>
+    <property name="dist.dir" value="dist"/>
     
-    <property name="nant-bin.dir" value="${nant.home}\bin"/>
+    <property name="nant-bin.dir" value="${nant.location}"/>
+    <echo message="Using nant files from ${nant-bin.dir}"/>
 
     <property name="backup.name" value="..\${project.name}-backup-${tstamp.date}-${tstamp.time}.zip" />
     <property name="project.version" value="x.x"/>
@@ -39,7 +40,7 @@
     <target name="prepare">
       <mkdir dir="${build.dir}"/>
       <mkdir dir="${dist.dir}"/>
-      <copy file="${nant-bin.dir}/NUnitCore.dll" todir="${build.dir}"/>
+      <!-- <copy file="${nant-bin.dir}/NUnitCore.dll" todir="${build.dir}"/> -->
     </target>
 
 
@@ -55,8 +56,9 @@
                 <includes name="**/*.cs"/>
             </sources>
             <references>
-                <includes name="${nant-bin.dir}/NAnt.Core.dll"/>
-                <includes name="${nant-bin.dir}/NUnitCore.dll"/>
+                <includes name="${nant-bin.dir}\NAnt.Core.dll"/>
+                <includes name="${nant-bin.dir}\NUnitCore.dll"/>
+                <includes name="bin\CollectionGen.dll"/>
             </references>
             <resources>
                 <includes name="${src.dir}/xsl/*.*"/>
@@ -103,4 +105,5 @@
             </fileset>
         </zip>
     </target>
+    
 </project>
