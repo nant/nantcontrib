@@ -1,14 +1,7 @@
 <?xml version="1.0"?>
 <project name="nant" default="nightly-self">
-    <script language="C#">
-        <code>
-            <![CDATA[
-                public static void ScriptMain(Project project) {
-                    project.Properties.AddReadOnly("project.version", DateTime.Now.ToString("yyyyMMdd"));
-                }
-            ]]>
-        </code>
-    </script>
+    <!-- set project.version to current date/time in yyyyMMdd format -->
+    <tstamp property="project.version" pattern="yyyyMMdd" />
     <property name="sf.net.ssh.server" value="shell1.sf.net" />
     <property name="sf.net.web.path" value="/home/groups/n/na/nantcontrib/htdocs" />
     <!-- retrieve system information and environment variables -->
