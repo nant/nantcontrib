@@ -20,12 +20,14 @@
 // Jayme C. Edwards (jedwards@wi.rr.com)
 
 using System;
+using System.Globalization;
 using System.IO;
 using System.Xml;
 using System.Text;
 using System.Collections.Specialized;
 
 using NAnt.Core;
+using NAnt.Core.Util;
 using NAnt.Core.Tasks;
 using NAnt.Core.Types;
 using NAnt.DotNet.Tasks;
@@ -43,29 +45,36 @@ namespace NAnt.Contrib.Tasks {
     [TaskName("wsdl")]
     [ProgramLocation(LocationType.FrameworkSdkDir)]
     public class WsdlTask : ExternalProgramBase {
-        private string _args;
-        string _path = null;
-        bool _nologo = false;
-        string _language = null;
-        bool _forserver = false;
-        string _namespace = null;
-        string _outfile = null;
-        string _protocol = null;
-        string _username = null;
-        string _password = null;
-        string _domain = null;
-        string _proxy = null;
-        string _proxyusername = null;
-        string _proxypassword = null;
-        string _proxydomain = null;
-        string _urlkey = null;
-        string _baseurl = null;
+        
+        #region Private Instance Fields
+        
+        private StringBuilder _argumentBuilder = null;
+        private string _path = null;
+        private bool _nologo = false;
+        private string _language = null;
+        private bool _forserver = false;
+        private string _namespace = null;
+        private string _outfile = null;
+        private string _protocol = null;
+        private string _username = null;
+        private string _password = null;
+        private string _domain = null;
+        private string _proxy = null;
+        private string _proxyusername = null;
+        private string _proxypassword = null;
+        private string _proxydomain = null;
+        private string _urlkey = null;
+        private string _baseurl = null;
+        
+        #endregion Private Instance Fields
+        
+        #region Public Instance Properties
 
         /// <summary>URL or Path to a WSDL, XSD, or .discomap document.</summary>
         [TaskAttribute("path")]
         public string Path {
             get { return _path; }
-            set { _path = value; }
+            set { _path = StringUtils.ConvertEmptyToNull(value); }
         }
 
         /// <summary>Suppresses the banner.</summary>
@@ -82,7 +91,7 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("language")]
         public string Language {
             get { return _language; }
-            set { _language = value; }
+            set { _language = StringUtils.ConvertEmptyToNull(value); }
         }
 
         /// <summary>Compiles server-side ASP.NET abstract classes
@@ -99,14 +108,14 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("namespace")]
         public string Namespace {
             get { return _namespace; }
-            set { _namespace = value; }
+            set { _namespace = StringUtils.ConvertEmptyToNull(value); }
         }
 
         /// <summary>Output filename of the created proxy. Default name is derived from the service name.</summary>
         [TaskAttribute("outfile")]
         public string OutFile {
             get { return _outfile; }
-            set { _outfile = value; }
+            set { _outfile = StringUtils.ConvertEmptyToNull(value); }
         }
 
         /// <summary>Override default protocol to implement. Choose from 'SOAP',
@@ -115,7 +124,7 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("protocol")]
         public string Protocol {
             get { return _protocol; }
-            set { _protocol = value; }
+            set { _protocol = StringUtils.ConvertEmptyToNull(value); }
         }
 
         /// <summary>Username of an account with credentials to access a
@@ -123,7 +132,7 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("username")]
         public string Username {
             get { return _username; }
-            set { _username = value; }
+            set { _username = StringUtils.ConvertEmptyToNull(value); }
         }
 
         /// <summary>Password of an account with credentials to access a
@@ -131,7 +140,7 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("password")]
         public string Password {
             get { return _password; }
-            set { _password = value; }
+            set { _password = StringUtils.ConvertEmptyToNull(value); }
         }
 
         /// <summary>Domain of an account with credentials to access a
@@ -139,7 +148,7 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("domain")]
         public string Domain {
             get { return _domain; }
-            set { _domain = value; }
+            set { _domain = StringUtils.ConvertEmptyToNull(value); }
         }
 
         /// <summary>URL of a proxy server to use for HTTP requests.
@@ -147,7 +156,7 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("proxy")]
         public string Proxy {
             get { return _proxy; }
-            set { _proxy = value; }
+            set { _proxy = StringUtils.ConvertEmptyToNull(value); }
         }
 
         /// <summary>Username of an account with credentials to access a
@@ -155,7 +164,7 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("proxyusername")]
         public string ProxyUsername {
             get { return _proxyusername; }
-            set { _proxyusername = value; }
+            set { _proxyusername = StringUtils.ConvertEmptyToNull(value); }
         }
 
         /// <summary>Password of an account with credentials to access a
@@ -163,7 +172,7 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("proxypassword")]
         public string ProxyPassword {
             get { return _proxypassword; }
-            set { _proxypassword = value; }
+            set { _proxypassword = StringUtils.ConvertEmptyToNull(value); }
         }
 
         /// <summary>Domain of an account with credentials to access a
@@ -171,7 +180,7 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("proxydomain")]
         public string ProxyDomain {
             get { return _proxydomain; }
-            set { _proxydomain = value; }
+            set { _proxydomain = StringUtils.ConvertEmptyToNull(value); }
         }
 
         /// <summary>Configuration key to use in the code generation to
@@ -180,7 +189,7 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("urlkey")]
         public string UrlKey {
             get { return _urlkey; }
-            set { _urlkey = value; }
+            set { _urlkey = StringUtils.ConvertEmptyToNull(value); }
         }
 
         /// <summary>Base Url to use when calculating the Url fragment.
@@ -188,97 +197,86 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("baseurl")]
         public string BaseUrl {
             get { return _baseurl; }
-            set { _baseurl = value; }
+            set { _baseurl = StringUtils.ConvertEmptyToNull(value); }
         }
+
+        #endregion Public Instance Properties
+
+        #region Override implementation of ExternalProgramBase
 
         /// <summary>
-        /// Arguments of program to execute
+        /// Gets the command-line arguments for the external program.
         /// </summary>
+        /// <value>
+        /// The command-line arguments for the external program.
+        /// </value>
         public override string ProgramArguments {
-            get { return _args; }
-        }
-
-        ///<summary>
-        ///Initializes task and ensures the supplied attributes are valid.
-        ///</summary>
-        ///<param name="taskNode">Xml node used to define this task instance.</param>
-        protected override void InitializeTask(System.Xml.XmlNode taskNode) {
+            get {
+                if (_argumentBuilder != null) {
+                    return _argumentBuilder.ToString();
+                } else {
+                    return null;
+                }
+            }
         }
 
         protected override void ExecuteTask() {
-            StringBuilder arguments = new StringBuilder();
+            _argumentBuilder = new StringBuilder();
 
             if (NoLogo) {
-                arguments.Append("/nologo ");
+                _argumentBuilder.Append(" /nologo ");
             }
 
             if (ForServer) {
-                arguments.Append("/server ");
+                _argumentBuilder.Append(" /server ");
             }
 
-            if (Language != null) {
-                arguments.Append(" /l:");
-                arguments.Append(Language);
+            if (Language) {
+                _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /l:\"{0}\"", Language);
             }
-            if (Namespace != null) {
-                arguments.Append(" /n:");
-                arguments.Append(Namespace);
+            if (Namespace) {
+                _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /n:\"{0}\"", Namespace);
             }
-            if (OutFile != null) {
-                arguments.Append(" /o:");
-                arguments.Append(OutFile);
+            if (OutFile) {
+                _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /o:\"{0}\"", OutFile);
             }
-            if (Protocol != null) {
-                arguments.Append(" /protocol:");
-                arguments.Append(Protocol);
+            if (Protocol) {               
+                _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /protocol:\"{0}\"", Protocol);
             }
-            if (Username != null) {
-                arguments.Append(" /username:");
-                arguments.Append(Username);
+            if (Username) {
+                _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /username:\"{0}\"", Username);
             }
-            if (Password != null) {
-                arguments.Append(" /password:");
-                arguments.Append(Password);
+            if (Password) {
+                _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /password:\"{0}\"", Password);
             }
-            if (Domain != null) {
-                arguments.Append(" /domain:");
-                arguments.Append(Domain);
+            if (Domain) {
+                _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /domain:\"{0}\"", Domain);
             }
-            if (Proxy != null) {
-                arguments.Append(" /proxy:");
-                arguments.Append(Proxy);
+            if (Proxy) {
+                _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /proxy:\"{0}\"", Proxy);
             }
-            if (ProxyUsername != null) {
-                arguments.Append(" /proxyusername:");
-                arguments.Append(ProxyUsername);
+            if (ProxyUsername) {
+                _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /proxyusername:\"{0}\"", ProxyUsername);
             }
-            if (ProxyPassword != null) {
-                arguments.Append(" /proxypassword:");
-                arguments.Append(ProxyPassword);
+            if (ProxyPassword) {
+                _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /proxypassword:\"{0}\"", ProxyPassword);
             }
-            if (ProxyDomain != null) {
-                arguments.Append(" /proxydomain:");
-                arguments.Append(ProxyDomain);
+            if (ProxyDomain) {
+                _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /proxydomain:\"{0}\"", ProxyDomain);
             }
-            if (UrlKey != null) {
-                arguments.Append(" /appsettingurlkey:");
-                arguments.Append(UrlKey);
+            if (UrlKey) {
+                _argumentBuilder.Append(" /appsettingurlkey:");
+                _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /appsettingurlkey:\"{0}\"", UrlKey);
             }
-            if (BaseUrl != null)            {
-                arguments.Append(" /appsettingbaseurl:");
-                arguments.Append(BaseUrl);
+            if (BaseUrl) {
+                _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " appsettingbaseurl:\"{0}\"", BaseUrl);
             }
 
-            arguments.Append(Path);
+            _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " \"{0}\"", Path);
 
-            try {
-                _args = arguments.ToString();
-
-                base.ExecuteTask();
-            }
-            catch (Exception e) {
-                throw new BuildException(LogPrefix + "ERROR: " + e);
-            }
+            // call base class to do perform the actual call
+            base.ExecuteTask();
         }
+        #endregion Override implementation of ExternalProgramBase
     }
 }
