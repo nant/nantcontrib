@@ -121,12 +121,26 @@
         <if test="${not schema.uptodate}">
             <mkdir dir="${build.dir}/schema/Msi" unless="${directory::exists(build.dir + '/schema/Msi')}" />
             <loadtasks assembly="${build.dir}/bin/NAnt.Xsd.Tasks.dll" />
-            <xsd schema="${src.dir}/Tasks/Msi/MsiTask.xsd" language="CS" namespace="NAnt.Contrib.Schemas.Msi" nologo="true" outputdir="${build.dir}/schema/Msi" uri="NAnt.Contrib.Tasks.Msi.MsiTask" />
+            <xsd 
+                schema="${src.dir}/Tasks/Msi/MsiTask.xsd"
+                language="CS"
+                namespace="NAnt.Contrib.Schemas.Msi"
+                outputdir="${build.dir}/schema/Msi"
+                uri="NAnt.Contrib.Tasks.Msi.MsiTask" />
         </if>
     </target>
 
     <!-- Build the NAnt.Contrib.Tasks.dll library -->
     <target name="build" depends="prepare, prepare.slingshot, compile.schemas, create-common-assemblyinfo" description="compiles the source code">
+        <!--
+            The copying of the xsd would not have been necessary if <resourcefileset>
+            supported a <resource> child element that allowed the manifest resource 
+            name to be explicitly specified.
+            
+            TO-DO : remove this "hack" once support for explicit manifest resource
+            names is in place.
+        -->
+        <copy file="${src.dir}/Tasks/Msi/MsiTask.xsd" tofile="${build.dir}/schema/Msi/NAnt.Contrib.Schemas.Msi" />
         <csc target="library" warnaserror="true" debug="${build.debug}" define="${current.build.defines}" output="${build.dir}/bin/${project.FormalName}.Tasks.dll" doc="${build.dir}/bin/${project.FormalName}.Tasks.xml">
             <nowarn>
                 <!-- do not report warnings for missing XML comments -->
@@ -135,16 +149,15 @@
                 <warning number="0618" />
             </nowarn>
             <sources>
-	       <include name="${src.dir}/**/*.cs" />
-	       <include name="${build.dir}/schema/**/*.cs" />
-	       
-	       <exclude name="${src.dir}/tasks/SharePoint/*.cs" />
-	       
+                <include name="${src.dir}/**/*.cs" />
+                <include name="${build.dir}/schema/**/*.cs" />
+
+                <exclude name="${src.dir}/tasks/SharePoint/*.cs" />
             </sources>
             <references>
                 <include name="${nant.dir}/bin/NAnt.Core.dll" />
                 <include name="${nant.dir}/bin/NAnt.DotNetTasks.dll" />
-                <include name="${nant.dir}/bin/NAnt.SourceControlTasks.dll" />                
+                <include name="${nant.dir}/bin/NAnt.SourceControlTasks.dll" />
                 <include name="${build.dir}/bin/CollectionGen.dll" />
                 <include name="${build.dir}/bin/SourceSafe.Interop.dll" />
                 <include name="${build.dir}/bin/Interop.StarTeam.dll" />
@@ -155,7 +168,7 @@
             </references>
             <resources>
                 <include name="${src.dir}/xsl/**" />
-                <include name="${build.dir}/schema/**.resources" />
+                <include name="${build.dir}/schema/Msi/NAnt.Contrib.Schemas.Msi" />
             </resources>
         </csc>
     </target>
