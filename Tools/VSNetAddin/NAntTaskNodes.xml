@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+//
+// NAntContrib - NAntAddin
+// Copyright (C) 2002 Jayme C. Edwards (jedwards@wi.rr.com)
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+//
+-->
+<NAntTaskNodes>
+  <NAntTaskNode name="al" typeName="NAnt.Contrib.NAntAddin.Nodes.NAntAssemblyLinkerTaskNode" />
+  <NAntTaskNode name="attrib" typeName="NAnt.Contrib.NAntAddin.Nodes.NAntAttributeTaskNode" />
+  <NAntTaskNode name="call" typeName="NAnt.Contrib.NAntAddin.Nodes.NAntCallTaskNode" />
+  <NAntTaskNode name="cl" typeName="NAnt.Contrib.NAntAddin.Nodes.NAntClassLinkerTaskNode" />
+  <NAntTaskNode name="copy" typeName="NAnt.Contrib.NAntAddin.Nodes.NAntCopyTaskNode" />
+  <NAntTaskNode name="csc" typeName="NAnt.Contrib.NAntAddin.Nodes.NAntCSharpCompilerTaskNode" />
+  <NAntTaskNode name="delete" typeName="NAnt.Contrib.NAntAddin.Nodes.NAntDeleteTaskNode" />
+  <NAntTaskNode name="echo" typeName="NAnt.Contrib.NAntAddin.Nodes.NAntEchoTaskNode" />
+  <NAntTaskNode name="exec" typeName="NAnt.Contrib.NAntAddin.Nodes.NAntExecuteTaskNode" />
+  <NAntTaskNode name="fail" typeName="NAnt.Contrib.NAntAddin.Nodes.NAntFailTaskNode" />
+  <NAntTaskNode name="get" typeName="NAnt.Contrib.NAntAddin.Nodes.NAntGetTaskNode" />
+  <NAntTaskNode name="include" typeName="NAnt.Contrib.NAntAddin.Nodes.NAntIncludeTaskNode" />
+  <NAntTaskNode name="jsc" typeName="NAnt.Contrib.NAntAddin.Nodes.NAntJScriptCompilerTaskNode" />
+  <NAntTaskNode name="lib" typeName="NAnt.Contrib.NAntAddin.Nodes.NAntLibraryTaskNode" />
+  <NAntTaskNode name="link" typeName="NAnt.Contrib.NAntAddin.Nodes.NAntLinkerTaskNode" />
+  <NAntTaskNode name="mail" typeName="NAnt.Contrib.NAntAddin.Nodes.NAntSendSMTPMailTaskNode" />
+  <NAntTaskNode name="mcs" typeName="NAnt.Contrib.NAntAddin.Nodes.NAntMonoCompilerTaskNode" />
+  <NAntTaskNode name="mkdir" typeName="NAnt.Contrib.NAntAddin.Nodes.NAntMakeDirectoryTaskNode" />
+  <NAntTaskNode name="nant" typeName="NAnt.Contrib.NAntAddin.Nodes.NAntNAntTaskNode" />
+  <NAntTaskNode name="nunit" typeName="NAnt.Contrib.NAntAddin.Nodes.NAntNUnitTaskNode" />
+  <NAntTaskNode name="ndoc" typeName="NAnt.Contrib.NAntAddin.Nodes.NAntNDocTaskNode" />
+  <NAntTaskNode name="property" typeName="NAnt.Contrib.NAntAddin.Nodes.NAntPropertyNode" />
+  <NAntTaskNode name="script" typeName="NAnt.Contrib.NAntAddin.Nodes.NAntScriptTaskNode" />
+  <NAntTaskNode name="sleep" typeName="NAnt.Contrib.NAntAddin.Nodes.NAntSleepTaskNode" />
+  <NAntTaskNode name="style" typeName="NAnt.Contrib.NAntAddin.Nodes.NAntStyleTaskNode" />
+  <NAntTaskNode name="sysinfo" typeName="NAnt.Contrib.NAntAddin.Nodes.NAntSystemInfoTaskNode" />
+  <NAntTaskNode name="touch" typeName="NAnt.Contrib.NAntAddin.Nodes.NAntTouchTaskNode" />
+  <NAntTaskNode name="tstamp" typeName="NAnt.Contrib.NAntAddin.Nodes.NAntTimeStampTaskNode" />
+  <NAntTaskNode name="vbc" typeName="NAnt.Contrib.NAntAddin.Nodes.NAntVBCompilerTaskNode" />
+  <NAntTaskNode name="zip" typeName="NAnt.Contrib.NAntAddin.Nodes.NAntZipTaskNode" />
+</NAntTaskNodes>

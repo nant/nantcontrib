@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 7.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleTaskNode", "SampleTaskNode.csproj", "{F74DACFE-60AC-4A51-B2B5-FC1467EA491C}"
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		ConfigName.0 = Debug
+		ConfigName.1 = Release
+	EndGlobalSection
+	GlobalSection(ProjectDependencies) = postSolution
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{F74DACFE-60AC-4A51-B2B5-FC1467EA491C}.Debug.ActiveCfg = Debug|.NET
+		{F74DACFE-60AC-4A51-B2B5-FC1467EA491C}.Debug.Build.0 = Debug|.NET
+		{F74DACFE-60AC-4A51-B2B5-FC1467EA491C}.Release.ActiveCfg = Release|.NET
+		{F74DACFE-60AC-4A51-B2B5-FC1467EA491C}.Release.Build.0 = Release|.NET
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

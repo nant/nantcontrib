@@ -1,0 +1,71 @@
+<project>
+    <assemblies>
+        <assembly location="bin\Debug\NAntAddin.dll" documentation="NAntAddinAPI.xml" />
+    </assemblies>
+    <namespaces>
+        <namespace name="NAnt.Contrib.NAntAddin">Provides the Visual Studio.NET Addin.</namespace>
+        <namespace name="NAnt.Contrib.NAntAddin.Controls">Provides user interface controls for the Addin.</namespace>
+        <namespace name="NAnt.Contrib.NAntAddin.Nodes">Provides tree nodes for the Script Explorer window.</namespace>
+    </namespaces>
+    <documenters>
+        <documenter name="JavaDoc">
+            <property name="OutputDirectory" value=".\docs\JavaDoc\" />
+            <property name="ShowMissingSummaries" value="False" />
+            <property name="ShowMissingRemarks" value="False" />
+            <property name="ShowMissingParams" value="False" />
+            <property name="ShowMissingReturns" value="False" />
+            <property name="ShowMissingValues" value="False" />
+            <property name="DocumentInternals" value="False" />
+            <property name="DocumentProtected" value="True" />
+            <property name="DocumentPrivates" value="False" />
+            <property name="DocumentEmptyNamespaces" value="False" />
+            <property name="IncludeAssemblyVersion" value="False" />
+            <property name="CopyrightText" value="" />
+            <property name="CopyrightHref" value="" />
+            <property name="SkipNamespacesWithoutSummaries" value="False" />
+            <property name="AddPropertyBackerSummaries" value="False" />
+        </documenter>
+        <documenter name="MSDN">
+            <property name="OutputDirectory" value=".\APIDocs\NAntAddin\MSDN\" />
+            <property name="HtmlHelpName" value="NAnt.Contrib.NAntAddin" />
+            <property name="IncludeFavorites" value="False" />
+            <property name="Title" value="NAnt Addin for Visual Studio.NET Class Library" />
+            <property name="SplitTOCs" value="False" />
+            <property name="DefaulTOC" value="" />
+            <property name="ShowVisualBasic" value="False" />
+            <property name="OmitObjectTags" value="False" />
+            <property name="ShowMissingSummaries" value="True" />
+            <property name="ShowMissingRemarks" value="True" />
+            <property name="ShowMissingParams" value="True" />
+            <property name="ShowMissingReturns" value="True" />
+            <property name="ShowMissingValues" value="True" />
+            <property name="DocumentInternals" value="False" />
+            <property name="DocumentProtected" value="True" />
+            <property name="DocumentPrivates" value="False" />
+            <property name="DocumentEmptyNamespaces" value="False" />
+            <property name="IncludeAssemblyVersion" value="True" />
+            <property name="CopyrightText" value="" />
+            <property name="CopyrightHref" value="" />
+            <property name="ReferencesPath" value="bin\Debug" />
+            <property name="SkipNamespacesWithoutSummaries" value="False" />
+            <property name="AddPropertyBackerSummaries" value="False" />
+        </documenter>
+        <documenter name="XML">
+            <property name="OutputFile" value=".\docs\doc.xml" />
+            <property name="ShowMissingSummaries" value="False" />
+            <property name="ShowMissingRemarks" value="False" />
+            <property name="ShowMissingParams" value="False" />
+            <property name="ShowMissingReturns" value="False" />
+            <property name="ShowMissingValues" value="False" />
+            <property name="DocumentInternals" value="False" />
+            <property name="DocumentProtected" value="True" />
+            <property name="DocumentPrivates" value="False" />
+            <property name="DocumentEmptyNamespaces" value="False" />
+            <property name="IncludeAssemblyVersion" value="False" />
+            <property name="CopyrightText" value="" />
+            <property name="CopyrightHref" value="" />
+            <property name="SkipNamespacesWithoutSummaries" value="False" />
+            <property name="AddPropertyBackerSummaries" value="False" />
+        </documenter>
+    </documenters>
+</project>

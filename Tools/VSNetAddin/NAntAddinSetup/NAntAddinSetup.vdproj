@@ -1,0 +1,3129 @@
+"DeployProject"
+{
+"VSVersion" = "3:700"
+"ProjectType" = "8:{5443560c-dbb4-11d2-8724-00a0c9a8b90c}"
+"IsWebType" = "8:FALSE"
+"ProjectName" = "8:NAntAddinSetup"
+"LanguageId" = "3:1033"
+"CodePage" = "3:1252"
+"UILanguageId" = "3:1033"
+"SccProjectName" = "8:"
+"SccLocalPath" = "8:"
+"SccAuxPath" = "8:"
+"SccProvider" = "8:"
+    "Hierarchy"
+    {
+        "Entry"
+        {
+        "MsmKey" = "8:_033EE3831231880B9D6B07FF6FFD438E"
+        "OwnerKey" = "8:_2D4407EB6718496CB46C1DD4BF4FF62A"
+        "MsmSig" = "8:ndoc.documenter.msdnc:\\development\\nant\\bin\\ndoc.documenter.msdn.dll"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_06106D6BFF4C4A4493DD116F1FBB5BAD"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\TASKIMAGES\\STYLETASK.BMP"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_097FB8CFDC3B4ACE8D32B9F4DF05F5EA"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:VIntegration_VS7.58894039_0926_11D5_A548_0090278A1BB8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_0FE98F22B924E29D1200AFB0CBB31295"
+        "OwnerKey" = "8:_2D4407EB6718496CB46C1DD4BF4FF62A"
+        "MsmSig" = "8:interop.vsusercontrolhostlibc:\\documents and settings\\jayme\\my documents\\visual studio projects\\nantaddin\\obj\\interop.vsusercontrolhostlib.dll"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_1037F2F3A5463CB01ECEA35B8EE7B19C"
+        "OwnerKey" = "8:_9E8902F72C5A969F5BF4ACF9A5E5E954"
+        "MsmSig" = "8:msddslmp_50e354509fc217630f8ebd8f014aabb9"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_10674A9AD90F4CA58BA22A58EFD82F29"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\TASKIMAGES\\EXECTASK.BMP"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_125C7361501D47289AB4743422B0C643"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\TASKIMAGES\\LIBTASK.BMP"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_19846CBFE331C73EDF2783687283B22E"
+        "OwnerKey" = "8:_2D4407EB6718496CB46C1DD4BF4FF62A"
+        "MsmSig" = "8:nant.documenterc:\\development\\nant\\bin\\nant.documenter.dll"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_2012ECD74E53469D8746C3F9756C63E9"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\TASKIMAGES\\SYSINFOTASK.BMP"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_23CA9CC90D7C49D682017E90A97227AC"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\TASKIMAGES\\COPYTASK.BMP"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_28DB5B9CFAEC46E293873A5070D30532"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\TASKIMAGES\\MAILTASK.BMP"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_2D4407EB6718496CB46C1DD4BF4FF62A"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\OBJ\\DEBUG\\NANTADDIN.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_2F67B3DC737C4B45A32CAB1491BD9BA5"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\TASKIMAGES\\ZIPTASK.BMP"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_307A3BE63CE04F26ACE9DD384BCFD83C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:MSHelp2_RegTables_.5A8D2AA7_2CAA_4de4_A994_11D0431D8A2A"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_31D07EFA9EAB441D9F6C45E29ABC6D98"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\NANTADDINDOCS\\COLLECTIONFILES\\NANTADDINDOCSFINDEX.HXK"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_350915BDB3F344D39F7C6DBADEB66B1D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:MergeModule.102996FF964C4880B7BB79506692219D"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_3A6F7B053C1F4707852A71DABAFABC4C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\TASKIMAGES\\CLTASK.BMP"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_432A2BC42AF34A328DA9CBA8D2EEDA3F"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\NANTADDINRESOURCES\\DEBUG\\NANTADDINRESOURCES.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_44A2496582164A24B58085728F6252BF"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\TASKIMAGES\\SLEEPTASK.BMP"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_4AD3B3F0D6964378AFB12C755EEB956F"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:VS_Combined_Help_Collec.FC4F73D8_50FC_11D4_A53E_0090278A1BB8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_4AE8D0CB64FE991178AF053D879056E4"
+        "OwnerKey" = "8:_9E8902F72C5A969F5BF4ACF9A5E5E954"
+        "MsmSig" = "8:msddsp_dd17b0a3d1244b4488420a9f6cbb8039"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_505A09C19AA5DCA0AE74E48E8411A802"
+        "OwnerKey" = "8:_2D4407EB6718496CB46C1DD4BF4FF62A"
+        "MsmSig" = "8:extensibility_8c9c6e3362c636948ff73615c81d6576"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_5195E60CA5D746EBAB6A1D9D570019CD"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\NANTTABICON.BMP"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_5319EC2292694324B970DD4CE7472211"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\TASKIMAGES\\NDOCTASK.BMP"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_58D1ECB1929D43B6976126CEF40FBBC8"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\TASKIMAGES\\ALTASK.BMP"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_5CBC4CAE2F7A4D50A44307216DAE82BA"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\NANTADDINDOCS\\COLLECTIONFILES\\NANTADDINDOCS.HXT"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6320409C4FD43EDC888DA26527713598"
+        "OwnerKey" = "8:_0FE98F22B924E29D1200AFB0CBB31295"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\VSUSERCONTROLHOST.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6C081497546949BB90E8240147A8C81E"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\LICENSE.RTF"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6EBC6B2F18C8E61A4E688F79E067EDFC"
+        "OwnerKey" = "8:_2D4407EB6718496CB46C1DD4BF4FF62A"
+        "MsmSig" = "8:collectiongenc:\\development\\nant\\bin\\collectiongen.dll"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6F9623CF881F0933286A54455B698837"
+        "OwnerKey" = "8:_9E8902F72C5A969F5BF4ACF9A5E5E954"
+        "MsmSig" = "8:microsoft.visualstudio.wizardframework_b3f02bd84ca13e706c9560cafd9f0c91"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6FB1F26B112ECF102F7946D39F399F62"
+        "OwnerKey" = "8:_D131E359150236FE75574A1E72448E78"
+        "MsmSig" = "8:envdte_d890e65cda365bb06db21a11aabba008"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6FB1F26B112ECF102F7946D39F399F62"
+        "OwnerKey" = "8:_2D4407EB6718496CB46C1DD4BF4FF62A"
+        "MsmSig" = "8:envdte_d890e65cda365bb06db21a11aabba008"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6FB1F26B112ECF102F7946D39F399F62"
+        "OwnerKey" = "8:_9E8902F72C5A969F5BF4ACF9A5E5E954"
+        "MsmSig" = "8:envdte_d890e65cda365bb06db21a11aabba008"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6FB1F26B112ECF102F7946D39F399F62"
+        "OwnerKey" = "8:_6F9623CF881F0933286A54455B698837"
+        "MsmSig" = "8:envdte_d890e65cda365bb06db21a11aabba008"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6FB1F26B112ECF102F7946D39F399F62"
+        "OwnerKey" = "8:_F981FE432E5DDA7B19D5290867D8490D"
+        "MsmSig" = "8:envdte_d890e65cda365bb06db21a11aabba008"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7001DD9B52F7401EA1E0C8F2EF96A8C5"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\TASKIMAGES\\ECHOTASK.BMP"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7A76B53960674DEEA345BACE83872C41"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:VS_Combined_Help_Collec.FC4F73C8_50FC_11D4_A53E_0090278A1BB8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7DC6CFD7073D4B7898AF184918AD2226"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\NANTTASKNODES.XML"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_833FF17624CD5D0ADE37B28AA866DF06"
+        "OwnerKey" = "8:_6FB1F26B112ECF102F7946D39F399F62"
+        "MsmSig" = "8:office_736ce26e3972ad23e1298f97ce43db19"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_833FF17624CD5D0ADE37B28AA866DF06"
+        "OwnerKey" = "8:_2D4407EB6718496CB46C1DD4BF4FF62A"
+        "MsmSig" = "8:office_736ce26e3972ad23e1298f97ce43db19"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_857836CF13070F666A93E60073A94DE4"
+        "OwnerKey" = "8:_6FB1F26B112ECF102F7946D39F399F62"
+        "MsmSig" = "8:stdole_c209afdbbe385f6128d9c8ea2a9f992d"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_857836CF13070F666A93E60073A94DE4"
+        "OwnerKey" = "8:_2D4407EB6718496CB46C1DD4BF4FF62A"
+        "MsmSig" = "8:stdole_c209afdbbe385f6128d9c8ea2a9f992d"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_857836CF13070F666A93E60073A94DE4"
+        "OwnerKey" = "8:_4AE8D0CB64FE991178AF053D879056E4"
+        "MsmSig" = "8:stdole_c209afdbbe385f6128d9c8ea2a9f992d"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_857836CF13070F666A93E60073A94DE4"
+        "OwnerKey" = "8:_1037F2F3A5463CB01ECEA35B8EE7B19C"
+        "MsmSig" = "8:stdole_c209afdbbe385f6128d9c8ea2a9f992d"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_857836CF13070F666A93E60073A94DE4"
+        "OwnerKey" = "8:_9E8902F72C5A969F5BF4ACF9A5E5E954"
+        "MsmSig" = "8:stdole_c209afdbbe385f6128d9c8ea2a9f992d"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_857836CF13070F666A93E60073A94DE4"
+        "OwnerKey" = "8:_833FF17624CD5D0ADE37B28AA866DF06"
+        "MsmSig" = "8:stdole_c209afdbbe385f6128d9c8ea2a9f992d"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_87C6BC5675FE420D8EF5185C8981D854"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\NANTADDINDOCS\\NANTADDINDOCS.HXS"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8BAD7617A3EBBA6A0B31EBDDDF495FF5"
+        "OwnerKey" = "8:_2D4407EB6718496CB46C1DD4BF4FF62A"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\OBJ\\DEBUG\\NANTADDIN.TLB"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8F9FB6D023C190D71E5747794E0B896C"
+        "OwnerKey" = "8:_E052FE66D61CB8FE4862B7B59EC8081D"
+        "MsmSig" = "8:ndoc.corec:\\development\\nant\\bin\\ndoc.core.dll"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8F9FB6D023C190D71E5747794E0B896C"
+        "OwnerKey" = "8:_2D4407EB6718496CB46C1DD4BF4FF62A"
+        "MsmSig" = "8:ndoc.corec:\\development\\nant\\bin\\ndoc.core.dll"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_92A6D626D0BD4B4EA6388E5BE86EF12C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\TASKIMAGES\\SCRIPTTASK.BMP"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_9E597E9E27E44348A94598C376439890"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\NANTADDINDOCS\\COLLECTIONFILES\\NANTADDINDOCS.HXC"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_9E8902F72C5A969F5BF4ACF9A5E5E954"
+        "OwnerKey" = "8:_6EBC6B2F18C8E61A4E688F79E067EDFC"
+        "MsmSig" = "8:microsoft.vsdesigner_2d82ce749b79851f3b9ca2988c4eb791"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A11F04FB3972426EBC50F80E34A67ED8"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:HTML_Help_Registration_.5C144DB8_72F5_11D4_A53F_0090278A1BB8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A28D0424F0324B2FBBC12009267DA959"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\TASKIMAGES\\MKDIRTASK.BMP"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A39AC5F500EF460F82AD669CBC36CA4D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\LICENSE.TXT"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_AFFF0BBA9B2248758BF07CDFCA89E46B"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\TASKIMAGES\\GETTASK.BMP"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_B0194DC41A70431BBF42A63B28843FA6"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\TASKIMAGES\\VBCTASK.BMP"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_B45B28B228CC43D4B688DA91EE5E16A1"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\TASKIMAGES\\JSCTASK.BMP"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_B62B51FF39644545A95AE6D4EAFF1944"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\NANTADDINDOCS\\COLLECTIONFILES\\NANTADDINDOCSAINDEX.HXK"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_B704EECC79E24F13A174337BEC58B9BC"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\TASKIMAGES\\ATTRTASK.BMP"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_B7E96D343A004D90B3E014BEB548EBC8"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\TASKIMAGES\\CALLTASK.BMP"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_BB46974257F747C394E14C58FE5F9019"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\TASKIMAGES\\TSTAMPTASK.BMP"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_BF55DAF09FB34EBAAFDD25778B15D206"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\TASKIMAGES\\NUNITTASK.BMP"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C7E0310AC8A1489D9AEC5794B9BAFBAE"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\TASKIMAGES\\TOUCHTASK.BMP"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_CF2429D73F694CDAB0B60BED1193D16E"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\TASKIMAGES\\MOVETASK.BMP"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D0E27319D5EF4077A1118FDFE0C0301F"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\TASKIMAGES\\LINKTASK.BMP"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D131E359150236FE75574A1E72448E78"
+        "OwnerKey" = "8:_2D4407EB6718496CB46C1DD4BF4FF62A"
+        "MsmSig" = "8:vslangproj_bd4cc7512746ef6f1b53cb6e2bdb098c"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D131E359150236FE75574A1E72448E78"
+        "OwnerKey" = "8:_F981FE432E5DDA7B19D5290867D8490D"
+        "MsmSig" = "8:vslangproj_bd4cc7512746ef6f1b53cb6e2bdb098c"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DDB30A55F6C0424F960EF2DA07C4BF2D"
+        "OwnerKey" = "8:_505A09C19AA5DCA0AE74E48E8411A802"
+        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DDB30A55F6C0424F960EF2DA07C4BF2D"
+        "OwnerKey" = "8:_2D4407EB6718496CB46C1DD4BF4FF62A"
+        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DDB30A55F6C0424F960EF2DA07C4BF2D"
+        "OwnerKey" = "8:_0FE98F22B924E29D1200AFB0CBB31295"
+        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DDB30A55F6C0424F960EF2DA07C4BF2D"
+        "OwnerKey" = "8:_033EE3831231880B9D6B07FF6FFD438E"
+        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DDB30A55F6C0424F960EF2DA07C4BF2D"
+        "OwnerKey" = "8:_19846CBFE331C73EDF2783687283B22E"
+        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DDB30A55F6C0424F960EF2DA07C4BF2D"
+        "OwnerKey" = "8:_E052FE66D61CB8FE4862B7B59EC8081D"
+        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DDB30A55F6C0424F960EF2DA07C4BF2D"
+        "OwnerKey" = "8:_E963FFE051DA87F468F4D6F78E7E9A04"
+        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DDB30A55F6C0424F960EF2DA07C4BF2D"
+        "OwnerKey" = "8:_F769D90E424BAB44D700398D5A133D76"
+        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DDB30A55F6C0424F960EF2DA07C4BF2D"
+        "OwnerKey" = "8:_8F9FB6D023C190D71E5747794E0B896C"
+        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DDB30A55F6C0424F960EF2DA07C4BF2D"
+        "OwnerKey" = "8:_6EBC6B2F18C8E61A4E688F79E067EDFC"
+        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DDB30A55F6C0424F960EF2DA07C4BF2D"
+        "OwnerKey" = "8:_4AE8D0CB64FE991178AF053D879056E4"
+        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DDB30A55F6C0424F960EF2DA07C4BF2D"
+        "OwnerKey" = "8:_1037F2F3A5463CB01ECEA35B8EE7B19C"
+        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DDB30A55F6C0424F960EF2DA07C4BF2D"
+        "OwnerKey" = "8:_9E8902F72C5A969F5BF4ACF9A5E5E954"
+        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DDB30A55F6C0424F960EF2DA07C4BF2D"
+        "OwnerKey" = "8:_6F9623CF881F0933286A54455B698837"
+        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DDB30A55F6C0424F960EF2DA07C4BF2D"
+        "OwnerKey" = "8:_F981FE432E5DDA7B19D5290867D8490D"
+        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DDB30A55F6C0424F960EF2DA07C4BF2D"
+        "OwnerKey" = "8:_E4909A5BB6E254EDC76D9E7477FBA34E"
+        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DDB30A55F6C0424F960EF2DA07C4BF2D"
+        "OwnerKey" = "8:_D131E359150236FE75574A1E72448E78"
+        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DDB30A55F6C0424F960EF2DA07C4BF2D"
+        "OwnerKey" = "8:_833FF17624CD5D0ADE37B28AA866DF06"
+        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DDB30A55F6C0424F960EF2DA07C4BF2D"
+        "OwnerKey" = "8:_6FB1F26B112ECF102F7946D39F399F62"
+        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DDB30A55F6C0424F960EF2DA07C4BF2D"
+        "OwnerKey" = "8:_857836CF13070F666A93E60073A94DE4"
+        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E04DC26EB6854F2BB2082718D63BF3AE"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\TASKIMAGES\\INCLUDETASK.BMP"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E052FE66D61CB8FE4862B7B59EC8081D"
+        "OwnerKey" = "8:_2D4407EB6718496CB46C1DD4BF4FF62A"
+        "MsmSig" = "8:nant.corec:\\development\\nant\\bin\\nant.core.dll"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E0FCC0925F534334B9C739DF1F653064"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\NANTADDINDOCS\\NANTADDINDOCS.HXA"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E4909A5BB6E254EDC76D9E7477FBA34E"
+        "OwnerKey" = "8:_9E8902F72C5A969F5BF4ACF9A5E5E954"
+        "MsmSig" = "8:microsoft.visualstudio.designer.interfaces_623a03a98cd2842958a9896e30a81688"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E4909A5BB6E254EDC76D9E7477FBA34E"
+        "OwnerKey" = "8:_F981FE432E5DDA7B19D5290867D8490D"
+        "MsmSig" = "8:microsoft.visualstudio.designer.interfaces_623a03a98cd2842958a9896e30a81688"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E5D7DD6CBFBB4DCDAE6AE74BF8092743"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\TASKIMAGES\\EXITTASK.BMP"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E673E30231B3EF40A2F21B69C1FEA92B"
+        "OwnerKey" = "8:_6FB1F26B112ECF102F7946D39F399F62"
+        "MsmSig" = "8:C:\\PROGRAM FILES\\COMMON FILES\\MICROSOFT SHARED\\MSENV\\DTE.OLB"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E963FFE051DA87F468F4D6F78E7E9A04"
+        "OwnerKey" = "8:_E052FE66D61CB8FE4862B7B59EC8081D"
+        "MsmSig" = "8:nziplibc:\\development\\nant\\bin\\nziplib.dll"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E963FFE051DA87F468F4D6F78E7E9A04"
+        "OwnerKey" = "8:_2D4407EB6718496CB46C1DD4BF4FF62A"
+        "MsmSig" = "8:nziplibc:\\development\\nant\\bin\\nziplib.dll"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_EE8B031BE7E240308C97E994C97F311B"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\INSTALLLOGO.BMP"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F5E79FDD1D54404D84BA74EAD3F9C213"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\NANTADDINDOCS\\COLLECTIONFILES\\NANTADDINDOCSKINDEX.HXK"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F769D90E424BAB44D700398D5A133D76"
+        "OwnerKey" = "8:_E052FE66D61CB8FE4862B7B59EC8081D"
+        "MsmSig" = "8:nunitcore_63e706bc61012cc73eac9407890085b8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F769D90E424BAB44D700398D5A133D76"
+        "OwnerKey" = "8:_2D4407EB6718496CB46C1DD4BF4FF62A"
+        "MsmSig" = "8:nunitcore_63e706bc61012cc73eac9407890085b8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F97428455705405CB76945F1C25FAE47"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\TASKIMAGES\\DELETETASK.BMP"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F981FE432E5DDA7B19D5290867D8490D"
+        "OwnerKey" = "8:_9E8902F72C5A969F5BF4ACF9A5E5E954"
+        "MsmSig" = "8:microsoft.visualstudio_1b37609f1a7834e0ad069da3f8e64465"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_FA56A6201F514C1E89C8AF335A429A4D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:C:\\DOCUMENTS AND SETTINGS\\JAYME\\MY DOCUMENTS\\VISUAL STUDIO PROJECTS\\NANTADDIN\\TASKIMAGES\\CSHARPTASK.BMP"
+        }
+    }
+    "Configurations"
+    {
+        "Debug"
+        {
+        "DisplayName" = "8:Debug"
+        "IsDebugOnly" = "11:TRUE"
+        "IsReleaseOnly" = "11:FALSE"
+        "OutputFilename" = "8:Debug\\NAntAddin.msi"
+        "PackageFilesAs" = "3:2"
+        "PackageFileSize" = "3:-2147483648"
+        "CabType" = "3:1"
+        "Compression" = "3:2"
+        "SignOutput" = "11:FALSE"
+        "CertificateFile" = "8:"
+        "PrivateKeyFile" = "8:"
+        "TimeStampServer" = "8:"
+        "InstallerBootstrapper" = "3:2"
+        }
+        "Release"
+        {
+        "DisplayName" = "8:Release"
+        "IsDebugOnly" = "11:FALSE"
+        "IsReleaseOnly" = "11:TRUE"
+        "OutputFilename" = "8:Release\\NAntAddinSetup.msi"
+        "PackageFilesAs" = "3:2"
+        "PackageFileSize" = "3:-2147483648"
+        "CabType" = "3:1"
+        "Compression" = "3:2"
+        "SignOutput" = "11:FALSE"
+        "CertificateFile" = "8:"
+        "PrivateKeyFile" = "8:"
+        "TimeStampServer" = "8:"
+        "InstallerBootstrapper" = "3:2"
+        }
+    }
+    "Deployable"
+    {
+        "CustomAction"
+        {
+        }
+        "DefaultFeature"
+        {
+        "Name" = "8:DefaultFeature"
+        "Title" = "8:"
+        "Description" = "8:"
+        }
+        "Feature"
+        {
+        }
+        "File"
+        {
+            "{C7BF5952-4B9D-11D3-8E24-00C04F6837D0}:_033EE3831231880B9D6B07FF6FFD438E"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:NDoc.Documenter.Msdn, Version=1.0.844.22064, Culture=neutral"
+                "ScatterAssemblies"
+                {
+                    "_033EE3831231880B9D6B07FF6FFD438E"
+                    {
+                    "Name" = "8:NDoc.Documenter.Msdn.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:NDoc.Documenter.Msdn.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_06106D6BFF4C4A4493DD116F1FBB5BAD"
+            {
+            "SourcePath" = "8:..\\TaskImages\\styletask.bmp"
+            "TargetName" = "8:styletask.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_8A78B74CA28C44D398F131A88117F975"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{C7BF5952-4B9D-11D3-8E24-00C04F6837D0}:_0FE98F22B924E29D1200AFB0CBB31295"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:Interop.VSUserControlHostLib, Version=1.0.0.0, Culture=neutral"
+                "ScatterAssemblies"
+                {
+                    "_0FE98F22B924E29D1200AFB0CBB31295"
+                    {
+                    "Name" = "8:Interop.VSUserControlHostLib.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:Interop.VSUserControlHostLib.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{C7BF5952-4B9D-11D3-8E24-00C04F6837D0}:_1037F2F3A5463CB01ECEA35B8EE7B19C"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:TRUE"
+            "AssemblyAsmDisplayName" = "8:MSDDSLMP, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
+                "ScatterAssemblies"
+                {
+                    "_1037F2F3A5463CB01ECEA35B8EE7B19C"
+                    {
+                    "Name" = "8:MSDDSLMP.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:MSDDSLMP.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_10674A9AD90F4CA58BA22A58EFD82F29"
+            {
+            "SourcePath" = "8:..\\TaskImages\\exectask.bmp"
+            "TargetName" = "8:exectask.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_8A78B74CA28C44D398F131A88117F975"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_125C7361501D47289AB4743422B0C643"
+            {
+            "SourcePath" = "8:..\\TaskImages\\libtask.bmp"
+            "TargetName" = "8:libtask.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_8A78B74CA28C44D398F131A88117F975"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{C7BF5952-4B9D-11D3-8E24-00C04F6837D0}:_19846CBFE331C73EDF2783687283B22E"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:NAnt.Documenter, Version=0.8.888.15182, Culture=neutral"
+                "ScatterAssemblies"
+                {
+                    "_19846CBFE331C73EDF2783687283B22E"
+                    {
+                    "Name" = "8:NAnt.Documenter.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:NAnt.Documenter.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_2012ECD74E53469D8746C3F9756C63E9"
+            {
+            "SourcePath" = "8:..\\TaskImages\\sysinfotask.bmp"
+            "TargetName" = "8:sysinfotask.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_8A78B74CA28C44D398F131A88117F975"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_23CA9CC90D7C49D682017E90A97227AC"
+            {
+            "SourcePath" = "8:..\\TaskImages\\copytask.bmp"
+            "TargetName" = "8:copytask.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_8A78B74CA28C44D398F131A88117F975"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_28DB5B9CFAEC46E293873A5070D30532"
+            {
+            "SourcePath" = "8:..\\TaskImages\\mailtask.bmp"
+            "TargetName" = "8:mailtask.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_8A78B74CA28C44D398F131A88117F975"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_2F67B3DC737C4B45A32CAB1491BD9BA5"
+            {
+            "SourcePath" = "8:..\\TaskImages\\ziptask.bmp"
+            "TargetName" = "8:ziptask.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_8A78B74CA28C44D398F131A88117F975"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_31D07EFA9EAB441D9F6C45E29ABC6D98"
+            {
+            "SourcePath" = "8:..\\NAntAddinDocs\\CollectionFiles\\NAntAddinDocsFIndex.HxK"
+            "TargetName" = "8:NAntAddinDocsFIndex.HxK"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_3A6F7B053C1F4707852A71DABAFABC4C"
+            {
+            "SourcePath" = "8:..\\TaskImages\\cltask.bmp"
+            "TargetName" = "8:cltask.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_8A78B74CA28C44D398F131A88117F975"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_44A2496582164A24B58085728F6252BF"
+            {
+            "SourcePath" = "8:..\\TaskImages\\sleeptask.bmp"
+            "TargetName" = "8:sleeptask.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_8A78B74CA28C44D398F131A88117F975"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{C7BF5952-4B9D-11D3-8E24-00C04F6837D0}:_4AE8D0CB64FE991178AF053D879056E4"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:TRUE"
+            "AssemblyAsmDisplayName" = "8:MSDDSP, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
+                "ScatterAssemblies"
+                {
+                    "_4AE8D0CB64FE991178AF053D879056E4"
+                    {
+                    "Name" = "8:MSDDSP.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:MSDDSP.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{C7BF5952-4B9D-11D3-8E24-00C04F6837D0}:_505A09C19AA5DCA0AE74E48E8411A802"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:Extensibility, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
+                "ScatterAssemblies"
+                {
+                    "_505A09C19AA5DCA0AE74E48E8411A802"
+                    {
+                    "Name" = "8:Extensibility.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:Extensibility.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_5195E60CA5D746EBAB6A1D9D570019CD"
+            {
+            "SourcePath" = "8:..\\nanttabicon.bmp"
+            "TargetName" = "8:nanttabicon.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_5319EC2292694324B970DD4CE7472211"
+            {
+            "SourcePath" = "8:..\\TaskImages\\ndoctask.bmp"
+            "TargetName" = "8:ndoctask.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_8A78B74CA28C44D398F131A88117F975"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_58D1ECB1929D43B6976126CEF40FBBC8"
+            {
+            "SourcePath" = "8:..\\TaskImages\\altask.bmp"
+            "TargetName" = "8:altask.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_8A78B74CA28C44D398F131A88117F975"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_5CBC4CAE2F7A4D50A44307216DAE82BA"
+            {
+            "SourcePath" = "8:..\\NAntAddinDocs\\CollectionFiles\\NAntAddinDocs.HxT"
+            "TargetName" = "8:NAntAddinDocs.HxT"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_6320409C4FD43EDC888DA26527713598"
+            {
+            "Signature" = "8:20000000f09d6b7f490ec201d0ced8e93829c20100914b6e490ec2010000000000100200000000000000000056005300550073006500720043006f006e00740072006f006c0048006f00730074002e0064006c006c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005600530055005300450052007e0031002e0044004c004c0000000000"
+            "SourcePath" = "8:VSUserControlHost.dll"
+            "TargetName" = "8:VSUserControlHost.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:2"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_6C081497546949BB90E8240147A8C81E"
+            {
+            "SourcePath" = "8:..\\license.rtf"
+            "TargetName" = "8:license.rtf"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{C7BF5952-4B9D-11D3-8E24-00C04F6837D0}:_6EBC6B2F18C8E61A4E688F79E067EDFC"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:CollectionGen, Version=1.0.834.34691, Culture=neutral"
+                "ScatterAssemblies"
+                {
+                    "_6EBC6B2F18C8E61A4E688F79E067EDFC"
+                    {
+                    "Name" = "8:CollectionGen.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:CollectionGen.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{C7BF5952-4B9D-11D3-8E24-00C04F6837D0}:_6F9623CF881F0933286A54455B698837"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:Microsoft.VisualStudio.WizardFramework, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
+                "ScatterAssemblies"
+                {
+                    "_6F9623CF881F0933286A54455B698837"
+                    {
+                    "Name" = "8:Microsoft.VisualStudio.WizardFramework.DLL"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:Microsoft.VisualStudio.WizardFramework.DLL"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{C7BF5952-4B9D-11D3-8E24-00C04F6837D0}:_6FB1F26B112ECF102F7946D39F399F62"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:EnvDTE, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
+                "ScatterAssemblies"
+                {
+                    "_6FB1F26B112ECF102F7946D39F399F62"
+                    {
+                    "Name" = "8:EnvDTE.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:EnvDTE.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_7001DD9B52F7401EA1E0C8F2EF96A8C5"
+            {
+            "SourcePath" = "8:..\\TaskImages\\echotask.bmp"
+            "TargetName" = "8:echotask.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_8A78B74CA28C44D398F131A88117F975"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_7DC6CFD7073D4B7898AF184918AD2226"
+            {
+            "SourcePath" = "8:..\\NAntTaskNodes.xml"
+            "TargetName" = "8:NAntTaskNodes.xml"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{C7BF5952-4B9D-11D3-8E24-00C04F6837D0}:_833FF17624CD5D0ADE37B28AA866DF06"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:Office, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
+                "ScatterAssemblies"
+                {
+                    "_833FF17624CD5D0ADE37B28AA866DF06"
+                    {
+                    "Name" = "8:Office.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:Office.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{C7BF5952-4B9D-11D3-8E24-00C04F6837D0}:_857836CF13070F666A93E60073A94DE4"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:stdole, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
+                "ScatterAssemblies"
+                {
+                    "_857836CF13070F666A93E60073A94DE4"
+                    {
+                    "Name" = "8:stdole.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:stdole.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_8BAD7617A3EBBA6A0B31EBDDDF495FF5"
+            {
+            "Signature" = "8:2000000090754c4f231ac20140e62c323c29c20180be4a313c29c20100000000b47c000000000000000000004e0041006e00740041006400640069006e002e0074006c00620000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004e0041004e005400410044007e0031002e0054004c00420000000000"
+            "SourcePath" = "8:NAntAddin.tlb"
+            "TargetName" = "8:NAntAddin.tlb"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:2"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{C7BF5952-4B9D-11D3-8E24-00C04F6837D0}:_8F9FB6D023C190D71E5747794E0B896C"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:NDoc.Core, Version=1.0.896.35686, Culture=neutral"
+                "ScatterAssemblies"
+                {
+                    "_8F9FB6D023C190D71E5747794E0B896C"
+                    {
+                    "Name" = "8:NDoc.Core.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:NDoc.Core.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_92A6D626D0BD4B4EA6388E5BE86EF12C"
+            {
+            "SourcePath" = "8:..\\TaskImages\\scripttask.bmp"
+            "TargetName" = "8:scripttask.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_8A78B74CA28C44D398F131A88117F975"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_9E597E9E27E44348A94598C376439890"
+            {
+            "SourcePath" = "8:..\\NAntAddinDocs\\CollectionFiles\\NAntAddinDocs.HxC"
+            "TargetName" = "8:NAntAddinDocs.HxC"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{C7BF5952-4B9D-11D3-8E24-00C04F6837D0}:_9E8902F72C5A969F5BF4ACF9A5E5E954"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:Microsoft.VSDesigner, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
+                "ScatterAssemblies"
+                {
+                    "_9E8902F72C5A969F5BF4ACF9A5E5E954"
+                    {
+                    "Name" = "8:Microsoft.VSDesigner.DLL"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:Microsoft.VSDesigner.DLL"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_A28D0424F0324B2FBBC12009267DA959"
+            {
+            "SourcePath" = "8:..\\TaskImages\\mkdirtask.bmp"
+            "TargetName" = "8:mkdirtask.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_8A78B74CA28C44D398F131A88117F975"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_A39AC5F500EF460F82AD669CBC36CA4D"
+            {
+            "SourcePath" = "8:..\\license.txt"
+            "TargetName" = "8:license.txt"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_AFFF0BBA9B2248758BF07CDFCA89E46B"
+            {
+            "SourcePath" = "8:..\\TaskImages\\gettask.bmp"
+            "TargetName" = "8:gettask.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_8A78B74CA28C44D398F131A88117F975"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_B0194DC41A70431BBF42A63B28843FA6"
+            {
+            "SourcePath" = "8:..\\TaskImages\\vbctask.bmp"
+            "TargetName" = "8:vbctask.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_8A78B74CA28C44D398F131A88117F975"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_B45B28B228CC43D4B688DA91EE5E16A1"
+            {
+            "SourcePath" = "8:..\\TaskImages\\jsctask.bmp"
+            "TargetName" = "8:jsctask.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_8A78B74CA28C44D398F131A88117F975"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_B62B51FF39644545A95AE6D4EAFF1944"
+            {
+            "SourcePath" = "8:..\\NAntAddinDocs\\CollectionFiles\\NAntAddinDocsAIndex.HxK"
+            "TargetName" = "8:NAntAddinDocsAIndex.HxK"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_B704EECC79E24F13A174337BEC58B9BC"
+            {
+            "SourcePath" = "8:..\\TaskImages\\attrtask.bmp"
+            "TargetName" = "8:attrtask.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_8A78B74CA28C44D398F131A88117F975"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_B7E96D343A004D90B3E014BEB548EBC8"
+            {
+            "SourcePath" = "8:..\\TaskImages\\calltask.bmp"
+            "TargetName" = "8:calltask.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_8A78B74CA28C44D398F131A88117F975"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_BB46974257F747C394E14C58FE5F9019"
+            {
+            "SourcePath" = "8:..\\TaskImages\\tstamptask.bmp"
+            "TargetName" = "8:tstamptask.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_8A78B74CA28C44D398F131A88117F975"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_BF55DAF09FB34EBAAFDD25778B15D206"
+            {
+            "SourcePath" = "8:..\\TaskImages\\nunittask.bmp"
+            "TargetName" = "8:nunittask.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_8A78B74CA28C44D398F131A88117F975"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_C7E0310AC8A1489D9AEC5794B9BAFBAE"
+            {
+            "SourcePath" = "8:..\\TaskImages\\touchtask.bmp"
+            "TargetName" = "8:touchtask.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_8A78B74CA28C44D398F131A88117F975"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_CF2429D73F694CDAB0B60BED1193D16E"
+            {
+            "SourcePath" = "8:..\\TaskImages\\movetask.bmp"
+            "TargetName" = "8:movetask.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_8A78B74CA28C44D398F131A88117F975"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_D0E27319D5EF4077A1118FDFE0C0301F"
+            {
+            "SourcePath" = "8:..\\TaskImages\\linktask.bmp"
+            "TargetName" = "8:linktask.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_8A78B74CA28C44D398F131A88117F975"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{C7BF5952-4B9D-11D3-8E24-00C04F6837D0}:_D131E359150236FE75574A1E72448E78"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:VSLangProj, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
+                "ScatterAssemblies"
+                {
+                    "_D131E359150236FE75574A1E72448E78"
+                    {
+                    "Name" = "8:VSLangProj.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:VSLangProj.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_E04DC26EB6854F2BB2082718D63BF3AE"
+            {
+            "SourcePath" = "8:..\\TaskImages\\includetask.bmp"
+            "TargetName" = "8:includetask.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_8A78B74CA28C44D398F131A88117F975"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{C7BF5952-4B9D-11D3-8E24-00C04F6837D0}:_E052FE66D61CB8FE4862B7B59EC8081D"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:NAnt.Core, Version=0.7.9.0, Culture=neutral"
+                "ScatterAssemblies"
+                {
+                    "_E052FE66D61CB8FE4862B7B59EC8081D"
+                    {
+                    "Name" = "8:NAnt.Core.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:NAnt.Core.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_E0FCC0925F534334B9C739DF1F653064"
+            {
+            "SourcePath" = "8:..\\NAntAddinDocs\\NAntAddinDocs.HxA"
+            "TargetName" = "8:NAntAddinDocs.HxA"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{C7BF5952-4B9D-11D3-8E24-00C04F6837D0}:_E4909A5BB6E254EDC76D9E7477FBA34E"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:Microsoft.VisualStudio.Designer.Interfaces, Version=1.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
+                "ScatterAssemblies"
+                {
+                    "_E4909A5BB6E254EDC76D9E7477FBA34E"
+                    {
+                    "Name" = "8:Microsoft.VisualStudio.Designer.Interfaces.DLL"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:Microsoft.VisualStudio.Designer.Interfaces.DLL"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_E5D7DD6CBFBB4DCDAE6AE74BF8092743"
+            {
+            "SourcePath" = "8:..\\TaskImages\\exittask.bmp"
+            "TargetName" = "8:exittask.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_8A78B74CA28C44D398F131A88117F975"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_E673E30231B3EF40A2F21B69C1FEA92B"
+            {
+            "Signature" = "8:2000000080d72ba5ce95c10130aa72453929c20180d72ba5ce95c1010000000000e0050000000000000000006400740065002e006f006c006200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+            "SourcePath" = "8:dte.olb"
+            "TargetName" = "8:dte.olb"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{C7BF5952-4B9D-11D3-8E24-00C04F6837D0}:_E963FFE051DA87F468F4D6F78E7E9A04"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:NZipLib, Version=0.2.0.0, Culture=neutral"
+                "ScatterAssemblies"
+                {
+                    "_E963FFE051DA87F468F4D6F78E7E9A04"
+                    {
+                    "Name" = "8:NZipLib.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:NZipLib.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_EE8B031BE7E240308C97E994C97F311B"
+            {
+            "SourcePath" = "8:..\\installlogo.bmp"
+            "TargetName" = "8:installlogo.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_F5E79FDD1D54404D84BA74EAD3F9C213"
+            {
+            "SourcePath" = "8:..\\NAntAddinDocs\\CollectionFiles\\NAntAddinDocsKIndex.HxK"
+            "TargetName" = "8:NAntAddinDocsKIndex.HxK"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{C7BF5952-4B9D-11D3-8E24-00C04F6837D0}:_F769D90E424BAB44D700398D5A133D76"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:NUnitCore, Version=1.11.786.40392, Culture=neutral, PublicKeyToken=1fd1558aebfb1c04"
+                "ScatterAssemblies"
+                {
+                    "_F769D90E424BAB44D700398D5A133D76"
+                    {
+                    "Name" = "8:NUnitCore.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:NUnitCore.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_F97428455705405CB76945F1C25FAE47"
+            {
+            "SourcePath" = "8:..\\TaskImages\\deletetask.bmp"
+            "TargetName" = "8:deletetask.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_8A78B74CA28C44D398F131A88117F975"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{C7BF5952-4B9D-11D3-8E24-00C04F6837D0}:_F981FE432E5DDA7B19D5290867D8490D"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:Microsoft.VisualStudio, Version=1.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
+                "ScatterAssemblies"
+                {
+                    "_F981FE432E5DDA7B19D5290867D8490D"
+                    {
+                    "Name" = "8:Microsoft.VisualStudio.DLL"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:Microsoft.VisualStudio.DLL"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_FA56A6201F514C1E89C8AF335A429A4D"
+            {
+            "SourcePath" = "8:..\\TaskImages\\csharptask.bmp"
+            "TargetName" = "8:csharptask.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_8A78B74CA28C44D398F131A88117F975"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+        }
+        "FileType"
+        {
+        }
+        "Folder"
+        {
+            "{EE62640D-12F2-11D3-8D6C-00A0C9CFCEE6}:_85C81E029DC0431194504C62563AE22F"
+            {
+            "DefaultLocation" = "8:[ProgramFilesFolder]\\[ProductName]"
+            "Name" = "8:#1925"
+            "AlwaysCreate" = "11:FALSE"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Property" = "8:TARGETDIR"
+                "Folders"
+                {
+                    "{461E96AF-1495-11D3-8D6C-00A0C9CFCEE6}:_6D2541DC85734FCE8627F32BA6170ED2"
+                    {
+                    "Name" = "8:1033"
+                    "AlwaysCreate" = "11:FALSE"
+                    "Condition" = "8:"
+                    "Transitive" = "11:FALSE"
+                    "Property" = "8:_058DF15603664357AFD25CCA4B1BA0C6"
+                        "Folders"
+                        {
+                        }
+                    }
+                    "{461E96AF-1495-11D3-8D6C-00A0C9CFCEE6}:_8A78B74CA28C44D398F131A88117F975"
+                    {
+                    "Name" = "8:TaskImages"
+                    "AlwaysCreate" = "11:FALSE"
+                    "Condition" = "8:"
+                    "Transitive" = "11:FALSE"
+                    "Property" = "8:_894CC070D21B4947BF6EBF707D168201"
+                        "Folders"
+                        {
+                        }
+                    }
+                }
+            }
+            "{777C097F-0ED8-11D3-8D6C-00A0C9CFCEE6}:_8DAE1B62AFD3428298865863FE4842DB"
+            {
+            "Name" = "8:#1919"
+            "AlwaysCreate" = "11:FALSE"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Property" = "8:ProgramMenuFolder"
+                "Folders"
+                {
+                }
+            }
+            "{777C097F-0ED8-11D3-8D6C-00A0C9CFCEE6}:_E804B5AB38744457B02D606A66566B61"
+            {
+            "Name" = "8:#1916"
+            "AlwaysCreate" = "11:FALSE"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Property" = "8:DesktopFolder"
+                "Folders"
+                {
+                }
+            }
+        }
+        "LaunchCondition"
+        {
+            "{B26CFB94-18E3-45BF-8D42-933BDAF5E76C}:_D029F97DAA754820A0661B13C490730D"
+            {
+            "Name" = "8:MsiNetAssemblySupport"
+            "Condition" = "8:MsiNetAssemblySupport"
+            "Message" = "8:[VSDNETMSG]"
+            }
+        }
+        "Locator"
+        {
+        }
+        "Shortcut"
+        {
+        }
+        "Sequences"
+        {
+        }
+        "Registry"
+        {
+            "HKLM"
+            {
+                "Keys"
+                {
+                    "{7DF0CD0A-FF27-11D2-8D6B-00A0C9CFCEE6}:_236CEB5148B046B1A4BDA1BF5CEFB8EA"
+                    {
+                    "Name" = "8:Software"
+                    "Condition" = "8:"
+                    "AlwaysCreate" = "11:FALSE"
+                    "DeleteAtUninstall" = "11:FALSE"
+                    "Transitive" = "11:FALSE"
+                        "Keys"
+                        {
+                            "{7DF0CD0A-FF27-11D2-8D6B-00A0C9CFCEE6}:_C92213B3EE4E4E7397B8269CC3737E22"
+                            {
+                            "Name" = "8:Microsoft"
+                            "Condition" = "8:"
+                            "AlwaysCreate" = "11:TRUE"
+                            "DeleteAtUninstall" = "11:FALSE"
+                            "Transitive" = "11:FALSE"
+                                "Keys"
+                                {
+                                    "{7DF0CD0A-FF27-11D2-8D6B-00A0C9CFCEE6}:_94152089119A48039447086112BE55DD"
+                                    {
+                                    "Name" = "8:VisualStudio"
+                                    "Condition" = "8:"
+                                    "AlwaysCreate" = "11:TRUE"
+                                    "DeleteAtUninstall" = "11:FALSE"
+                                    "Transitive" = "11:FALSE"
+                                        "Keys"
+                                        {
+                                            "{7DF0CD0A-FF27-11D2-8D6B-00A0C9CFCEE6}:_DFAE4B0162064F9FB959F76F787E2C47"
+                                            {
+                                            "Name" = "8:7.0"
+                                            "Condition" = "8:"
+                                            "AlwaysCreate" = "11:TRUE"
+                                            "DeleteAtUninstall" = "11:FALSE"
+                                            "Transitive" = "11:FALSE"
+                                                "Keys"
+                                                {
+                                                    "{7DF0CD0A-FF27-11D2-8D6B-00A0C9CFCEE6}:_3D60175F92534B698936AC73A1CFC73F"
+                                                    {
+                                                    "Name" = "8:AddIns"
+                                                    "Condition" = "8:"
+                                                    "AlwaysCreate" = "11:TRUE"
+                                                    "DeleteAtUninstall" = "11:FALSE"
+                                                    "Transitive" = "11:FALSE"
+                                                        "Keys"
+                                                        {
+                                                            "{7DF0CD0A-FF27-11D2-8D6B-00A0C9CFCEE6}:_A3AC4A330F91429693B8902E08F340CA"
+                                                            {
+                                                            "Name" = "8:NAnt.Addin"
+                                                            "Condition" = "8:"
+                                                            "AlwaysCreate" = "11:TRUE"
+                                                            "DeleteAtUninstall" = "11:FALSE"
+                                                            "Transitive" = "11:FALSE"
+                                                                "Keys"
+                                                                {
+                                                                }
+                                                                "Values"
+                                                                {
+                                                                    "{B73D4F5A-FF29-11D2-8D6B-00A0C9CFCEE6}:_021D88F9324B498C94CA3538AEEEE174"
+                                                                    {
+                                                                    "Name" = "8:CommandPreload"
+                                                                    "Condition" = "8:"
+                                                                    "Transitive" = "11:FALSE"
+                                                                    "ValueTypes" = "3:3"
+                                                                    "Value" = "3:1"
+                                                                    }
+                                                                    "{B73D4F5A-FF29-11D2-8D6B-00A0C9CFCEE6}:_196B7AF3DC1840FEAFBBF32110D5B630"
+                                                                    {
+                                                                    "Name" = "8:Description"
+                                                                    "Condition" = "8:"
+                                                                    "Transitive" = "11:FALSE"
+                                                                    "ValueTypes" = "3:1"
+                                                                    "Value" = "8:Integrates the NAnt build system with the Visual Studio.NET IDE."
+                                                                    }
+                                                                    "{B73D4F5A-FF29-11D2-8D6B-00A0C9CFCEE6}:_2D23D62D3401460490C7C97E3184FFD1"
+                                                                    {
+                                                                    "Name" = "8:LoadBehavior"
+                                                                    "Condition" = "8:"
+                                                                    "Transitive" = "11:FALSE"
+                                                                    "ValueTypes" = "3:3"
+                                                                    "Value" = "3:1"
+                                                                    }
+                                                                    "{B73D4F5A-FF29-11D2-8D6B-00A0C9CFCEE6}:_2F89360B8ECC49109C8186177A00B78B"
+                                                                    {
+                                                                    "Name" = "8:AboutBoxDetails"
+                                                                    "Condition" = "8:"
+                                                                    "Transitive" = "11:FALSE"
+                                                                    "ValueTypes" = "3:1"
+                                                                    "Value" = "8:Contributed by Jayme C. Edwards to the NAntContrib project."
+                                                                    }
+                                                                    "{B73D4F5A-FF29-11D2-8D6B-00A0C9CFCEE6}:_34274B6DC43A4EAB81B7E623267B20C9"
+                                                                    {
+                                                                    "Name" = "8:SatelliteDLLPath"
+                                                                    "Condition" = "8:"
+                                                                    "Transitive" = "11:FALSE"
+                                                                    "ValueTypes" = "3:1"
+                                                                    "Value" = "8:[TARGETDIR]"
+                                                                    }
+                                                                    "{B73D4F5A-FF29-11D2-8D6B-00A0C9CFCEE6}:_73D120F7300741F2BF4BCEA3EA55D2C3"
+                                                                    {
+                                                                    "Name" = "8:FriendlyName"
+                                                                    "Condition" = "8:"
+                                                                    "Transitive" = "11:FALSE"
+                                                                    "ValueTypes" = "3:1"
+                                                                    "Value" = "8:NAnt Addin"
+                                                                    }
+                                                                    "{B73D4F5A-FF29-11D2-8D6B-00A0C9CFCEE6}:_995F870C531249A3ACF990450B203115"
+                                                                    {
+                                                                    "Name" = "8:CommandLineSafe"
+                                                                    "Condition" = "8:"
+                                                                    "Transitive" = "11:FALSE"
+                                                                    "ValueTypes" = "3:3"
+                                                                    "Value" = "3:0"
+                                                                    }
+                                                                    "{B73D4F5A-FF29-11D2-8D6B-00A0C9CFCEE6}:_A7EDB9C58F1542B29046445F5B35F552"
+                                                                    {
+                                                                    "Name" = "8:AboutBoxIcon"
+                                                                    "Condition" = "8:"
+                                                                    "Transitive" = "11:FALSE"
+                                                                    "ValueTypes" = "3:4"
+                                                                    "Value" = "8:0000010001002020100000000000E8020000160000002800000020000000400000000100040000000000000200000000000000000000100000001000000000000000000080000080000000808000800000008000800080800000C0C0C000808080000000FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000888888888888888000000000000000008FFFFFFFFFFFFF8000000000000000008F8F8F8F8F8F8F8000000000000000008FFFFFFFFFFFFF8777777777777770008F8F8F8F8F8F8F8F7F7F7F7F7F7F70008F7F7F7F7F7F7F87F7F7F7F7F7F7700087F747F7F747F78F7F7F7F7F7F7F70008F74447F74447F87F7F7F7F7F7F77000874444474444478F7F7F7F7F7F7F70008F7F4F7F7F4F7F87F7F7F7F7F7F7700000084FF4FF4FFFFF7F7F7F7F7F7F70000408F4FFF4FFF4FFF7F7F7F7F7F770000004FFF4FFF4FFFFFF7F7F7F7F7F70000408F4FFF4FFF4FFFFF7F7F7F7F770000008FFFFFFFFFFFFFFFF7F7F7F7F70000008FFFFFFFFFFFFFFFFF7F7F7F770000008FFFFFFFFFFFFFFFFFF7F7F7F70000008FFFFFFFFFFFFFFFFFFF7F7F770000008FFFFFFFFFFFFFFFFFFFF7F7F70000008FFFFFFFFFFFFFFFFFFFFF7F770000008FFFFFFFFFFFFFFFFFFFFFF7F70000004444444C4C44C44C4CCC4CCCCC000000444444C444C44C4CCC4CCCCCCC00000044444444C444C4C4CCCCCCCCCC0000004444444C44C44C4C4C4C4CCCCC00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF8000FFFF8000FFFF8000000180000001800000018000000180000001800000018000000180000001F0000001D0000001F0000001D0000001F0000001F0000001F0000001F0000001F0000001F0000001F0000001F0000001F0000001F0000001F0000001FFFFFFFFFFFFFFFFFFFFFFFF"
+                                                                    }
+                                                                    "{B73D4F5A-FF29-11D2-8D6B-00A0C9CFCEE6}:_D22F64A11CD74AD18AA2C82A671DECE1"
+                                                                    {
+                                                                    "Name" = "8:SatelliteDLLName"
+                                                                    "Condition" = "8:"
+                                                                    "Transitive" = "11:FALSE"
+                                                                    "ValueTypes" = "3:1"
+                                                                    "Value" = "8:NAntAddinResources.dll"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                        "Values"
+                                                        {
+                                                        }
+                                                    }
+                                                }
+                                                "Values"
+                                                {
+                                                }
+                                            }
+                                        }
+                                        "Values"
+                                        {
+                                        }
+                                    }
+                                }
+                                "Values"
+                                {
+                                }
+                            }
+                        }
+                        "Values"
+                        {
+                        }
+                    }
+                }
+            }
+            "HKCU"
+            {
+                "Keys"
+                {
+                    "{7DF0CD0A-FF27-11D2-8D6B-00A0C9CFCEE6}:_682BF5D1AAAF4AFA9BC7E7B289FBBB7A"
+                    {
+                    "Name" = "8:Software"
+                    "Condition" = "8:"
+                    "AlwaysCreate" = "11:FALSE"
+                    "DeleteAtUninstall" = "11:FALSE"
+                    "Transitive" = "11:FALSE"
+                        "Keys"
+                        {
+                        }
+                        "Values"
+                        {
+                        }
+                    }
+                }
+            }
+            "HKCR"
+            {
+                "Keys"
+                {
+                }
+            }
+            "HKU"
+            {
+                "Keys"
+                {
+                }
+            }
+            "HKPU"
+            {
+                "Keys"
+                {
+                }
+            }
+        }
+        "ProjectOutput"
+        {
+            "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_2D4407EB6718496CB46C1DD4BF4FF62A"
+            {
+            "SourcePath" = "8:..\\obj\\Debug\\NAntAddin.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:2"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:Built"
+            "OutputProjectCanonicalName" = "8:NAntAddin.csproj"
+            "OutputProjectGuid" = "8:{64B219F9-E3C1-4E9E-ADEF-65E23D289343}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
+            }
+            "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_432A2BC42AF34A328DA9CBA8D2EEDA3F"
+            {
+            "SourcePath" = "8:..\\NAntAddinResources\\Debug\\NAntAddinResources.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_6D2541DC85734FCE8627F32BA6170ED2"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:Built"
+            "OutputProjectCanonicalName" = "8:NAntAddinResources\\NAntAddinResources.vcproj"
+            "OutputProjectGuid" = "8:{2C89FF21-1BA7-4C9F-874D-64992FA1C542}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
+            }
+            "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_87C6BC5675FE420D8EF5185C8981D854"
+            {
+            "SourcePath" = "8:..\\NAntAddinDocs\\NAntAddinDocs.HxS"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_85C81E029DC0431194504C62563AE22F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:HXSFiles"
+            "OutputProjectCanonicalName" = "8:NAntAddinDocs\\NAntAddinDocs.HWProj"
+            "OutputProjectGuid" = "8:{4B22B602-C9B5-4697-B867-24E8207563C5}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
+            }
+        }
+        "Product"
+        {
+        "Name" = "8:Microsoft Visual Studio"
+        "ProductName" = "8:NAnt Addin"
+        "ProductCode" = "8:{A14003F5-AFBF-444B-9CE1-F9842C6E7C2E}"
+        "PackageCode" = "8:{29B94734-1A14-4174-9DA0-41BCFDDF31D7}"
+        "UpgradeCode" = "8:{15AE65D6-A43C-44E6-85B9-B4FF03910829}"
+        "RestartWWWService" = "11:FALSE"
+        "RemovePreviousVersions" = "11:FALSE"
+        "DetectNewerInstalledVersion" = "11:TRUE"
+        "ProductVersion" = "8:1.0.0"
+        "Manufacturer" = "8:NAnt Addin"
+        "ARPHELPTELEPHONE" = "8:"
+        "ARPHELPLINK" = "8:"
+        "Title" = "8:NAnt Addin"
+        "Subject" = "8:"
+        "ARPCONTACT" = "8:Jayme C. Edwards"
+        "Keywords" = "8:"
+        "ARPCOMMENTS" = "8:NAnt Addin for Visual Studio.NET"
+        "ARPURLINFOABOUT" = "8:"
+        "ARPPRODUCTICON" = "8:"
+        "ARPIconIndex" = "3:0"
+        "SearchPath" = "8:"
+        "UseSystemSearchPath" = "11:TRUE"
+        }
+        "MsiBootstrapper"
+        {
+        "LangId" = "3:1033"
+        }
+        "MergeModule"
+        {
+            "{AC8774A4-3E09-11D3-8E14-00C04F6837D0}:_097FB8CFDC3B4ACE8D32B9F4DF05F5EA"
+            {
+            "UseDynamicProperties" = "11:TRUE"
+            "IsDependency" = "11:FALSE"
+            "SourcePath" = "8:VIntegration_VS7_RTL_---_---.msm"
+            "ModuleSignature" = "8:VIntegration_VS7.58894039_0926_11D5_A548_0090278A1BB8"
+                "Properties"
+                {
+                }
+            "LanguageId" = "3:0"
+            "Exclude" = "11:FALSE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
+            "{AC8774A4-3E09-11D3-8E14-00C04F6837D0}:_307A3BE63CE04F26ACE9DD384BCFD83C"
+            {
+            "UseDynamicProperties" = "11:TRUE"
+            "IsDependency" = "11:FALSE"
+            "SourcePath" = "8:MSHelp2_RegTables__RTL_---_---.msm"
+            "ModuleSignature" = "8:MSHelp2_RegTables_.5A8D2AA7_2CAA_4de4_A994_11D0431D8A2A"
+                "Properties"
+                {
+                }
+            "LanguageId" = "3:0"
+            "Exclude" = "11:FALSE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
+            "{AC8774A4-3E09-11D3-8E14-00C04F6837D0}:_350915BDB3F344D39F7C6DBADEB66B1D"
+            {
+            "UseDynamicProperties" = "11:TRUE"
+            "IsDependency" = "11:FALSE"
+            "SourcePath" = "8:VIntegration_VS7_AppSearch_RTL_---_---.msm"
+            "ModuleSignature" = "8:MergeModule.102996FF964C4880B7BB79506692219D"
+                "Properties"
+                {
+                }
+            "LanguageId" = "3:0"
+            "Exclude" = "11:FALSE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
+            "{AC8774A4-3E09-11D3-8E14-00C04F6837D0}:_4AD3B3F0D6964378AFB12C755EEB956F"
+            {
+            "UseDynamicProperties" = "11:TRUE"
+            "IsDependency" = "11:FALSE"
+            "SourcePath" = "8:VS_Combined_Help_Collec_RTL_---_enu.msm"
+            "ModuleSignature" = "8:VS_Combined_Help_Collec.FC4F73D8_50FC_11D4_A53E_0090278A1BB8"
+                "Properties"
+                {
+                }
+            "LanguageId" = "3:1033"
+            "Exclude" = "11:FALSE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
+            "{AC8774A4-3E09-11D3-8E14-00C04F6837D0}:_7A76B53960674DEEA345BACE83872C41"
+            {
+            "UseDynamicProperties" = "11:TRUE"
+            "IsDependency" = "11:FALSE"
+            "SourcePath" = "8:VS_Combined_Help_Collec_RTL_---_---.msm"
+            "ModuleSignature" = "8:VS_Combined_Help_Collec.FC4F73C8_50FC_11D4_A53E_0090278A1BB8"
+                "Properties"
+                {
+                }
+            "LanguageId" = "3:0"
+            "Exclude" = "11:FALSE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
+            "{AC8774A4-3E09-11D3-8E14-00C04F6837D0}:_A11F04FB3972426EBC50F80E34A67ED8"
+            {
+            "UseDynamicProperties" = "11:TRUE"
+            "IsDependency" = "11:FALSE"
+            "SourcePath" = "8:HTML_Help_Registration__RTL_---_---.msm"
+            "ModuleSignature" = "8:HTML_Help_Registration_.5C144DB8_72F5_11D4_A53F_0090278A1BB8"
+                "Properties"
+                {
+                }
+            "LanguageId" = "3:0"
+            "Exclude" = "11:FALSE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
+            "{AC8774A4-3E09-11D3-8E14-00C04F6837D0}:_DDB30A55F6C0424F960EF2DA07C4BF2D"
+            {
+            "UseDynamicProperties" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:dotnetfxredist_x86_enu.msm"
+            "ModuleSignature" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
+                "Properties"
+                {
+                }
+            "LanguageId" = "3:1033"
+            "Exclude" = "11:TRUE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
+        }
+        "UserInterface"
+        {
+            "{7DFFC192-4ABE-11D3-8D78-00A0C9CFCEE6}:_17E0E34553D24B8B889871EDCBEE1107"
+            {
+            "Name" = "8:#1900"
+            "Sequence" = "3:2"
+            "Attributes" = "3:1"
+                "Dialogs"
+                {
+                    "{E4ECAB24-4AB7-11D3-8D78-00A0C9CFCEE6}:_0B3DF476253A4C408BD006629FFE2B2E"
+                    {
+                    "Sequence" = "3:400"
+                    "DisplayName" = "8:Confirm Installation"
+                    "UseDynamicProperties" = "11:TRUE"
+                    "IsDependency" = "11:FALSE"
+                    "SourcePath" = "8:<VsdDialogDir>\\VsdAdminConfirmDlg.wid"
+                    "ModuleSignature" = "8:VsdDialogs.FA58E60A_A1E8_4876_95FC_2AC3B5AAA5F8"
+                        "Properties"
+                        {
+                            "BannerBitmap"
+                            {
+                            "Name" = "8:BannerBitmap"
+                            "DisplayName" = "8:#1001"
+                            "Description" = "8:#1101"
+                            "Type" = "3:8"
+                            "ContextData" = "8:Bitmap"
+                            "Attributes" = "3:4"
+                            "Setting" = "3:2"
+                            "Value" = "8:_EE8B031BE7E240308C97E994C97F311B"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                        }
+                    }
+                    "{E4ECAB24-4AB7-11D3-8D78-00A0C9CFCEE6}:_0FAF1A77660441EFA56EF5E25301FA82"
+                    {
+                    "Sequence" = "3:200"
+                    "DisplayName" = "8:License Agreement"
+                    "UseDynamicProperties" = "11:TRUE"
+                    "IsDependency" = "11:FALSE"
+                    "SourcePath" = "8:<VsdDialogDir>\\VsdAdminLicenseDlg.wid"
+                    "ModuleSignature" = "8:VsdDialogs.836CEFDB_3154_4E4C_84F8_DC115871E5E1"
+                        "Properties"
+                        {
+                            "BannerBitmap"
+                            {
+                            "Name" = "8:BannerBitmap"
+                            "DisplayName" = "8:#1001"
+                            "Description" = "8:#1101"
+                            "Type" = "3:8"
+                            "ContextData" = "8:Bitmap"
+                            "Attributes" = "3:4"
+                            "Setting" = "3:2"
+                            "Value" = "8:_EE8B031BE7E240308C97E994C97F311B"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                            "EulaText"
+                            {
+                            "Name" = "8:EulaText"
+                            "DisplayName" = "8:#1008"
+                            "Description" = "8:#1108"
+                            "Type" = "3:6"
+                            "ContextData" = "8:"
+                            "Attributes" = "3:0"
+                            "Setting" = "3:2"
+                            "Value" = "8:_6C081497546949BB90E8240147A8C81E"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                            "Sunken"
+                            {
+                            "Name" = "8:Sunken"
+                            "DisplayName" = "8:#1007"
+                            "Description" = "8:#1107"
+                            "Type" = "3:5"
+                            "ContextData" = "8:4;True=4;False=0"
+                            "Attributes" = "3:0"
+                            "Setting" = "3:0"
+                            "Value" = "3:4"
+                            "DefaultValue" = "3:4"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                        }
+                    }
+                    "{E4ECAB24-4AB7-11D3-8D78-00A0C9CFCEE6}:_2F0E6F6B604747A6A1982B81D1BD54E3"
+                    {
+                    "Sequence" = "3:300"
+                    "DisplayName" = "8:Installation Folder"
+                    "UseDynamicProperties" = "11:TRUE"
+                    "IsDependency" = "11:FALSE"
+                    "SourcePath" = "8:<VsdDialogDir>\\VsdAdminFolderDlg.wid"
+                    "ModuleSignature" = "8:VsdDialogs.2DED2424_5429_4616_A1AD_4D62837C2ADA"
+                        "Properties"
+                        {
+                            "BannerBitmap"
+                            {
+                            "Name" = "8:BannerBitmap"
+                            "DisplayName" = "8:#1001"
+                            "Description" = "8:#1101"
+                            "Type" = "3:8"
+                            "ContextData" = "8:Bitmap"
+                            "Attributes" = "3:4"
+                            "Setting" = "3:2"
+                            "Value" = "8:_EE8B031BE7E240308C97E994C97F311B"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                        }
+                    }
+                    "{E4ECAB24-4AB7-11D3-8D78-00A0C9CFCEE6}:_311D6F66BE1C4098BEA06D011DD7D172"
+                    {
+                    "Sequence" = "3:100"
+                    "DisplayName" = "8:Welcome"
+                    "UseDynamicProperties" = "11:TRUE"
+                    "IsDependency" = "11:FALSE"
+                    "SourcePath" = "8:<VsdDialogDir>\\VsdAdminWelcomeDlg.wid"
+                    "ModuleSignature" = "8:VsdDialogs.E35A0E2C_F131_4B57_B946_59A1A2A8F45F"
+                        "Properties"
+                        {
+                            "BannerBitmap"
+                            {
+                            "Name" = "8:BannerBitmap"
+                            "DisplayName" = "8:#1001"
+                            "Description" = "8:#1101"
+                            "Type" = "3:8"
+                            "ContextData" = "8:Bitmap"
+                            "Attributes" = "3:4"
+                            "Setting" = "3:2"
+                            "Value" = "8:_EE8B031BE7E240308C97E994C97F311B"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                            "CopyrightWarning"
+                            {
+                            "Name" = "8:CopyrightWarning"
+                            "DisplayName" = "8:#1002"
+                            "Description" = "8:#1102"
+                            "Type" = "3:3"
+                            "ContextData" = "8:"
+                            "Attributes" = "3:0"
+                            "Setting" = "3:1"
+                            "Value" = "8:#1202"
+                            "DefaultValue" = "8:#1202"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                            "Welcome"
+                            {
+                            "Name" = "8:Welcome"
+                            "DisplayName" = "8:#1003"
+                            "Description" = "8:#1103"
+                            "Type" = "3:3"
+                            "ContextData" = "8:"
+                            "Attributes" = "3:0"
+                            "Setting" = "3:1"
+                            "Value" = "8:#1203"
+                            "DefaultValue" = "8:#1203"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                        }
+                    }
+                }
+            }
+            "{E4ECAB26-4AB7-11D3-8D78-00A0C9CFCEE6}:_43D606383F6443A391AB0C6449BE6171"
+            {
+            "UseDynamicProperties" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "SourcePath" = "8:<VsdDialogDir>\\VsdBasicDialogs.wim"
+            "ModuleSignature" = "8:VsdDialogs.CE4B864F_F1C1_4B85_98D4_2A2BF5FFB12B"
+            }
+            "{7DFFC192-4ABE-11D3-8D78-00A0C9CFCEE6}:_57377989C52244CE9055A02BF70E8595"
+            {
+            "Name" = "8:#1902"
+            "Sequence" = "3:2"
+            "Attributes" = "3:3"
+                "Dialogs"
+                {
+                    "{E4ECAB24-4AB7-11D3-8D78-00A0C9CFCEE6}:_B72B30A01AA44E9583B28EA1356281CB"
+                    {
+                    "Sequence" = "3:100"
+                    "DisplayName" = "8:Finished"
+                    "UseDynamicProperties" = "11:TRUE"
+                    "IsDependency" = "11:FALSE"
+                    "SourcePath" = "8:<VsdDialogDir>\\VsdAdminFinishedDlg.wid"
+                    "ModuleSignature" = "8:VsdDialogs.83D22742_1B79_46f6_9A99_DF0F2BD4C077"
+                        "Properties"
+                        {
+                            "BannerBitmap"
+                            {
+                            "Name" = "8:BannerBitmap"
+                            "DisplayName" = "8:#1001"
+                            "Description" = "8:#1101"
+                            "Type" = "3:8"
+                            "ContextData" = "8:Bitmap"
+                            "Attributes" = "3:4"
+                            "Setting" = "3:2"
+                            "Value" = "8:_EE8B031BE7E240308C97E994C97F311B"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                        }
+                    }
+                }
+            }
+            "{7DFFC192-4ABE-11D3-8D78-00A0C9CFCEE6}:_66DA283E972F4BDDAAA4EC04D4057EB1"
+            {
+            "Name" = "8:#1901"
+            "Sequence" = "3:1"
+            "Attributes" = "3:2"
+                "Dialogs"
+                {
+                    "{E4ECAB24-4AB7-11D3-8D78-00A0C9CFCEE6}:_EC1C903E1961498684FCB6B9195ABCF4"
+                    {
+                    "Sequence" = "3:100"
+                    "DisplayName" = "8:Progress"
+                    "UseDynamicProperties" = "11:TRUE"
+                    "IsDependency" = "11:FALSE"
+                    "SourcePath" = "8:<VsdDialogDir>\\VsdProgressDlg.wid"
+                    "ModuleSignature" = "8:VsdDialogs.4FB12620_0D15_42D0_8677_2766FFA6923F"
+                        "Properties"
+                        {
+                            "BannerBitmap"
+                            {
+                            "Name" = "8:BannerBitmap"
+                            "DisplayName" = "8:#1001"
+                            "Description" = "8:#1101"
+                            "Type" = "3:8"
+                            "ContextData" = "8:Bitmap"
+                            "Attributes" = "3:4"
+                            "Setting" = "3:2"
+                            "Value" = "8:_EE8B031BE7E240308C97E994C97F311B"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                            "ShowProgress"
+                            {
+                            "Name" = "8:ShowProgress"
+                            "DisplayName" = "8:#1009"
+                            "Description" = "8:#1109"
+                            "Type" = "3:5"
+                            "ContextData" = "8:1;True=1;False=0"
+                            "Attributes" = "3:0"
+                            "Setting" = "3:0"
+                            "Value" = "3:1"
+                            "DefaultValue" = "3:1"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                        }
+                    }
+                }
+            }
+            "{7DFFC192-4ABE-11D3-8D78-00A0C9CFCEE6}:_877D6D3A4DA240B8BBD3C8B53F23C0EE"
+            {
+            "Name" = "8:#1901"
+            "Sequence" = "3:2"
+            "Attributes" = "3:2"
+                "Dialogs"
+                {
+                    "{E4ECAB24-4AB7-11D3-8D78-00A0C9CFCEE6}:_597DEA4FC38147A99F50A2E2D3C54FCB"
+                    {
+                    "Sequence" = "3:100"
+                    "DisplayName" = "8:Progress"
+                    "UseDynamicProperties" = "11:TRUE"
+                    "IsDependency" = "11:FALSE"
+                    "SourcePath" = "8:<VsdDialogDir>\\VsdAdminProgressDlg.wid"
+                    "ModuleSignature" = "8:VsdDialogs.EE9A1AFA_41DD_4514_B727_DF0ACA1D7389"
+                        "Properties"
+                        {
+                            "BannerBitmap"
+                            {
+                            "Name" = "8:BannerBitmap"
+                            "DisplayName" = "8:#1001"
+                            "Description" = "8:#1101"
+                            "Type" = "3:8"
+                            "ContextData" = "8:Bitmap"
+                            "Attributes" = "3:4"
+                            "Setting" = "3:2"
+                            "Value" = "8:_EE8B031BE7E240308C97E994C97F311B"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                            "ShowProgress"
+                            {
+                            "Name" = "8:ShowProgress"
+                            "DisplayName" = "8:#1009"
+                            "Description" = "8:#1109"
+                            "Type" = "3:5"
+                            "ContextData" = "8:1;True=1;False=0"
+                            "Attributes" = "3:0"
+                            "Setting" = "3:0"
+                            "Value" = "3:1"
+                            "DefaultValue" = "3:1"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                        }
+                    }
+                }
+            }
+            "{7DFFC192-4ABE-11D3-8D78-00A0C9CFCEE6}:_B3D3D1CDF167486C92A167BFA47F7751"
+            {
+            "Name" = "8:#1902"
+            "Sequence" = "3:1"
+            "Attributes" = "3:3"
+                "Dialogs"
+                {
+                    "{E4ECAB24-4AB7-11D3-8D78-00A0C9CFCEE6}:_2589386E91E248E384C715FF496ACB16"
+                    {
+                    "Sequence" = "3:100"
+                    "DisplayName" = "8:Finished"
+                    "UseDynamicProperties" = "11:TRUE"
+                    "IsDependency" = "11:FALSE"
+                    "SourcePath" = "8:<VsdDialogDir>\\VsdFinishedDlg.wid"
+                    "ModuleSignature" = "8:VsdDialogs.1DB77F5A_BA5C_4470_89B6_0B0EC07E3A10"
+                        "Properties"
+                        {
+                            "BannerBitmap"
+                            {
+                            "Name" = "8:BannerBitmap"
+                            "DisplayName" = "8:#1001"
+                            "Description" = "8:#1101"
+                            "Type" = "3:8"
+                            "ContextData" = "8:Bitmap"
+                            "Attributes" = "3:4"
+                            "Setting" = "3:2"
+                            "Value" = "8:_EE8B031BE7E240308C97E994C97F311B"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                        }
+                    }
+                }
+            }
+            "{7DFFC192-4ABE-11D3-8D78-00A0C9CFCEE6}:_B965812E75594159948CD1A27ED59454"
+            {
+            "Name" = "8:#1900"
+            "Sequence" = "3:1"
+            "Attributes" = "3:1"
+                "Dialogs"
+                {
+                    "{E4ECAB24-4AB7-11D3-8D78-00A0C9CFCEE6}:_4E7FF1064E404466997C04487825111D"
+                    {
+                    "Sequence" = "3:300"
+                    "DisplayName" = "8:Installation Folder"
+                    "UseDynamicProperties" = "11:TRUE"
+                    "IsDependency" = "11:FALSE"
+                    "SourcePath" = "8:<VsdDialogDir>\\VsdFolderDlg.wid"
+                    "ModuleSignature" = "8:VsdDialogs.C113BC36_2532_4D45_8099_4818B1133B2F"
+                        "Properties"
+                        {
+                            "BannerBitmap"
+                            {
+                            "Name" = "8:BannerBitmap"
+                            "DisplayName" = "8:#1001"
+                            "Description" = "8:#1101"
+                            "Type" = "3:8"
+                            "ContextData" = "8:Bitmap"
+                            "Attributes" = "3:4"
+                            "Setting" = "3:2"
+                            "Value" = "8:_EE8B031BE7E240308C97E994C97F311B"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                        }
+                    }
+                    "{E4ECAB24-4AB7-11D3-8D78-00A0C9CFCEE6}:_59A5201B1FD64A1585C30532EF2A708C"
+                    {
+                    "Sequence" = "3:200"
+                    "DisplayName" = "8:License Agreement"
+                    "UseDynamicProperties" = "11:TRUE"
+                    "IsDependency" = "11:FALSE"
+                    "SourcePath" = "8:<VsdDialogDir>\\VsdLicenseDlg.wid"
+                    "ModuleSignature" = "8:VsdDialogs.8FA7D956_B864_4FF4_92F0_FB2799B33176"
+                        "Properties"
+                        {
+                            "BannerBitmap"
+                            {
+                            "Name" = "8:BannerBitmap"
+                            "DisplayName" = "8:#1001"
+                            "Description" = "8:#1101"
+                            "Type" = "3:8"
+                            "ContextData" = "8:Bitmap"
+                            "Attributes" = "3:4"
+                            "Setting" = "3:2"
+                            "Value" = "8:_EE8B031BE7E240308C97E994C97F311B"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                            "EulaText"
+                            {
+                            "Name" = "8:EulaText"
+                            "DisplayName" = "8:#1008"
+                            "Description" = "8:#1108"
+                            "Type" = "3:6"
+                            "ContextData" = "8:"
+                            "Attributes" = "3:0"
+                            "Setting" = "3:2"
+                            "Value" = "8:_6C081497546949BB90E8240147A8C81E"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                            "Sunken"
+                            {
+                            "Name" = "8:Sunken"
+                            "DisplayName" = "8:#1007"
+                            "Description" = "8:#1107"
+                            "Type" = "3:5"
+                            "ContextData" = "8:4;True=4;False=0"
+                            "Attributes" = "3:0"
+                            "Setting" = "3:0"
+                            "Value" = "3:4"
+                            "DefaultValue" = "3:4"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                        }
+                    }
+                    "{E4ECAB24-4AB7-11D3-8D78-00A0C9CFCEE6}:_74049B1A0FB1403692FC99F359E445C2"
+                    {
+                    "Sequence" = "3:400"
+                    "DisplayName" = "8:Confirm Installation"
+                    "UseDynamicProperties" = "11:TRUE"
+                    "IsDependency" = "11:FALSE"
+                    "SourcePath" = "8:<VsdDialogDir>\\VsdConfirmDlg.wid"
+                    "ModuleSignature" = "8:VsdDialogs.6DBC9783_3677_4D68_8BF5_D749558A0AC1"
+                        "Properties"
+                        {
+                            "BannerBitmap"
+                            {
+                            "Name" = "8:BannerBitmap"
+                            "DisplayName" = "8:#1001"
+                            "Description" = "8:#1101"
+                            "Type" = "3:8"
+                            "ContextData" = "8:Bitmap"
+                            "Attributes" = "3:4"
+                            "Setting" = "3:2"
+                            "Value" = "8:_EE8B031BE7E240308C97E994C97F311B"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                        }
+                    }
+                    "{E4ECAB24-4AB7-11D3-8D78-00A0C9CFCEE6}:_A135A26CF93740B9A5A8BEB226707D68"
+                    {
+                    "Sequence" = "3:100"
+                    "DisplayName" = "8:Welcome"
+                    "UseDynamicProperties" = "11:TRUE"
+                    "IsDependency" = "11:FALSE"
+                    "SourcePath" = "8:<VsdDialogDir>\\VsdWelcomeDlg.wid"
+                    "ModuleSignature" = "8:VsdDialogs.68F69290_BB7C_474E_A153_6679845F3DDF"
+                        "Properties"
+                        {
+                            "BannerBitmap"
+                            {
+                            "Name" = "8:BannerBitmap"
+                            "DisplayName" = "8:#1001"
+                            "Description" = "8:#1101"
+                            "Type" = "3:8"
+                            "ContextData" = "8:Bitmap"
+                            "Attributes" = "3:4"
+                            "Setting" = "3:2"
+                            "Value" = "8:_EE8B031BE7E240308C97E994C97F311B"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                            "CopyrightWarning"
+                            {
+                            "Name" = "8:CopyrightWarning"
+                            "DisplayName" = "8:#1002"
+                            "Description" = "8:#1102"
+                            "Type" = "3:3"
+                            "ContextData" = "8:"
+                            "Attributes" = "3:0"
+                            "Setting" = "3:1"
+                            "Value" = "8:#1202"
+                            "DefaultValue" = "8:#1202"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                            "Welcome"
+                            {
+                            "Name" = "8:Welcome"
+                            "DisplayName" = "8:#1003"
+                            "Description" = "8:#1103"
+                            "Type" = "3:3"
+                            "ContextData" = "8:"
+                            "Attributes" = "3:0"
+                            "Setting" = "3:1"
+                            "Value" = "8:#1203"
+                            "DefaultValue" = "8:#1203"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                        }
+                    }
+                }
+            }
+            "{E4ECAB26-4AB7-11D3-8D78-00A0C9CFCEE6}:_D1C158A80539455CA5D0868398542A0B"
+            {
+            "UseDynamicProperties" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "SourcePath" = "8:<VsdDialogDir>\\VsdUserInterface.wim"
+            "ModuleSignature" = "8:VsdUserInterface.524F4245_5254_5341_4C45_534153783400"
+            }
+        }
+    }
+}
