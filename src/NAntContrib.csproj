@@ -232,11 +232,6 @@
                     BuildAction="Compile"
                 />
                 <File
-                    RelPath="Tasks\IISTasks.cs"
-                    SubType="Code"
-                    BuildAction="Compile"
-                />
-                <File
                     RelPath="Tasks\MgmtClassGenTask.cs"
                     SubType="Code"
                     BuildAction="Compile"
@@ -736,6 +731,26 @@
                 />
                 <File
                     RelPath = "Tasks\Svn\SvnUpdateTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Web\CreateVirtualDirectory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Web\DeleteVirtualDirectory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Web\VirtualDirectoryInfo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Web\WebBase.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
