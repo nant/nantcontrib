@@ -67,12 +67,13 @@
     <echo message="**********************************************************************************" />
     <sysinfo />
   </target>
-  <target name="addin.compile" description="Compiles the Addin">
+  <target name="addin.compile" description="Compiles the Addin" depends="build.nant">
     <echo message="**************************************************" />
     <echo message="*" />
     <echo message="* Compiling C# Addin Class Library" />
     <echo message="*" />
     <echo message="**************************************************" />
+    <exec program="regasm" commandline="${dest.dir}\${product.name}.dll /silent /unregister" failonerror="false"/>
     <exec program="resgen" commandline="NAntAddin.resx ${dest.dir}\NAnt.Contrib.NAntAddin.Addin.resources" />
     <exec program="resgen" commandline="Controls\AboutDialog.resx ${dest.dir}\NAnt.Contrib.NAntAddin.Dialogs.AboutDialog.resources" />
     <exec program="resgen" commandline="Controls\AddPropertyDialog.resx ${dest.dir}\NAnt.Contrib.NAntAddin.Dialogs.AddPropertyDialog.resources" />
@@ -113,8 +114,9 @@
         <includes name="${dest.dir}\**.resources" />
       </fileset>
     </delete>
+    <exec program="regasm" commandline="${dest.dir}\${product.name}.dll /tlb:${dest.dir}\${product.name}.tlb /codebase ${dest.dir}\${product.name}.dll" />
   </target>
-  <target name="resources.compile" description="Compiles Addin Resources">
+  <target name="resources.compile" description="Compiles Addin Resources" depends="addin.compile">
     <echo message="**************************************************" />
     <echo message="*" />
     <echo message="* Compiling C++ Resource Library Source" />
@@ -122,8 +124,8 @@
     <echo message="**************************************************" />
     <property name="resources.dir" value="NAntAddinResources" />
 	<property name="resources.dest.dir" value="${dest.dir}\1033" />
-    <mkdir dir="${resources.dest.dir}" />
-    <cl outputdir="${resources.dest.dir}">
+      <mkdir dir="${resources.dest.dir}" />
+      <cl outputdir="${resources.dest.dir}">
       <includedirs>
         <includes name="${sys.env.INCLUDE}" asis="true" />
         <includes name="${resources.dir}" />
@@ -195,15 +197,15 @@
       </fileset>
     </delete>
   </target>
-  <target name="build" description="Builds the NAnt Addin" depends="prepare,build.nant,addin.compile,resources.compile,content.deploy,vsdocs,assemblies.deploy" />
-  <target name="build.nant" description="Compiles NAnt">
+  <target name="build" description="Builds the NAnt Addin" depends="assemblies.deploy" />
+  <target name="build.nant" description="Compiles NAnt" depends="prepare">
     <echo message="**************************************************" />
     <echo message="*" />
     <echo message="* Building NAnt..." />
     <echo message="*" />
     <echo message="**************************************************" />
     <property name="nant.dir" value="..\..\..\NAnt" />
-	<property name="nantbuild.dir" value="${nant.dir}\build" />
+    <property name="nantbuild.dir" value="${nant.dir}\build" />
     <nant buildfile="${nant.dir}\NAnt.build" target="build" basedir="${nant.dir}" />
     <copy file="${nantbuild.dir}\CollectionGen.dll" todir="${dest.dir}" />
     <copy file="${nantbuild.dir}\NAnt.Core.dll" todir="${dest.dir}" />
@@ -225,15 +227,18 @@
     <taskdef assembly="${nantcontrib.dir}\build\NAnt.Contrib.Tasks.dll"/>
   </target>
   <target name="clean" description="Deletes Build Output">
+	<exec program="regsvr32" commandline="/u /s ${dest.dir}\VSUserControlHost.dll" failonerror="false" />
+	<exec program="regasm" commandline="${dest.dir}\${product.name}.dll /silent /unregister" failonerror="false" />
     <delete dir="${dest.dir}" failonerror="false" />
   </target>
   <target name="rebuild" description="Cleans and Builds the Addin" depends="clean,build" />
-  <target name="content.deploy" description="Copies Static Content to the Build Directory">
+  <target name="content.deploy" description="Copies Static Content to the Build Directory" depends="resources.compile">
     <echo message="**************************************************" />
     <echo message="*" />
     <echo message="* Deploying Static Files..." />
     <echo message="*" />
     <echo message="**************************************************" />
+    <exec program="regsvr32" commandline="/u /s ${dest.dir}\VSUserControlHost.dll" failonerror="false" />
     <copy todir="${dest.dir}">
       <fileset>
         <includes name="*.bmp" />
@@ -249,8 +254,9 @@
         <includes name="TaskImages\*.bmp" />
       </fileset>
     </copy>
+    <exec program="regsvr32" commandline="/s ${dest.dir}\VSUserControlHost.dll" />
   </target>
-  <target name="vsdocs" description="Builds the User Documentation">
+  <target name="vsdocs" description="Builds the User Documentation" depends="content.deploy">
     <echo message="**************************************************" />
     <echo message="*" />
     <echo message="* Compiling HTML Help..." />
@@ -279,27 +285,12 @@
     <echo message="**************************************************" />
     <exec program="&quot;${helpsdk.dir}\hxreg&quot;" commandline="-n ${product.name} -i ${product.name} -c ${dest.dir}\NAntAddinDocs.HxC -s ${dest.dir}\NAntAddinDocs.HxS " />
   </target>
-  <target name="assemblies.deploy" description="Copies Assemblies to the Build Directory">
-    <echo message="**************************************************" />
-    <echo message="*" />
-    <echo message="* Deploying Shared Assemblies..." />
-    <echo message="*" />
-    <echo message="**************************************************" />
-    <copy todir="${dest.dir}" file="${vslibs.dir}\extensibility.dll"/>
-    <copy todir="${dest.dir}" file="${vslibs.dir}\vslangproj.dll"/>
-    <copy todir="${dest.dir}" file="${vside.dir}\microsoft.visualstudio.designer.interfaces.dll"/>
-    <copy todir="${dest.dir}" file="${vside.dir}\microsoft.visualstudio.wizardframework.dll"/>
-    <copy todir="${dest.dir}" file="${vside.dir}\microsoft.visualstudio.dll"/>
-    <copy todir="${dest.dir}" file="${vside.dir}\microsoft.vsdesigner.dll"/>
-    <copy todir="${dest.dir}" file="${dotnetlibs.dir}\msddsp.dll"/>
-    <copy todir="${dest.dir}" file="${dotnetlibs.dir}\msddslmp.dll"/>
+  <target name="assemblies.deploy" description="Copies Assemblies to the Build Directory" depends="vsdocs">
     <echo message="**************************************************" />
     <echo message="*" />
     <echo message="* Registering Addin..." />
     <echo message="*" />
     <echo message="**************************************************" />
-    <exec program="regsvr32" commandline="/s ${dest.dir}\VSUserControlHost.dll" />
-    <exec program="regasm" commandline="${dest.dir}\${product.name}.dll /tlb:${dest.dir}\${product.name}.tlb /codebase ${dest.dir}\${product.name}.dll" />
     <script language="C#">
       <code><![CDATA[
       public static void ScriptMain(Project project) {
@@ -379,9 +370,7 @@
       </fileset>
     </delete>
   </target>
-  <target name="build.installtask" description="Builds the MSI Task">
-  </target>
-  <target name="build.install" description="Builds the MSI Install" depends="build.nantcontrib">
+  <target name="build.install" description="Builds the MSI Install" depends="build.nantcontrib, build">
     <echo message="**************************************************" />
     <echo message="*" />
     <echo message="* Building MSI (Windows Installer) File..." />
@@ -398,55 +387,50 @@
       <features>
         <feature name="DefaultFeature" title="NAnt Addin" display="2">
           <description>NAnt Addin for Visual Studio.NET</description>
-          <directory ref="AddinFolder"/>
-          <feature name="AddinFeature" title="Addin Runtime" display="0">
-            <directory ref="AddinFolder" />
-          </feature>
-          <feature name="AddinResourceFeature" title="Addin Resources" display="0">
-            <directory ref="AddinResourceFolder" />	
-          </feature>
-          <feature name="AddinTaskImageFeature" title="Addin Task Images" display="0">
-            <directory ref="AddinTaskImageFolder" />	
-          </feature>
+          <directory ref="ADDINFOLDER"/>
+          <feature name="AddinFeature" display="0" />
+          <feature name="AddinResourceFeature" display="0" />
+          <feature name="AddinTaskImageFeature" display="0" />
         </feature>
       </features>
       <components>
         <component name="AddinFiles" id="{53064B03-10ED-45B8-A612-757B75217122}" attr="2">
-          <directory ref="AddinFolder" />
+          <directory ref="ADDINFOLDER" />
           <feature ref="AddinFeature" />
-          <key file="NAntAddin.dll" />
+          <key file="nanttabicon.bmp" />
         </component>
         <component name="AddinResourceFiles" id="{B72B91FE-3625-4B83-977E-BE3CA2EADBCE}" attr="2">
-          <directory ref="AddinResourceFolder" />
+          <directory ref="ADDINRESOURCEFOLDER" />
           <feature ref="AddinResourceFeature" />
           <key file="NAntAddinResources.dll" />
         </component>
         <component name="AddinTaskImageFiles" id="{D0BE9760-37B1-4CB7-A3E6-A6FFAE0991A9}" attr="2">
-          <directory ref="AddinTaskImageFolder" />
+          <directory ref="ADDINTASKIMAGEFOLDER" />
           <feature ref="AddinTaskImageFeature" />
           <key file="altask.bmp" />
         </component>
       </components>
       <directories>
-        <directory name="AddinFolder" parent="ProgramFilesFolder" default="NAntAddin" />
-        <directory name="AddinResourceFolder" parent="AddinFolder" default="1033" />
-        <directory name="AddinTaskImageFolder" parent="AddinFolder" default="TaskImages" />
+        <directory name="ADDINFOLDER" foldername="NAntAddin" root="ProgramFilesFolder">
+	     <directory name="ADDINRESOURCEFOLDER" foldername="1033" />
+	     <directory name="ADDINTASKIMAGEFOLDER" foldername="TaskImages" />
+        </directory>
       </directories>
       <mergemodules>
         <includes name="NAntAddinSetup\*.msm" />
       </mergemodules>
       <registry>
-		<key root="machine" path="Software\Microsoft\VisualStudio\7.0\AddIns\NAnt.Addin">
-			<component ref="AddinFiles" />
-			<value name="SatelliteDLLName" value="NAntAddinResources.dll" />
-			<value name="SatelliteDLLPath" value="[AddinFolder]" />
-			<value name="FriendlyName" value="NAnt Addin" />
-			<value name="Description" value="Integrates the NAnt build system with the Visual Studio.NET IDE." />
-			<value name="CommandLineSafe" dword="00000000" />
-			<value name="CommandPreload" dword="00000001" />
-			<value name="LoadBehavior" dword="00000000" />
-			<value name="AboutBoxDetails" value="NAnt Addin for Visual Studio.NET." />
-			<value name="AboutBoxIcon">
+	  <key path="Software\Microsoft\VisualStudio\7.0\AddIns\NAnt.Addin" root="machine">
+	    <component ref="AddinFiles" />
+	    <value name="SatelliteDLLName" value="NAntAddinResources.dll" />
+        <value name="SatelliteDLLPath" value="[ADDINFOLDER]" />
+        <value name="FriendlyName" value="NAnt Addin" />
+	    <value name="Description" value="Integrates the NAnt build system with the Visual Studio.NET IDE." />
+	    <value name="CommandLineSafe" dword="00000000" />
+	    <value name="CommandPreload" dword="00000001" />
+	    <value name="LoadBehavior" dword="00000000" />
+	    <value name="AboutBoxDetails" value="NAnt Addin for Visual Studio.NET." />
+	    <value name="AboutBoxIcon">
 <![CDATA[00,00,01,00,01,00,20,20,10,00,00,00,00,00,e8,02,00,00,16,00,
 00,00,28,00,00,00,20,00,00,00,40,00,00,00,01,00,04,00,00,00,00,00,00,02,00,
 00,00,00,00,00,00,00,00,00,10,00,00,00,10,00,00,00,00,00,00,00,00,00,80,00,
@@ -478,7 +462,7 @@ ff,ff,ff,ff,ff,ff,ff,ff,ff,80,00,ff,ff,80,00,ff,ff,80,00,00,01,80,00,00,01,
 00,00,01,d0,00,00,01,f0,00,00,01,d0,00,00,01,f0,00,00,01,f0,00,00,01,f0,00,
 00,01,f0,00,00,01,f0,00,00,01,f0,00,00,01,f0,00,00,01,f0,00,00,01,f0,00,00,
 01,f0,00,00,01,f0,00,00,01,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff]]></value>
-		</key>
+	  </key>
       </registry>
     </msi>
   </target>
