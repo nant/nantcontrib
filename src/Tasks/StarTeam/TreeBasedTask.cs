@@ -58,7 +58,7 @@ namespace NAnt.Contrib.Tasks.StarTeam {
         /// <summary>
         /// Root StarTeam folder to begin operations on. Defaults to the root of the view.
         /// </summary>
-        [TaskAttribute("rootstarteamfolder",Required=true)]
+        [TaskAttribute("rootstarteamfolder", Required=true)]
         public virtual string rootstarteamfolder {
             set { _rootStarTeamFolder = value;}
         }

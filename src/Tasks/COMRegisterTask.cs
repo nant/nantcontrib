@@ -31,9 +31,18 @@ using NAnt.Core.Attributes;
 using NAnt.Core.Types;
 
 namespace NAnt.Contrib.Tasks {
-    /// <summary>Register COM servers or type libraries.</summary>
+    /// <summary>
+    /// Register COM servers or type libraries.
+    /// </summary>
     /// <remarks>
-    ///     <para>COM register task will try and register any type of COM related file that needs registering. .exe files will be registered as exe servers, .tlb files registered with RegisterTypeLib and for all other filetypes it will attempt to register them as dll servers.</para>
+    /// <para>
+    /// COM register task will try and register any type of COM related file 
+    /// that needs registering.
+    /// </para>
+    /// <para>Executable files (.exe) will be registered as exe servers, type 
+    /// libaries (.tlb) registered with RegisterTypeLib and for all other 
+    /// filetypes it will attempt to register them as dll servers.
+    /// </para>
     /// </remarks>
     /// <example>
     ///   <para>Register a single dll server.</para>

@@ -211,7 +211,7 @@ namespace NAnt.Contrib.Tasks {
                     string value;
 
                     Option ov = (Option) option;
-                    name  = ov.OptionName;
+                    name = ov.OptionName;
                     value = ov.Value;
 
                     Log(Level.Verbose, " -- {0} = {1}", name, value);

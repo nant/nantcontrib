@@ -44,10 +44,10 @@ struct FileCodeCountInfo {
 
 namespace NAnt.Contrib.Tasks.CodeStatsTask {
     /// <summary>
-    /// Generates Statistics from Source Code
+    /// Generates Statistics from source code.
     /// </summary>
     /// <remarks>
-    /// <para>Scans files in a fileset counting lines</para>
+    /// Scans files in a fileset counting lines.
     /// </remarks>
     /// <example>
     /// <para>Count all .cs files for a project</para>

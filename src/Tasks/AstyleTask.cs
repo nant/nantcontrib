@@ -35,23 +35,23 @@ using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks {
     /// <summary>
-    /// Formats source code in a given directory to a specified code
-    ///     format.
-    ///     
-    /// Most examples inline have been produced by Tal Davidson and team and are
-    ///     a part of the astyle documentation.  They have been included in
-    ///     the task documentation as an easy reference.
-    ///     
-    /// NOTE: This task relies on the astyle.exe file being in your path variable.
-    ///     Please download the astyel.exe from:
-    ///         http://astyle.sourceforge.net
+    /// Formats source code in a given directory to a specified code format.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Most examples inline have been produced by Tal Davidson and team and 
+    /// are part of the astyle documentation.  They have been included in
+    /// the task documentation as an easy reference.
+    /// </para>
+    /// NOTE: This task relies on the astyle.exe file being in your path variable.
+    /// Please download the astyle.exe from http://astyle.sourceforge.net.
+    /// </remarks>
     /// <example>
     ///   <code>
     ///     <![CDATA[
     /// <astyle style="NAnt" cleanup="true">
     ///     <sources>
-    ///         <includes name="**/**.cs" />
+    ///         <include name="**/**.cs" />
     ///     </sources>
     /// </astyle>
     ///     ]]>

@@ -31,10 +31,16 @@ using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks {
-    /// <summary>Registers a Microsoft HTML Help 2.0 Collection.</summary>
+    /// <summary>
+    /// Registers a Microsoft HTML Help 2.0 Collection.
+    /// </summary>
     /// <example>
     ///   <para>Register a help namespace.</para>
-    ///   <code><![CDATA[<hxreg namespace="MyProduct.MyHelp" title="MyProductHelp" collection="MyHelp.HxC" helpfile="MyHelp.HxS"/>]]></code>
+    ///   <code>
+    ///     <![CDATA[
+    /// <hxreg namespace="MyProduct.MyHelp" title="MyProductHelp" collection="MyHelp.HxC" helpfile="MyHelp.HxS" />
+    ///     ]]>
+    ///   </code>
     /// </example>
     [TaskName("hxreg")]
     public class HxRegTask : ExternalProgramBase {

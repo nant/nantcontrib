@@ -45,7 +45,7 @@ namespace NAnt.Contrib.Tasks {
         /// <summary>
         /// The name of the property to get.
         /// </summary>
-        [TaskAttribute("propname",Required=true)]
+        [TaskAttribute("propname", Required=true)]
         [StringValidator(AllowEmpty=false)]
         public String PropName {
             get { return _propName; }
@@ -55,7 +55,7 @@ namespace NAnt.Contrib.Tasks {
         /// <summary>
         /// The name of the property to store the value in.
         /// </summary>
-        [TaskAttribute("storein",Required=true)]
+        [TaskAttribute("storein", Required=true)]
         [StringValidator(AllowEmpty=false)]
         public String StoreIn {
             get { return _storeIn; }

@@ -32,14 +32,24 @@ using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks {
-    /// <summary>Discovers the URLs of XML web services on a web server and saves documents
+    /// <summary>
+    /// Discovers the URLs of XML web services on a web server and saves documents
     /// related to them to the local disk. The resulting .discomap, .wsdl, and .xsd files
-    /// can be used with the <see cref="WsdlTask"/> to produce web service clients and
-    /// and abstract web service servers using ASP.NET.</summary>
+    /// can be used with the <see cref="WsdlTask" /> to produce web service clients and
+    /// and abstract web service servers using ASP.NET.
+    /// </summary>
     /// <example>
     ///   <para>Generate a proxy class for a web service.</para>
-    ///   <code><![CDATA[<disco path="http://www.somewhere.com/myservice.wsdl"
-    ///     language="CS" namespace="MyCompany.MyService" outfile="MyService.cs" />]]></code>
+    ///   <code>
+    ///     <![CDATA[
+    /// <disco 
+    ///     path="http://www.somewhere.com/myservice.wsdl"
+    ///     language="CS" 
+    ///     namespace="MyCompany.MyService" 
+    ///     outfile="MyService.cs" 
+    /// />
+    ///     ]]>
+    ///   </code>
     /// </example>
     [TaskName("disco")]
     [ProgramLocation(LocationType.FrameworkSdkDir)]
@@ -59,6 +69,7 @@ namespace NAnt.Contrib.Tasks {
         private string _proxypassword = null;
         private string _proxydomain = null;
         #endregion Private Instance Fields
+
         #region Public Instance Properties
 
         /// <summary>The URL or Path to discover.</summary>

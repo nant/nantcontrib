@@ -29,7 +29,7 @@ using NAnt.Core.Tasks;
 using NAnt.Core.Types;
 using NAnt.Core.Util;
 
-namespace NAnt.Optional.Tasks {
+namespace NAnt.Contrib.Tasks {
     /// <summary>
     /// Generates a Windows Forms Control that wraps ActiveX Controls defined 
     /// in an OCX.
