@@ -75,31 +75,31 @@
             <arg value="find ${sf.net.web.path} -maxdepth 1 -type f -exec rm --force {} \;" />
         </exec>
         <!-- copy stylesheet to sourceforge (using compression) -->
-        <exec workingdir="${build.dir}" program="scp">
+        <exec workingdir="${build.dir}/doc" program="scp">
             <arg value="-C" />
             <arg value="style.css" />
             <arg value="${serverpart}" />
         </exec>
         <!-- copy arrow.gif to sourceforge (using compression) -->
-        <exec workingdir="${build.dir}" program="scp">
+        <exec workingdir="${build.dir}/doc" program="scp">
             <arg value="-C" />
             <arg value="arrow.gif" />
             <arg value="${serverpart}" />
         </exec>
         <!-- copy bullet.gif to sourceforge (using compression) -->
-        <exec workingdir="${build.dir}" program="scp">
+        <exec workingdir="${build.dir}/doc" program="scp">
             <arg value="-C" />
             <arg value="bullet.gif" />
             <arg value="${serverpart}" />
         </exec>
         <!-- copy index.html to sourceforge (using compression) -->
-        <exec workingdir="${build.dir}" program="scp">
+        <exec workingdir="${build.dir}/doc" program="scp">
             <arg value="-C" />
             <arg value="index.html" />
             <arg value="${serverpart}" />
         </exec>
         <!-- copy index.html to sourceforge (using compression) -->
-        <exec workingdir="${build.dir}" program="scp">
+        <exec workingdir="${build.dir}/doc" program="scp">
             <arg value="-C" />
             <arg value="license.html" />
             <arg value="${serverpart}" />
