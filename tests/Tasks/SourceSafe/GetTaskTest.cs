@@ -308,7 +308,7 @@ namespace Tests.NAnt.Contrib.Tasks.SourceSafe {
             _getTask = new GetTask();
             _getTask.Item = _project;
             _getTask.LocalPath = _workingFolder;
-            _getTask.RemoveDeleted = Boolean.TrueString;
+            _getTask.RemoveDeleted = true;
 
             //make the GetTask happy by giving it a dummy project file to reference
             XmlDocument doc = new XmlDocument();
@@ -408,7 +408,7 @@ namespace Tests.NAnt.Contrib.Tasks.SourceSafe {
             _project.SetItems(items);
 
             _subProject.Deleted = false;
-            _getTask.Recursive = Boolean.FalseString;
+            _getTask.Recursive = false;
 
             Assert.IsTrue(File.Exists(_localItemPath), "file should exist");
             Assert.IsTrue(File.Exists(_localSubItemPath), "file should exist");
@@ -427,7 +427,7 @@ namespace Tests.NAnt.Contrib.Tasks.SourceSafe {
             _project.SetItems(items);
 
             _subProject.Deleted = false;
-            _getTask.Recursive = Boolean.TrueString;
+            _getTask.Recursive = true;
 
             Assert.IsTrue(File.Exists(_localItemPath), "file should exist");
             Assert.IsTrue(File.Exists(_localSubItemPath), "file should also exist");
