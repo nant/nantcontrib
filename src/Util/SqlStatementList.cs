@@ -77,7 +77,7 @@ namespace NAnt.Contrib.Util {
         /// <param name="style">Style of the delimiter</param>
         public SqlStatementList(string delimiter, DelimiterStyle style) {
             _statements = new StringCollection();
-            _style     = style;
+            _style = style;
             _delimiter = delimiter;
         }
 
