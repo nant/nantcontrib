@@ -71,10 +71,10 @@ namespace NAnt.Contrib.Tasks
       /// Whether to append to the destination file (true),
       /// or replace it (false). Default is false.
       /// </summary>
-      [TaskAttribute("append")]
-      public string Append { 
-         get { return _append.ToString(); } 
-         set { _append = bool.Parse(value); } 
+      [TaskAttribute("append"), BooleanValidator()]
+      public bool Append { 
+         get { return _append; } 
+         set { _append = value; } 
       }
 
       /// <summary>
