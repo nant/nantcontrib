@@ -89,7 +89,7 @@ namespace NAnt.Contrib.Tasks {
         /// <summary>
         /// Used to select the files to copy. 
         /// </summary>
-        [FileSet("fileset")]
+        [BuildElement("fileset")]
         public virtual FileSet Sources {
             get { return _sources; }
             set { _sources = value; }
