@@ -31,7 +31,7 @@ using NAnt.Core.Attributes;
 
 using NAnt.Contrib.Util;
 
-namespace NAnt.Contrib.Tests.Util {
+namespace Tests.NAnt.Contrib.Util {
     /// <summary>
     /// SqlStatementList class tests
     /// </summary>
@@ -168,7 +168,7 @@ namespace NAnt.Contrib.Tests.Util {
                 buildFile = CreateFileWithContents(ProjectXml);
 
                 // create project for buildfile
-                Project project = new Project(buildFile, Level.Info);
+                Project project = new Project(buildFile, Level.Info, 0);
 
                 list.Properties = new PropertyDictionary(project);
                 list.Properties.Add("dbName", "master");
