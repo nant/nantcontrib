@@ -2085,7 +2085,7 @@ namespace NAnt.Contrib.Tasks.Msi {
             InstallerTable selfRegTable, InstallerTable modComponentTable) {
 
             XmlElement fileSetElem = (XmlElement)((XmlElement)_xmlNode).SelectSingleNode(
-                "components/component[@id='" + Component.id + "']/fileset");
+                "nant:components/nant:component[@id='" + Component.id + "']/nant:fileset", NamespaceManager);
 
             FileSet componentFiles = new FileSet();
             componentFiles.Project = Project;
