@@ -189,7 +189,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///         <list type="bullet">
         ///             <item><c>dependent</c> - If this is a per-user installation, the registry value is written under HKEY_CURRENT_USER.  If this is a per-machine installation, the registry value is written under HKEY_LOCAL_MACHINE. Note that a per-machine installation is specified by setting the ALLUSERS property to 1.</item>
         ///             <item><c>machine</c> represents HKEY_LOCAL_MACHINE</item>
-        ///             <item><c>root</c> represents HKEY_CLASSES_ROOT</item>
+        ///             <item><c>classes</c> represents HKEY_CLASSES_ROOT</item>
         ///             <item><c>user</c> represents HKEY_CURRENT_USER</item>
         ///             <item><c>users</c> represents HKEY_USERS</item>
         ///         </list>
@@ -1754,7 +1754,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///                <list type="bullet">
         ///                       <item><c>dependent</c> - If this is a per-user installation, the registry value is written under HKEY_CURRENT_USER.  If this is a per-machine installation, the registry value is written under HKEY_LOCAL_MACHINE. Note that a per-machine installation is specified by setting the ALLUSERS property to 1.</item>
         ///                    <item><c>machine</c> represents HKEY_LOCAL_MACHINE</item>
-        ///                    <item><c>root</c> represents HKEY_CLASSES_ROOT</item>
+        ///                    <item><c>classes</c> represents HKEY_CLASSES_ROOT</item>
         ///                    <item><c>user</c> represents HKEY_CURRENT_USER</item>
         ///                    <item><c>users</c> represents HKEY_USERS</item>
         ///                </list>

@@ -939,7 +939,7 @@ namespace NAnt.Contrib.Tasks.Msi {
                                 throw new BuildException("Registry value must have a name and/or value specified.");
 
                             // Insert the Value
-                            Log(Level.Verbose, "\t" + GetDisplayablePath(key.path) + @"#" + ((value.name == null || value.name == String.Empty) ? "(Default)":value.name));
+                            Log(Level.Verbose, "\t" + GetDisplayablePath(key.path.Replace("}", "}}").Replace("{", "{{")) + @"#" + ((value.name == null || value.name == String.Empty) ? "(Default)":value.name.Replace("}", "}}").Replace("{", "{{")));
 
                             string keyValue = null;
                             if (value.value != null && value.value != "") {
@@ -1024,7 +1024,7 @@ namespace NAnt.Contrib.Tasks.Msi {
                         regLocatorTable.InsertRecord(signature, rootKey.ToString(), key.path,
                             value.name, msidbLocatorTypeRawValue);
 
-                        Log(Level.Verbose, "\t" + GetDisplayablePath(key.path) + @"#" + value.name);
+                        Log(Level.Verbose, "\t" + GetDisplayablePath(key.path.Replace("}", "}}").Replace("{", "{{")) + @"#" + value.name.Replace("}", "}}").Replace("{", "{{"));
                     }
                 }
             }

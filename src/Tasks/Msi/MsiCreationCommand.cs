@@ -355,7 +355,7 @@ namespace NAnt.Contrib.Tasks.Msi {
                             mergeClass.OpenModule(mergeModule, 1033);
                         } catch (Exception ex) {
                             throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                                "File '{0}' cannot be openen.", mergeModule), Location, ex);
+                                "File '{0}' cannot be opened.", mergeModule), Location, ex);
                         }
 
                         // Once the merge is complete, components in the module are attached to the
