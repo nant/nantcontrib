@@ -400,7 +400,7 @@ namespace NAnt.Contrib.Tasks {
             Regex codeRegEx = new Regex(@"(Class|Module)\s*=\s*\w*;\s*(?<filename>.*($^\.)*)\s*$");
 
             // Regexp that extracts reference entries from the VBP (Reference=)
-            Regex referenceRegEx = new Regex(@"(Object|Reference)\s*=\s*({|\*\\G{)(?<tlbguid>[0-9\-A-Fa-f]*($^\.)*)}\#(?<majorver>[0-9($^\.)]*)\.(?<minorver>[0-9a-fA-F($^\.)]*)\#(?<lcid>[0-9]($^\.)*)(;|\#)(?<tlbname>.*)");
+            Regex referenceRegEx = new Regex(@"(Object|Reference)\s*=\s*({|\*\\G{)(?<tlbguid>[0-9\-A-Fa-f]*($^\.)*)}\#(?<majorver>[0-9($^\.)]*)\.(?<minorver>[0-9a-fA-F($^\.)]*)\#(?<lcid>[0-9]($^\.)*)(;|\#)(?<tlbname>[^\#\n\r]*)");
             
             string key = String.Empty;
             string keyValue = String.Empty;
