@@ -32,28 +32,28 @@ using SourceForge.NAnt.Attributes;
 
 namespace NAnt.Contrib.Tasks
 {
-	/// <summary>Compiles an XML Schema into a Microsoft.NET Assembly 
-	/// containing types that can marshal back and forth from XML elements 
-	/// and the objects that represent them. Also can create a W3C XML 
-	/// schema from an existing Microsoft.NET Assembly, XML document, 
-	/// or an old XDR format schema.</summary>
-	/// <example>
-	///   <para>Compile a schema.</para>
-	///   <code><![CDATA[<xsd schema="MySchema.xsd" element="MyRootElement" 
-	///     language="CS" namespace="MyCompany.MySchema" outputdir="build\bin" 
-	///     uri="http://MySchema'sTargetNamespace" />]]></code>
+    /// <summary>Compiles an XML Schema into a Microsoft.NET Assembly 
+    /// containing types that can marshal back and forth from XML elements 
+    /// and the objects that represent them. Also can create a W3C XML 
+    /// schema from an existing Microsoft.NET Assembly, XML document, 
+    /// or an old XDR format schema.</summary>
+    /// <example>
+    ///   <para>Compile a schema.</para>
+    ///   <code><![CDATA[<xsd schema="MySchema.xsd" element="MyRootElement" 
+    ///     language="CS" namespace="MyCompany.MySchema" outputdir="build\bin" 
+    ///     uri="http://MySchema'sTargetNamespace" />]]></code>
     ///   <para>Generate a schema from an Assembly.</para>
     ///   <code><![CDATA[<xsd assembly="MyAssembly.dll" outputdir="build\Schemas" />]]></code>
     ///   <para>Generate a schema from an XML doc.</para>
     ///   <code><![CDATA[<xsd xmldoc="MyDoc.xml" outputdir="build\Schemas" />]]></code>
     ///   <para>Generate a schema from an XDR schema.</para>
     ///   <code><![CDATA[<xsd xdr="MyOldSchema.xdr" outputdir="build\Schemas" />]]></code>
-	/// </example>
-	[TaskName("xsd")]
-	public class XsdTask : ExternalProgramBase
-	{
-		private string _args;
-		string _schema = null;
+    /// </example>
+    [TaskName("xsd")]
+    public class XsdTask : ExternalProgramBase
+    {
+        private string _args;
+        string _schema = null;
         string _target = null;
         string _element = null;
         string _language = null;
@@ -66,8 +66,8 @@ namespace NAnt.Contrib.Tasks
         string _xmldoc = null;
         string _xdr = null;
 
-		/// <summary>XML Schema (.xsd) filename.</summary>
-       	[TaskAttribute("schema")]
+        /// <summary>XML Schema (.xsd) filename.</summary>
+        [TaskAttribute("schema")]
         public string Schema {
             get { return _schema; }
             set { _schema = value; } 
