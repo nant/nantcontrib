@@ -530,6 +530,51 @@
                     BuildAction="Compile"
                 />
                 <File
+                    RelPath = "Tasks\SurroundSCM\SSCMBatch.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\SurroundSCM\SSCMBranch.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\SurroundSCM\SSCMCheckin.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\SurroundSCM\SSCMCheckout.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\SurroundSCM\SSCMFreeze.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\SurroundSCM\SSCMGet.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\SurroundSCM\SSCMLabel.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\SurroundSCM\SSCMTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\SurroundSCM\SSCMUnfreeze.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath="Tasks\Svn\AbstractSvnTask.cs"
                     SubType="Code"
                     BuildAction="Compile"
