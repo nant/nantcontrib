@@ -199,7 +199,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 			stFile.checkin("version updated via stautolabel", starTeamLockTypeStatics.UNLOCKED,true, true, true);
 			this.Label = string.Format("{0}{1}.{2}.{3}",this.Label,_versionMajor,_versionMinor,_versionBuild);
 			this.Properties["label"] = this.Label;
-			this.Properties["Version.text"] = string.Format("{1}.{2}.{3}",_versionMajor,_versionMinor,_versionBuild);
+			this.Properties["Version.text"] = _versionMajor.ToString() + "." + _versionMinor.ToString() + "." + _versionBuild.ToString();
 			this.Properties["Version.major"] = _versionMajor.ToString();
 			this.Properties["Version.minor"] = _versionMinor.ToString();
 			this.Properties["Version.build"] = _versionBuild.ToString();

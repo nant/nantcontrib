@@ -218,12 +218,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 					//check in anything else
 					stFile.checkinFrom(localFile.FullName, _comment, _lockStatus, true, true, true);
 					
-					//if user defined a label attach the item checked to that label
-					if(_stLabel != null) 
-					{
-						_stLabel.moveLabelToItem((InterOpStarTeam.StItem)stFile);
-						_stLabel.update();
-					}
+					_updateLabel(stFile);
 
 					//track files affected for non-verbose output
 					_filesAffected++;
@@ -316,15 +311,20 @@ namespace NAnt.Contrib.Tasks.StarTeam
 				InterOpStarTeam.StFile newFile = starteamFileFactory.Create(parentFolder);
 				newFile.Add(file.FullName, file.Name, null, _comment, starTeamLockTypeStatics.UNLOCKED, true, true);
 				
-				//if user defined a label attach the item checked to that label
-				if(_stLabel != null) 
-				{
-					_stLabel.moveLabelToItem((InterOpStarTeam.StItem)newFile);
-				}
-
+				_updateLabel(newFile);
 			}
 
 			return true;
 		}               
+
+		private void _updateLabel(InterOpStarTeam.StFile stFile) 
+		{
+			//if user defined a label attach the item checked to that label
+			if(_stLabel != null) 
+			{
+				_stLabel.moveLabelToItem((InterOpStarTeam.StItem)stFile);
+				_stLabel.update();
+			}
+		}
 	}
 }
