@@ -1319,7 +1319,12 @@ namespace NAnt.Contrib.Tasks {
                         return success;
                     }
 
-                    if (files.Contains(component.directory + "|" + component.key.file))
+					if ((component.attr & 4) != 0)
+					{
+						recComp.set_StringData(6, component.key.file);
+						compView.Modify(MsiViewModify.msiViewModifyMerge, recComp);
+					}
+					else if (files.Contains(component.directory + "|" + component.key.file))
                     {
                         string keyFileName = (string)files[component.directory + "|" + component.key.file];
                         if (keyFileName == "KeyIsDotNetAssembly")
@@ -2118,8 +2123,8 @@ namespace NAnt.Contrib.Tasks {
                             null, InstallerObject,
                             new object[] { 6 });
 
-                        recVal.set_StringData(1, "_" +
-                            Guid.NewGuid().ToString().ToUpper().Replace("-", null));
+                        recVal.set_StringData(1, (value.id != null ? value.id : "_" +
+                            Guid.NewGuid().ToString().ToUpper().Replace("-", null)));
                         recVal.set_StringData(2, rootKey.ToString());
                         recVal.set_StringData(3, key.path);
                         recVal.set_StringData(4, value.name);
