@@ -13,6 +13,8 @@ How to build.
 
 		bin\NAnt.exe package
 
+	NOTE: You may need to run vcvars32.bat to set your path correctly to run the unit tests.
+
 2) run NAntContrib.build referencing the version of NAnt just built.
 	- change to the NAntContrib directory
 	- build using the command
