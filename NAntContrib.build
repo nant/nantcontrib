@@ -83,7 +83,8 @@
             <references>
                 <includes name="${nant-bin.dir}/NUnitCore.dll"/>
                 <includes name="${nant-bin.dir}/NAnt.Core.dll"/>
-                <includes name="${build.dir}/${project.FormalName}.dll"/>
+                <includes name="${nant-bin.dir}/NAnt.Tests.dll"/>
+                <includes name="${build.dir}/${project.FormalName}.Tasks.dll"/>
             </references>
         </csc>
     </target>
