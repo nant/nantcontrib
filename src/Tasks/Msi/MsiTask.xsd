@@ -805,6 +805,11 @@
     <xsd:element name="fileset" type="msi:NAntFileSet" />
     <xsd:complexType name="NAntFileSet">
         <xsd:sequence>
+            <xsd:element name="include" type="msi:NAntFileSetPattern" minOccurs="0" maxOccurs="unbounded" />
+            <xsd:element name="exclude" type="msi:NAntFileSetPattern" minOccurs="0" maxOccurs="unbounded" />
+            <xsd:element name="includesfile" type="msi:NAntFileSetPattern" minOccurs="0" maxOccurs="unbounded" />
+            <xsd:element name="excludesfile" type="msi:NAntFileSetPattern" minOccurs="0" maxOccurs="unbounded" />
+            
             <xsd:element name="includes" type="msi:NAntFileSetPattern" minOccurs="0" maxOccurs="unbounded" />
             <xsd:element name="excludes" type="msi:NAntFileSetPattern" minOccurs="0" maxOccurs="unbounded" />
         </xsd:sequence>
@@ -812,7 +817,10 @@
     </xsd:complexType>
     <xsd:complexType name="NAntFileSetPattern">
         <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="frompath" type="xsd:string" use="optional" />
         <xsd:attribute name="asIs" type="xsd:boolean" use="optional" />
+        <xsd:attribute name="if" type="xsd:string" use="optional" />
+        <xsd:attribute name="unless" type="xsd:string" use="optional" />
     </xsd:complexType>
     <!-- msm/moduledependencies -->
     <xsd:element name="moduledependencies">
