@@ -25,6 +25,7 @@ using System.Text;
 using NAnt.Core;
 using NAnt.Core.Attributes;
 using NAnt.Core.Tasks;
+using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks.SurroundSCM {
     /// <summary>
@@ -82,7 +83,7 @@ namespace NAnt.Contrib.Tasks.SurroundSCM {
         /// The command line arguments for the external program.
         /// </value>
         public override string ProgramArguments {
-            get { return GetCommandlineArgument(); }
+            get { return GetCommandlineArguments(); }
         }
 
         #endregion Override implementation of ExternalProgramBase
