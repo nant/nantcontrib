@@ -533,10 +533,10 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     <para>Get the path of the web directory and the version of IIS.  Create new properties in the Msi file with those values.</para>
         ///     <code>
         /// &lt;search&gt;
-        ///     &lt;registry path="Software\Microsoft\InetStp" root="machine" &gt;
+        ///     &lt;registry type="registry" path="Software\Microsoft\InetStp" root="machine" &gt;
         ///         &lt;value name="PathWWWRoot" setproperty="IISWWWROOT" /&gt;
         ///     &lt;/registry&gt;
-        ///     &lt;registry path="SYSTEM\CurrentControlSet\Services\W3SVC\Parameters" root="machine" &gt;
+        ///     &lt;registry type="registry" path="SYSTEM\CurrentControlSet\Services\W3SVC\Parameters" root="machine" &gt;
         ///             &lt;value name="MajorVersion" setproperty="IISVERSION" /&gt;
         ///     &lt;/registry&gt;
         /// &lt;/search&gt; 
@@ -546,10 +546,10 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     <para>Shows two ways to get the default key value for the specified key.  Create new properties in the Msi file with those values.</para>
         ///     <code>
         /// &lt;search&gt;
-        ///     &lt;key type="registry" path="Software\Microsoft\MessengerService" root="machine" &gt;
+        ///     &lt;registry type="registry" path="Software\Microsoft\MessengerService" root="machine" &gt;
         ///         &lt;value setproperty="MSGSRVNAME" /&gt;
         ///         &lt;value name="" setproperty="MSGSRVNAME2" /&gt;
-        ///     &lt;/key&gt;
+        ///     &lt;/registry&gt;
         /// &lt;/search&gt; 
         ///     </code>
         /// </example>

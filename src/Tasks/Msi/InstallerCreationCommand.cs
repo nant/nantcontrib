@@ -998,7 +998,7 @@ namespace NAnt.Contrib.Tasks.Msi {
                                     regLocatorTable.InsertRecord(signature, rootKey.ToString(), regKey.path,
                                         value.name, msidbLocatorTypeRawValue);
 
-                                    Log(Level.Verbose, "\t" + GetDisplayablePath(regKey.path.Replace("}", "}}").Replace("{", "{{")) + @"#" + value.name.Replace("}", "}}").Replace("{", "{{"));
+                                    Log(Level.Verbose, "\t" + GetDisplayablePath(regKey.path.Replace("}", "}}").Replace("{", "{{")) + @"#" + ((value.name == null) ? "" : value.name.Replace("}", "}}").Replace("{", "{{")));
                                 }
                             }
                         }                        
