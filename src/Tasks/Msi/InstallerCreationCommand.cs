@@ -459,12 +459,31 @@ namespace NAnt.Contrib.Tasks.Msi {
 
             if (relativePath.ToString().Length != 0) {
                 string fullPath = Path.Combine(Path.Combine(Project.BaseDirectory, msi.sourcedir), relativePath.ToString());
+
+                bool createTemp = false;
+                DirectoryInfo di = new DirectoryInfo(fullPath);
+                DirectoryInfo lastExistingDir = di.Parent;
+                if (!di.Exists) {
+                    while (!lastExistingDir.Exists) {
+                        lastExistingDir = lastExistingDir.Parent;
+                    }
+                    di.Create();
+                    createTemp = true;
+                }
+
                 string path = GetShortPath(fullPath) + "|" + Directory.foldername;
+
+                if (createTemp) {
+                    while (!di.FullName.Equals(lastExistingDir.FullName)) {
+                        di.Delete();
+                        di = di.Parent;
+                    }
+                }
+
                 if (Directory.foldername == ".")
                     path = Directory.foldername;
 
-                Log(Level.Verbose, "\t" +
-                    Path.Combine(Project.BaseDirectory, Path.Combine(msi.sourcedir, relativePath.ToString())));
+                Log(Level.Verbose, "\t" +  relativePath.ToString());
 
                 // Insert the Directory
                 directoryTable.InsertRecord(Directory.name, newParent, path);
@@ -2109,30 +2128,12 @@ namespace NAnt.Contrib.Tasks.Msi {
             componentFiles.Parent = this;
             componentFiles.Initialize(fileSetElem);
 
-            MSIDirectory componentDirInfo = FindDirectory(ComponentDirectory);
+            if (componentFiles.BaseDirectory == null)
+                componentFiles.BaseDirectory = new DirectoryInfo(Project.BaseDirectory);
 
-            StringBuilder relativePath = new StringBuilder();
-
-            string newParent = null;
-            if (componentDirInfo is MSIRootDirectory) {
-                newParent = ((MSIRootDirectory)componentDirInfo).root;
-            } else {
-                newParent = FindParent(ComponentDirectory);
-            }
-
-            GetRelativePath(database,
-                ComponentDirectory,
-                newParent,
-                componentDirInfo.foldername,
-                relativePath, directoryTable);
-
-            string basePath = Path.Combine(Project.BaseDirectory, msi.sourcedir);
-            string fullPath = Path.Combine(basePath, relativePath.ToString());
-
-            for (int i = 0; i < componentFiles.FileNames.Count; i++) {
+            foreach (string filePath in componentFiles.FileNames) {
                 // Insert the File
-                string fileName = Path.GetFileName(componentFiles.FileNames[i]);
-                string filePath = Path.Combine(fullPath, fileName);
+                string fileName = Path.GetFileName(filePath);
 
                 MSIFileOverride fileOverride = null;
 
@@ -2163,9 +2164,7 @@ namespace NAnt.Contrib.Tasks.Msi {
                     throw new BuildException(String.Format(CultureInfo.InvariantCulture, "Could not open file {0}", filePath), Location, ex);
                 }
 
-                Log(Level.Verbose, "\t" +
-                    Path.Combine(Project.BaseDirectory, Path.Combine(Path.Combine(msi.sourcedir,
-                    relativePath.ToString()), fileName)));
+                Log(Level.Verbose, "\t" + filePath);
 
                 // If the file is an assembly, create a new component to contain it,
                 // add the new component, map the new component to the old component's
@@ -2342,13 +2341,19 @@ namespace NAnt.Contrib.Tasks.Msi {
                     language = (lcid == 0x007F) ? "0" : lcid.ToString(CultureInfo.InvariantCulture);
                 } else {
                     FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(filePath);
-                    language = fileVersionInfo.Language;
+
+                    if (!fileVersionInfo.Language.Equals(String.Empty)) {
+                        foreach (CultureInfo ci in CultureInfo.GetCultures(CultureTypes.AllCultures)) {
+                            if (ci.EnglishName.Equals(fileVersionInfo.Language)) {
+                                language = ci.LCID.ToString();
+                                break;
+                            }
+                        }
+                    }
                 }
             } catch {}
             return language;
         }
-
-
 
         /// <summary>
         /// Loads records for the Components table.
@@ -2381,6 +2386,7 @@ namespace NAnt.Contrib.Tasks.Msi {
                         int componentIndex = 0;
 
                         foreach (MSIComponent component in msi.components) {
+                            // TODO: This should only be done for MSI archives
                             featureComponents.Add(component.name, component.feature);
 
                             AddModuleComponentVirtual(database, modComponentTable, component.name);

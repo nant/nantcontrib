@@ -48,7 +48,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// <summary>
         /// The name of the .msi file that will be generated when the task completes execution.
         /// </summary>
-        [TaskAttribute("output", Required=true)]
+//        [TaskAttribute("output", Required=true)]
         public string MsiOutput
         {
             get { return _taskCommand.MsiBase.output; }
@@ -59,7 +59,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// that will be installed by the msi database. All files that will be included in your installation need 
         /// to be located directly within or in subdirectories of this directory. 
         /// </summary>
-        [TaskAttribute("sourcedir", Required=true)]
+//        [TaskAttribute("sourcedir", Required=true)]
         public string MsiSourceDir
         {
             get { return _taskCommand.MsiBase.sourcedir; }
@@ -69,7 +69,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// An .rtf (rich text format) file containing the license agreement for your software. 
         /// The contents of this file will be displayed to the user when setup runs and must be accepted to continue.
         /// </summary>
-        [TaskAttribute("license", Required=true)]
+//        [TaskAttribute("license", Required=true)]
         public string MsiLicense
         {
             get { return _taskCommand.MsiBase.license; }
@@ -78,7 +78,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// <summary>
         /// A .bmp (bitmap) file 495x60 pixels in size that will be displayed as the banner (top) image of the installation user interface.
         /// </summary>
-        [TaskAttribute("banner", Required=false)]
+//        [TaskAttribute("banner", Required=false)]
         public string MsiBanner
         {
             get { return _taskCommand.MsiBase.banner; }
@@ -87,7 +87,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// <summary>
         /// A .bmp (bitmap) file 495x315 pixels in size that will be displayed as the background image of the installation user interface.
         /// </summary>
-        [TaskAttribute("background", Required=false)]
+//        [TaskAttribute("background", Required=false)]
         public string MsiBackground
         {
             get { return _taskCommand.MsiBase.background; }
@@ -98,7 +98,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// specified by the output parameter. A .msi template is included with the msi task, you only need to supply this value if you 
         /// want to override the default template and cannot perform something through the features of the msi task. 
         /// </summary>
-        [TaskAttribute("template", Required=false)]
+//        [TaskAttribute("template", Required=false)]
         public string MsiTemplate
         {
             get { return _taskCommand.MsiBase.template; }
@@ -109,7 +109,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// A .mst template is included with the msi task, you only need to supply this value if you want to override the default error 
         /// template and cannot perform something through the features of the msi task.
         /// </summary>
-        [TaskAttribute("errortemplate", Required=false)]
+//        [TaskAttribute("errortemplate", Required=false)]
         public string MsiErrorTemplate
         {
             get { return _taskCommand.MsiBase.errortemplate; }
@@ -119,7 +119,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// Causes the generated msi database file to contain debug messages for errors created by inconsistencies in creation of the 
         /// database. This makes the file slightly larger and should be avoided when generating a production release of your software.
         /// </summary>
-        [TaskAttribute("debug", Required=false)]
+//        [TaskAttribute("debug", Required=false)]
         public bool MsiDebug
         {
             get { return _taskCommand.MsiBase.debug; }
@@ -171,7 +171,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElementCollection("properties", "property", ElementType=typeof(property))]
+//        [BuildElementCollection("properties", "property", ElementType=typeof(property))]
         public property[] MsiPropertiesElement
         {
             get { return _taskCommand.MsiBase.properties; }
@@ -264,7 +264,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElementCollection("search", "key", ElementType=typeof(searchKey))]
+//        [BuildElementCollection("search", "key", ElementType=typeof(searchKey))]
         public searchKey[] MsiSearchElement
         {
             get { return _taskCommand.MsiBase.search; }
@@ -313,7 +313,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElementCollection("launchconditions", "launchcondition", ElementType=typeof(MSILaunchCondition))]
+//        [BuildElementCollection("launchconditions", "launchcondition", ElementType=typeof(MSILaunchCondition))]
         public MSILaunchCondition[] MsiLaunchConditionsElement
         {
             get { return ((msi)_taskCommand.MsiBase).launchconditions; }
@@ -525,7 +525,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElementCollection("tables", "table", ElementType=typeof(MSITable))]
+//        [BuildElementCollection("tables", "table", ElementType=typeof(MSITable))]
         public MSITable[] MsiTablesElement
         {
             get { return _taskCommand.MsiBase.tables; }
@@ -627,7 +627,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElementCollection("directories", "directory", ElementType=typeof(MSIDirectory))]
+//        [BuildElementCollection("directories", "directory", ElementType=typeof(MSIDirectory))]
         public MSIDirectory[] MsiDirectoriesElement
         {
             get { return _taskCommand.MsiBase.directories; }
@@ -710,7 +710,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElementCollection("environment", "variable", ElementType=typeof(MSIVariable))]
+//        [BuildElementCollection("environment", "variable", ElementType=typeof(MSIVariable))]
         public MSIVariable[] MsiEnvironmentElement
         {
             get { return _taskCommand.MsiBase.environment; }
@@ -875,7 +875,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElementCollection("features", "feature", ElementType=typeof(MSIFeature))]
+//        [BuildElementCollection("features", "feature", ElementType=typeof(MSIFeature))]
         public MSIFeature[] MsiFeaturesElement
         {
             get { return ((msi)_taskCommand.MsiBase).features; }
@@ -1201,7 +1201,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElementCollection("components", "component", ElementType=typeof(MSIComponent))]
+//        [BuildElementCollection("components", "component", ElementType=typeof(MSIComponent))]
         public MSIComponent[] MsiComponentsElement
         {
             get { return _taskCommand.MsiBase.components; }
@@ -1358,7 +1358,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElementCollection("dialogs", "dialog", ElementType=typeof(MSIDialog))]
+//        [BuildElementCollection("dialogs", "dialog", ElementType=typeof(MSIDialog))]
         public MSIDialog[] MsiDialogsElement
         {
             get { return _taskCommand.MsiBase.dialogs; }
@@ -1609,7 +1609,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElementCollection("controls", "control", ElementType=typeof(MSIControl))]
+//        [BuildElementCollection("controls", "control", ElementType=typeof(MSIControl))]
         public MSIControl[] MsiControlsElement
         {
             get { return _taskCommand.MsiBase.controls; }
@@ -1700,7 +1700,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElementCollection("controlconditions", "controlcondition", ElementType=typeof(MSIControlCondition))]
+//        [BuildElementCollection("controlconditions", "controlcondition", ElementType=typeof(MSIControlCondition))]
         public MSIControlCondition[] MsiControlConditionsElement
         {
             get { return _taskCommand.MsiBase.controlconditions; }
@@ -1814,7 +1814,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElementCollection("controlevents", "controlevent", ElementType=typeof(MSIControlEvent))]
+//        [BuildElementCollection("controlevents", "controlevent", ElementType=typeof(MSIControlEvent))]
         public MSIControlEvent[] MsiControlEventsElement
         {
             get { return _taskCommand.MsiBase.controlevents; }
@@ -1857,7 +1857,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElementCollection("mergemodules", "merge", ElementType=typeof(MSIMerge))]
+//        [BuildElementCollection("mergemodules", "merge", ElementType=typeof(MSIMerge))]
         public MSIMerge[] MsiMergeModulesElement
         {
             get { return ((msi)_taskCommand.MsiBase).mergemodules; }
@@ -2000,7 +2000,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElementCollection("registry", "key", ElementType=typeof(MSIRegistryKey))]
+//        [BuildElementCollection("registry", "key", ElementType=typeof(MSIRegistryKey))]
         public MSIRegistryKey[] MsiRegistryElement
         {
             get { return _taskCommand.MsiBase.registry; }
@@ -2039,7 +2039,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElementCollection("icons", "icon", ElementType=typeof(MSIIcon))]
+//        [BuildElementCollection("icons", "icon", ElementType=typeof(MSIIcon))]
         public MSIIcon[] MsiIconsElement
         {
             get { return _taskCommand.MsiBase.icons; }
@@ -2160,7 +2160,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElementCollection("shortcuts", "shortcut", ElementType=typeof(MSIShortcut))]
+//        [BuildElementCollection("shortcuts", "shortcut", ElementType=typeof(MSIShortcut))]
         public MSIShortcut[] MsiShortcutsElement
         {
             get { return _taskCommand.MsiBase.shortcuts; }
@@ -2199,7 +2199,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElementCollection("binaries", "binary", ElementType=typeof(MSIBinary))]
+//        [BuildElementCollection("binaries", "binary", ElementType=typeof(MSIBinary))]
         public MSIBinary[] MsiBinariesElement
         {
             get { return _taskCommand.MsiBase.binaries; }
@@ -2294,7 +2294,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElementCollection("customactions", "customaction", ElementType=typeof(MSICustomAction))]
+//        [BuildElementCollection("customactions", "customaction", ElementType=typeof(MSICustomAction))]
         public MSICustomAction[] MsiCustomActionsElement
         {
             get { return _taskCommand.MsiBase.customactions; }
@@ -2398,7 +2398,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElementCollection("sequences", "sequence", ElementType=typeof(MSISequence))]
+//        [BuildElementCollection("sequences", "sequence", ElementType=typeof(MSISequence))]
         public MSISequence[] MsiSequencesElement
         {
             get { return _taskCommand.MsiBase.sequences; }
@@ -2472,7 +2472,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElementCollection("actiontext", "action", ElementType=typeof(MSIActionTextAction))]
+//        [BuildElementCollection("actiontext", "action", ElementType=typeof(MSIActionTextAction))]
         public MSIActionTextAction[] MsiActionTextElement
         {
             get { return _taskCommand.MsiBase.actiontext; }
@@ -2524,7 +2524,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElementCollection("appmappings", "appmapping", ElementType=typeof(MSIAppMapping))]
+//        [BuildElementCollection("appmappings", "appmapping", ElementType=typeof(MSIAppMapping))]
         public MSIAppMapping[] MsiAppMappingsElement
         {
             get { return _taskCommand.MsiBase.appmappings; }
@@ -2564,7 +2564,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElementCollection("urlproperties", "urlproperty", ElementType=typeof(MSIURLProperty))]
+//        [BuildElementCollection("urlproperties", "urlproperty", ElementType=typeof(MSIURLProperty))]
         public MSIURLProperty[] MsiUrlPropertiesElement
         {
             get { return _taskCommand.MsiBase.urlproperties; }
@@ -2610,7 +2610,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElementCollection("vdirproperties", "vdirproperty", ElementType=typeof(MSIVDirProperty))]
+//        [BuildElementCollection("vdirproperties", "vdirproperty", ElementType=typeof(MSIVDirProperty))]
         public MSIVDirProperty[] MsiVDirPropertiesElement
         {
             get { return _taskCommand.MsiBase.vdirproperties; }
@@ -2656,7 +2656,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElementCollection("approots", "approot", ElementType=typeof(MSIAppRoot))]
+//        [BuildElementCollection("approots", "approot", ElementType=typeof(MSIAppRoot))]
         public MSIAppRoot[] MsiAppRootsElement
         {
             get { return _taskCommand.MsiBase.approots; }
@@ -2787,7 +2787,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElementCollection("iisproperties", "iisproperty", ElementType=typeof(MSIAppRoot))]
+//        [BuildElementCollection("iisproperties", "iisproperty", ElementType=typeof(MSIAppRoot))]
         public MSIIISProperty[] MsiIISPropertiesElement
         {
             get { return _taskCommand.MsiBase.iisproperties; }
