@@ -67,19 +67,19 @@ namespace NAnt.Contrib.Tasks {
         Hashtable typeLibComponents = new Hashtable();
 
         string[] commonFolderNames = new string[] {
-            "AdminToolsFolder", "AppDataFolder",
-            "CommonAppDataFolder", "CommonFiles64Folder",
-            "CommonFilesFolder", "DesktopFolder",
-            "FavoritesFolder", "FontsFolder",
-            "LocalAppDataFolder", "MyPicturesFolder",
-            "PersonalFolder", "ProgramFiles64Folder",
-            "ProgramFilesFolder", "ProgramMenuFolder",
-            "SendToFolder", "StartMenuFolder",
-            "StartupFolder", "System16Folder",
-            "System64Folder", "SystemFolder",
-            "TempFolder", "TemplateFolder",
-            "WindowsFolder", "WindowsVolume"
-        };
+                                                      "AdminToolsFolder", "AppDataFolder",
+                                                      "CommonAppDataFolder", "CommonFiles64Folder",
+                                                      "CommonFilesFolder", "DesktopFolder",
+                                                      "FavoritesFolder", "FontsFolder",
+                                                      "LocalAppDataFolder", "MyPicturesFolder",
+                                                      "PersonalFolder", "ProgramFiles64Folder",
+                                                      "ProgramFilesFolder", "ProgramMenuFolder",
+                                                      "SendToFolder", "StartMenuFolder",
+                                                      "StartupFolder", "System16Folder",
+                                                      "System64Folder", "SystemFolder",
+                                                      "TempFolder", "TemplateFolder",
+                                                      "WindowsFolder", "WindowsVolume"
+                                                  };
 
         /// <summary>
         /// Initialize taks and verify parameters.
@@ -98,33 +98,6 @@ namespace NAnt.Contrib.Tasks {
         /// </summary>
         /// <remarks>None.</remarks>
         protected override void ExecuteTask() {
-            // Create WindowsInstaller.Installer
-            Type msiType = Type.GetTypeFromProgID("WindowsInstaller.Installer");
-            Object obj = Activator.CreateInstance(msiType);
-
-            // Open the Template MSI File
-            Module tasksModule = Assembly.GetExecutingAssembly().GetModule("NAnt.Contrib.Tasks.dll");
-
-            string source = Path.Combine(Path.GetDirectoryName(tasksModule.FullyQualifiedName), "MSITaskTemplate.msi");
-            if (msi.template != null) {
-                source = Path.Combine(Project.BaseDirectory, msi.template);
-            }
-            if (!File.Exists(source)) {
-                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                    "Unable to find template file {0}.", source), Location);
-            }
-
-            string dest = Path.Combine(Project.BaseDirectory, Path.Combine(msi.sourcedir, msi.output));
-
-            string errors = Path.Combine(Path.GetDirectoryName(tasksModule.FullyQualifiedName), "MSITaskErrors.mst");
-            if (msi.errortemplate != null) {
-                errors = Path.Combine(Project.BaseDirectory, msi.errortemplate);
-            }
-            if (!File.Exists(errors)) {
-                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                    "Unable to find error template file {0}.", errors), Location);
-            }
-
             string tempPath = Path.Combine(Project.BaseDirectory,
                 Path.Combine(msi.sourcedir, @"Temp"));
 
@@ -132,369 +105,318 @@ namespace NAnt.Contrib.Tasks {
                 Path.Combine(msi.sourcedir,
                 Path.GetFileNameWithoutExtension(msi.output) + @".cab"));
 
-            CleanOutput(cabFile, tempPath);
-
-            // Copy the Template MSI File
             try {
-                File.Copy(source, dest, true);
-                File.SetAttributes(dest, System.IO.FileAttributes.Normal);
-            } catch (IOException ex) {
-                throw new BuildException("File in use or cannot be copied to" 
-                    + " output.", Location, ex);
-            }
+                // Create WindowsInstaller.Installer
+                Type msiType = Type.GetTypeFromProgID("WindowsInstaller.Installer");
+                Object obj = Activator.CreateInstance(msiType);
 
-            try {
+                // Open the Template MSI File
+                Module tasksModule = Assembly.GetExecutingAssembly().GetModule("NAnt.Contrib.Tasks.dll");
+
+                string source = Path.Combine(Path.GetDirectoryName(tasksModule.FullyQualifiedName), "MSITaskTemplate.msi");
+                if (msi.template != null) {
+                    source = Path.Combine(Project.BaseDirectory, msi.template);
+                }
+                if (!File.Exists(source)) {
+                    throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                        "Unable to find template file {0}.", source), Location);
+                }
+
+                string dest = Path.Combine(Project.BaseDirectory, Path.Combine(msi.sourcedir, msi.output));
+
+                string errors = Path.Combine(Path.GetDirectoryName(tasksModule.FullyQualifiedName), "MSITaskErrors.mst");
+                if (msi.errortemplate != null) {
+                    errors = Path.Combine(Project.BaseDirectory, msi.errortemplate);
+                }
+                if (!File.Exists(errors)) {
+                    throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                        "Unable to find error template file {0}.", errors), Location);
+                }
+
+                CleanOutput(cabFile, tempPath);
+
+                // copy the template MSI file
+                try {
+                    File.Copy(source, dest, true);
+                    File.SetAttributes(dest, System.IO.FileAttributes.Normal);
+                } catch (IOException ex) {
+                    throw new BuildException("File in use or cannot be copied to" 
+                        + " output.", Location, ex);
+                }
+
                 // Open the Output Database.
                 Database d = null;
-                try {
-                    d = (Database) msiType.InvokeMember(
-                        "OpenDatabase",
-                        BindingFlags.InvokeMethod,
-                        null, obj,
-                        new Object[] {
-                            dest,
-                            MsiOpenDatabaseMode.msiOpenDatabaseModeDirect
-                        });
 
-                    if (msi.debug) {
-                        // If Debug is true, transform the error strings in
-                        d.ApplyTransform(errors, MsiTransformError.msiTransformErrorNone);
-                    }
-                } catch (Exception e) {
-                    CleanOutput(cabFile, tempPath);
-                    System.Console.WriteLine(e.ToString());
-                    throw new Win32Exception();
+                d = (Database) msiType.InvokeMember(
+                    "OpenDatabase",
+                    BindingFlags.InvokeMethod,
+                    null, obj,
+                    new Object[] {
+                                     dest,
+                                     MsiOpenDatabaseMode.msiOpenDatabaseModeDirect
+                                 });
+
+                if (msi.debug) {
+                    // if debug is true, transform the error strings in
+                    d.ApplyTransform(errors, MsiTransformError.msiTransformErrorNone);
                 }
 
                 Log(Level.Info, LogPrefix + "Building MSI Database '{0}'.", msi.output);
 
-                // Load the Banner Image
+                // load the banner image
                 if (!LoadBanner(d)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                // Load the Background Image
+                // load the background image
                 if (!LoadBackground(d)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                // Load the License File
+                // load the license file
                 if (!LoadLicense(d)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                // Load Properties
+                // load properties
                 if (!LoadProperties(d, msiType, obj)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                // Load Registry Locators
+                // load registry locators
                 if (!LoadRegLocator(d, msiType, obj)) {
                     CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                // Load Application Search
+                // load application search
                 if (!LoadAppSearch(d, msiType, obj)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                // Load Launch Conditions
+                // load launch conditions
                 if (!LoadLaunchCondition(d, msiType, obj)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                // Add user defined table(s) to the database
+                // add user defined table(s) to the database
                 if (!AddTables(d, msiType, obj)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                try {
-                    // Commit the MSI Database
-                    d.Commit();
+                // commit the MSI database
+                d.Commit();
 
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
-                } catch (Exception e) {
-                    CleanOutput(cabFile, tempPath);
-                    System.Console.WriteLine(e.ToString());
-                    throw new Win32Exception();
-                }
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
 
                 View directoryView, asmView, asmNameView, classView, progIdView;
 
-                // Load Directories
+                // load directories
                 if (!LoadDirectories(d, msiType, obj, out directoryView)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                // Load Assemblies
+                // load assemblies
                 if (!LoadAssemblies(d, msiType, obj, out asmView,
                     out asmNameView, out classView, out progIdView)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
                 int lastSequence = 0;
 
-                // Load Components
+                // load components
                 if (!LoadComponents(d, msiType, obj, ref lastSequence,
                     asmView, asmNameView, directoryView, classView, progIdView)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                try {
-                    directoryView.Close();
-                    asmView.Close();
-                    asmNameView.Close();
-                    classView.Close();
-                    progIdView.Close();
+                directoryView.Close();
+                asmView.Close();
+                asmNameView.Close();
+                classView.Close();
+                progIdView.Close();
 
-                    directoryView = null;
-                    asmView = null;
-                    asmNameView = null;
-                    classView = null;
-                    progIdView = null;
+                directoryView = null;
+                asmView = null;
+                asmNameView = null;
+                classView = null;
+                progIdView = null;
 
-                    // Commit the MSI Database
-                    d.Commit();
+                // commit the MSI database
+                d.Commit();
 
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
-                }
-                catch (Exception e) {
-                    CleanOutput(cabFile, tempPath);
-                    System.Console.WriteLine(e.ToString());
-                    throw new Win32Exception();
-                }
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
 
-                // Load Features
+                // load features
                 if (!LoadFeatures(d, msiType, obj)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                // Load Dialog Data
+                // load dialog data
                 if (!LoadDialog(d, msiType, obj)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                // Load Dialog Control Data
+                // load dialog control data
                 if (!LoadControl(d, msiType, obj)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                // Load Dialog Control Condition Data
+                // load dialog control condition data
                 if (!LoadControlCondition(d, msiType, obj)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                // Load Dialog Control Event Data
+                // load dialog control event data
                 if (!LoadControlEvent(d, msiType, obj)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
                 View registryView;
 
-                // Load the Registry
+                // load the registry
                 if (!LoadRegistry(d, msiType, obj, out registryView)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                // Load TypeLibs
+                // load typeLibs
                 if (!LoadTypeLibs(d, msiType, obj, registryView)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                try {
-                    registryView.Close();
-                    registryView = null;
+                registryView.Close();
+                registryView = null;
 
-                    // Commit the MSI Database
-                    d.Commit();
+                // commit the MSI database
+                d.Commit();
 
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
-                } catch (Exception e) {
-                    CleanOutput(cabFile, tempPath);
-                    System.Console.WriteLine(e.ToString());
-                    throw new Win32Exception();
-                }
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
 
-                // Load Icon Data
+                // load icon data
                 if (!LoadIcon(d, msiType, obj)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                // Load Shortcut Data
+                // load shortcut data
                 if (!LoadShortcut(d, msiType, obj)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                // Load Binary Data
+                // load binary data
                 if (!LoadBinary(d, msiType, obj)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                // Load Custom Actions
+                // load custom actions
                 if (!LoadCustomAction(d, msiType, obj)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                // Load Sequences
+                // load sequences
                 if (!LoadSequence(d, msiType, obj)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                // Load ActionText
+                // load action text
                 if (!LoadActionText(d, msiType, obj)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                // Load the application mappings
+                // load application mappings
                 if (!LoadAppMappings(d, msiType, obj)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                // Load the url properties to convert
+                // load the url properties to convert
                 // url properties to a properties object
                 if (!LoadUrlProperties(d, msiType, obj)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                // Load the vdir properties to convert
+                // load the vdir properties to convert
                 // a vdir to an url
                 if (!LoadVDirProperties(d, msiType, obj)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                // Load the application root properties
+                // load the application root properties
                 // to make a virtual directory an virtual
                 // application
                 if (!LoadAppRootCreate(d, msiType, obj)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                // Load IIS Directory Properties
+                // load IIS directory properties
                 if (!LoadIISProperties(d, msiType, obj)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                // Load Summary Information
+                // load summary information
                 if (!LoadSummaryInfo(d)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                // Load Environment Variables
+                // load environment variables
                 if (!LoadEnvironment(d, msiType, obj)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                try {
-                    // Commit the MSI Database
-                    d.Commit();
-                    d = null;
+                // Commit the MSI Database
+                d.Commit();
+                d = null;
 
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
-                }
-                catch (Exception e) {
-                    CleanOutput(cabFile, tempPath);
-                    System.Console.WriteLine(e.ToString());
-                    throw new Win32Exception();
-                }
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
 
-                // Load Merge Modules
+                // load merge modules
                 if (!LoadMergeModules(dest, tempPath)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                try {
-                    d = (Database)msiType.InvokeMember(
-                        "OpenDatabase",
-                        BindingFlags.InvokeMethod,
-                        null, obj,
-                        new Object[] {
-                            dest,
-                            MsiOpenDatabaseMode.msiOpenDatabaseModeDirect
-                        });
-                } catch (Exception e) {
-                    CleanOutput(cabFile, tempPath);
-                    System.Console.WriteLine(e.ToString());
-                    throw new Win32Exception();
-                }
+                d = (Database) msiType.InvokeMember(
+                    "OpenDatabase",
+                    BindingFlags.InvokeMethod,
+                    null, obj,
+                    new Object[] {
+                                     dest,
+                                     MsiOpenDatabaseMode.msiOpenDatabaseModeDirect
+                                 });
 
-                // Reorder Files
+                // reorder files
                 if (!ReorderFiles(d, ref lastSequence)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                // Load Media
+                // load media
                 if (!LoadMedia(d, msiType, obj, lastSequence)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
-                // Compress Files
+                // compress files
                 if (!CreateCabFile(d, msiType, obj)) {
-                    CleanOutput(cabFile, tempPath);
                     throw new BuildException();
                 }
 
+                Log(Level.Info, LogPrefix + "Saving MSI Database...");
+
+                // Commit the MSI Database
+                d.Commit();
+                d = null;
+
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+            } catch (Exception ex) {
+                CleanOutput(cabFile, tempPath);
+
+                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                    "Unable to build MSI database '{0}'.", msi.output), 
+                    Location, ex);
+            } finally {
                 Log(Level.Info, LogPrefix + "Deleting Temporary Files...");
                 CleanOutput(cabFile, tempPath);
-                Log(Level.Info, "Done.");
-
-                try {
-                    Log(Level.Info, LogPrefix + "Saving MSI Database...");
-
-                    // Commit the MSI Database
-                    d.Commit();
-                    d = null;
-
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
-                }
-                catch (Exception e) {
-                    System.Console.WriteLine(e.ToString());
-                    throw new Win32Exception();
-                }
-                Log(Level.Info, "Done.");
-            } catch (Exception e) {
-                CleanOutput(cabFile, tempPath);
-                throw new BuildException(LogPrefix + "ERROR: " +
-                    e.GetType().FullName + " thrown:\n" +
-                    e.Message + "\n" + e.StackTrace);
             }
         }
 
@@ -1549,9 +1471,22 @@ namespace NAnt.Contrib.Tasks {
                     fileVersion = null;
                 }
 
+                // propagate language (if available) to File table to avoid 
+                // ICE60 verification warnings
+                string language = null;
+                try {
+                    if (isAssembly) {
+                        int lcid = fileAssembly.GetName().CultureInfo.LCID;
+                        language = (lcid == 0x007F) ? "0" : lcid.ToString(CultureInfo.InvariantCulture);
+                    } else {
+                        FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(filePath);
+                        language = fileVersionInfo.Language;
+                    }
+                } catch {}
+
                 recFile.set_StringData(3, GetShortFile(filePath) + "|" + fileName);
                 recFile.set_StringData(5, fileVersion);
-                recFile.set_StringData(6, null);  // Language
+                recFile.set_StringData(6, language);
                 recFile.set_IntegerData(7, fileAttr);
 
                 Sequence++;
@@ -1611,22 +1546,18 @@ namespace NAnt.Contrib.Tasks {
                 foreach (MSIRegistryKey key in msi.registry) {
                     int rootKey = -1;
                     switch (key.root.ToString()) {
-                        case "classes": {
+                        case "classes":
                             rootKey = 0;
                             break;
-                        }
-                        case "user": {
+                        case "user":
                             rootKey = 1;
                             break;
-                        }
-                        case "machine": {
+                        case "machine":
                             rootKey = 2;
                             break;
-                        }
-                        case "users": {
+                        case "users":
                             rootKey = 3;
                             break;
-                        }
                     }
 
                     foreach (MSIRegistryKeyValue value in key.value) {
@@ -1650,12 +1581,10 @@ namespace NAnt.Contrib.Tasks {
 
                         if (value.value != null && value.value != "") {
                             recVal.set_StringData(5, value.value);
-                        }
-                        else if (value.dword != null && value.dword != "") {
+                        } else if (value.dword != null && value.dword != "") {
                             string sDwordMsi = "#" + Int32.Parse(value.dword);
                             recVal.set_StringData(5, sDwordMsi);
-                        }
-                        else {
+                        } else {
                             string val1 = value.Value.Replace(",", null);
                             string val2 = val1.Replace(" ", null);
                             string val3 = val2.Replace("\n", null);
@@ -1712,28 +1641,24 @@ namespace NAnt.Contrib.Tasks {
 
                 foreach (searchKey key in msi.search) {
                     switch (key.type.ToString()) {
-                        case "registry": {
+                        case "registry":
                             // Select the "RegLocator" Table
                             View regLocatorView = Database.OpenView("SELECT * FROM `RegLocator`");
 
                             int rootKey = -1;
                             switch (key.root.ToString()) {
-                                case "classes": {
+                                case "classes":
                                     rootKey = 0;
                                     break;
-                                }
-                                case "user": {
+                                case "user":
                                     rootKey = 1;
                                     break;
-                                }
-                                case "machine": {
+                                case "machine":
                                     rootKey = 2;
                                     break;
-                                }
-                                case "users": {
+                                case "users":
                                     rootKey = 3;
                                     break;
-                                }
                             }
 
                             if (key.value != null) {
@@ -1765,10 +1690,8 @@ namespace NAnt.Contrib.Tasks {
                             regLocatorView = null;
 
                             break;
-                        }
-                        case "file": {
+                        case "file":
                             break;
-                        }
                     }
                 }
             }
@@ -1788,7 +1711,7 @@ namespace NAnt.Contrib.Tasks {
             if (msi.search != null) {
                 foreach (searchKey key in msi.search) {
                     switch (key.type.ToString()) {
-                        case "registry": {
+                        case "registry":
                             // Select the "AppSearch" Table
                             View appSearchView = Database.OpenView("SELECT * FROM `AppSearch`");
 
@@ -1813,10 +1736,8 @@ namespace NAnt.Contrib.Tasks {
                             appSearchView = null;
 
                             break;
-                        }
-                        case "file": {
+                        case "file":
                             break;
-                        }
                     }
                 }
             }
@@ -1901,8 +1822,7 @@ namespace NAnt.Contrib.Tasks {
                         recIcon.set_StringData(1, icon.name);
                         recIcon.SetStream(2, Path.Combine(Project.BaseDirectory, icon.value));
                         iconView.Modify(MsiViewModify.msiViewModifyMerge, recIcon);
-                    }
-                    else {
+                    } else {
                         Log(Level.Error, LogPrefix +
                             "ERROR: Unable to open file:\n\n\t" +
                             Path.Combine(Project.BaseDirectory, icon.value) + "\n\n");
