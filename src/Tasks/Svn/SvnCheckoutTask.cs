@@ -44,7 +44,7 @@ namespace NAnt.SourceControl.Tasks {
     ///                 username="anonymoose"
     ///                 password="Canada" 
     ///                 revision="HEAD"
-    ///                 cach-auth="false"
+    ///                 cache-auth="false"
     ///                 config-dir="c:\home"
     ///                 />
     ///     ]]>
@@ -126,6 +126,28 @@ namespace NAnt.SourceControl.Tasks {
                     throw new BuildException (
                         String.Format("Invalid argument specified: {0}.", value));
                 }
+            }
+        }
+
+        /// <summary>
+        /// <code>true</code> if the authentiction token should be cached
+        ///     locally.
+        /// </summary>
+        [TaskAttribute("cache-auth", Required=false)]
+        [BooleanValidator()]
+        public bool CacheAuth {
+            get {return ((Option)this.CommandOptions["cache-auth"]).IfDefined;}
+            set {this.SetCommandOption("cache-auth", "no-auth-cache", !value);}
+        }
+
+        /// <summary>
+        /// The location of the configuration directory.
+        /// </summary>
+        [TaskAttribute("config-dir", Required=false)]
+        public string ConfigDir {
+            get {return ((Option)this.CommandOptions["config-dir"]).Value;}
+            set {this.SetCommandOption("config-dir", 
+                     String.Format("config-dir={0}", value), true);
             }
         }
 
