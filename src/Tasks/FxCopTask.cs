@@ -105,7 +105,7 @@ namespace NAnt.Contrib.Tasks {
         /// <summary>
         /// Specifies additional directories to search for assembly dependencies. FxCopCmd always searches the target assembly directory and the current working directory.
         /// </summary>
-        [TaskAttribute("dependencyDirectories", Required=false)]
+        [BuildElement("dependencyDirectories")]
         public DirSet DependencyDirectories {
             get { return _dependencyDirectories; }
             set { _dependencyDirectories = value; }
