@@ -157,7 +157,7 @@ namespace NAnt.Contrib.Tasks {
         #region Override implementation of ExternalProgramBase
 
         public override string ExeName {
-            get { return "gacutil.exe"; }
+            get { return "gacutil"; }
         }
 
         public override string ProgramArguments {
