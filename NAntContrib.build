@@ -188,8 +188,8 @@
                 <include name="bin/NAnt.Core.dll" />
                 <include name="bin/NAnt.DotNetTasks.dll" />
                 <include name="bin/NAnt.Win32Tasks.dll" />
+                <include name="bin/log4net.dll" />
                 <include name="bin/lib/${framework::get-family(framework::get-target-framework())}/${framework::get-version(framework::get-target-framework())}/nunit.framework.dll" />
-                <include name="bin/lib/${framework::get-family(framework::get-target-framework())}/${framework::get-version(framework::get-target-framework())}/log4net.dll" />
             </fileset>
         </copy>
         <!-- compile the test assembly -->
