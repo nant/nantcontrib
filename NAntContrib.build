@@ -60,7 +60,7 @@
         <!-- generate the source file holding the common assembly-level attributes -->
         <asminfo output="src/CommonAssemblyInfo.cs" language="CSharp">
             <imports>
-                <import name="System.Reflection" />
+                <import namespace="System.Reflection" />
             </imports>
             <attributes>
                 <attribute type="AssemblyConfigurationAttribute" value="${project.release.type}" />

@@ -58,7 +58,7 @@
     <reference name="System.Xml.dll"/>
   </references>
   <imports>
-    <import name="System.Xml"/>
+    <import namespace="System.Xml"/>
   </imports>
   <code><![CDATA[
   public static void ScriptMain(Project project) {
