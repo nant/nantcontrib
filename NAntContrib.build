@@ -14,7 +14,7 @@
 
     <property name="src.dir" value="src"/>
     <property name="tests.dir" value="Tests"/>
-	
+    
     <!-- Used to build against. This directory must exist or it will be created. -->
     <property name="nant.dir" value="NAntRelease" />
     <property name="nant.releasebuild.name" value="nant-20030424"/>
@@ -38,9 +38,9 @@
         
         <call target="UpdateNAntReleaseFiles"/>
         
-		<property name="nant-bin.dir" value="${nant.dir}/bin"/>
-		<property name="nant-doc.dir" value="${nant.dir}/doc" />
-		<echo message="Using nant files from ${nant.dir}"/>
+        <property name="nant-bin.dir" value="${nant.dir}/bin"/>
+        <property name="nant-doc.dir" value="${nant.dir}/doc" />
+        <echo message="Using nant files from ${nant.dir}"/>
     </target>
     
     <include buildfile="NAntContribInstall.include" />
@@ -54,16 +54,16 @@
     <target name="clean" depends="init" description="cleans up everything">
         <delete dir="${build.dir}" failonerror="false"/>
     </target>
-	
-	<!--*****************************************************************-->
+    
+    <!--*****************************************************************-->
     <!--* Clean the outputs                                             *-->
     <!--*****************************************************************-->
     <target name="cleanall" depends="" description="cleans up everything">
         <foreach item="String" in="release debug" delim=" " property="target">
-			<call target="${target}"/>
-			<call target="clean" failonerror="false"/>
+            <call target="${target}"/>
+            <call target="clean" failonerror="false"/>
         </foreach>
-		<delete dir="build"/>        
+        <delete dir="build"/>        
     </target>
         
     <!--*****************************************************************-->
@@ -79,10 +79,10 @@
                 <includes name="Interop.StarTeam.dll"/>
                 <includes name="Interop.WindowsInstaller.dll"/>
                 <includes name="Interop.MsmMergeTypeLib.dll"/>
-		        <includes name="MSITaskErrors.mst"/>
-		        <includes name="MSITaskTemplate.msi"/>
-		        <includes name="MSMTaskErrors.mst"/>
-		        <includes name="MSMTaskTemplate.msm"/>
+                <includes name="MSITaskErrors.mst"/>
+                <includes name="MSITaskTemplate.msi"/>
+                <includes name="MSMTaskErrors.mst"/>
+                <includes name="MSMTaskTemplate.msm"/>
             </fileset>
       </copy>
     </target>
@@ -108,32 +108,32 @@
     <!--* Bootstrap XML Schemas into assemblies for task validation     *-->
     <!--*****************************************************************-->
     <target name="compile.schemas" depends="compile.schematask" description="compiles Task XML Schemas into assemblies">
-		
-		<loadtasks assembly="${build.dir}\NAnt.Xsd.Tasks.dll"/>
+        
+        <loadtasks assembly="${build.dir}\NAnt.Xsd.Tasks.dll"/>
 
-		<if uptodate="${src.dir}\Tasks\MSITask.xsd">
-			<comparefiles basedir="${build.dir}\Schemas\MSI">
-				<includes name="*"/>
-			</comparefiles>
-			
-			<mkdir dir="${build.dir}\Schemas\MSI" />
-			<xsd schema="${src.dir}\Tasks\MSITask.xsd" 
-				language="CS" namespace="NAnt.Contrib.Schemas.MSI" nologo="true" 
-				outputdir="${build.dir}\Schemas\MSI" uri="NAnt.Contrib.Tasks.MSITask" />	
-		</if>
+        <if uptodate="${src.dir}\Tasks\MSITask.xsd">
+            <comparefiles basedir="${build.dir}\Schemas\MSI">
+                <includes name="*"/>
+            </comparefiles>
+            
+            <mkdir dir="${build.dir}\Schemas\MSI" />
+            <xsd schema="${src.dir}\Tasks\MSITask.xsd" 
+                language="CS" namespace="NAnt.Contrib.Schemas.MSI" nologo="true" 
+                outputdir="${build.dir}\Schemas\MSI" uri="NAnt.Contrib.Tasks.MSITask" />    
+        </if>
 
-		<if uptodate="${src.dir}\Tasks\MSMTask.xsd">
-			<comparefiles basedir="${build.dir}\Schemas\MSM">
-				<includes name="*"/>
-			</comparefiles>
-			
-			<mkdir dir="${build.dir}\Schemas\MSM" />
-			<xsd schema="${src.dir}\Tasks\MSMTask.xsd" 
-				language="CS" namespace="NAnt.Contrib.Schemas.MSM" nologo="true" 
-				outputdir="${build.dir}\Schemas\MSM" uri="NAnt.Contrib.Tasks.MSMTask" />	
-		</if>
-		
-		<csc target="library" output="${build.dir}\NAnt.Contrib.Schemas.dll">
+        <if uptodate="${src.dir}\Tasks\MSMTask.xsd">
+            <comparefiles basedir="${build.dir}\Schemas\MSM">
+                <includes name="*"/>
+            </comparefiles>
+            
+            <mkdir dir="${build.dir}\Schemas\MSM" />
+            <xsd schema="${src.dir}\Tasks\MSMTask.xsd" 
+                language="CS" namespace="NAnt.Contrib.Schemas.MSM" nologo="true" 
+                outputdir="${build.dir}\Schemas\MSM" uri="NAnt.Contrib.Tasks.MSMTask" />    
+        </if>
+        
+        <csc target="library" output="${build.dir}\NAnt.Contrib.Schemas.dll">
             <sources basedir="${build.dir}\Schemas">
                 <includes name="**.cs"/>
             </sources>
@@ -167,7 +167,7 @@
             </references>
             <resources>
                 <includes name="${src.dir}\xsl\*.*"/>
-		    <includes name="${build.dir}\Schemas\**.resources" />
+            <includes name="${build.dir}\Schemas\**.resources" />
             </resources>
             <arg value="/nowarn:1591,1595"/>
         </csc>
@@ -191,7 +191,17 @@
     <!--* Build the unit tests library                                  *-->
     <!--*****************************************************************-->
     <target name="buildtests" depends="build" description="Compiles the NUnit Tests">
-
+        <!-- copy nant assemblies needed for the tests to run -->
+        <copy todir="${build.dir}">
+            <fileset basedir="${nant.dir}/bin" failonempty="true">
+                <includes name="nunit.framework.dll"/>
+                <includes name="NAnt.Core.dll"/>
+                <includes name="NAnt.DotNetTasks.dll"/>
+                <includes name="NAnt.Core.Tests.dll"/>
+                <includes name="log4net-net-1.0.dll"/>
+            </fileset>
+        </copy>
+        
         <csc target="library" output="${build.dir}\${project.FormalName}.Tests.dll" debug="${debug}">
             <sources basedir="${tests.dir}">
                 <includes name="**/*.cs"/>
@@ -212,10 +222,10 @@
     <!--* can easily load external data files wihtout having to worry   *-->
     <!--* about complicated paths.                                      *-->
     <!--*****************************************************************-->
-    <target name="test" depends="buildtests init" description="run unit tests">
-		<nunit2>
-			<test assemblyname="${build.dir}\${project.FormalName}.Tests.dll" />
-		</nunit2>
+    <target name="test" depends="buildtests init" description="run unit tests">        
+        <nunit2>
+            <test assemblyname="${build.dir}\${project.FormalName}.Tests.dll" />
+        </nunit2>
 <!--
         <nunit basedir="${tests.dir}" verbose="false" haltonerror="true" haltonfailure="true">
             <formatter type="Xml"/>
@@ -267,32 +277,32 @@
             </documenters> 
         </ndoc>
         <copy todir="${build.dir}">
-			<fileset basedir="${build.dir}/doc/MSDN" failonempty="true">
-				<includes name="*.chm"/>
-			</fileset>
-		</copy>
+            <fileset basedir="${build.dir}/doc/MSDN" failonempty="true">
+                <includes name="*.chm"/>
+            </fileset>
+        </copy>
         <echo message="Preview task references: file://${build.dir}/doc/help/tasks/index.html"/>
     </target>
     
     <!-- this target must be defined before that call below it! -->
     <target name="UpdateNAntReleaseFiles">
-		<available property="NAntReleaseExists" resource="${nant.dir}" type="Directory"/>
-		<ifnot propertyexists="NAntReleaseExists" propertytrue="NAntReleaseExists">
-			<echo>
+        <available property="NAntReleaseExists" resource="${nant.dir}" type="Directory"/>
+        <ifnot propertyexists="NAntReleaseExists" propertytrue="NAntReleaseExists">
+            <echo>
 Missing '${nant.dir}' Folder!
 Creating folder and getting file from NAnt Nightly Build (${nant.releasebuild.name})!
-			</echo>
-			<mkdir dir="${nant.dir}"/>
-			<get dest="${nant.releasebuild.name}.zip" src="http://nant.sourceforge.net/builds/${nant.releasebuild.name}.zip"/>
-			<unzip zipfile="${nant.releasebuild.name}.zip"/>
-			<move todir="${nant.dir}">
-				<fileset basedir="${nant.releasebuild.name}">
-					<includes name="**"/>
-				</fileset>
-			</move>
-			<delete dir="${nant.releasebuild.name}" failonerror="false"/>
-			<delete file="${nant.releasebuild.name}.zip" failonerror="false"/>
-		</ifnot>
+            </echo>
+            <mkdir dir="${nant.dir}"/>
+            <get dest="${nant.releasebuild.name}.zip" src="http://nant.sourceforge.net/builds/${nant.releasebuild.name}.zip"/>
+            <unzip zipfile="${nant.releasebuild.name}.zip"/>
+            <move todir="${nant.dir}">
+                <fileset basedir="${nant.releasebuild.name}">
+                    <includes name="**"/>
+                </fileset>
+            </move>
+            <delete dir="${nant.releasebuild.name}" failonerror="false"/>
+            <delete file="${nant.releasebuild.name}.zip" failonerror="false"/>
+        </ifnot>
     </target>
 
 </project>
