@@ -231,44 +231,43 @@ namespace NAnt.Contrib.Tasks {
                 _argumentBuilder.Append(" /server ");
             }
 
-            if (Language) {
+            if ( Language != null) {
                 _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /l:\"{0}\"", Language);
             }
-            if (Namespace) {
+            if (Namespace != null) {
                 _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /n:\"{0}\"", Namespace);
             }
-            if (OutFile) {
+            if (OutFile != null) {
                 _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /o:\"{0}\"", OutFile);
             }
-            if (Protocol) {               
+            if (Protocol != null) {
                 _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /protocol:\"{0}\"", Protocol);
             }
-            if (Username) {
+            if (Username != null) {
                 _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /username:\"{0}\"", Username);
             }
-            if (Password) {
+            if (Password != null) {
                 _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /password:\"{0}\"", Password);
             }
-            if (Domain) {
+            if (Domain != null) {
                 _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /domain:\"{0}\"", Domain);
             }
-            if (Proxy) {
+            if (Proxy != null) {
                 _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /proxy:\"{0}\"", Proxy);
             }
-            if (ProxyUsername) {
+            if (ProxyUsername != null) {
                 _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /proxyusername:\"{0}\"", ProxyUsername);
             }
-            if (ProxyPassword) {
+            if (ProxyPassword != null) {
                 _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /proxypassword:\"{0}\"", ProxyPassword);
             }
-            if (ProxyDomain) {
+            if (ProxyDomain != null) {
                 _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /proxydomain:\"{0}\"", ProxyDomain);
             }
-            if (UrlKey) {
-                _argumentBuilder.Append(" /appsettingurlkey:");
+            if (UrlKey != null) {
                 _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /appsettingurlkey:\"{0}\"", UrlKey);
             }
-            if (BaseUrl) {
+            if (BaseUrl != null) {
                 _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " appsettingbaseurl:\"{0}\"", BaseUrl);
             }
 
