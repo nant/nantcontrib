@@ -15,7 +15,6 @@
         <property name="unsafe" value="/unsafe-" />
         <property name="checked" value="/checked-" />
         <property name="define" value="DEBUG;TRACE" />
-        <property name="doc" value="" />
         <call target="SLiNgshoT" />
     </target>
     <target name="SLiNgshoT.Release" depends="SLiNgshoT.Core.Release">
@@ -26,11 +25,10 @@
         <property name="unsafe" value="/unsafe-" />
         <property name="checked" value="/checked-" />
         <property name="define" value="TRACE" />
-        <property name="doc" value="" />
         <call target="SLiNgshoT" />
     </target>
     <target name="SLiNgshoT" depends="setup">
-        <csc target="exe" output="${output}" debug="${debug}" define="${define}" doc="${doc}">
+        <csc target="exe" output="${output}" debug="${debug}" define="${define}">
             <arg value="${unsafe}" />
             <arg value="${checked}" />
             <sources>
@@ -54,7 +52,6 @@
         <property name="unsafe" value="/unsafe-" />
         <property name="checked" value="/checked-" />
         <property name="define" value="DEBUG;TRACE" />
-        <property name="doc" value="" />
         <call target="SLiNgshoT.Core" />
     </target>
     <target name="SLiNgshoT.Core.Release">
@@ -65,11 +62,10 @@
         <property name="unsafe" value="/unsafe-" />
         <property name="checked" value="/checked-" />
         <property name="define" value="TRACE" />
-        <property name="doc" value="" />
         <call target="SLiNgshoT.Core" />
     </target>
     <target name="SLiNgshoT.Core" depends="setup">
-        <csc target="library" output="${output}" debug="${debug}" define="${define}" doc="${doc}">
+        <csc target="library" output="${output}" debug="${debug}" define="${define}">
             <arg value="${unsafe}" />
             <arg value="${checked}" />
             <sources>
