@@ -18,7 +18,6 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-
 // Rob Jefferies (rob@houstonsigamchi.org)
 #endregion
 
@@ -65,25 +64,25 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         /// <summary>
         /// Places a comment on all files added into the SourceSafe repository.
         /// </summary>
-        [TaskAttribute("comment", Required = false)]
+        [TaskAttribute("comment", Required=false)]
         public string Comment {
             get { return _comment;}
             set {_comment = value;}
         }
 
         /// <summary>
-        /// List of files that should be added to SourceSafe.  Note: Recursive adds not supported.
+        /// List of files that should be added to SourceSafe.
         /// </summary>
         [BuildElement("fileset")]
         public FileSet AddFileSet {
             get { return _fileset; }
             set { _fileset = value; }
         }
-        
+
         #endregion Public Instance Properties
-        
+
         #region Override implementation of Task
-        
+
         /// <summary>
         /// Main task execution method
         /// </summary>
@@ -120,7 +119,7 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
                 }
             }
         }
-        
+
         #endregion Override implementation of Task
 
         #region Protected Instance Methods
@@ -130,47 +129,41 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        protected IVSSItem CreateProjectPath( string file ) {
-            //Determine relitivity using the base directory
+        protected IVSSItem CreateProjectPath(string file) {
             if (file.StartsWith(AddFileSet.BaseDirectory.FullName)) {
                 FileInfo fi = new FileInfo(file);
 
-                string relativePath, currentPath;
-                string[] projects;
+                // Get file path relative to fileset base directory
+                string relativePath = file.Replace(AddFileSet.BaseDirectory.FullName, "").Replace('/', '\\');
+
+                // Split path into its component parts; the last part is the filename itself
+                string[] projects = relativePath.Split('\\');
+
+                // Now create any requisite subdirectories, if they don't already exist
                 IVSSItem currentItem = null;
+                string oldPath = Path;
 
-                relativePath = fi.DirectoryName.Replace(AddFileSet.BaseDirectory.FullName, "").Replace('/', '\\');
-
-                if (relativePath[0] == '\\') {
-                    relativePath = relativePath.Substring( 1, relativePath.Length - 1);
+                // Trim final "/" if present (not strictly required)
+                if (oldPath.EndsWith("/")) {
+                    oldPath = oldPath.Substring(0, oldPath.Length-1);
                 }
 
-                projects = relativePath.Split( '\\' );
+                for (int i = 0; i < projects.Length-1; i ++) {
+                    currentItem = null;
+                    string newPath = oldPath + "/" + projects[i];
 
-                currentPath = Path;
-                currentItem = Database.get_VSSItem( currentPath, false );
-
-                Log(Level.Info, "RelativePath: " + relativePath);
-                Log(Level.Info, "BaseDir: " + AddFileSet.BaseDirectory.FullName );
-
-                //Walk the path creating as we go
-                foreach( string project in projects ) {
-                    string newPath = string.Format( "{0}/{1}", currentPath, project );
-                    IVSSItem newItem = null;
-
-                    //Try to get the next item in the path
                     try {
-                        newItem = Database.get_VSSItem( newPath, false );
-                    } catch {}
-
-                    //Create it if it doesn't exist
-                    if (newItem == null) {
-                        newItem = currentItem.NewSubproject( project, "NAntContrib vssadd" );
+                        // Try to retrieve the VSS directory
+                        currentItem = Database.get_VSSItem( newPath, false );
+                    }
+                    catch {
+                        // Create it if it doesn't exist
+                        currentItem = Database.get_VSSItem( oldPath, false );
+                        currentItem = currentItem.NewSubproject(projects[i], "NAntContrib vssadd" );
                         Log(Level.Info, "Adding VSS Project : " + newPath);
                     }
-                    //Move on
-                    currentItem = newItem;
-                    currentPath = newPath;
+
+                    oldPath = newPath;
                 }
                 return currentItem;
             } else {
