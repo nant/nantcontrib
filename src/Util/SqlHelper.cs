@@ -31,6 +31,7 @@ namespace NAnt.Contrib.Util
    {
       private OleDbConnection _connection;
       private OleDbTransaction _transaction;
+      private int _commandTimeout = 0;
       
 		/// <summary>
 		/// OleDB Connection object
@@ -38,6 +39,7 @@ namespace NAnt.Contrib.Util
 	   public OleDbConnection Connection {
 		   get { return _connection;}
 	   }
+
 
       /// <summary>
       /// Initializes a new instance.
@@ -77,9 +79,10 @@ namespace NAnt.Contrib.Util
       /// </summary>
       /// <param name="sql">SQL statement to execute</param>
       /// <returns>Data reader used to check the result</returns>
-      public IDataReader Execute(string sql)
+      public IDataReader Execute(string sql, int cmdTimeout)
       {
          OleDbCommand command = new OleDbCommand(sql, _connection);
+         command.CommandTimeout = cmdTimeout;
          if ( _transaction != null )
             command.Transaction = _transaction;
          return command.ExecuteReader();

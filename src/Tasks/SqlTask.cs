@@ -95,6 +95,7 @@ namespace NAnt.Contrib.Tasks
       private string _output;
       public string _embeddedSqlStatements;
       private bool _batch = true;
+      private int _commandTimeout = 0;
       TextWriter _outputWriter = null;
       private bool _expandProps = true;
 
@@ -147,6 +148,15 @@ namespace NAnt.Contrib.Tasks
       public bool ExpandProperties {
          get { return _expandProps; }
          set { _expandProps = value; }
+      }
+
+      /// <summary>
+      /// Command timeout to use when creating commands
+      /// </summary>
+      [ TaskAttribute("cmdtimeout") ]
+      public int CommandTimeout {
+         get { return _commandTimeout; }
+         set { _commandTimeout = value; }
       }
 
       /// <summary>
@@ -292,7 +302,7 @@ namespace NAnt.Contrib.Tasks
 
             IDataReader results = null;
             try {
-               results = sqlHelper.Execute(statement);
+               results = sqlHelper.Execute(statement, CommandTimeout);
             } catch (Exception error) {
                Log.WriteLine("SQL Error: " + error.Message);
                Log.WriteLine("Statement: " + statement);
@@ -329,7 +339,7 @@ namespace NAnt.Contrib.Tasks
             _outputWriter.WriteLine(sql);
          }
 
-         IDataReader results = sqlHelper.Execute(sql);
+         IDataReader results = sqlHelper.Execute(sql, CommandTimeout);
          ProcessResults(results, _outputWriter);
       }
 
