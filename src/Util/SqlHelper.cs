@@ -32,6 +32,13 @@ namespace NAnt.Contrib.Util
       private OleDbConnection _connection;
       private OleDbTransaction _transaction;
       
+		/// <summary>
+		/// OleDB Connection object
+		/// </summary>
+	   public OleDbConnection Connection {
+		   get { return _connection;}
+	   }
+
       /// <summary>
       /// Initializes a new instance.
       /// </summary>

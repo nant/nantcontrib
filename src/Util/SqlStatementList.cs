@@ -52,6 +52,7 @@ namespace NAnt.Contrib.Util
    {
       private StringCollection _statements;
       private string _delimiter;
+      private DelimiterStyle _style;
       private Regex _regex;
       private PropertyDictionary _properties;
 
@@ -65,7 +66,7 @@ namespace NAnt.Contrib.Util
       /// Get the statement specified by the index
       /// </summary>
       public string this[int index] {
-         get { return _statements[index].Trim(); }
+         get { return _statements[index]; }
       }
 
       /// <summary>
@@ -84,16 +85,17 @@ namespace NAnt.Contrib.Util
       public SqlStatementList(string delimiter, DelimiterStyle style)
       {
          _statements = new StringCollection();
+		_style = style;
 
          if ( style == DelimiterStyle.Line ) {
-            _delimiter = "[\n\r]+" + delimiter + "[\n\r]+";
+            _delimiter = delimiter;
+            //_delimiter = "[\n\r]+" + delimiter + "[\n\r]+";
             _regex = new Regex(_delimiter, RegexOptions.Multiline);
          } else {
             _delimiter = delimiter;
             _regex = new Regex(_delimiter);
          }
       }
-
 
       /// <summary>
       /// Parses the Sql into the internal list using the specified delimiter
@@ -102,20 +104,54 @@ namespace NAnt.Contrib.Util
       /// <param name="sql"></param>
       public void ParseSql(string sql)
       {
-         string strippedSql = StripComments(ExpandProps(sql));
+         StringReader reader = new StringReader(ExpandProps(sql));
+         string line = null;
+		  StringBuilder sqlStatement = new StringBuilder();
 
-         string[] tokens = _regex.Split(strippedSql);
-         foreach ( string token in tokens )
-         {
-            string ttoken = token.Trim();
-            if ( ttoken != string.Empty ) { 
-//               Console.WriteLine("*******\n{0}\n*********", ttoken);
-               _statements.Add(ttoken);
-            }
+         while ( (line = reader.ReadLine()) != null ) {
+
+			 if ( line.Trim() == string.Empty ) 
+			 {
+				 continue;
+			 }
+
+			 if (_style == DelimiterStyle.Normal)
+			 {
+				 if ( line.Trim().StartsWith("//") || line.Trim().StartsWith("--") ) 
+				 {
+					 continue;
+				 }
+
+				 string[] tokens = Regex.Split(line.Trim(), _delimiter);
+				 foreach ( string t in tokens ) 
+				 {
+					 if ( t != string.Empty ) 
+					 {
+						 _statements.Add(t);
+					 }
+				 }
+			 }
+			 // DelimiterStyle.Line
+			 else 
+			 {				 
+				 if (line.Trim().ToUpper().StartsWith(_delimiter.ToUpper()))
+				 {
+					 if (sqlStatement.ToString().Trim().Length > 0)
+						_statements.Add(sqlStatement.ToString());
+
+					 sqlStatement = new StringBuilder();
+					 continue;
+				 }
+
+				sqlStatement.Append(line + Environment.NewLine);
+			 
+			 }
+
          }
-      }
-
-
+		 if (sqlStatement.Length > 0)
+			 _statements.Add(sqlStatement.ToString());
+	  }
+  
       /// <summary>
       /// Parses the contents of the file into the 
       /// internal list using the specified delimiter
@@ -144,7 +180,7 @@ namespace NAnt.Contrib.Util
       {
          return ((IEnumerable)_statements).GetEnumerator();
       }
-
+      
 
       /// <summary>
       /// Strips all single line comments 

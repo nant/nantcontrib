@@ -23,7 +23,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Security.Cryptography;
+//using System.Security.Cryptography;
 using NUnit.Framework;
 using SourceForge.NAnt.Attributes;
 using SourceForge.NAnt;
@@ -31,28 +31,26 @@ using SourceForge.NAnt;
 using NAnt.Contrib.Util;
 
 namespace NAnt.Contrib.Tests.Util
-{ 
+{
    /// <summary>
    /// SqlStatementList class tests
    /// </summary>
    public class SqlStatementListTests : TestCase
    {
+
       const string STATEMENT_1 = "select * from tables";
       const string STATEMENT_2 = "insert into tables values(1,2,3)";
       const string STATEMENT_3 = "drop tables";
-      const string STATEMENT_4 = "insert into tables\r\nvalues(1234)";
       const string DELIMITER = ";";
-      const string DELIMITER2 = "GO";
 
-      public SqlStatementListTests(string name)
-         : base(name)
+      public SqlStatementListTests(string name) : base(name)
       {
       }
 
       public void TestLoadFromString()
       {
          string statements = STATEMENT_1 + "\n  " + DELIMITER + STATEMENT_2
-                           + DELIMITER + "   \n " + STATEMENT_3;
+            + DELIMITER + "   \n " + STATEMENT_3;
 
          SqlStatementList list = new SqlStatementList(DELIMITER, DelimiterStyle.Normal);
          list.ParseSql(statements);
@@ -67,8 +65,8 @@ namespace NAnt.Contrib.Tests.Util
       public void TestCommentStripping()
       {
          string statements = STATEMENT_1 + DELIMITER + "\n //" + STATEMENT_2
-                           + DELIMITER + "   \n --" + STATEMENT_3 
-                           + DELIMITER + "\n" + STATEMENT_1;
+            + DELIMITER + "   \n --" + STATEMENT_3
+            + DELIMITER + "\n" + STATEMENT_1;
 
          SqlStatementList list = new SqlStatementList(DELIMITER, DelimiterStyle.Normal);
          list.ParseSql(statements);
@@ -89,39 +87,94 @@ namespace NAnt.Contrib.Tests.Util
          Assertion.AssertEquals(STATEMENT_1, list[0]);
       }
 
-      public void TestMultiLineStatements()
+      public void TestGoLineBatch()
       {
-         string statements = STATEMENT_1 + "\n" + DELIMITER2  + "\r\n" 
-                           + STATEMENT_2 + "\r\n" + STATEMENT_4
-                           + "\r\n" + DELIMITER2 + "\n " + STATEMENT_3;
+         string goDelimiter = "go";
 
-         SqlStatementList list = new SqlStatementList(DELIMITER2, DelimiterStyle.Line);
+         string statements =
+            STATEMENT_1 + Environment.NewLine
+            + STATEMENT_2 + Environment.NewLine
+            + goDelimiter + Environment.NewLine
+            + STATEMENT_3 + Environment.NewLine
+            + goDelimiter + Environment.NewLine
+            + STATEMENT_3 + Environment.NewLine
+            + goDelimiter + Environment.NewLine
+            + "-- " + STATEMENT_3;
+
+         SqlStatementList list = new SqlStatementList(goDelimiter, DelimiterStyle.Line);
          list.ParseSql(statements);
-         
-         Assertion.AssertEquals(3, list.Count);
 
-         Assertion.AssertEquals(STATEMENT_1, list[0]);
-         Assertion.AssertEquals(STATEMENT_2 + "\r\n" + STATEMENT_4, list[1]);
-         Assertion.AssertEquals(STATEMENT_3, list[2]);
+         Assertion.AssertEquals(4, list.Count);
+         Assertion.AssertEquals("Statement 1", STATEMENT_1 + Environment.NewLine + STATEMENT_2 + Environment.NewLine, list[0]);
+         Assertion.AssertEquals("Statement 3.1", STATEMENT_3 + Environment.NewLine, list[1]);
+         Assertion.AssertEquals("Statement 3.2", STATEMENT_3 + Environment.NewLine, list[2]);
+         Assertion.AssertEquals("Comment", "-- " + STATEMENT_3 + Environment.NewLine, list[3]);
       }
 
-      public void TestPropertyExpansion()
+      public void TestDifferentGoDelimiters()
       {
-         const string table_name = "jobs";
+         string goDelimiter1 = "go";
+         string goDelimiter2 = "gO";
 
-         string statement = "select * from ${table.name} where id=1";
-         string result = "select * from " + table_name + " where id=1";
+         string statements =
+            STATEMENT_1 + Environment.NewLine
+            + STATEMENT_2 + Environment.NewLine
+            + goDelimiter1 + Environment.NewLine
+            + STATEMENT_3 + Environment.NewLine
+            + goDelimiter1 + Environment.NewLine
+            + STATEMENT_3 + Environment.NewLine
+            + goDelimiter2 + Environment.NewLine
+            + "-- " + STATEMENT_3;
 
-         PropertyDictionary props = new PropertyDictionary();
-         props.Add("table.name", table_name);
+         SqlStatementList list = new SqlStatementList(goDelimiter1, DelimiterStyle.Line);
+         list.ParseSql(statements);
 
-         SqlStatementList list = new SqlStatementList(DELIMITER, DelimiterStyle.Normal);
+         Assertion.AssertEquals(4, list.Count);
+         Assertion.AssertEquals("Statement 1", STATEMENT_1 + Environment.NewLine + STATEMENT_2  + Environment.NewLine, list[0]);
+         Assertion.AssertEquals("Statement 3.1", STATEMENT_3 + Environment.NewLine, list[1]);
+         Assertion.AssertEquals("Statement 3.2", STATEMENT_3 + Environment.NewLine, list[2]);
+         Assertion.AssertEquals("Comment", "-- " + STATEMENT_3 + Environment.NewLine, list[3]);
+      }
 
-         list.Properties = props;
-         list.ParseSql(statement);
+      public void TestKeepLineFormatting()
+      {
+         string goDelimiter = "go";
+
+         string statements = "\t" +
+            STATEMENT_1 + Environment.NewLine
+            + "\t" + STATEMENT_2 + Environment.NewLine;
+
+         SqlStatementList list = new SqlStatementList(goDelimiter, DelimiterStyle.Line);
+         list.ParseSql(statements);
+
          Assertion.AssertEquals(1, list.Count);
-         Assertion.AssertEquals(result, list[0]);
+         Assertion.AssertEquals(statements, list[0]);
+      }
 
+      public void TestPropertyReplacement()
+      {
+         string sqlWithPropertyTags = @"use ${dbName}";
+         string expectedSqlStatement = @"use master";
+
+         string goDelimiter = "go";
+
+         string inputStatements = "\t" +
+            sqlWithPropertyTags + Environment.NewLine
+            + "\t" + sqlWithPropertyTags + Environment.NewLine;
+
+         string expectedStatements = "\t" +
+            expectedSqlStatement + Environment.NewLine
+            + "\t" + expectedSqlStatement + Environment.NewLine;
+
+         SqlStatementList list = new SqlStatementList(goDelimiter, DelimiterStyle.Line);
+
+         list.Properties = new PropertyDictionary();
+         list.Properties.Add("dbName", "master");
+
+         list.ParseSql(inputStatements);
+
+         Assertion.AssertEquals(1, list.Count);
+         Assertion.AssertEquals(expectedStatements, list[0]);
       }
 
    } // class SqlStatementListTests
