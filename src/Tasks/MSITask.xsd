@@ -230,10 +230,6 @@
             <xsd:selector xpath="msi:urlproperties/msi:urlproperty" />
             <xsd:field xpath="@name" />
         </xsd:unique>
-        <xsd:key name="tableColumnKey">
-            <xsd:selector xpath="msi:tables/msi:table/msi:columns/msi:column" />
-            <xsd:field xpath="@name" />
-        </xsd:key>
     </xsd:element>
     <!-- msi/properties -->
     <xsd:element name="properties">
@@ -347,12 +343,7 @@
     </xsd:complexType>
     <xsd:complexType name="MSITableRowColumns">
         <xsd:sequence>
-            <xsd:element name="column" type="msi:MSITableRowColumnData" minOccurs="1" maxOccurs="unbounded">
-                <xsd:keyref name="tableRowColumnRefs" refer="msi:tableColumnKey">
-                    <xsd:selector xpath="." />
-                    <xsd:field xpath="@name" />
-                </xsd:keyref>
-            </xsd:element>
+            <xsd:element name="column" type="msi:MSITableRowColumnData" minOccurs="1" maxOccurs="unbounded" />
         </xsd:sequence>
     </xsd:complexType>
     <!-- msi/tables/table/rows/row/column -->
