@@ -39,7 +39,7 @@
   <property name="bin.dir" value="bin" />
   <property name="dest.dir" value="${build.dir}\${product.name}" />
   <property name="vside.dir" value="${vsnet.dir}\Common7\IDE" />
-  <property name="vslibs.dir" value="${vsnet.dir}\Common7\IDE\PublicAssemblies" />
+  <property name="vslibs.dir" value="${vside.dir}\PublicAssemblies" />
   <property name="vstools.dir" value="${vsnet.dir}\Common7\Tools" />
   <property name="dotnetlibs.dir" value="${dotnet.dir}\Primary Interop Assemblies" />
   <property name="buildlibs.arg" value="&quot;/lib:${vslibs.dir};${dotnetlibs.dir}&quot;" />
@@ -284,12 +284,37 @@
     <copy todir="${dest.dir}" file="${dotnetlibs.dir}\msddslmp.dll"/>
     <echo message="**************************************************" />
     <echo message="*" />
-    <echo message="* Registering Addin TypeLibrary..." />
+    <echo message="* Registering Addin..." />
     <echo message="*" />
     <echo message="**************************************************" />
     <exec program="regsvr32" commandline="/s ${dest.dir}\VSUserControlHost.dll" />
     <exec program="regasm" commandline="${dest.dir}\${product.name}.dll /tlb:${dest.dir}\${product.name}.tlb /codebase ${dest.dir}\${product.name}.dll" />
-    <echo message="Done. Remember to run RegisterAddin.reg." />
+    <script language="C#">
+      <code><![CDATA[
+      public static void ScriptMain(Project project) {
+        string sourcePath = Path.Combine(project.BaseDirectory, project.Properties["dest.dir"]);
+        string inputFileName = Path.Combine(project.BaseDirectory, "RegisterAddin.txt");
+        string registerFileName = Path.Combine(project.BaseDirectory, "RegisterAddin.reg");
+        StreamReader reader = File.OpenText(inputFileName);
+        FileStream stream = null;
+        try {	
+          string contents = reader.ReadToEnd();
+          string curPath = sourcePath.Replace(@"\", @"\\");
+          string newContents = contents.Replace("%CURRENT_DIRECTORY%", curPath + @"\\");
+          stream = File.Create(registerFileName);
+          StreamWriter writer = new StreamWriter(stream);
+          writer.Write(newContents);
+          writer.Flush();
+        }
+        finally {
+          reader.Close();
+          stream.Close();
+        }
+      }
+      ]]></code>
+    </script>
+    <exec program="regedit" commandline="/s RegisterAddin.reg" />
+    <delete file="RegisterAddin.reg" />
   </target>
   <target name="apidocs" reference="Builds API Documentation" description="Builds the API Reference" depends="build">
     <echo message="**************************************************" />
