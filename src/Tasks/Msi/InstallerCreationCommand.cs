@@ -1931,7 +1931,7 @@ namespace NAnt.Contrib.Tasks.Msi {
                 tempDir = tempDir.Substring(Project.BaseDirectory.Length+1);
             }
 
-            processInfo.Arguments = "-p -r -P " + tempDir + @"\ N " + cabFilePath + " " + tempDir + @"\*";
+            processInfo.Arguments = "-r -P " + tempDir + @"\ N " + cabFilePath + " " + tempDir + @"\*";
 
             processInfo.CreateNoWindow = false;
             processInfo.WindowStyle = ProcessWindowStyle.Hidden;
