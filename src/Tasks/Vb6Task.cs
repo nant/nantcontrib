@@ -259,19 +259,19 @@ namespace NAnt.Contrib.Tasks {
                 Log(Level.Info, LogPrefix + "Output file '{0}' does not exist, recompiling.", outputFileInfo.FullName);
                 return true;
             }
-
-            string fileName = FileSet.FindMoreRecentLastWriteTime(outputFileInfo.FullName, outputFileInfo.LastWriteTime);
+            // look for a changed project file.
+            string fileName = FileSet.FindMoreRecentLastWriteTime( projectFile, outputFileInfo.LastWriteTime);
             if (fileName != null) {
                 Log(Level.Info, LogPrefix + "{0} is out of date, recompiling.", fileName);
                 return true;
             }
-
+            // check for a changed source file
             fileName = FileSet.FindMoreRecentLastWriteTime(sources.FileNames, outputFileInfo.LastWriteTime);
             if (fileName != null) {
                 Log(Level.Info, LogPrefix + "{0} is out of date, recompiling.", fileName);
                 return true;
             }
-
+            // check for a changed reference 
             if (CheckReferences) {
                 fileName = FileSet.FindMoreRecentLastWriteTime(references.FileNames, outputFileInfo.LastWriteTime);
                 if (fileName != null) {
@@ -279,7 +279,6 @@ namespace NAnt.Contrib.Tasks {
                     return true;
                 }
             }
-
             return false;
         }
 
