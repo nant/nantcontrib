@@ -38,8 +38,12 @@ using NAnt.DotNet.Tasks;
 
 namespace NAnt.Contrib.Tasks {
     /// <summary>
+    /// The <see cref="XsdTask" /> generates XML schema or common language runtime 
+    /// classes from XDR, XML, and XSD files, or from classes in a runtime assembly.
+    /// </summary>
+    /// <remarks>
     /// <para>
-    /// The <see cref="XsdTask" /> can perform the following operations :
+    /// The following operations can be performed :
     /// </para>
     /// <list type="table">
     ///     <listheader>
@@ -85,7 +89,7 @@ namespace NAnt.Contrib.Tasks {
     ///         </description>
     ///     </item>
     /// </list>
-    /// </summary>
+    /// </remarks>
     /// <example>
     ///   <para>Compile a XML Schema.</para>
     ///   <code>
@@ -96,8 +100,7 @@ namespace NAnt.Contrib.Tasks {
     ///     language="CS" 
     ///     namespace="MyCompany.MySchema" 
     ///     outputdir="build\bin"
-    ///     uri="http://MySchema'sTargetNamespace" 
-    /// />
+    ///     uri="http://MySchema'sTargetNamespace" />
     ///     ]]>
     ///   </code>
     /// </example>
