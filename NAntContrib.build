@@ -118,7 +118,6 @@
             <references>
                 <includes name="${nant.dir}/bin/NAnt.Core.dll" />
                 <includes name="${nant.dir}/bin/NAnt.DotNetTasks.dll" />
-                <includes name="${nant.dir}/bin/NUnitCore.dll" />
                 <includes name="${build.dir}/bin/CollectionGen.dll" />
                 <includes name="${build.dir}/bin/SourceSafe.Interop.dll" />
                 <includes name="${build.dir}/bin/Interop.StarTeam.dll" />
@@ -144,13 +143,12 @@
     <!-- Build the unit tests library -->
     <target name="buildtests" depends="build" description="Compiles the NUnit Tests">
         <!-- copy NAnt assemblies needed for the tests to run -->
-        <copy todir="${build.dir}/bin">
-            <fileset basedir="${nant.dir}/bin" failonempty="true">
-                <includes name="nunit.framework.dll" />
-                <includes name="NAnt.Core.dll" />
-                <includes name="NAnt.DotNetTasks.dll" />
-                <includes name="NAnt.Core.Tests.dll" />
-                <includes name="log4net.dll" />
+        <copy todir="${build.dir}/bin" flatten="true">
+            <fileset basedir="${nant.dir}" failonempty="true">
+                <includes name="lib/${current.runtime.config}/${current.runtime.version}/nunit.framework.dll" />
+                <includes name="bin/NAnt.Core.dll" />
+                <includes name="bin/NAnt.DotNetTasks.dll" />
+                <includes name="lib/${current.runtime.config}/${current.runtime.version}/log4net.dll" />
             </fileset>
         </copy>
         
@@ -160,9 +158,8 @@
                 <includes name="**/*.cs" />
             </sources>
             <references>
-                 <includes name="${nant.dir}/bin/nunit.framework.dll" />
+                 <includes name="${nant.dir}/lib/${current.runtime.config}/${current.runtime.version}/nunit.framework.dll" />
                  <includes name="${nant.dir}/bin/NAnt.Core.dll" />
-                 <includes name="${nant.dir}/bin/NAnt.Core.Tests.dll" />
                  <includes name="${build.dir}/bin/${project.FormalName}.Tasks.dll" />
                  <includes name="${build.dir}/bin/SourceSafe.Interop.dll" />
             </references>
@@ -197,7 +194,6 @@
                 <includes name="nunit.framework.dll" />
                 <includes name="NAnt.Core.dll" />
                 <includes name="NAnt.DotNetTasks.dll" />
-                <includes name="NAnt.Core.Tests.dll" />
                 <includes name="log4net.dll" />
             </fileset>
         </delete>
