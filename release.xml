@@ -32,7 +32,7 @@
         <!-- make sure the directory tree exists -->
         <exec program="ssh">
             <arg value="${sf.net.ssh.server}" />
-            <arg value="mkdir --mode=755 --parents ${sf.net.web.path}/help" />
+            <arg value="mkdir --mode=775 --parents ${sf.net.web.path}/help" />
         </exec>
         <!-- try to remove existing files and directories -->
         <exec program="ssh" failonerror="false">
@@ -49,7 +49,7 @@
         <!-- make sure permissions are set right -->
         <exec program="ssh" failonerror="false">
             <arg value="${sf.net.ssh.server}" />
-            <arg value="chmod -R 755 ${sf.net.web.path}/help" />
+            <arg value="chmod -R 775 ${sf.net.web.path}/help" />
         </exec>
     </target>
     <!-- copy website to sourceforge -->
@@ -57,7 +57,7 @@
         <!-- make sure the directory tree exists -->
         <exec program="ssh">
             <arg value="${sf.net.ssh.server}" />
-            <arg value="mkdir --mode=755 --parents ${sf.net.web.path}" />
+            <arg value="mkdir --mode=775 --parents ${sf.net.web.path}" />
         </exec>
         <!-- try to remove existing files -->
         <exec program="ssh" failonerror="false">
@@ -97,7 +97,7 @@
         <!-- make sure permissions are set right -->
         <exec program="ssh" failonerror="false">
             <arg value="${sf.net.ssh.server}" />
-            <arg value="find ${sf.net.web.path} -maxdepth 1 -type f -exec chmod 755 {} \;" />
+            <arg value="find ${sf.net.web.path} -maxdepth 1 -type f -exec chmod 775 {} \;" />
         </exec>
     </target>
 </project>

@@ -28,7 +28,7 @@
         <!-- make sure the directory tree exists -->
         <exec program="ssh">
             <arg value="${sf.net.ssh.server}" />
-            <arg value="mkdir --mode=755 --parents ${sf.net.web.path}/nightly/builds" />
+            <arg value="mkdir --mode=775 --parents ${sf.net.web.path}/nightly/builds" />
         </exec>
         <!-- copy the build to sourceforge -->
         <exec workingdir="${execpath}" program="scp">
@@ -39,14 +39,14 @@
         <!-- make sure permissions are set right -->
         <exec program="ssh">
             <arg value="${sf.net.ssh.server}" />
-            <arg value="chmod 755 ${sf.net.web.path}/nightly/builds/${execfilename}" />
+            <arg value="chmod 775 ${sf.net.web.path}/nightly/builds/${execfilename}" />
         </exec>
     </target>
     <target name="deploy-help" depends="set-net-1.0-runtime-configuration, package">
         <!-- make sure the directory tree exists -->
         <exec program="ssh">
             <arg value="${sf.net.ssh.server}" />
-            <arg value="mkdir --mode=755 --parents ${sf.net.web.path}/nightly/help" />
+            <arg value="mkdir --mode=775 --parents ${sf.net.web.path}/nightly/help" />
         </exec>
         <!-- try to remove existing files and directories -->
         <exec program="ssh" failonerror="false">
@@ -63,7 +63,7 @@
         <!-- make sure permissions are set right -->
         <exec program="ssh" failonerror="false">
             <arg value="${sf.net.ssh.server}" />
-            <arg value="chmod -R 755 ${sf.net.web.path}/nightly/help" />
+            <arg value="chmod -R 775 ${sf.net.web.path}/nightly/help" />
         </exec>
     </target>
 </project>
