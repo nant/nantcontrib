@@ -921,9 +921,9 @@ namespace NAnt.Contrib.Tasks.Msi {
                     foreach (MSIRegistryKey key in msi.registry) {
                         int rootKey = -1;
                         switch (key.root.ToString()) {
-							case "dependent":
-								rootKey = -1;
-								break;
+                            case "dependent":
+                                rootKey = -1;
+                                break;
                             case "classes":
                                 rootKey = 0;
                                 break;
@@ -951,13 +951,13 @@ namespace NAnt.Contrib.Tasks.Msi {
                             } else if (value.dword != null && value.dword != "") {
                                 keyValue = "#" + Int32.Parse(value.dword);
                             } else {
-								if (value.Value != null) {
-									string val1 = value.Value.Replace(",", null);
-									string val2 = val1.Replace(" ", null);
-									string val3 = val2.Replace("\n", null);
-									string val4 = val3.Replace("\r", null);
-									keyValue = "#x" + val4;
-								}
+                                if (value.Value != null) {
+                                    string val1 = value.Value.Replace(",", null);
+                                    string val2 = val1.Replace(" ", null);
+                                    string val3 = val2.Replace("\n", null);
+                                    string val4 = val3.Replace("\r", null);
+                                    keyValue = "#x" + val4;
+                                }
                             }
 
                             registryTable.InsertRecord((value.id != null ? value.id : CreateIdentityGuid()), 
@@ -1123,7 +1123,10 @@ namespace NAnt.Contrib.Tasks.Msi {
                 foreach (MSITable table in msi.tables) {
                     Log(Level.Verbose, "\t" + table.name);
 
-                    if (!database.VerifyTableExistance(table.name)) {
+                    ArrayList columnList = new ArrayList();
+                    
+                    if (!database.VerifyTableExistance(table.name)) 
+                    {
                         Log(Level.Verbose, "\t\tAdding table structure...");
 
 
@@ -1131,8 +1134,6 @@ namespace NAnt.Contrib.Tasks.Msi {
                         string tableStructureColumnTypes = "";
                         string tableStructureKeys = table.name;
                         bool firstColumn = true;
-
-                        ArrayList columnList = new ArrayList();
 
                         using (InstallerTable validationTable = database.OpenTable("_Validation")) {
                             foreach (MSITableColumn column in table.columns) { 
@@ -1165,10 +1166,15 @@ namespace NAnt.Contrib.Tasks.Msi {
 
                         Log(Level.Verbose, "Done");
 
-                        if (table.rows != null)
-                            AddTableData(database, table.name, table, columnList);
-
                     }
+                    else {
+                        foreach (MSITableColumn column in table.columns) { 
+                            AddToInsertionColumnList(column, columnList);
+                        }
+                    }
+
+                    if (table.rows != null)
+                        AddTableData(database, table.name, table, columnList);
                 }
             }
         }
@@ -1186,11 +1192,16 @@ namespace NAnt.Contrib.Tasks.Msi {
             bool useMaxValue;
             GetMaxValue(column, out maxValue, out useMaxValue);
 
-            validationTable.InsertRecord(tableName, column.name, nullability,
-                (useMinValue ? (object) minValue : null),
-                (useMaxValue ? (object) maxValue : null), column.keytable,
-                (column.keycolumnSpecified ? (object) column.keycolumn : null),
-                validationCategory, column.set, column.description);
+            try {
+                validationTable.InsertRecord(tableName, column.name, nullability,
+                    (useMinValue ? (object) minValue : null),
+                    (useMaxValue ? (object) maxValue : null), column.keytable,
+                    (column.keycolumnSpecified ? (object) column.keycolumn : null),
+                    validationCategory, column.set, column.description);
+            }
+            catch (Exception) {
+                Log(Level.Warning, "_Validation table record already exists for column: " + column.name);
+            }
         }
 
         private void AddToInsertionColumnList(MSITableColumn column, ArrayList columnList) {
