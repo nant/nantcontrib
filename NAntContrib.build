@@ -16,8 +16,7 @@
     <property name="tests.dir" value="Tests"/>
 
     <!-- Used to build against. This directory must exist or it will be created. -->
-    <property name="nant.dir" value="NAntRelease" />
-    <property name="nant.releasebuild.name" value="nant-20030424"/>
+    <property name="nant.dir" value="NAntRelease" overwrite="false" />
 
     <!-- named project configurations (used by self-test and self-doc tasks) -->
     <target name="debug" description="Perform a 'debug' build">
@@ -35,7 +34,6 @@
     <!-- build tasks -->
     <target name="init" description="Initializes build properties">
         <call target="${project.config}" />
-
         <call target="UpdateNAntReleaseFiles"/>
 
         <property name="nant-bin.dir" value="${nant.dir}/bin"/>
@@ -45,8 +43,6 @@
 
     <include buildfile="NAntContribInstall.include" />
     <include buildfile="Tools/SLiNgshoT/SLiNgshoTInstall.include" />
-
-
 
     <!--*****************************************************************-->
     <!--* Clean the outputs                                             *-->
@@ -288,33 +284,17 @@
         </copy>
         <echo message="Preview task references: file://${build.dir}/doc/help/tasks/index.html"/>
     </target>
-
-    <!-- this target must be defined before that call below it! -->
     <target name="UpdateNAntReleaseFiles">
         <available property="NAntReleaseExists" resource="${nant.dir}" type="Directory"/>
         <ifnot propertyexists="NAntReleaseExists" propertytrue="NAntReleaseExists">
-            <echo>
-
+            <echo level="Error">
    Folder '${nant.dir}' does not exist. pass the value of nant.dir on the commandline:
-   somthing like
+   something like
    nant -D:nant.dir=c:\cvs\nant\build\nant-0.8.4-debug -f:NAntContrib.build
 
    nant.dir should point to the build directory just above bin.
             </echo>
             <fail />
-<!--
-Creating folder and getting file from NAnt Nightly Build (${nant.releasebuild.name})!
-
-            <mkdir dir="${nant.dir}"/>
-            <get dest="${nant.releasebuild.name}.zip" src="http://nant.sourceforge.net/builds/${nant.releasebuild.name}.zip"/>
-            <unzip zipfile="${nant.releasebuild.name}.zip"/>
-            <move todir="${nant.dir}">
-                <fileset basedir="${nant.releasebuild.name}">
-                    <includes name="**"/>
-                </fileset>
-            </move>
-            <delete dir="${nant.releasebuild.name}" failonerror="false"/>
-            <delete file="${nant.releasebuild.name}.zip" failonerror="false"/>-->
         </ifnot>
     </target>
 </project>
