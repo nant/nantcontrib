@@ -68,20 +68,42 @@
                 Getting single file causes error (bug <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=1019972&group_id=54790&atid=474851">#1019972</a>).
             </li>
         </ul>
-        <h4>Task changes</h4>
-        <h5><a class="heading" href="help/tasks/vssget.html">&lt;vssget&gt;</a></h5>
+        <h4>New Tasks</h4>
+        <h5><a class="heading" href="help/tasks/vsshistory.html">&lt;vsshistory&gt;</a></h5>
         <ul>
             <li>
-                Added &quot;filetimestamp&quot; attribute that allows the behavior
-                for timestamps of local files to be set.
+                Generates an XML file showing all changes made to a Visual SourceSafe
+                project/file between specified labels or dates (by a given user).
+            </li>
+        </ul>
+        <h4>Task changes</h4>
+        <h5><a class="heading" href="help/tasks/vssadd.html">&lt;vssadd&gt;</a></h5>
+        <ul>
+            <li>
+                The &quot;user&quot; attribute is deprecated, and has been superceded
+                by a &quot;username&quot; attribute.
             </li>
             <li>
-                If &quot;localpath&quot; is not an absolute path, it will now be
-                considered as a path relative to the project base directory.
+                The &quot;user&quot;/&quot;username&quot; attribute is no longer 
+                required. When no username is specified and &quot;Use network
+                name for automatic user log in&quot; is enabled for the Visual 
+                SourceSafe database, then the current Windows username will be 
+                used to log in.
             </li>
         </ul>
         <h5><a class="heading" href="help/tasks/vsscheckin.html">&lt;vsscheckin&gt;</a></h5>
         <ul>
+            <li>
+                The &quot;user&quot; attribute is deprecated, and has been superceded
+                by a &quot;username&quot; attribute.
+            </li>
+            <li>
+                The &quot;user&quot;/&quot;username&quot; attribute is no longer 
+                required. When no username is specified and &quot;Use network
+                name for automatic user log in&quot; is enabled for the Visual 
+                SourceSafe database, then the current Windows username will be 
+                used to log in.
+            </li>
             <li>
                 If &quot;localpath&quot; is not an absolute path, it will now be
                 considered as a path relative to the project base directory.
@@ -90,6 +112,17 @@
         <h5><a class="heading" href="help/tasks/vsscheckout.html">&lt;vsscheckout&gt;</a></h5>
         <ul>
             <li>
+                The &quot;user&quot; attribute is deprecated, and has been superceded
+                by a &quot;username&quot; attribute.
+            </li>
+            <li>
+                The &quot;user&quot;/&quot;username&quot; attribute is no longer 
+                required. When no username is specified and &quot;Use network
+                name for automatic user log in&quot; is enabled for the Visual 
+                SourceSafe database, then the current Windows username will be 
+                used to log in.
+            </li>
+            <li>
                 Added &quot;filetimestamp&quot; attribute that allows the behavior
                 for timestamps of local files to be set.
             </li>
@@ -98,8 +131,69 @@
                 considered as a path relative to the project base directory.
             </li>
         </ul>
+        <h5><a class="heading" href="help/tasks/vssdiff.html">&lt;vssdiff&gt;</a></h5>
+        <ul>
+            <li>
+                The &quot;user&quot; attribute is deprecated, and has been superceded
+                by a &quot;username&quot; attribute.
+            </li>
+            <li>
+                The &quot;user&quot;/&quot;username&quot; attribute is no longer 
+                required. When no username is specified and &quot;Use network
+                name for automatic user log in&quot; is enabled for the Visual 
+                SourceSafe database, then the current Windows username will be 
+                used to log in.
+            </li>
+        </ul>
+        <h5><a class="heading" href="help/tasks/vssget.html">&lt;vssget&gt;</a></h5>
+        <ul>
+            <li>
+                The &quot;user&quot; attribute is deprecated, and has been superceded
+                by a &quot;username&quot; attribute.
+            </li>
+            <li>
+                The &quot;user&quot;/&quot;username&quot; attribute is no longer 
+                required. When no username is specified and &quot;Use network
+                name for automatic user log in&quot; is enabled for the Visual 
+                SourceSafe database, then the current Windows username will be 
+                used to log in.
+            </li>
+            <li>
+                Added &quot;filetimestamp&quot; attribute that allows the behavior
+                for timestamps of local files to be set.
+            </li>
+            <li>
+                If &quot;localpath&quot; is not an absolute path, it will now be
+                considered as a path relative to the project base directory.
+            </li>
+        </ul>
+        <h5><a class="heading" href="help/tasks/vsslabel.html">&lt;vsslabel&gt;</a></h5>
+        <ul>
+            <li>
+                The &quot;user&quot; attribute is deprecated, and has been superceded
+                by a &quot;username&quot; attribute.
+            </li>
+            <li>
+                The &quot;user&quot;/&quot;username&quot; attribute is no longer 
+                required. When no username is specified and &quot;Use network
+                name for automatic user log in&quot; is enabled for the Visual 
+                SourceSafe database, then the current Windows username will be 
+                used to log in.
+            </li>
+        </ul>
         <h5><a class="heading" href="help/tasks/vssundocheckout.html">&lt;vssundocheckout&gt;</a></h5>
         <ul>
+            <li>
+                The &quot;user&quot; attribute is deprecated, and has been superceded
+                by a &quot;username&quot; attribute.
+            </li>
+            <li>
+                The &quot;user&quot;/&quot;username&quot; attribute is no longer 
+                required. When no username is specified and &quot;Use network
+                name for automatic user log in&quot; is enabled for the Visual 
+                SourceSafe database, then the current Windows username will be 
+                used to log in.
+            </li>
             <li>
                 If &quot;localpath&quot; is not an absolute path, it will now be
                 considered as a path relative to the project base directory.
