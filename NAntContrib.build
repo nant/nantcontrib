@@ -1,0 +1,106 @@
+<project name="NAntContrib" default="build">
+    <tstamp/>
+    <property name="debug" value="true"/>
+    <property name="project.name" value="nantcontrib"/>
+    <property name="project.FormalName" value="NAnt.Contrib"/>
+
+    <property name="src.dir" value="src"/>
+    <property name="build.dir" value="build"/>
+    <property name="dist.dir" value="bin"/>
+    
+    <property name="nant-bin.dir" value="${nant.home}\bin"/>
+
+    <property name="backup.name" value="..\${project.name}-backup-${tstamp.date}-${tstamp.time}.zip" />
+    <property name="project.version" value="x.x"/>
+
+
+    <!--
+        Clean the outputs.
+    -->
+    <target name="clean" description="cleans up everything">
+        <delete dir="${build.dir}" failonerror="false"/>
+        <delete dir="${dist.dir}" failonerror="false"/>
+        <delete file="${dist.name}" failonerror="false"/>
+    </target>
+    
+    <!--
+        Performan full and clean rebuild 
+    -->
+    <target name="all" description="make a full, clean rebuild">
+      <call target="clean"/>
+      <call target="build"/>
+      <call target="buildtests"/>
+      <call target="test"/>
+    </target>
+    
+    <!--
+        Prepare directories and build settings
+    -->
+    <target name="prepare">
+      <mkdir dir="${build.dir}"/>
+      <mkdir dir="${dist.dir}"/>
+      <copy file="${nant-bin.dir}/NUnitCore.dll" todir="${build.dir}"/>
+    </target>
+
+
+
+    <!--
+        Build the NAnt.Contrib.dll library
+    -->
+    <target name="build" depends="prepare" description="compiles the source code">
+
+        <!-- compile NAntContrib.dll -->
+        <csc target="library" output="${build.dir}\${project.FormalName}.dll" debug="${debug}" doc="${build.dir}\${project.FormalName}.xml">
+            <sources basedir="${src.dir}">
+                <includes name="**/*.cs"/>
+            </sources>
+            <references>
+                <includes name="${nant-bin.dir}/NAnt.Core.dll"/>
+                <includes name="${nant-bin.dir}/NUnitCore.dll"/>
+            </references>
+            <resources>
+                <includes name="${src.dir}/xsl/*.*"/>
+            </resources>
+            <arg value="/nowarn:1591"/>
+        </csc>
+
+    </target>
+
+    <!--
+        Build the unit tests library
+    -->
+    <target name="buildtests" depends="build" description="Compiles the NUnit Tests">
+        <!-- compile NAntContrib.Tests.dll -->
+        <csc target="library" output="${build.dir}\${project.FormalName}.Tests.dll" debug="${debug}">
+            <sources basedir="${src.dir}\Tests">
+                <includes name="**/*.cs"/>
+            </sources>
+            <references>
+                <includes name="${build.dir}/NUnitCore.dll"/>
+                <includes name="${build.dir}/${project.FormalName}.dll"/>
+            </references>
+        </csc>
+    </target>
+
+    <!--
+        Perform unit tests.  If a unit test fails, the build fails.
+        The base directory is set to the Test directory so that tests can easily
+        load external data files wihtout having to worry about complicated paths.
+    -->
+    <target name="test" depends="buildtests" description="run unit tests">
+        <nunit basedir="${src.dir}\Tests" verbose="false" haltonerror="true" haltonfailure="true">
+            <formatter type="Xml"/>
+            <formatter type="Plain"/>
+            <test class="NAnt.Contrib.AllTests" assembly="${build.dir}\${project.FormalName}.Tests.dll" outfile="${build.dir}\${project.FormalName}.Tests.Results" />
+        </nunit>
+    </target>
+
+    <target name="backup" depends="clean" description="make local backup">
+        <echo message="Creating backup ${backup.name}"/>
+        <zip zipfile="${backup.name}">
+            <fileset basedir=".">
+                <includes name="**"/>
+            </fileset>
+        </zip>
+    </target>
+</project>
