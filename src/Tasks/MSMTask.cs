@@ -1934,17 +1934,27 @@ namespace NAnt.Contrib.Tasks {
                             MsiAssemblyNameView.Modify(MsiViewModify.msiViewModifyMerge, recPublicKey);
                         }
 
-                        bool success = CheckAssemblyForCOMInterop(
-                            filePath, fileAssembly, InstallerType,
-                            InstallerObject, ComponentName,
-                            asmCompName, ClassView, ProgIdView);
+						bool checkInterop = Component.checkinterop;
 
-                        if (!success)
-                        {
-                            return success;
-                        }
+						if (fileOverride != null)
+						{
+							checkInterop = fileOverride.checkinterop;
+						}
+						
+						if (checkInterop)
+						{
+							bool success = CheckAssemblyForCOMInterop(
+								filePath, fileAssembly, InstallerType,
+								InstallerObject, ComponentName,
+								asmCompName, ClassView, ProgIdView);
 
-                        // File cant be a member of both components
+							if (!success)
+							{
+								return success;
+							}
+						}
+
+                        // File can't be a member of both components
                         if (componentFiles.FileNames.Count > 1)
                         {
                             files.Remove(ComponentDirectory + "|" + fileName);
@@ -4461,7 +4471,7 @@ namespace NAnt.Contrib.Tasks {
                             string curTypeLibFileName = (string)win32Key.GetValue(null, null);
                             if (curTypeLibFileName != null)
                             {
-                                if (curTypeLibFileName == typeLibFileName)
+                                if (String.Compare(curTypeLibFileName, typeLibFileName, true) == 0)
                                 {
                                     Log(Level.Info, LogPrefix + "Configuring " + typeLibName + " for COM Interop...");
 

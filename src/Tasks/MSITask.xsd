@@ -550,6 +550,7 @@
 		<xsd:attribute name="feature" type="xsd:string" use="required" />
 		<xsd:attribute name="condition" type="xsd:string" use="optional" />
 		<xsd:attribute name="fileattr" type="xsd:int" use="optional" default="512" />
+		<xsd:attribute name="checkinterop" type="xsd:boolean" use="optional" default="false" />
 	</xsd:complexType>
 	<!-- msi/components/component/key -->
 	<xsd:complexType name="MSIKeyFile">
@@ -562,6 +563,7 @@
 		<xsd:attribute name="attr" type="xsd:int" use="optional" default="0" />
 		<xsd:attribute name="version" type="xsd:string" use="optional" />
 		<xsd:attribute name="language" type="xsd:int" use="optional" default="-1" />
+		<xsd:attribute name="checkinterop" type="xsd:boolean" use="optional" default="false" />
 	</xsd:complexType>
 	<!-- msi/mergemodules/merge -->
 	<xsd:complexType name="MSIMerge">

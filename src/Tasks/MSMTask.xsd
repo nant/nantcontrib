@@ -604,6 +604,7 @@
 		<xsd:attribute name="feature" type="xsd:string" use="optional" default="{00000000-0000-0000-0000-000000000000}" />
 		<xsd:attribute name="condition" type="xsd:string" use="optional" />
 		<xsd:attribute name="fileattr" type="xsd:int" use="optional" default="512" />
+		<xsd:attribute name="checkinterop" type="xsd:boolean" use="optional" default="false" />
 	</xsd:complexType>
 	<!-- msm/components/component/key -->
 	<xsd:complexType name="MSMKeyFile">
@@ -616,6 +617,7 @@
 		<xsd:attribute name="attr" type="xsd:int" use="optional" default="0" />
 		<xsd:attribute name="version" type="xsd:string" use="optional" />
 		<xsd:attribute name="language" type="xsd:int" use="optional" default="-1" />
+		<xsd:attribute name="checkinterop" type="xsd:boolean" use="optional" default="false" />
 	</xsd:complexType>
 	<!-- msm/mergemodules/merge -->
 	<xsd:complexType name="MSMMerge">
