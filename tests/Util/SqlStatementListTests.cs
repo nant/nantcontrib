@@ -56,9 +56,9 @@ namespace Tests.NAnt.Contrib.Util {
             list.ParseSql(statements);
 
             Assert.AreEqual(3, list.Count);
-            Assert.AreEqual(STATEMENT_1, list[0]);
-            Assert.AreEqual(STATEMENT_2, list[1]);
-            Assert.AreEqual(STATEMENT_3, list[2]);
+            Assert.AreEqual(STATEMENT_1 + Environment.NewLine, list[0]);
+            Assert.AreEqual(STATEMENT_2 + Environment.NewLine, list[1]);
+            Assert.AreEqual(STATEMENT_3 + Environment.NewLine, list[2]);
         }
 
         public void TestCommentStripping() {
@@ -70,8 +70,8 @@ namespace Tests.NAnt.Contrib.Util {
             list.ParseSql(statements);
 
             Assert.AreEqual(2, list.Count);
-            Assert.AreEqual(STATEMENT_1, list[0]);
-            Assert.AreEqual(STATEMENT_1, list[1]);
+            Assert.AreEqual(STATEMENT_1 + Environment.NewLine, list[0]);
+            Assert.AreEqual(STATEMENT_1 + Environment.NewLine, list[1]);
         }
 
         public void TestIgnoreEmptyLines() {
@@ -81,7 +81,7 @@ namespace Tests.NAnt.Contrib.Util {
             list.ParseSql(statements);
 
             Assert.AreEqual(1, list.Count);
-            Assert.AreEqual(STATEMENT_1, list[0]);
+            Assert.AreEqual(STATEMENT_1 + Environment.NewLine, list[0]);
         }
 
         public void TestGoLineBatch() {
@@ -129,6 +129,25 @@ namespace Tests.NAnt.Contrib.Util {
             Assert.AreEqual(STATEMENT_3 + Environment.NewLine, list[1], "Statement 3.1");
             Assert.AreEqual(STATEMENT_3 + Environment.NewLine, list[2], "Statement 3.2");
             Assert.AreEqual("-- " + STATEMENT_3 + Environment.NewLine, list[3], "Comment");
+        }
+
+        public void TestLineSpawningDelimiter() {
+            string delimiter = "#";
+
+            string statements =
+                STATEMENT_1 + Environment.NewLine
+                + STATEMENT_2 + delimiter + STATEMENT_3 + Environment.NewLine
+                + delimiter + "ABC";
+
+            SqlStatementList list = new SqlStatementList(delimiter, DelimiterStyle.Normal);
+            list.ParseSql(statements);
+
+            Assert.AreEqual(3, list.Count);
+            Assert.AreEqual(STATEMENT_1 + Environment.NewLine + STATEMENT_2, 
+                list[0], "Statement 1");
+            Assert.AreEqual(STATEMENT_3 + Environment.NewLine, list[1], 
+                "Statement 2");
+            Assert.AreEqual("ABC" + Environment.NewLine, list[2], "Statement 3");
         }
 
         public void TestKeepLineFormatting() {
