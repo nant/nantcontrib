@@ -44,7 +44,7 @@ namespace NAnt.Contrib.Tasks {
 	/// <regasm unregister="false" codebase="true" >
 	///     <fileset>
 	///         <includes name="**/*.dll"/>
-    ///         <excludes name="notanassembly.dll"/>
+      ///         <excludes name="notanassembly.dll"/>
 	///     </fileset>
 	/// </regasm>
 	/// ]]>
@@ -57,6 +57,7 @@ namespace NAnt.Contrib.Tasks {
         string _regfile = null;
         string _typelib = null;
         bool _codebase = false;
+        bool _silent = false;
         bool _exporttypelib = false;
         bool _unregister = false;
         bool _registered = false;        
@@ -82,6 +83,13 @@ namespace NAnt.Contrib.Tasks {
         public bool CodeBase {
             get { return _codebase; }
             set { _codebase = value; }
+        }
+
+        /// <summary>Silent mode. Prevents displaying of success messages. Default is "false".</summary>
+        [TaskAttribute("silent")]
+        public bool Silent {
+            get { return _silent; }
+            set { _silent = value; }
         }
 
         /// <summary>Export a typelib and register it. The typelib will have the same name as the source assembly unless the "typelib" attribute is used.</summary>
@@ -144,6 +152,9 @@ namespace NAnt.Contrib.Tasks {
                 }
                 if ( Verbose ){
                      args += " /verbose";
+                }
+                if ( Silent ){
+                     args += " /silent";
                 }
                 args += " /nologo";
 
