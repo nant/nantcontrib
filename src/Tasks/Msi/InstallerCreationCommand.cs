@@ -2136,6 +2136,14 @@ namespace NAnt.Contrib.Tasks.Msi {
                         tmpDirPath = Path.Combine(tmpDirPath, folderName);
                         relativeDirId += "_" + folderName.ToUpper();
 
+                        // Directory column is an identifier: identifiers may
+                        // contain the ASCII characters A-Z (a-z), digits, 
+                        // underscores (_), or periods (.). However, every
+                        // identifier must begin with either a letter or an 
+                        // underscore.
+
+                        relativeDirId = relativeDirId.Replace(" ","_");
+
                         if (!dirMap.ContainsKey(tmpDirPath)) {
                             // Add entry to directory table
                             dirMap[tmpDirPath] = relativeDirId;
