@@ -1,0 +1,130 @@
+<?xml version="1.0" ?>
+<!--
+//
+// NAntContrib
+// Copyright (C) 2002 Jayme C. Edwards (jedwards@wi.rr.com)
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+//
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+	targetNamespace="NAnt.Contrib.Tasks.MSITask" 
+	xmlns="NAnt.Contrib.Tasks.MSITask">
+	<xsd:element name="property">
+		<xsd:complexType>
+			<xsd:attribute name="name" type="xsd:string" use="required" />
+			<xsd:attribute name="value" type="xsd:string" use="required" />
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="properties">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:simpleType name="MSISearchKeyType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="registry" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="MSISearchKeyRoot">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="machine" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="MSISearchKey">
+		<xsd:sequence>
+			<xsd:element name="value">
+				<xsd:complexType>
+					<xsd:attribute name="name" type="xsd:string" use="required" />
+					<xsd:attribute name="ref" type="xsd:string" use="required" />
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="type" type="MSISearchKeyType" use="required" />
+		<xsd:attribute name="path" type="xsd:string" use="required" />
+		<xsd:attribute name="root" type="MSISearchKeyRoot" use="required" />
+	</xsd:complexType>
+	<xsd:element name="search">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="key" type="MSISearchKey" minOccurs="0" maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:complexType name="MSIFeature">
+		<xsd:sequence>
+			<xsd:element name="description" type="xsd:string" minOccurs="0" maxOccurs="1" />
+			<xsd:element name="directory" type="directoryReference" minOccurs="0" maxOccurs="1" />
+			<xsd:element name="feature" type="MSIFeature" minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string" use="required" />
+		<xsd:attribute name="attr" type="xsd:int" use="optional" default="0" />
+		<xsd:attribute name="title" type="xsd:string" use="optional" />
+		<xsd:attribute name="display" type="xsd:int" use="required" />
+		<xsd:attribute name="typical" type="xsd:boolean" use="optional" default="false" />
+	</xsd:complexType>
+	<xsd:element name="features">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="feature" type="MSIFeature" minOccurs="0" maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:complexType name="directoryReference">
+		<xsd:attribute name="name" type="xsd:string" use="required" />
+	</xsd:complexType>
+	<xsd:complexType name="MSIDirectory">
+		<xsd:sequence>
+			<xsd:element name="directory" type="MSIDirectory" minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string" use="required" />
+		<xsd:attribute name="foldername" type="xsd:string" use="required" />
+	</xsd:complexType>
+	<xsd:complexType name="MSIRootDirectory">
+		<xsd:complexContent>
+			<xsd:extension base="MSIDirectory">
+				<xsd:attribute name="root" type="xsd:string" use="required" />
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:element name="directories">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="directory" type="MSIRootDirectory" minOccurs="0" maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="msi">
+            <xsd:annotation>
+			<xsd:documentation>The root element of the task, "msi".</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="properties" minOccurs="0" maxOccurs="1" />
+				<xsd:element ref="search" minOccurs="0" maxOccurs="1" />
+				<xsd:element ref="features" minOccurs="0" maxOccurs="1" />
+				<xsd:element ref="directories" minOccurs="0" maxOccurs="1" />
+			</xsd:sequence>
+			<xsd:attribute name="output" type="xsd:string" use="required" />
+			<xsd:attribute name="sourcedir" type="xsd:string" use="required" />
+			<xsd:attribute name="license" type="xsd:string" use="required" />
+			<xsd:attribute name="banner" type="xsd:string" use="optional" />
+			<xsd:attribute name="background" type="xsd:string" use="optional" />
+			<xsd:attribute name="debug" type="xsd:boolean" use="optional" default="false" />
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>
