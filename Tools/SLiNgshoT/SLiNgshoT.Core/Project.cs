@@ -279,7 +279,14 @@ namespace SLiNgshoT.Core
 				navigator = nodes.Current;
 			}
 
-			return new Configuration(navigator);
+      // 2003-04-18 - jean rajotte - make this safe
+      Configuration res = null;
+      if ( navigator != null ) 
+      {
+        res = new Configuration(navigator);
+      }
+      return res;
+
 		}
 
 		/// <summary>Gets the relative path (from the project directory) to the

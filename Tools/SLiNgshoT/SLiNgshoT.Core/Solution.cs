@@ -61,6 +61,9 @@ namespace SLiNgshoT.Core
 			_SolutionDirectory = Path.GetDirectoryName(path);
 			_SolutionName = Path.GetFileNameWithoutExtension(path);
 
+      if ( ! System.IO.File.Exists( path ) )
+        throw new ApplicationException( string.Concat( "file not found: ", path ) );
+
 			StreamReader streamReader = null;
 
 			try

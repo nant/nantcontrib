@@ -93,5 +93,30 @@ namespace SLiNgshoT.Core
 				return result;
 			}
 		}
-	}
+
+    /// <summary>Gets whether this reference should be copied to the build directory.</summary>
+    /// <value>if the reference's Private= element is set to true, return true, else return false</value>
+    public bool CopyLocal
+    {
+      get
+      {
+        bool res = false;
+        if ( (bool)_Navigator.Evaluate("boolean(@Private)") )
+        {
+          res = Convert.ToBoolean( ((string)_Navigator.Evaluate("string(@Private)") ) );
+        }
+        return res;
+      }
+    }
+
+    /// <summary>Gets the reference's source path if present.</summary>
+    public string SourcePath
+    {
+      get
+      {
+        return (string)_Navigator.Evaluate("string(@HintPath)");
+      }
+    }
+
+  }
 }

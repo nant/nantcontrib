@@ -44,7 +44,14 @@ namespace SLiNgshoT.Core
 			}
 		}
 
-		/// <summary>Gets the location of the output files (relative to the
+    /// <summary>Renders a configuration name in a nant-legal way.</summary>
+    /// <remarks>This replaces vs.net-legal ' ' char w/ nant-legal '-'.</remarks>
+    public static string NantName( string name )
+    {
+      return name.Replace( ' ', '-' );
+    }
+
+    /// <summary>Gets the location of the output files (relative to the
 		/// project directory) for this project's configuration.</summary>
 		public string OutputPath
 		{
