@@ -580,9 +580,19 @@
                     BuildAction="Compile"
                 />
                 <File
+                    RelPath = "Tasks\Svn\SvnCheckoutTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath="Tasks\Svn\SvnTask.cs"
                     SubType="Code"
                     BuildAction="Compile"
+                />
+                <File
+                    RelPath = "Tasks\Svn\SvnUpdateTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath="Types\Filter.cs"
