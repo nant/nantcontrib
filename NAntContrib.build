@@ -1,11 +1,20 @@
 <?xml version="1.0"?>
 <project name="NAntContrib" default="test">
     <include buildfile="../properties.xml" if="${file::exists('../properties.xml')}" />
+    <!-- set build.date property to current date in format yyyy-MM-dd -->
+    <tstamp property="build.date" pattern="yyyy-MM-dd" />
     <!-- global project settings -->
     <property name="project.name" value="nantcontrib" />
     <property name="project.FormalName" value="NAnt.Contrib" />
     <property name="project.version" value="0.85" unless="${property::exists('project.version')}" />
     <property name="project.release.type" value="dev" unless="${property::exists('project.release.type')}" /> <!-- nightly / dev / alpha / beta# / rc# / release -->
+    <if test="${project.release.type == 'nightly'}">
+        <property name="project.version.full" value="${project.version + '-nightly-' + build.date}" />
+    </if>
+    <if test="${project.release.type != 'nightly'}">
+        <property name="project.version.full" value="${project.version + if(project.release.type == 'release', '', '-' + project.release.type)}" dynamic="true" />    
+    </if>
+
     <!-- 
         specifies whether the CommonAssemblyInfo.cs file should be created.
         we do not want this for releases (whether they're beta or release) as
@@ -20,7 +29,6 @@
     <property name="src.dir" value="src" />
     <property name="tests.dir" value="tests" />
     <property name="tools.dir" value="Tools" />
-    <property name="nant.base.uri" value="${nant.dir}/doc/help/" dynamic="true" unless="${property::exists('nant.base.uri')}" />
 
     <!-- named project configurations (used by self-test and self-doc tasks) -->
     <target name="debug" description="Perform a 'debug' build">
@@ -31,7 +39,7 @@
     <target name="release" description="Perform a 'release' build">
         <property name="project.config" value="release" />
         <property name="build.debug" value="false" />
-        <property name="build.dir" value="${project::get-base-directory()}/build/${project.name}-${project.version}" />
+        <property name="build.dir" value="${project::get-base-directory()}/build/${project.name}-${project.version.full}" />
     </target>
     
     <!-- build tasks -->
@@ -264,14 +272,34 @@
 
     <!-- Build task and sdk documentation -->
     <target name="doc" depends="build" description="build documentation">
+        <!-- ensure NAnt documenter exists -->
         <if test="${not file::exists(path::combine(nant.dir, 'bin/NDoc.Documenter.NAnt.dll'))}">
             <fail message="NDoc.Documenter.NAnt.dll not found. Run the 'userdoc' target in your NAnt source tree" />
         </if>
+
+        <!-- 
+            determine NAnt base uri for linking to NAnt docs :
+            
+            - for local development builds, just link to the help of the version of NAnt we're building against
+            - for nightly builds and releases, link to corresponding online docs
+        -->
+        <if test="${project.release.type == 'dev'}">
+            <property name="nant.base.uri" value="${nant.dir}/doc/help/" unless="${property::exists('nant.base.uri')}" />
+        </if>
+        <if test="${project.release.type == 'nightly'}">
+            <property name="nant.base.uri" value="http://nant.sourceforge.net/nightly/${build.date}-${project.version}/help/" unless="${property::exists('nant.base.uri')}" />
+        </if>
+        <if test="${project.release.type != 'nightly' and project.release.type != 'dev'}">
+            <property name="nant.base.uri" value="http://nant.sourceforge.net/release/${project.version.full}/help/" unless="${property::exists('nant.base.uri')}" />
+        </if>
+
         <ndoc>
             <assemblies basedir="${build.dir}/bin" failonempty="true">
                 <include name="NAnt.Contrib.Tasks.dll" />
-                <include name="${nant.dir}/bin/NAnt.Core.dll" />
             </assemblies>
+            <referencepaths basedir="${nant.dir}">
+                <include name="bin" />
+            </referencepaths>
             <documenters>
                 <documenter name="NAnt">
                     <property name="OutputDirectory" value="${build.dir}/doc/help" />
@@ -293,6 +321,7 @@
                 </documenter>
                 <documenter name="MSDN">
                     <property name="OutputDirectory" value="${build.dir}/doc/sdk" />
+                    <property name="OutputTarget" value="HtmlHelpAndWeb" />
                     <property name="HtmlHelpName" value="NAntContrib-SDK" />
                     <property name="SdkDocVersion" value="${link.sdkdoc.version}" />
                     <property name="SdkLinksOnWeb" value="${link.sdkdoc.web}" />
@@ -317,18 +346,10 @@
                     <property name="CopyrightText" value="Copyright (C) 2001-${datetime::get-year(datetime::now())} Gerry Shaw" />
                     <property name="CopyrightHref" value="http://nantcontrib.sourceforge.net" />
                     <property name="EditorBrowsableFilter" value="Off" />
-                 </documenter>
+                </documenter>
             </documenters>
         </ndoc>
-        
-        <!-- delete everything but the .chm -->
-        <delete>
-            <fileset basedir="${build.dir}/doc/sdk">
-                <include name="**/*" />
-                <exclude name="NAntContrib-SDK.chm" />
-            </fileset>
-        </delete>
-        
+
         <!-- copy images and stylesheet so we can preview userdoc and have it look right -->
         <copy todir="${build.dir}/doc/help">
             <fileset basedir="doc/help">
@@ -336,10 +357,10 @@
                 <exclude name="**/*.html" />
             </fileset>
         </copy>
-        
+
         <echo message="Preview task references: file://${build.dir}/doc/help/tasks/index.html"/>
     </target>
-    
+
     <target name="package-common" depends="test, doc">
         <!-- remove non-release files -->
         <delete>
@@ -354,11 +375,16 @@
         <!-- copy project files -->
         <copy todir="${build.dir}">
             <fileset>
+                <include name="*" />
                 <include name="${src.dir}/**" />
                 <include name="${tests.dir}/**" />
                 <include name="${tools.dir}/**" />
-                <include name="*" />
-
+                <!-- website -->
+                <include name="web/**" />
+                <!-- docs -->
+                <include name="doc/**" />
+                <!-- exclude static html pages as these will be filter-copied -->
+                <exclude name="doc/**/*.html" />
                 <!-- exclude tools build directory -->
                 <exclude name="${tools.dir}/**/build/**" />
                 <!-- exclude nighlty build file -->
@@ -370,14 +396,6 @@
                 <exclude name="**/*j.user" />
                 <exclude name="**/bin/**" />
                 <exclude name="**/obj/**" />
-            </fileset>
-        </copy>
-
-        <!-- copy website files -->
-        <copy todir="${build.dir}/doc">
-            <fileset basedir="doc">
-                <include name="*" />
-                <exclude name="*.html" />
             </fileset>
         </copy>
 
@@ -404,15 +422,28 @@
                 />
             </filterchain>
         </copy>
+
         <!-- determine the zip file prefix directory -->
-        <if test="${project.release.type == 'release'}">
-            <property name="project.zip.prefix" value="${project.name}-${project.version}" />
-        </if>    
-        <if test="${not(project.release.type == 'release')}">
-            <property name="project.zip.prefix" value="${project.name}-${project.version}-${project.release.type}" />
-        </if>
+        <property name="project.zip.prefix" value="${project.name}-${project.version.full}" />
     </target>
     
+    <!-- creates tar for distributing the user manual and SDK to SourceForge -->
+    <target name="package-doc" depends="package-common">
+        <!-- determine name of temporary doc distribution -->
+        <property name="project.gzip-path.doc" value="${project::get-base-directory()}/build/${project.name}-${project.version.full}-doc.tar.gz" />
+        <!-- remove package gzip file if it already exists -->
+        <delete file="${project.gzip-path.doc}" if="${file::exists(project.gzip-path.doc)}" />
+        <!-- create package gzip file -->
+        <tar destfile="${project.gzip-path.doc}" compression="GZip">
+            <fileset basedir="${build.dir}/doc">
+                <include name="help/**/*" />
+                <include name="sdk/*" />
+                <exclude name="sdk/NAnt-SDK.chm" />
+            </fileset>
+        </tar>
+        <echo message="Created '${project.config}' doc package at file://${project::get-base-directory()}/build/" />
+    </target>
+
     <target name="package-src" depends="package-common">
         <!-- determine name of package zip file -->
         <property name="project.zip-path.src" value="${project::get-base-directory()}/build/${project.name}-${project.version}-src.zip" />
@@ -436,14 +467,19 @@
                 <include name="bin/MSITaskTemplate.msi" />
                 <include name="bin/MSMTaskErrors.mst" />
                 <include name="bin/MSMTaskTemplate.msm" />
-                <!-- sources and docs -->
-                <include name="doc/**/*" />
+                <!-- sources -->
                 <include name="src/**/*" />
+                <!-- unit tests -->
                 <include name="tests/**/*" />
-                <include name="Tools/**/*" />                
+                <!-- tools -->
+                <include name="Tools/**/*" />
+                <!-- license & release notes -->
+                <include name="doc/*" />
+                <!-- user manual (no SDK) -->
+                <include name="doc/help/**" />
             </fileset>
         </zip>
-        <echo message="Created a '${project.config}' source package at file://${project.zip-path.src}" />        
+        <echo message="Created a '${project.config}' source package at file://${project.zip-path.src}" />
     </target>
 
     <target name="package-bin" depends="package-common">
@@ -456,9 +492,12 @@
             <fileset basedir="${build.dir}" prefix="${project.zip.prefix}">
                 <include name="license.txt" />
                 <include name="bin/**/*" />
-                <include name="doc/**/*" />
-                <!-- exclude SDK docs -->
-                <exclude name="doc/sdk/**" />
+                <!-- license & release notes -->
+                <include name="doc/*" />
+                <!-- user manual -->
+                <include name="doc/help/**" />
+                <!-- SDK (in HTML Help format) -->
+                <include name="doc/sdk/NAnt-SDK.chm" />
             </fileset>
         </zip>
         <echo message="Created a '${project.config}' binary package at file://${project.zip-path.bin}" />

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="nant" default="build-release-self">
+<project name="nant" default="build-release">
     <!-- set base uri for linking to NAnt help -->
     <property name="nant.base.uri" value="http://nant.sourceforge.net/help/" />
     <!-- set name of sourceforge project server -->
@@ -12,54 +12,116 @@
     <!-- setup property that holds partial path to be used by scp -->
     <property name="serverpart" value="${sys.env.USERNAME}@${sf.net.ssh.server}:${sf.net.web.path}" />
     <!-- perform a 'release' package and upload to sf.net -->
-    <target name="build-release-self" depends="set-net-1.0-framework-configuration, release, package, deploy-sf" description="Perform a 'release' package and uploads to sf.net" />
+    <target name="build-release-self" depends="deploy-sf" description="Perform a 'release' package and uploads to sf.net" />
     <!-- perform a 'release' package and upload to sf.net -->
     <target name="build-release" depends="set-net-1.0-framework-configuration" description="Perform a 'release' package and uploads to sf.net">
-        <property name="NAntReleaseEXE" value="${nant.dir}/bin/nant.exe" />
-        <available property="NAntReleaseEXEExists" resource="${NAntReleaseEXE}" type="File" />
-        <ifnot propertyexists="NAntReleaseEXEExists" propertytrue="NAntReleaseEXEExists">
+        <if test="${not(file::exists(nant.dir + '/bin/nant.exe')}">
             <fail message="Please pass a valid NAnt installation directory on the commandline using a nant.dir property." />
-        </ifnot>
-        <exec program="${NAntReleaseEXE}">
+        </if>
+        <exec program="${nant.dir + '/bin/nant.exe'}">
             <arg value="-buildfile:release.xml" />
             <arg value="-D:nant.dir=${nant.dir}" />
-            <arg value="-k:${nant.settings.currentframework}" />
+            <arg value="-targetframework:${framework::get-target-framework()}" />
+            <arg value="build-release-self" />
         </exec>
     </target>
     <!-- deploy content to sourceforge -->
-    <target name="deploy-sf" depends="deploy-help-sf, deploy-web-sf" />
-    <!-- copy help to sourceforge -->
-    <target name="deploy-help-sf" depends="set-net-1.0-framework-configuration, package">
-        <!-- make sure the directory tree exists -->
+    <target name="deploy-sf" depends="deploy-distributions-sf, deploy-doc-sf, deploy-web-sf">
+        <!-- remove existing symlink, if it exists -->
+        <exec program="ssh" failonerror="false">
+            <arg value="${sf.net.ssh.server}" />
+            <arg value="rm --force ${sf.net.web.path}/release/latest" />
+        </exec>
+        <!-- finally, create symlink to the just uploaded nightly build -->
         <exec program="ssh">
             <arg value="${sf.net.ssh.server}" />
-            <arg value="mkdir --mode=775 --parents ${sf.net.web.path}/help" />
-        </exec>
-        <!-- try to remove existing files and directories -->
-        <exec program="ssh" failonerror="false">
-            <arg value="${sf.net.ssh.server}" />
-            <arg value="rm -R --force ${sf.net.web.path}/help/*" />
-        </exec>
-        <!-- copy the help to sourceforge (using compression) -->
-        <exec workingdir="${build.dir}/doc/help" program="scp">
-            <arg value="-r" />
-            <arg value="-C" />
-            <arg value="*" />
-            <arg value="${serverpart}/help" />
+            <arg value="ln -s ${sf.net.web.path}/release/${project.version.full} ${sf.net.web.path}/release/latest" />
         </exec>
         <!-- make sure permissions are set right -->
-        <exec program="ssh" failonerror="false">
+        <exec program="ssh">
             <arg value="${sf.net.ssh.server}" />
-            <arg value="chmod -R 775 ${sf.net.web.path}/help" />
+            <arg value="chmod -R 775 ${sf.net.web.path}/release/latest" />
         </exec>
         <!-- make sure group is set right -->
         <exec program="ssh">
             <arg value="${sf.net.ssh.server}" />
-            <arg value="chgrp -R nantcontrib ${sf.net.web.path}/help" />
+            <arg value="chgrp -R nantcontrib ${sf.net.web.path}/release/latest" />
+        </exec>
+    </target>
+    <!-- copy the release distributions, release notes and license to sourceforge -->
+    <target name="deploy-distributions-sf" depends="set-net-1.0-framework-configuration, release, package">
+        <!-- make sure the directory tree exists -->
+        <exec program="ssh">
+            <arg value="${sf.net.ssh.server}" />
+            <arg value="mkdir --mode=775 --parents ${sf.net.web.path}/release/${project.version.full}" />
+        </exec>
+        <!-- copy the source zip distribution to sourceforge -->
+        <exec workingdir="${path::get-directory-name(project.zip-path.src)}" program="scp">
+            <arg value="${path::get-file-name(project.zip-path.src)}" />
+            <arg value="${serverpart}/release/${project.version.full}/" />
+        </exec>
+        <!-- copy the binary zip distribution to sourceforge -->
+        <exec workingdir="${path::get-directory-name(project.zip-path.bin)}" program="scp">
+            <arg value="${path::get-file-name(project.zip-path.bin)}" />
+            <arg value="${serverpart}/release/${project.version.full}/" />
+        </exec>
+        <!-- copy the release notes and license to sourceforge -->
+        <exec workingdir="${build.dir}/doc" program="scp">
+            <arg value="-C" />
+            <arg value="*.html" />
+            <arg value="${serverpart}/release/${project.version.full}/" />
+        </exec>
+        <echo message="Copied distributions and release notes over to SF.Net" />
+        <!-- make sure permissions are set right -->
+        <exec program="ssh">
+            <arg value="${sf.net.ssh.server}" />
+            <arg value="chmod -R 775 ${sf.net.web.path}/release/${project.version.full}" />
+        </exec>
+        <!-- make sure group is set right -->
+        <exec program="ssh">
+            <arg value="${sf.net.ssh.server}" />
+            <arg value="chgrp -R nantcontrib ${sf.net.web.path}/release/${project.version.full}" />
+        </exec>
+    </target>
+    <!-- copy online docs (manual & sdk) to sourceforge -->
+    <target name="deploy-doc-sf" depends="set-net-1.0-framework-configuration, release, package-doc">
+        <!-- make sure the directory tree exists -->
+        <exec program="ssh">
+            <arg value="${sf.net.ssh.server}" />
+            <arg value="mkdir --mode=775 --parents ${sf.net.web.path}/release/${project.version.full}" />
+        </exec>
+        <!-- copy the gzipped tar doc distribution to sourceforge -->
+        <exec workingdir="${path::get-directory-name(project.gzip-path.doc)}" program="scp">
+            <arg value="${path::get-file-name(project.gzip-path.doc)}" />
+            <arg value="${serverpart}/release/${project.version.full}/doc.tar.gz" />
+        </exec>
+        <!-- extract the doc distribution on sourceforge -->
+        <exec program="ssh">
+            <arg value="${sf.net.ssh.server}" />
+            <arg value="cd ${sf.net.web.path}/release/${project.version.full} &amp;&amp; tar -xzf doc.tar.gz &amp;&amp; rm --force doc.tar.gz" />
+        </exec>
+        <echo message="Copied online docs over to SF.Net" />
+        <!-- make sure permissions are set right -->
+        <exec program="ssh" failonerror="false">
+            <arg value="${sf.net.ssh.server}" />
+            <arg value="chmod -R 775 ${sf.net.web.path}/release/${project.version.full}/help" />
+        </exec>
+        <exec program="ssh" failonerror="false">
+            <arg value="${sf.net.ssh.server}" />
+            <arg value="chmod -R 775 ${sf.net.web.path}/release/${project.version.full}/sdk" />
+        </exec>
+        <!-- make sure group is set right -->
+        <exec program="ssh">
+            <arg value="${sf.net.ssh.server}" />
+            <arg value="chgrp -R nant ${sf.net.web.path}/release/${project.version.full}/help" />
+        </exec>
+        <exec program="ssh">
+            <arg value="${sf.net.ssh.server}" />
+            <arg value="chgrp -R nant ${sf.net.web.path}/release/${project.version.full}/sdk" />
         </exec>
     </target>
     <!-- copy website to sourceforge -->
-    <target name="deploy-web-sf" depends="set-net-1.0-framework-configuration, package">
+    <target name="deploy-web-sf" depends="set-net-1.0-framework-configuration, release, package">
         <!-- make sure the directory tree exists -->
         <exec program="ssh">
             <arg value="${sf.net.ssh.server}" />
@@ -70,24 +132,13 @@
             <arg value="${sf.net.ssh.server}" />
             <arg value="find ${sf.net.web.path} -maxdepth 1 -type f -exec rm --force {} \;" />
         </exec>
-        <!-- copy stylesheet to sourceforge (using compression) -->
-        <exec workingdir="${build.dir}/doc" program="scp">
+        <!-- copy images and html files for website to sourceforge (using compression) -->
+        <exec workingdir="${build.dir}/web" program="scp">
             <arg value="-C" />
-            <arg value="style.css" />
+            <arg value="*" />
             <arg value="${serverpart}" />
         </exec>
-        <!-- copy images for website to sourceforge (using compression) -->
-        <exec workingdir="${build.dir}/doc" program="scp">
-            <arg value="-C" />
-            <arg value="*.gif" />
-            <arg value="${serverpart}" />
-        </exec>
-        <!-- copy html files to sourceforge (using compression) -->
-        <exec workingdir="${build.dir}/doc" program="scp">
-            <arg value="-C" />
-            <arg value="*.html" />
-            <arg value="${serverpart}" />
-        </exec>
+        <echo message="Copied website over to SF.Net" />
         <!-- make sure permissions are set right -->
         <exec program="ssh" failonerror="false">
             <arg value="${sf.net.ssh.server}" />
@@ -96,7 +147,7 @@
         <!-- make sure group is set right -->
         <exec program="ssh">
             <arg value="${sf.net.ssh.server}" />
-            <arg value="chgrp nantcontrib ${sf.net.web.path}" />
+            <arg value="find ${sf.net.web.path} -maxdepth 1 -type f -exec chgrp nantcontrib {} \;" />
         </exec>
     </target>
 </project>
