@@ -1,3 +1,4 @@
+#region GNU General Public License
 //
 // NAntContrib
 //
@@ -17,15 +18,9 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// 8/23/2002  - RegLocator/AppSearch Added (jgeurts@users.sourceforge.net)
-// 11/27/2002 - Dialog/Control/ControlCondition/ControlEvent/Binary/
-//              CustomAction/Sequence Added/UrlProperties/VDirProperties/
-//              AppRootCreate/IISProperties
-//                 Added (jgeurts@users.sourceforge.net)
-// 12/5/2002  - Icon/Shortcut Added (jgeurts@users.sourceforge.net)
-// 12/10/2002 - LaunchCondition Added (jgeurts@users.sourceforge.net)
-// 12/18/2002 - AddCustomTable Added (jgeurts@users.sourceforge.net)
+// Additions: jgeurts@users.sourceforge.net
 //
+#endregion
 
 using System;
 using System.IO;
@@ -1819,7 +1814,7 @@ namespace NAnt.Contrib.Tasks
                                     if (Verbose)
                                     {
                                         string path = GetDisplayablePath(key.path);
-                                        Log.WriteLine("\t" + path + @"#" + value.name);
+                                        Log.WriteLine("\t" + key.path + @"#" + value.name);
                                     }
                                 }
                             }
@@ -2367,13 +2362,12 @@ namespace NAnt.Contrib.Tasks
 
                         try
                         {
-                            Database.Import(Path.Combine(Project.BaseDirectory, msi.sourcedir), tempFileName);
+                            Database.Import(Path.GetFullPath(Path.Combine(Project.BaseDirectory, msi.sourcedir)), tempFileName);
                         }
                         catch (Exception ae)
                         {
-                            Log.WriteLine(LogPrefix + "ERROR: Temporary table file is not valid:\n" + 
-                                ae.GetType().FullName + " thrown:\n" + 
-                                ae.Message + "\n" + ae.StackTrace);
+                            Log.WriteLine(LogPrefix + "ERROR: Temporary table file\n (" + Path.GetFullPath(Path.Combine(Path.Combine(Project.BaseDirectory, msi.sourcedir), tempFileName)) + ") is not valid:\n" + 
+                                ae.ToString());
                         }
                         File.Delete(fullTempFileName);
 
@@ -3272,6 +3266,16 @@ namespace NAnt.Contrib.Tasks
                     if (Verbose)
                     {
                         Log.WriteLine("\t" + Path.Combine(Project.BaseDirectory, binary.value));
+
+                        int nameColSize = 50;
+
+                        if (binary.name.Length > nameColSize)
+                        {
+                            Log.WriteLine(LogPrefix + 
+                                "WARNING: Binary key name longer than " + nameColSize + " characters:\n\tName: " + 
+                                binary.name + "\n\tLength: " + binary.name.Length.ToString());
+
+                        }
                     }
 
                     if (File.Exists(Path.Combine(Project.BaseDirectory, binary.value)))

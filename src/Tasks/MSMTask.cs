@@ -1,3 +1,4 @@
+#region GNU General Public License
 //
 // NAntContrib
 //
@@ -17,6 +18,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
+#endregion
 
 using System;
 using System.IO;
@@ -2648,7 +2650,7 @@ namespace NAnt.Contrib.Tasks
                         }
                         catch (Exception e)
                         {
-                            Log.WriteLine("Error: " + e.Message + "\n" + e.StackTrace);
+                            Log.WriteLine("Error: " + e.ToString());
                         }
                         finally 
                         {
@@ -2660,13 +2662,12 @@ namespace NAnt.Contrib.Tasks
 
                         try
                         {
-                            Database.Import(Path.Combine(Project.BaseDirectory, msm.sourcedir), tempFileName);
+                            Database.Import(Path.GetFullPath(Path.Combine(Project.BaseDirectory, msm.sourcedir)), tempFileName);
                         }
                         catch (Exception ae)
                         {
-                            Log.WriteLine(LogPrefix + "ERROR: Temporary table file is not valid:\n" + 
-                                ae.GetType().FullName + " thrown:\n" + 
-                                ae.Message + "\n" + ae.StackTrace);
+                            Log.WriteLine(LogPrefix + "ERROR: Temporary table file\n (" + Path.GetFullPath(Path.Combine(Path.Combine(Project.BaseDirectory, msm.sourcedir), tempFileName)) + ") is not valid:\n" + 
+                                ae.ToString());
                         }
                         File.Delete(fullTempFileName);
 
@@ -3420,11 +3421,22 @@ namespace NAnt.Contrib.Tasks
                 // Add binary data from Task definition
                 foreach (MSMBinary binary in msm.binaries)
                 {
+
+
                     if (Verbose)
                     {
                         Log.WriteLine("\t" + Path.Combine(Project.BaseDirectory, binary.value));
-                    }
 
+                        int nameColSize = 50;
+
+                        if (binary.name.Length > nameColSize)
+                        {
+                            Log.WriteLine(LogPrefix + 
+                                "WARNING: Binary key name longer than " + nameColSize + " characters:\n\tName: " + 
+                                binary.name + "\n\tLength: " + binary.name.Length.ToString());
+
+                        }
+                    }
                     if (File.Exists(Path.Combine(Project.BaseDirectory, binary.value)))
                     {
                         // Insert the binary data
