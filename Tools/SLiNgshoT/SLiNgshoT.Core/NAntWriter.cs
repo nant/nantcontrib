@@ -265,24 +265,45 @@ namespace SLiNgshoT.Core
 
 		public void WriteStartAssembly()
 		{
-			writer.WriteStartElement("csc");
-			writer.WriteAttributeString("target", project.OutputType.ToLower());
+
+      if (project.ProjectType.StartsWith("VB"))
+      {
+        writer.WriteStartElement("vbc");
+      }
+      else
+      {
+        // default to 'csc'
+        writer.WriteStartElement("csc");
+        #warning uncomment this once NAnt supports unsafe and checked
+        //writer.WriteAttributeString("unsafe", "${unsafe}");
+        //writer.WriteAttributeString("checked", "${checked}");
+      }
+
+      
+      writer.WriteAttributeString("target", project.OutputType.ToLower());
 			writer.WriteAttributeString("output", "${output}");
 			writer.WriteAttributeString("debug", "${debug}");
-			#warning uncomment this once NAnt supports unsafe and checked
-			//writer.WriteAttributeString("unsafe", "${unsafe}");
-			//writer.WriteAttributeString("checked", "${checked}");
-			writer.WriteAttributeString("define", "${define}");
+
+      writer.WriteAttributeString("define", "${define}");
 			writer.WriteAttributeString("doc", "${doc}");
 
-			#warning remove these once NAnt supports unsafe and checked
-			writer.WriteStartElement("arg");
-			writer.WriteAttributeString("value", "${unsafe}");
-			writer.WriteEndElement();
+      if (project.ProjectType.StartsWith("C#")) 
+      {
+        #warning remove these once NAnt supports unsafe and checked
+        writer.WriteStartElement("arg");
+        writer.WriteAttributeString("value", "${unsafe}");
+        writer.WriteEndElement();
 
-			writer.WriteStartElement("arg");
-			writer.WriteAttributeString("value", "${checked}");
-			writer.WriteEndElement();
+        writer.WriteStartElement("arg");
+        writer.WriteAttributeString("value", "${checked}");
+        writer.WriteEndElement();
+      }
+
+      if (project.ProjectType.StartsWith("VB"))
+      {
+        writer.WriteAttributeString("rootnamespace", project.RootNamespace);
+        writer.WriteAttributeString("imports", project.GetImports());
+      }
 		}
 
 		public void WriteStartSourceFiles()
@@ -315,6 +336,13 @@ namespace SLiNgshoT.Core
 
 			writer.WriteStartElement("includes");
 			writer.WriteAttributeString("name", path);
+      if (this.project.ProjectType.StartsWith("VB")) 
+      {
+        if (path.StartsWith("System")) 
+        {
+          writer.WriteAttributeString("frompath", "true");
+        }
+      }
 			writer.WriteEndElement(); // includes
 		}
 

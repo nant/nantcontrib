@@ -77,15 +77,15 @@ namespace SLiNgshoT.Core
 		{
 			string extension = Path.GetExtension(path);
 
-			if (extension == ".csproj" || extension == ".vcproj")
+			if (extension == ".csproj" || extension == ".vcproj" || extension == ".vbproj")
 			{
 				_ProjectDocument = new XPathDocument(path);
 				_ProjectNavigator = _ProjectDocument.CreateNavigator();
 			}
 		}
 
-		/// <summary>Gets a string that represents the type of project.</summary>
-		/// <value>"Visual C++" or "C# Local"</value>
+    /// <summary>Gets a string that represents the type of project.</summary>
+		/// <value>"Visual C++", "C# Local", "C# Web", "VB Local", or "VB Web"</value>
 		public string ProjectType
 		{
 			get
@@ -94,18 +94,26 @@ namespace SLiNgshoT.Core
 
 				if (_ProjectNavigator != null)
 				{
-					if ((bool)_ProjectNavigator.Evaluate("boolean(VisualStudioProject/@ProjectType='Visual C++')"))
-					{
-						projectType = "Visual C++";
-					}
-					else if ((bool)_ProjectNavigator.Evaluate("boolean(VisualStudioProject/CSHARP/@ProjectType='Local')"))
-					{
-						projectType = "C# Local";
-					}
-					else if ((bool)_ProjectNavigator.Evaluate("boolean(VisualStudioProject/CSHARP/@ProjectType='Web')"))
-					{
-						projectType = "C# Web";
-					}
+          if ((bool)_ProjectNavigator.Evaluate("boolean(VisualStudioProject/@ProjectType='Visual C++')"))
+          {
+            projectType = "Visual C++";
+          }
+          else if ((bool)_ProjectNavigator.Evaluate("boolean(VisualStudioProject/CSHARP/@ProjectType='Local')"))
+          {
+            projectType = "C# Local";
+          }
+          else if ((bool)_ProjectNavigator.Evaluate("boolean(VisualStudioProject/CSHARP/@ProjectType='Web')"))
+          {
+            projectType = "C# Web";
+          }
+          else if((bool)_ProjectNavigator.Evaluate("boolean(VisualStudioProject/VisualBasic/@ProjectType='Local')"))
+          {
+            projectType = "VB Local";
+          }
+          else if((bool)_ProjectNavigator.Evaluate("boolean(VisualStudioProject/VisualBasic/@ProjectType='Web')"))
+          {
+            projectType = "VB Web";
+          }
 				}
 
 				return projectType;
@@ -121,7 +129,20 @@ namespace SLiNgshoT.Core
 
 				if (_ProjectNavigator != null)
 				{
-					assemblyName = (string)_ProjectNavigator.Evaluate("string(/VisualStudioProject/CSHARP/Build/Settings/@AssemblyName)");
+          switch (this.ProjectType)
+          {
+            case "C# Local":
+            case "C# Web":
+              assemblyName = (string)_ProjectNavigator.Evaluate("string(/VisualStudioProject/CSHARP/Build/Settings/@AssemblyName)");
+              break;
+            case "VB Local":
+            case "VB Web":
+              assemblyName = (string)_ProjectNavigator.Evaluate("string(/VisualStudioProject/VisualBasic/Build/Settings/@AssemblyName)");
+              break;
+            default:
+              assemblyName = "";
+              break;
+          }
 				}
 
 				return assemblyName;
@@ -138,7 +159,20 @@ namespace SLiNgshoT.Core
 
 				if (_ProjectNavigator != null)
 				{
-					outputType = (string)_ProjectNavigator.Evaluate("string(/VisualStudioProject/CSHARP/Build/Settings/@OutputType)");
+          switch (this.ProjectType)
+          {
+            case "C# Local":
+            case "C# Web":
+              outputType = (string)_ProjectNavigator.Evaluate("string(/VisualStudioProject/CSHARP/Build/Settings/@OutputType)");
+              break;
+            case "VB Local":
+            case "VB Web":
+              outputType = (string)_ProjectNavigator.Evaluate("string(/VisualStudioProject/VisualBasic/Build/Settings/@OutputType)");
+              break;
+            default:
+              outputType = "";
+              break;
+          }
 				}
 
 				return outputType;
@@ -174,7 +208,17 @@ namespace SLiNgshoT.Core
 		{
 			get
 			{
-				return (string)_ProjectNavigator.Evaluate("string(/VisualStudioProject/CSHARP/Build/Settings/@RootNamespace)");
+        switch (this.ProjectType)
+        {
+          case "C# Local":
+          case "C# Web":
+            return (string)_ProjectNavigator.Evaluate("string(/VisualStudioProject/CSHARP/Build/Settings/@RootNamespace)");
+          case "VB Local":
+          case "VB Web":
+            return (string)_ProjectNavigator.Evaluate("string(/VisualStudioProject/VisualBasic/Build/Settings/@RootNamespace)");
+          default:
+            return "";
+        }
 			}
 		}
 
@@ -182,9 +226,21 @@ namespace SLiNgshoT.Core
 		{
 			ArrayList configurations = new ArrayList();
 
-			XPathNodeIterator nodes =
-				_ProjectNavigator.Select("/VisualStudioProject/CSHARP/Build/Settings/Config");
+      XPathNodeIterator nodes;
 
+      switch (this.ProjectType)
+      {
+        case "VB Local":
+        case "VB Web":
+          nodes =
+            _ProjectNavigator.Select("/VisualStudioProject/VisualBasic/Build/Settings/Config");
+          break;
+        default:
+          nodes =
+            _ProjectNavigator.Select("/VisualStudioProject/CSHARP/Build/Settings/Config");
+          break;
+      }
+      
 			while (nodes.MoveNext())
 			{
 				configurations.Add(new Configuration(nodes.Current));
@@ -199,13 +255,27 @@ namespace SLiNgshoT.Core
 		public Configuration GetConfiguration(string name)
 		{
 			XPathNavigator navigator = null;
+      XPathNodeIterator nodes;
 
-			XPathNodeIterator nodes =
-				_ProjectNavigator.Select(
-				String.Format(
-				"/VisualStudioProject/CSHARP/Build/Settings/Config[@Name='{0}']",
-				name));
-
+      switch (this.ProjectType)
+      {
+        case "VB Local":
+        case "VB Web":
+          nodes =
+            _ProjectNavigator.Select(
+            String.Format(
+            "/VisualStudioProject/VisualBasic/Build/Settings/Config[@Name='{0}']",
+            name));
+          break;
+        default:
+          nodes =
+            _ProjectNavigator.Select(
+            String.Format(
+            "/VisualStudioProject/CSHARP/Build/Settings/Config[@Name='{0}']",
+            name));
+          break;
+      }
+      
 			if (nodes.MoveNext())
 			{
 				navigator = nodes.Current;
@@ -253,8 +323,20 @@ namespace SLiNgshoT.Core
 				{
 					_References = new ArrayList();
 
-					XPathNodeIterator nodes =
-						_ProjectNavigator.Select("/VisualStudioProject/CSHARP/Build/References/Reference");
+          XPathNodeIterator nodes = null;
+
+          switch (this.ProjectType)
+          {
+            case "VB Local":
+            case "VB Web":
+              nodes =
+                _ProjectNavigator.Select("/VisualStudioProject/VisualBasic/Build/References/Reference");
+              break;
+            default:
+              nodes =
+                _ProjectNavigator.Select("/VisualStudioProject/CSHARP/Build/References/Reference");
+              break;
+          }
 
 					while (nodes.MoveNext())
 					{
@@ -315,8 +397,21 @@ namespace SLiNgshoT.Core
 			{
 				_Files = new ArrayList();
 
-				XPathNodeIterator nodes =
-					_ProjectNavigator.Select("/VisualStudioProject/CSHARP/Files/Include/File");
+        XPathNodeIterator nodes;
+  
+        switch (this.ProjectType)
+        {
+          case "VB Local":
+          case "VB Web":
+            nodes =
+              _ProjectNavigator.Select("/VisualStudioProject/VisualBasic/Files/Include/File");
+            break;
+          default:
+            nodes =
+              _ProjectNavigator.Select("/VisualStudioProject/CSHARP/Files/Include/File");
+            break;
+        }
+
 
 				while (nodes.MoveNext())
 				{
@@ -420,5 +515,29 @@ namespace SLiNgshoT.Core
 
 			return list;
 		}
-	}
+
+    public string GetImports()
+    {
+      string importsString = "";
+
+      if (this.ProjectType.StartsWith("VB")) 
+      {
+
+        XPathNodeIterator nodes =
+          _ProjectNavigator.Select("/VisualStudioProject/VisualBasic/Build/Imports/Import");
+
+        while (nodes.MoveNext())
+        {
+          if (importsString.Length > 0) { importsString+=","; }
+          importsString+=nodes.Current.Evaluate("string(@Namespace)");
+        }
+      
+      }
+
+      return importsString;
+
+      }
+
+    }
+	
 }
