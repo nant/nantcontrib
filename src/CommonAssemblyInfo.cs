@@ -20,9 +20,13 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-[assembly: AssemblyTitle("NAntContrib Tests")]
-[assembly: AssemblyDescription("Unit Tests for NAntContrib")]
+[assembly: AssemblyConfiguration("net-1.0.win32; nightly")]
+[assembly: AssemblyCompany("http://nantcontrib.sourceforge.net")]
+[assembly: AssemblyProduct("NAntContrib")]
+[assembly: AssemblyCopyright("Copyright (C) 2001-2003 Gerry Shaw")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]     
 
-[assembly: AssemblyDelaySign(false)]
-[assembly: AssemblyKeyFile(@"")]
-[assembly: AssemblyKeyName("")]
+// build number expressed in number of days since 1/1/2000
+[assembly: AssemblyVersion("0.84.1432.0")]
+[assembly: AssemblyInformationalVersion("0.84")]

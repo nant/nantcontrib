@@ -160,6 +160,8 @@
         <includes name="**.cs" />
         <excludes name="SampleTaskNode/**" />
         <excludes name="build/**" />
+        <!-- common assembly-level attributes -->      
+        <includes name="../../src/CommonAssemblyInfo.cs" />
       </sources>
       <references>
         <includes name="System.dll" />
