@@ -48,7 +48,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 	{
 		/// <summary>
 		/// Override of base-class abstract function creates an appropriately configured view for checkoutlists. 
-		/// The current view or a view of the label specified <see cref="Label" />.
+		/// The current view or a view of the label specified <see cref="TreeBasedTask.Label" />.
 		/// </summary>
 		/// <param name="raw">the unconfigured <c>View</c></param>
 		/// <returns>the snapshot <c>View</c> appropriately configured.</returns>
@@ -71,7 +71,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		}
 	
 		/// <summary>Required base-class abstract function implementation is a no-op here.</summary>
-		protected internal override void  testPreconditions()
+		protected override void testPreconditions()
 		{
 			//intentionally do nothing.
 		}
@@ -80,7 +80,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		/// operation on the files in each folder of the tree.</summary>
 		/// <param name="starteamFolder">the StarTeam folder from which files to be checked out</param>
 		/// <param name="targetFolder">the local mapping of rootStarteamFolder</param>
-		protected internal override void visit(InterOpStarTeam.StFolder starteamFolder, FileInfo targetFolder)
+		protected override void visit(InterOpStarTeam.StFolder starteamFolder, FileInfo targetFolder)
 		{
 			try
 			{
@@ -103,12 +103,12 @@ namespace NAnt.Contrib.Tasks.StarTeam
 					FileInfo localFile = new FileInfo(Path.Combine(targetFolder.FullName,filename));
 				
 					delistLocalFile(localFiles, localFile);
-				
-					//				// If the file doesn't pass the include/exclude tests, skip it.
-					//				if (!shouldProcess(filename))
-					//				{
-					//					continue;
-					//				}
+
+					// If the file doesn't pass the include/exclude tests, skip it.
+					if (!IsIncluded(filename))
+					{
+						continue;
+					}
 				
 					list(stFile, localFile);
 				}

@@ -69,7 +69,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		/// Should label created be a revision label : default is false
 		/// </summary>
 		/// <remarks>
-		/// <see cref="buildlabel"/> has no effect if this is set <c>true</c> as revision labels cannot have a build status.
+		/// <see cref="BuildLabel"/> has no effect if this is set <c>true</c> as revision labels cannot have a build status.
 		/// </remarks>
 		[TaskAttribute("revisionlabel", Required=false)]
 		[BooleanValidator]         

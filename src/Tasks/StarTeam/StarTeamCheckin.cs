@@ -142,9 +142,9 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		}
 		
 		/// <summary> Implements base-class abstract function to define tests for any preconditons required by the task</summary>
-		protected internal override void  testPreconditions()
+		protected override void testPreconditions()
 		{
-			if (null != _rootLocalFolder && this.forced)
+			if (null != _rootLocalFolder && this.Forced)
 			{
 				Log.WriteLine("Warning: rootLocalFolder specified, but forcing off.");
 			}
@@ -153,9 +153,11 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		/// <summary> Implements base-class abstract function to perform the checkin operation on the files in each folder of the tree.</summary>
 		/// <param name="starteamFolder">the StarTeam folder to which files will be checked in</param>
 		/// <param name="targetFolder">local folder from which files will be checked in</param>
-		protected internal override void  visit(InterOpStarTeam.StFolder starteamFolder, FileInfo targetFolder)
+		protected override void visit(InterOpStarTeam.StFolder starteamFolder, FileInfo targetFolder)
 		{
 			int notProcessed = 0;
+			int notMatched = 0;
+
 			try
 			{
 				System.Collections.Hashtable localFiles = listLocalFiles(targetFolder);
@@ -172,16 +174,20 @@ namespace NAnt.Contrib.Tasks.StarTeam
 					delistLocalFile(localFiles, localFile);
 					
 					// If the file doesn't pass the include/exclude tests, skip it.
-//					if (!shouldProcess(filename))
-//					{
-//						Log.WriteLine("Skipping: {0}",stFile.toString());
-//						continue;
-//					}
+					if (!IsIncluded(filename))
+					{
+						if(this.Verbose) 
+						{
+							Log.WriteLine("Skipping : {0}",localFile.ToString());
+						}
+						notMatched++;
+						continue;
+					}
 					           					
 					// If forced is not set then we may save ourselves some work by looking at the status flag.
 					// Otherwise, we care nothing about these statuses.
 					
-					if (!this.forced)
+					if (!this.Forced)
 					{
 						int fileStatus = (stFile.Status);
 						
@@ -219,9 +225,12 @@ namespace NAnt.Contrib.Tasks.StarTeam
 				}
 
 				//if we are being verbose emit count of files not processed 
-				if(this.Verbose && notProcessed > 0)
+				if(this.Verbose)
 				{
-					Log.WriteLine("{0} : {1} files not processed because they were current.",targetFolder.FullName,notProcessed.ToString());
+					if(notProcessed > 0) 
+						Log.WriteLine("{0} : {1} files not processed because they were current.",targetFolder.FullName,notProcessed.ToString());
+					if(notMatched > 0) 
+						Log.WriteLine("{0} : {1} files not processed because they did not match includes/excludes.",targetFolder.FullName,notMatched.ToString());
 				}
 
 				

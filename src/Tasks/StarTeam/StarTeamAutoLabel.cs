@@ -28,7 +28,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 {
 	/// <summary>
 	/// Task for supporting labeling of repositories with incremented version numbers. 
-	/// The version number calculated will be concatenated to the <see cref="Label"/>
+	/// The version number calculated will be concatenated to the <see cref="LabelTask.Label"/>
 	/// </summary>
 	/// <remarks>
 	/// <para>Instruments root of repository with versionnumber.xml file.</para>
@@ -159,7 +159,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		/// Default behavior is to <see cref="IncrementBuild"/> number. 
 		/// If user sets <see cref="MajorVersion"/>, <see cref="MinorVersion"/>, or <see cref="BuildVersion"/> no incrementing is done 
 		/// and the exact version set and/or read from versionnumber.xml is used.
-		/// <para>The title of the Label is the <see cref="Label"/> property concatenated with the version number Major.Minor.Build</para>
+		/// <para>The title of the Label is the <see cref="LabelTask.Label"/> property concatenated with the version number Major.Minor.Build</para>
 		/// </remarks>
 		protected override void  ExecuteTask()
 		{                         			

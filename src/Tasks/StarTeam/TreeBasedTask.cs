@@ -19,6 +19,9 @@
 
 using System;
 using System.IO;
+using System.Collections.Specialized;
+using System.Text;
+using System.Text.RegularExpressions;
 using SourceForge.NAnt;
 using SourceForge.NAnt.Attributes;
 using InterOpStarTeam = StarTeam;
@@ -40,6 +43,17 @@ namespace NAnt.Contrib.Tasks.StarTeam
 	/// </remarks>
 	public abstract class TreeBasedTask : StarTeamTask
 	{
+		protected string _rootStarTeamFolder = "/";
+		protected string _rootLocalFolder = null;
+		protected int _filesAffected = 0;
+		protected string _label = null;
+		protected bool _recursive = true;
+		protected bool _forced = false;
+		protected StringCollection _exclude = new StringCollection();
+		protected StringCollection _include = new StringCollection();
+		protected StringCollection _excludePatterns = new StringCollection();
+		protected StringCollection _includePatterns = new StringCollection();
+		
 		/// <summary>
 		/// Root StarTeam folder to begin operations on. Defaults to the root of the view.
 		/// </summary>
@@ -56,82 +70,55 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		{
 			set { _rootLocalFolder = value; }
 		}
-	
-		//TODO: add Include / Exclude capability utilizing filesets
 
-		//	public virtual string Includes
-		//	{
-		//		/// <summary> Gets the patterns from the include filter. Rather that duplicate the details of AntStarTeamCheckOut's filtering here, refer to these links: *</summary>
-		//		/// <returns>A string of filter patterns separated by spaces.</returns>
-		//		/// <seealso cref=" #setIncludes(String includes)"/>
-		//		/// <seealso cref=" #setExcludes(String excludes)"/>
-		//		/// <seealso cref=" #getExcludes()"/>
-		//		get
-		//		{
-		//			return includes;
-		//		}
-		//		/// <summary> Declare files to include using standard <tt>includes</tt> patterns; optional. </summary>
-		//		/// <param name="includes">A string of filter patterns to include. Separate the patterns by spaces.</param>
-		//		/// <seealso cref=" #getIncludes()"/>
-		//		/// <seealso cref=" #setExcludes(String excludes)"/>
-		//		/// <seealso cref=" #getExcludes()"/>
-		//		set
-		//		{
-		//			this.includes = value;
-		//		}
-		//	}
-		//
-		//	public virtual string Excludes
-		//	{
-		//		/// <summary> Gets the patterns from the exclude filter. Rather that duplicate the details of AntStarTeanCheckOut's filtering here, refer to these
-		//		/// links:
-		//		/// *
-		//		/// </summary>
-		//		/// <returns>A string of filter patterns separated by spaces.</returns>
-		//		/// <seealso cref=" #setExcludes(String excludes)"/>
-		//		/// <seealso cref=" #setIncludes(String includes)"/>
-		//		/// <seealso cref=" #getIncludes()"/>
-		//		get
-		//		{
-		//			return excludes;
-		//		}
-		//		/// <summary> Declare files to exclude using standard <tt>excludes</tt> patterns; optional. 
-		//		/// When filtering files, AntStarTeamCheckOut
-		//		/// uses an unmodified version of <CODE>DirectoryScanner</CODE>'s
-		//		/// <CODE>match</CODE> method, so here are the patterns straight from the
-		//		/// Ant source code:
-		//		/// <BR><BR>
-		//		/// Matches a string against a pattern. The pattern contains two special
-		//		/// characters:
-		//		/// <BR>'*' which means zero or more characters,
-		//		/// <BR>'?' which means one and only one character.
-		//		/// <BR><BR>
-		//		/// For example, if you want to check out all files except .XML and
-		//		/// .HTML files, you would put the following line in your program:
-		//		/// <CODE>setExcludes("*.XML,*.HTML");</CODE>
-		//		/// Finally, note that filters have no effect on the <B>directories</B>
-		//		/// that are scanned; you could not skip over all files in directories
-		//		/// whose names begin with "project," for instance.
-		//		/// <BR><BR>
-		//		/// Treatment of overlapping inlcudes and excludes: To give a simplistic
-		//		/// example suppose that you set your include filter to "*.htm *.html"
-		//		/// and your exclude filter to "index.*". What happens to index.html?
-		//		/// AntStarTeamCheckOut will not check out index.html, as it matches an
-		//		/// exclude filter ("index.*"), even though it matches the include
-		//		/// filter, as well.
-		//		/// <BR><BR>
-		//		/// Please also read the following sections before using filters:
-		//		/// *
-		//		/// </summary>
-		//		/// <param name="excludes">A string of filter patterns to exclude. Separate the patterns by spaces.</param>
-		//		/// <seealso cref=" #setIncludes(String includes)"/>
-		//		/// <seealso cref=" #getIncludes()"/>
-		//		/// <seealso cref=" #getExcludes()"/>
-		//		set
-		//		{
-		//			this.excludes = value;
-		//		}
-		//	}
+		/// <summary>
+		/// Accepts comma de-limited list of expressions to include in tree operations. 
+		/// If nothing is set ALL filespecs are included.
+		/// </summary>
+		/// <example>
+		/// <para>Match all C# files in the directory</para>
+		/// <code>*.cs</code>
+		/// </example>
+		/// <remarks>
+		/// Expressions should be just for filename matching. 
+		/// Technically relative directory information is accepted but will never match.
+		/// </remarks>
+		[TaskAttribute("includes")]
+		public virtual string Includes
+		{
+			set 
+			{
+				_include.Clear();
+				_include.AddRange(value.Split(','));
+				populatePatterns(_include,out _includePatterns);
+			}
+		}
+
+		/// <summary>
+		/// Accepts comma de-limited list of expressions to exclude from tree operations. 
+		/// If nothing is specified. NO filespecs are excluded.
+		/// </summary>
+		/// <example>
+		/// <para>Match <b>No</b> C# files in the directory</para>
+		/// <code>*.cs</code>
+		/// </example>
+		/// <remarks>
+		/// <para>
+		/// If a excludes pattern is set with no <see cref="Includes"/> patterns present includes defaults to "*"
+		/// </para>
+		/// Expressions should be just for filename matching. 
+		/// Technically relative directory information is accepted but will never match.
+		/// </remarks>
+		[TaskAttribute("excludes")]
+		public virtual string Excludes
+		{
+			set 
+			{
+				_exclude.Clear();
+				_exclude.AddRange(value.Split(','));
+				populatePatterns(_include,out _includePatterns);
+			}
+		}
 
 		/// <summary>
 		///Default : true - should tasks recurse through tree.
@@ -153,7 +140,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		/// </remarks>
 		[TaskAttribute("forced")]
 		[BooleanValidator]
-		public virtual bool forced
+		public virtual bool Forced
 		{
 			get { return _forced; }
 			set { _forced = value;}
@@ -166,7 +153,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		/// The label must exist in starteam or an exception will be thrown. 
 		/// </remarks>
 		[TaskAttribute("label", Required=false)]
-		public virtual string label
+		public virtual string Label
 		{
 			get { return _label; }			
 			set 
@@ -182,82 +169,6 @@ namespace NAnt.Contrib.Tasks.StarTeam
 			}			
 		}
 
-		///////////////////////////////////////////////////////////////
-		// default values for attributes.
-		///////////////////////////////////////////////////////////////
-		// <summary> This constant sets the filter to include all files. This default has the same result as <CODE>setIncludes("*")</CODE>.</summary>
-		//public const string DEFAULT_INCLUDESETTING = "*";
-	
-		// <summary> This disables the exclude filter by default. In other words, no files are excluded. This setting is equivalent to
-		// <CODE>setExcludes(null)</CODE>.
-		// </summary>
-		//public const string DEFAULT_EXCLUDESETTING = null;
-	
-		//ATTRIBUTES settable from ant.
-	
-		// <value> The root folder of the operation in InterOpStarTeam.</value>
-		protected string _rootStarTeamFolder = "/";
-	
-		// <value> The local folder corresponding to starteamFolder.  If not specified the Star Team defalt folder will be used.</value>
-		protected string _rootLocalFolder = null;
-
-		// <value>Keeps a tally of the number of files affected by the operation</value>
-		protected int _filesAffected = 0;
-	
-		// <value> All files that fit this pattern are checked out.</value>
-		//private string includes;
-	
-		// <value> All files fitting this pattern are ignored.</value>
-		//private string excludes;
-	
-		/// <value> StarTeam label on which to perform task.</value>
-		protected string _label = null;
-	
-		/// <value> Set recursion to false to check out files in only the given folder and not in its subfolders.</value>
-		private bool _recursive = true;
-	
-		/// <value> If forced set to true, files in the target directory will be processed regardless of status in the repository.
-		/// Usually this should be  true if rootlocalfolder is set because status will be relative to the default folder, not
-		/// to the one being processed. </value>
-		private bool _forced = false;
-	                    	
-
-	
-		///////////////////////////////////////////////////////////////
-		// INCLUDE-EXCLUDE processing
-		///////////////////////////////////////////////////////////////
-	
-		// <summary> Look if the file should be processed by the task. Don't process it if it fits no include filters or if it fits an exclude filter.</summary>
-		// <param name="pName">the item name to look for being included.</param>
-		// <returns>whether the file should be checked out or not.</returns>
-		//	protected internal virtual bool shouldProcess(string pName)
-		//	{
-		//		bool includeIt = matchPatterns(Includes, pName);
-		//		bool excludeIt = matchPatterns(Excludes, pName);
-		//		return (includeIt && !excludeIt);
-		//	}
-
-		// <summary> Convenience method to see if a string match a one pattern in given set of space-separated patterns.</summary>
-		// <param name="patterns">the space-separated list of patterns.</param>
-		// <param name="pName">the name to look for matching.</param>
-		// <returns>whether the name match at least one pattern.</returns>
-		//	protected internal virtual bool matchPatterns(string patterns, string pName)
-		//	{
-		//		if (patterns == null) 
-		//		{
-		//			return false;
-		//		}
-		//		SupportClass.Tokenizer exStr = new SupportClass.Tokenizer(patterns, ",");
-		//		while (exStr.HasMoreTokens())
-		//		{
-		//				if (DirectoryScanner.match(exStr.NextToken(), pName))
-		//				{
-		//					return true;
-		//				}
-		//		}
-		//		return false;
-		//	}
-	
 		/// <summary>
 		/// Does the work of opening the supplied Starteam view and calling 
 		/// the <see cref="visit"/> method setting the pattern in motion to perform the task.
@@ -320,7 +231,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		/// Helper method calls on the StarTeam API to retrieve an ID number for the specified view, corresponding to this.label.
 		/// </summary>
 		/// <returns>The Label identifier or <c>-1</c> if no label was provided.</returns>
-		protected internal virtual InterOpStarTeam.IStLabel getLabelID(InterOpStarTeam.StView stView)
+		protected virtual InterOpStarTeam.IStLabel getLabelID(InterOpStarTeam.StView stView)
 		{
 			if (null != _label)
 			{
@@ -340,14 +251,14 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		/// <summary> Derived classes must override this class to define actual processing to be performed on each folder in the tree defined for the task</summary>
 		/// <param name="rootStarteamFolder">the StarTeam folderto be visited</param>
 		/// <param name="rootLocalFolder">the local mapping of rootStarteamFolder</param>
-		protected internal abstract void  visit(InterOpStarTeam.StFolder rootStarteamFolder, FileInfo rootLocalFolder);
+		protected abstract void visit(InterOpStarTeam.StFolder rootStarteamFolder, FileInfo rootLocalFolder);
 	
 		/// <summary> 
 		/// Derived classes must override this method to define tests for any preconditons required by the task.  
 		/// This method is called at the beginning of the ExecuteTask method. 
 		/// </summary>
 		/// <seealso cref="ExecuteTask"/>
-		protected internal abstract void  testPreconditions();
+		protected abstract void testPreconditions();
 	
 		/// <summary> 
 		/// Gets the collection of the local file names in the supplied directory.
@@ -359,7 +270,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		/// </remarks>
 		/// <param name="localFolder">Local folder to scan</param>
 		/// <returns>hashtable whose keys represent a file or directory in localFolder.</returns>
-		protected internal static System.Collections.Hashtable listLocalFiles(FileInfo localFolder)
+		protected static System.Collections.Hashtable listLocalFiles(FileInfo localFolder)
 		{   		
 			System.Collections.Hashtable localFileList = new System.Collections.Hashtable();
 			// we can't use java 2 collections so we will use an identity
@@ -390,11 +301,130 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		/// </remarks>
 		/// <param name="localFiles">Hashtable of the current directory's file|dire</param>
 		/// <param name="thisfile">file to remove from list.</param>
-		protected internal virtual void delistLocalFile(System.Collections.Hashtable localFiles, FileInfo thisfile)
+		protected virtual void delistLocalFile(System.Collections.Hashtable localFiles, FileInfo thisfile)
 		{
 			string key = thisfile.ToString();
 			localFiles.Remove(key);
 		}
 
+		/// <summary>
+		/// Evaluates defined <see cref="Includes"/> and <see cref="Excludes"/> patterns against a filename. 
+		/// </summary>
+		/// <param name="filePath"></param>
+		/// <returns></returns>
+		protected virtual bool IsIncluded(string filePath)
+		{   
+			//check to see if any actual includes are set.
+			if(_includePatterns.Count < 1 && _excludePatterns.Count < 1) return true;
+			//make sure includes matches all if excludes is set.
+			if(_excludePatterns.Count > 1 && _includePatterns.Count == 0) 
+			{
+				_includePatterns.Add(ToRegexPattern("*"));
+			}
+	
+			bool included = false;
+			
+			// check path against includes
+			foreach (string pattern in _includePatterns) 
+			{
+				Match m = Regex.Match(filePath, pattern);
+				if (m.Success) 
+				{
+					included = true;
+					break;
+				}
+			}
+
+			// check path against excludes
+			if (included) 
+			{
+				foreach (string pattern in _excludePatterns)
+				{
+					Match m = Regex.Match(filePath, pattern);
+					if (m.Success) 
+					{
+						included = false;
+						break;
+					}
+				}
+			}
+
+			return included;
+		}
+
+		/// <summary>
+		///     Lifted/Modified from <see cref="SourceForge.NAnt.DirectoryScanner"/> to convert patterns to match filenames to regularexpressions.
+		/// </summary>
+		/// <param name="nantPattern">Search pattern - meant to be just a filename with no path info</param>
+		/// <remarks>The directory seperation code in here most likely is overkill.</remarks>
+		/// <returns>Regular expresssion for searching matching file names</returns>
+		static string ToRegexPattern(string nantPattern) 
+		{                                                                          
+			StringBuilder pattern = new StringBuilder(nantPattern);
+
+			// NAnt patterns can use either / \ as a directory seperator.
+			// We must replace both of these characters with Path.DirectorySeperatorChar
+			pattern.Replace('/',  Path.DirectorySeparatorChar);
+			pattern.Replace('\\', Path.DirectorySeparatorChar);
+
+			// The '\' character is a special character in regular expressions
+			// and must be escaped before doing anything else.
+			pattern.Replace(@"\", @"\\");
+
+			// Escape the rest of the regular expression special characters.
+			// NOTE: Characters other than . $ ^ { [ ( | ) * + ? \ match themselves.
+			// TODO: Decide if ] and } are missing from this list, the above
+			// list of characters was taking from the .NET SDK docs.
+			pattern.Replace(".", @"\.");
+			pattern.Replace("$", @"\$");
+			pattern.Replace("^", @"\^");
+			pattern.Replace("{", @"\{");
+			pattern.Replace("[", @"\[");
+			pattern.Replace("(", @"\(");
+			pattern.Replace(")", @"\)");
+			pattern.Replace("+", @"\+");
+
+			// Special case directory seperator string under Windows.
+			string seperator = Path.DirectorySeparatorChar.ToString();
+			if (seperator == @"\") 
+			{
+				seperator = @"\\";
+			}
+
+			// Convert NAnt pattern characters to regular expression patterns.
+
+			// SPECIAL CASE: to match subdirectory OR current directory.  If
+			// we don't do this then we can write something like 'src/**/*.cs'
+			// to match all the files ending in .cs in the src directory OR
+			// subdirectories of src.
+			pattern.Replace(seperator + "**", "(" + seperator + ".|)|");
+
+			// | is a place holder for * to prevent it from being replaced in next line
+			pattern.Replace("**", ".|");
+			pattern.Replace("*", "[^" + seperator + "]*");
+			pattern.Replace("?", "[^" + seperator + "]?");
+			pattern.Replace('|', '*'); // replace place holder string
+
+			// Help speed up the search
+			//pattern.Insert(0, '^'); // start of line
+			//pattern.Append('$'); // end of line
+
+			return pattern.ToString();
+		}
+ 
+		/// <summary>
+		/// Convert path patterns to regularexpression patterns. Stored in the given string collection.
+		/// </summary>
+		/// <param name="paths">collection of paths to expand into regular expressions</param>
+		/// <param name="patterns">collection to store the given regularexpression patterns</param>
+		protected void populatePatterns(StringCollection paths, out StringCollection patterns)
+		{
+			patterns = new StringCollection();
+			foreach(string path in paths)
+			{
+				patterns.Add(ToRegexPattern(path));
+			}
+		}
+	
 	}
 }
