@@ -154,36 +154,35 @@
     <resgen input="Controls\VSNetToolbarControl.resx" output="${dest.dir}\NAnt.Contrib.NAntAddin.Controls.VSNetToolbarDesigner.resources" />
     <csc target="library" debug="true" define="DEBUG;TRACE" output="${dest.dir}/${product.name}.dll" doc="${dest.dir}\${product.name}.xml">
       <resources>
-        <includes name="${dest.dir}\**.resources" />
+        <include name="${dest.dir}\**.resources" />
       </resources>
       <sources baseDir=".">
-        <includes name="**.cs" />
-        <excludes name="SampleTaskNode/**" />
-        <excludes name="build/**" />
-        <!-- common assembly-level attributes -->      
-        <includes name="../../src/CommonAssemblyInfo.cs" />
+        <include name="**.cs" />
+        <exclude name="SampleTaskNode/**" />
+        <exclude name="build/**" />
+        <!-- common assembly-level attributes -->
+        <include name="../../src/CommonAssemblyInfo.cs" />
       </sources>
       <references>
-        <includes name="System.dll" />
-        <includes name="System.Design.dll" />
-        <includes name="System.Drawing.Design.dll" />
-        <includes name="System.Data.dll" />
-        <includes name="System.Xml.dll" />
-        <includes name="System.Windows.Forms.dll" />
-        <includes name="System.Drawing.dll" />
-        <includes name="${vslibs.dir}/Extensibility.dll" />
-        <includes name="${vslibs.dir}/VSLangProj.dll"  />
-        <includes name="${dotnetlibs.dir}/stdole.dll"  />
-        <includes name="${nant.settings.currentframework.frameworkdirectory}/envdte.dll" />
-        <includes name="office.dll" asis="true" />
-        <includes name="${nantbuild.dir}/NAnt.Core.dll" />
-        
-        <includes name="${dest.dir}\Interop.VSUserControlHostLib.dll" />
+        <include name="System.dll" />
+        <include name="System.Design.dll" />
+        <include name="System.Drawing.Design.dll" />
+        <include name="System.Data.dll" />
+        <include name="System.Xml.dll" />
+        <include name="System.Windows.Forms.dll" />
+        <include name="System.Drawing.dll" />
+        <include name="${vslibs.dir}/Extensibility.dll" />
+        <include name="${vslibs.dir}/VSLangProj.dll"  />
+        <include name="${dotnetlibs.dir}/stdole.dll"  />
+        <include name="${framework::get-framework-directory(framework::get-target-framework())}/envdte.dll" />
+        <include name="office.dll" asis="true" />
+        <include name="${nantbuild.dir}/NAnt.Core.dll" />
+        <include name="${dest.dir}\Interop.VSUserControlHostLib.dll" />
       </references>
     </csc>
     <delete>
       <fileset>
-        <includes name="${dest.dir}\**.resources" />
+        <include name="${dest.dir}\**.resources" />
       </fileset>
     </delete>
     <regasm assembly="${dest.dir}\${product.name}.dll" typelibrary="${dest.dir}\${product.name}.tlb" codebase="true" silent="true" failonerror="false" exporttypelib="true" />
@@ -198,8 +197,8 @@
       <mkdir dir="${resources.dest.dir}" />
       <cl outputdir="${resources.dest.dir}">
       <includedirs>
-        <!-- includes name="${sys.env.INCLUDE}" asis="true" /-->
-        <includes name="${resources.dir}" />
+        <!-- include name="${sys.env.INCLUDE}" asis="true" /-->
+        <include name="${resources.dir}" />
       </includedirs>
       <arg value="/Od" />
       <arg value="/D &quot;WIN32&quot;" />
@@ -221,14 +220,14 @@
       <arg value="/ZI" />
       <arg value="/TP" />
       <sources>
-        <includes name="${resources.dir}\stdafx.cpp" />
-        <includes name="${resources.dir}\NAntAddinResources.cpp" />
+        <include name="${resources.dir}\stdafx.cpp" />
+        <include name="${resources.dir}\NAntAddinResources.cpp" />
       </sources>
     </cl>
     <rc rcfile="${resources.dir}\NAntAddinResources.rc" output="${resources.dest.dir}\NAntAddinResources.res"/>
     <link output="${resources.dest.dir}\NAntAddinResources.dll">
       <libdirs>
-        <!--includes name="${sys.env.LIB}" asis="true" /-->
+        <!--include name="${sys.env.LIB}" asis="true" /-->
       </libdirs>
       <arg value="/INCREMENTAL" />
       <arg value="/NOLOGO" />
@@ -254,12 +253,12 @@
     </link>
     <delete>
       <fileset>
-        <includes name="${resources.dest.dir}\*.ilk" />
-        <includes name="${resources.dest.dir}\*.obj" />
-        <includes name="${resources.dest.dir}\*.pch" />
-        <includes name="${resources.dest.dir}\*.pdb" />
-        <includes name="${resources.dest.dir}\*.res" />
-        <includes name="${resources.dest.dir}\*.idb" />
+        <include name="${resources.dest.dir}\*.ilk" />
+        <include name="${resources.dest.dir}\*.obj" />
+        <include name="${resources.dest.dir}\*.pch" />
+        <include name="${resources.dest.dir}\*.pdb" />
+        <include name="${resources.dest.dir}\*.res" />
+        <include name="${resources.dest.dir}\*.idb" />
       </fileset>
     </delete>
   </target>
@@ -271,17 +270,17 @@
     <exec program="regsvr32" commandline="/u /s ${dest.dir}\VSUserControlHost.dll" failonerror="false" />
     <copy todir="${dest.dir}">
       <fileset>
-        <includes name="nanttabicon.bmp" />
-        <includes name="license.txt" />
-        <includes name="license.rtf" />
-        <includes name="NAntTaskNodes.xml" />
-        <includes name="VSUserControlHost.dll" />
+        <include name="nanttabicon.bmp" />
+        <include name="license.txt" />
+        <include name="license.rtf" />
+        <include name="NAntTaskNodes.xml" />
+        <include name="VSUserControlHost.dll" />
       </fileset>
     </copy>
     <mkdir dir="${dest.dir}\TaskImages" />
     <copy todir="${dest.dir}">
       <fileset>
-        <includes name="TaskImages\*.bmp" />
+        <include name="TaskImages\*.bmp" />
       </fileset>
     </copy>
     <exec program="regsvr32" commandline="/s ${dest.dir}\VSUserControlHost.dll" />
@@ -310,16 +309,16 @@
     <hxcomp contents="${help.dir}\NAntAddinDocs.HxC" output="${dest.dir}\NAntAddinDocs.HxS" projectroot="${help.dir}" />
     <copy todir="${dest.dir}">
       <fileset basedir="${help.dir}\CollectionFiles">
-        <includes name="NAntAddinDocs.HxC" />
-        <includes name="NAntAddinDocs.HxT" />
-        <includes name="NAntAddinDocsAIndex.HxK" />
-        <includes name="NAntAddinDocsFIndex.HxK" />
-        <includes name="NAntAddinDocsKIndex.HxK" />
+        <include name="NAntAddinDocs.HxC" />
+        <include name="NAntAddinDocs.HxT" />
+        <include name="NAntAddinDocsAIndex.HxK" />
+        <include name="NAntAddinDocsFIndex.HxK" />
+        <include name="NAntAddinDocsKIndex.HxK" />
       </fileset>
     </copy>
     <copy todir="${dest.dir}">
       <fileset basedir="${help.dir}">
-        <includes name="NAntAddinDocs.HxA" />
+        <include name="NAntAddinDocs.HxA" />
       </fileset>
     </copy>
     <hxreg namespace="${product.name}" title="${product.name}" collection="${dest.dir}\NAntAddinDocs.HxC" helpfile="${dest.dir}\NAntAddinDocs.HxS" />
@@ -363,10 +362,10 @@
   <target name="apidocs" description="Builds the API Reference" depends="build">
     <ndoc>
       <assemblies basedir="${dest.dir}">
-        <includes name="${product.name}.dll" />
+        <include name="${product.name}.dll" />
       </assemblies>
       <summaries>
-        <includes name="NamespaceSummary.xml" />
+        <include name="NamespaceSummary.xml" />
       </summaries>
       <documenters>
         <documenter name="MSDN">
@@ -398,12 +397,12 @@
     </ndoc>
     <delete>
       <fileset>
-        <includes name="${dest.dir}\APIDocs\*.css"/>
-        <includes name="${dest.dir}\APIDocs\*.html"/>
-        <includes name="${dest.dir}\APIDocs\*.hhc"/>
-        <includes name="${dest.dir}\APIDocs\*.hhk"/>
-        <includes name="${dest.dir}\APIDocs\*.hhp"/>
-        <includes name="${dest.dir}\APIDocs\*.log"/>
+        <include name="${dest.dir}\APIDocs\*.css"/>
+        <include name="${dest.dir}\APIDocs\*.html"/>
+        <include name="${dest.dir}\APIDocs\*.hhc"/>
+        <include name="${dest.dir}\APIDocs\*.hhk"/>
+        <include name="${dest.dir}\APIDocs\*.hhp"/>
+        <include name="${dest.dir}\APIDocs\*.log"/>
       </fileset>
     </delete>
   </target>
