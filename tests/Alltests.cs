@@ -25,19 +25,18 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 using NUnit.Framework;
-using SourceForge.NAnt.Attributes;
-using SourceForge.NAnt;
+using NAnt.Core.Attributes;
+using NAnt.Core;
+using Tests.NAnt.Core;
 
-namespace NAnt.Contrib.Tests
-{ 
+namespace NAnt.Contrib.Tests { 
 
 
    /// <summary>
    /// All Tests
    /// </summary>
-   public class AllTests
-   {
-      public static ITest Suite {
+   public class AllTests {
+     /* public static ITest Suite {
          get {
 
             // Force the loading of the correct NAnt.Contrib assembly to test against.
@@ -60,7 +59,7 @@ namespace NAnt.Contrib.Tests
             }
             return suite;
          }
-      }
+      } */
 
    } // class AllTests
 

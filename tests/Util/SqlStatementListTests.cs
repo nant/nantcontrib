@@ -25,27 +25,25 @@ using System.Text;
 using System.Text.RegularExpressions;
 //using System.Security.Cryptography;
 using NUnit.Framework;
-using SourceForge.NAnt.Attributes;
-using SourceForge.NAnt;
+using NAnt.Core.Attributes;
+using NAnt.Core;
 
 using NAnt.Contrib.Util;
+using Tests.NAnt.Core;
 
-namespace NAnt.Contrib.Tests.Util
-{
+namespace NAnt.Contrib.Tests.Util {
    /// <summary>
    /// SqlStatementList class tests
    /// </summary>
-   public class SqlStatementListTests : TestCase
+   [TestFixture]
+   public class SqlStatementListTests
    {
       const string STATEMENT_1 = "select * from tables";
       const string STATEMENT_2 = "insert into tables values(1,2,3)";
       const string STATEMENT_3 = "drop tables";
       const string STATEMENT_GOTO = "goto error_handling";
       const string DELIMITER = ";";
-
-      public SqlStatementListTests(string name) : base(name)
-      {
-      }
+     
 
       public void TestLoadFromString()
       {

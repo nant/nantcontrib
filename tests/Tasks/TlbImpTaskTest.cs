@@ -24,15 +24,13 @@ using System.Text;
 using System.Xml;
 
 using NUnit.Framework;
-using SourceForge.NAnt.Tests;
+using Tests.NAnt.Core;
 
-namespace SourceForge.NAnt.Contrib.Tests {
+namespace NAnt.Contrib.Tests {
+    
+    [TestFixture]
     public class TlbImpTaskTest : BuildTestBase {
-
-        TlbImpTaskTest(string name) : base(name)
-        {
-        }
-
+      
         string _format = @"<?xml version='1.0' ?>
             <project>
                 <tlbimp output='{0}'
