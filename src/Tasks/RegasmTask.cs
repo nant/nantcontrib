@@ -67,8 +67,8 @@ namespace NAnt.Contrib.Tasks {
     ///     <![CDATA[
     /// <regasm unregister="false" codebase="true">
     ///     <fileset>
-    ///         <includes name="**/*.dll" />
-      ///       <excludes name="notanassembly.dll" />
+    ///         <include name="**/*.dll" />
+      ///       <exclude name="notanassembly.dll" />
     ///     </fileset>
     /// </regasm>
     ///     ]]>

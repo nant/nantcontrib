@@ -43,7 +43,7 @@ namespace NAnt.Contrib.Tasks {
     /// <![CDATA[
     /// <typedcollection language="CSharp">
     ///    <fileset>
-    ///        <includes name="collections.xml"/>
+    ///        <include name="collections.xml" />
     ///    </fileset>
     ///</typedcollection>
     /// ]]>

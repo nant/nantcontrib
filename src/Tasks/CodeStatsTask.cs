@@ -57,7 +57,7 @@ namespace NAnt.Contrib.Tasks.CodeStatsTask {
     /// <![CDATA[
     ///     <codestats outputFile="test.xml" verbose="true">
     ///         <fileset>
-    ///             <includes name="**.cs" />
+    ///             <include name="**.cs" />
     ///         </fileset>
     ///     </codestats>
     /// ]]>

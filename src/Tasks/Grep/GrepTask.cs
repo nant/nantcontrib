@@ -49,7 +49,7 @@ namespace NAnt.Contrib.Tasks.Grep {
     ///         <![CDATA[
     /// <grep output="out.xml" pattern="// (?'Type'TODO|UNDONE|HACK): (\[(?'Author'\w*),(?'Date'.*)\])? (?'Text'[^\n\r]*)">
     ///     <fileset>
-    ///         <includes name="*.cs"/>
+    ///         <include name="*.cs" />
     ///     </fileset>
     /// </grep>
     ///         ]]>

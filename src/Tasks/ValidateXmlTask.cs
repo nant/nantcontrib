@@ -40,7 +40,7 @@ namespace NAnt.Contrib.Tasks {
     ///         <schema namespace="urn:schemas-company-com:base" source="base-schema.xsd" />
     ///     </schemas>
     ///     <files>
-    ///         <includes name="*.xml" />
+    ///         <include name="*.xml" />
     ///     </files>
     /// </validatexml>
     ///     ]]>

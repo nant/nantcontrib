@@ -59,7 +59,7 @@ namespace NAnt.Contrib.Tasks {
     ///         out="${outputdir}\TestSummary.html"
     ///         >
     ///      <fileset>
-    ///         <includes name="${outputdir}\Test-*.xml" />
+    ///         <include name="${outputdir}\Test-*.xml" />
     ///      </fileset>
     ///   </nunitreport>
     ///   
