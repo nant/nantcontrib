@@ -19,8 +19,9 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 -->
-<project name="NAntAddin" basedir="." default="build" verbose="false">
+<project name="NAntAddin" default="build" verbose="false">
   <description>Builds the NAnt Addin for Visual Studio.NET</description>
+  <property name="fromcontrib" value="false" />
   <!--*******************************************************************-->
   <!--
   IMPORTANT: If you are having problems building, before anything else, 
@@ -33,16 +34,16 @@
   <property name="helpsdk.dir" value="C:\Program Files\Microsoft Help 2.0 SDK" />
   <!--*******************************************************************-->
   <property name="product.name" value="NAntAddin" />
-  <property name="build.dir" value="build" />
+  <property name="addinbuild.dir" value="build" />
   <property name="bin.dir" value="bin" />
-  <property name="dest.dir" value="${build.dir}\${product.name}" />
+  <property name="dest.dir" value="${addinbuild.dir}\${product.name}" />
   <property name="vside.dir" value="${vsnet.dir}\Common7\IDE" />
   <property name="vslibs.dir" value="${vside.dir}\PublicAssemblies" />
   <property name="vstools.dir" value="${vsnet.dir}\Common7\Tools" />
   <property name="dotnetlibs.dir" value="${dotnet.dir}\Primary Interop Assemblies" />
   <property name="buildlibs.arg" value="&quot;/lib:${vslibs.dir};${dotnetlibs.dir}&quot;" />
   <target name="prepare" description="Prepares the Build Directory" depends="build.nantcontrib">
-    <mkdir dir="${build.dir}" />
+    <mkdir dir="${addinbuild.dir}" />
     <mkdir dir="${dest.dir}" />
     <copy file="${bin.dir}\Interop.VSUserControlHostLib.dll" todir="${dest.dir}" />
     <echo message="**********************************************************************************" />
@@ -109,7 +110,7 @@
         <includes name="${dest.dir}\**.resources" />
       </fileset>
     </delete>
-    <regasm assembly="${dest.dir}\${product.name}.dll" typelibrary="${dest.dir}\${product.name}.tlb" codebase="true" silent="true" failonerror="false" />
+    <regasm assembly="${dest.dir}\${product.name}.dll" typelibrary="${dest.dir}\${product.name}.tlb" codebase="true" silent="true" failonerror="false" exporttypelib="true" />
   </target>
   <target name="resources.compile" description="Compiles Addin Resources" depends="addin.compile">
     <property name="resources.dir" value="NAntAddinResources" />
@@ -182,7 +183,7 @@
     </delete>
   </target>
   <target name="build" description="Builds the NAnt Addin" depends="assemblies.deploy" />
-  <target name="build.nant" description="Compiles NAnt" depends="prepare">
+  <target name="build.nant" description="Compiles NAnt" depends="prepare" unless="${fromcontrib}">
     <property name="nant.dir" value="..\..\..\NAnt" />
     <property name="nantbuild.dir" value="${nant.dir}\bin" />
     <nant buildfile="${nant.dir}\NAnt.build" target="build" basedir="${nant.dir}" />
@@ -194,7 +195,7 @@
     <copy file="${nantbuild.dir}\NUnitCore.dll" todir="${dest.dir}" />
     <copy file="${nantbuild.dir}\SharpZipLib.dll" todir="${dest.dir}" />
   </target>
-  <target name="build.nantcontrib" description="Compiles NAntContrib">
+  <target name="build.nantcontrib" description="Compiles NAntContrib" unless="${fromcontrib}">
     <property name="nantcontrib.dir" value="..\..\..\NAntContrib" />
     <nant buildfile="${nantcontrib.dir}\NAntContrib.build" target="build" basedir="${nantcontrib.dir}" />
     <nant buildfile="${nantcontrib.dir}\NAntContrib.build" target="use" basedir="${nantcontrib.dir}" />
@@ -210,7 +211,7 @@
     <exec program="regsvr32" commandline="/u /s ${dest.dir}\VSUserControlHost.dll" failonerror="false" />
     <copy todir="${dest.dir}">
       <fileset>
-        <includes name="*.bmp" />
+        <includes name="nanttabicon.bmp" />
         <includes name="license.txt" />
         <includes name="license.rtf" />
         <includes name="NAntTaskNodes.xml" />
@@ -318,105 +319,5 @@
         <includes name="${dest.dir}\APIDocs\*.log"/>
       </fileset>
     </delete>
-  </target>
-  <target name="build.install" description="Builds the MSI Install" depends="build">
-    <msi output="NAntAddinSetup.msi" sourcedir="${build.dir}" banner="installlogo.bmp" background="installbg.bmp" license="license.rtf" debug="true">
-      <properties>
-        <property name="ProductName" value="NAnt Addin"/>
-        <property name="ProductVersion" value="1.0.0.1"/>
-        <property name="Manufacturer" value="The NAntContrib Project"/>
-        <property name="ProductCode" value="{A14003F5-AFBF-444B-9CE1-F9842C6E7C2E}"/>
-        <property name="UpgradeCode" value="{15AE65D6-A43C-44E6-85B9-B4FF03910829}"/>
-      </properties>
-      <features>
-        <feature name="DefaultFeature" title="NAnt Addin" display="2">
-          <description>NAnt Addin for Visual Studio.NET</description>
-          <directory ref="ADDINFOLDER"/>
-          <feature name="AddinFeature" display="0" />
-          <feature name="AddinResourceFeature" display="0" />
-          <feature name="AddinTaskImageFeature" display="0" />
-        </feature>
-      </features>
-      <components>
-        <component name="AddinFiles" id="{53064B03-10ED-45B8-A612-757B75217122}" attr="2">
-          <directory ref="ADDINFOLDER" />
-          <feature ref="AddinFeature" />
-          <key file="nanttabicon.bmp" />
-          <override file="NAntAddinDocs.HxT" id="_5CBC4CAE2F7A4D50A44307216DAE82BA" />
-          <override file="NAntAddinDocs.HxA" id="_E0FCC0925F534334B9C739DF1F653064" />
-          <override file="NAntAddinDocs.HxC" id="_9E597E9E27E44348A94598C376439890" />
-          <override file="NAntAddinDocs.HxS" id="_13C3EB7B6D93F6087485D1E2D30498A7" />
-        </component>
-        <component name="AddinResourceFiles" id="{B72B91FE-3625-4B83-977E-BE3CA2EADBCE}" attr="2">
-          <directory ref="ADDINRESOURCEFOLDER" />
-          <feature ref="AddinResourceFeature" />
-          <key file="NAntAddinResources.dll" />
-        </component>
-        <component name="AddinTaskImageFiles" id="{D0BE9760-37B1-4CB7-A3E6-A6FFAE0991A9}" attr="2">
-          <directory ref="ADDINTASKIMAGEFOLDER" />
-          <feature ref="AddinTaskImageFeature" />
-          <key file="altask.bmp" />
-        </component>
-      </components>
-      <directories>
-        <directory name="ADDINFOLDER" foldername="NAntAddin" root="ProgramFilesFolder">
-	     <directory name="ADDINRESOURCEFOLDER" foldername="1033" />
-	     <directory name="ADDINTASKIMAGEFOLDER" foldername="TaskImages" />
-        </directory>
-      </directories>
-      <mergemodules>
-		<merge feature="AddinFeature">
-			<modules>
-				<includes name="NAntAddinSetup\*.msm" />	
-			</modules>
-		</merge>
-      </mergemodules>
-      <registry>
-        <key path="Software\Microsoft\VisualStudio\7.0\AddIns\NAnt.Addin" root="machine">
-	      <component ref="AddinFiles" />
-          <value name="SatelliteDLLName" value="NAntAddinResources.dll" />
-          <value name="SatelliteDLLPath" value="[ADDINFOLDER]" />
-          <value name="FriendlyName" value="NAnt Addin" />
-          <value name="Description" value="Integrates the NAnt build system with the Visual Studio .NET IDE." />
-          <value name="CommandLineSafe" dword="00000000" />
-          <value name="CommandPreload" dword="00000001" />
-          <value name="LoadBehavior" dword="00000000" />
-          <value name="AboutBoxDetails" value="NAnt Addin for Visual Studio .NET" />
-          <value name="AboutBoxIcon">
-<![CDATA[00,00,01,00,01,00,20,20,10,00,00,00,00,00,e8,02,00,00,16,00,
-00,00,28,00,00,00,20,00,00,00,40,00,00,00,01,00,04,00,00,00,00,00,00,02,00,
-00,00,00,00,00,00,00,00,00,10,00,00,00,10,00,00,00,00,00,00,00,00,00,80,00,
-00,80,00,00,00,80,80,00,80,00,00,00,80,00,80,00,80,80,00,00,c0,c0,c0,00,80,
-80,80,00,00,00,ff,00,00,ff,00,00,00,ff,ff,00,ff,00,00,00,ff,00,ff,00,ff,ff,
-00,00,ff,ff,ff,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,
-00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,
-00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,08,88,88,88,88,
-88,88,88,00,00,00,00,00,00,00,00,08,ff,ff,ff,ff,ff,ff,f8,00,00,00,00,00,00,
-00,00,08,f8,f8,f8,f8,f8,f8,f8,00,00,00,00,00,00,00,00,08,ff,ff,ff,ff,ff,ff,
-f8,77,77,77,77,77,77,77,00,08,f8,f8,f8,f8,f8,f8,f8,f7,f7,f7,f7,f7,f7,f7,00,
-08,f7,f7,f7,f7,f7,f7,f8,7f,7f,7f,7f,7f,7f,77,00,08,7f,74,7f,7f,74,7f,78,f7,
-f7,f7,f7,f7,f7,f7,00,08,f7,44,47,f7,44,47,f8,7f,7f,7f,7f,7f,7f,77,00,08,74,
-44,44,74,44,44,78,f7,f7,f7,f7,f7,f7,f7,00,08,f7,f4,f7,f7,f4,f7,f8,7f,7f,7f,
-7f,7f,7f,77,00,00,00,84,ff,4f,f4,ff,ff,f7,f7,f7,f7,f7,f7,f7,00,00,40,8f,4f,
-ff,4f,ff,4f,ff,7f,7f,7f,7f,7f,77,00,00,00,4f,ff,4f,ff,4f,ff,ff,f7,f7,f7,f7,
-f7,f7,00,00,40,8f,4f,ff,4f,ff,4f,ff,ff,7f,7f,7f,7f,77,00,00,00,8f,ff,ff,ff,
-ff,ff,ff,ff,f7,f7,f7,f7,f7,00,00,00,8f,ff,ff,ff,ff,ff,ff,ff,ff,7f,7f,7f,77,
-00,00,00,8f,ff,ff,ff,ff,ff,ff,ff,ff,f7,f7,f7,f7,00,00,00,8f,ff,ff,ff,ff,ff,
-ff,ff,ff,ff,7f,7f,77,00,00,00,8f,ff,ff,ff,ff,ff,ff,ff,ff,ff,f7,f7,f7,00,00,
-00,8f,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,7f,77,00,00,00,8f,ff,ff,ff,ff,ff,ff,ff,
-ff,ff,ff,f7,f7,00,00,00,44,44,44,4c,4c,44,c4,4c,4c,cc,4c,cc,cc,00,00,00,44,
-44,44,c4,44,c4,4c,4c,cc,4c,cc,cc,cc,00,00,00,44,44,44,44,c4,44,c4,c4,cc,cc,
-cc,cc,cc,00,00,00,44,44,44,4c,44,c4,4c,4c,4c,4c,4c,cc,cc,00,00,00,00,00,00,
-00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,
-00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,ff,ff,ff,ff,ff,ff,ff,
-ff,ff,ff,ff,ff,ff,ff,ff,ff,80,00,ff,ff,80,00,ff,ff,80,00,00,01,80,00,00,01,
-80,00,00,01,80,00,00,01,80,00,00,01,80,00,00,01,80,00,00,01,80,00,00,01,f0,
-00,00,01,d0,00,00,01,f0,00,00,01,d0,00,00,01,f0,00,00,01,f0,00,00,01,f0,00,
-00,01,f0,00,00,01,f0,00,00,01,f0,00,00,01,f0,00,00,01,f0,00,00,01,f0,00,00,
-01,f0,00,00,01,f0,00,00,01,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff]]>
-          </value>
-        </key>
-      </registry>
-    </msi>
   </target>
 </project>
