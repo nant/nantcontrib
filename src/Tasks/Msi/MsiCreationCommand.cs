@@ -420,7 +420,7 @@ namespace NAnt.Contrib.Tasks.Msi {
             // cabarc does not work (nor does it raise an error) if you end the 
             // destination path with a quote.
             processInfo.Arguments = "-o X \"" +
-                moduleCab + "\" \"" + Path.Combine(Project.BaseDirectory, Path.Combine(msi.sourcedir, @"Temp\"));
+                moduleCab + "\" \"" + TempFolderPath+ @"\";
 
             processInfo.CreateNoWindow = false;
             processInfo.WindowStyle = ProcessWindowStyle.Hidden;
