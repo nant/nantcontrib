@@ -132,9 +132,9 @@
                     BuildAction="Compile"
                 />
                 <File
-                    RelPath = "CommonAssemblyInfo.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
+                    RelPath="CommonAssemblyInfo.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
                 />
                 <File
                     RelPath="Tasks\ADSIBaseTask.cs"
@@ -218,93 +218,93 @@
                 <File RelPath="Tasks\WsdlTask.cs" SubType="Code" BuildAction="Compile" />
                 <File RelPath="Tasks\XsdTask.cs" SubType="Code" BuildAction="Compile" />
                 <File
-                    RelPath = "Tasks\Grep\GrepTask.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
+                    RelPath="Tasks\Grep\GrepTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
                 />
                 <File
-                    RelPath = "Tasks\Grep\LineCounter.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
+                    RelPath="Tasks\Grep\LineCounter.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
                 />
                 <File
-                    RelPath = "Tasks\Grep\Match.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
+                    RelPath="Tasks\Grep\Match.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
                 />
                 <File
-                    RelPath = "Tasks\Grep\MatchCollection.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
+                    RelPath="Tasks\Grep\MatchCollection.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
                 />
                 <File
-                    RelPath = "Tasks\Grep\Pattern.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
+                    RelPath="Tasks\Grep\Pattern.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
                 />
                 <File
-                    RelPath = "Tasks\Msi\InstallerCreationCommand.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
+                    RelPath="Tasks\Msi\InstallerCreationCommand.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
                 />
                 <File
-                    RelPath = "Tasks\Msi\InstallerDatabase.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
+                    RelPath="Tasks\Msi\InstallerDatabase.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
                 />
                 <File
-                    RelPath = "Tasks\Msi\InstallerRecordReader.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
+                    RelPath="Tasks\Msi\InstallerRecordReader.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
                 />
                 <File
-                    RelPath = "Tasks\Msi\InstallerSearchClause.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
+                    RelPath="Tasks\Msi\InstallerSearchClause.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
                 />
                 <File
-                    RelPath = "Tasks\Msi\InstallerTable.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
+                    RelPath="Tasks\Msi\InstallerTable.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
                 />
                 <File
-                    RelPath = "Tasks\Msi\InstallerTaskBase.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
+                    RelPath="Tasks\Msi\InstallerTaskBase.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
                 />
                 <File
-                    RelPath = "Tasks\Msi\MsiCreationCommand.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
+                    RelPath="Tasks\Msi\MsiCreationCommand.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
                 />
                 <File
-                    RelPath = "Tasks\Msi\MsiTask.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
+                    RelPath="Tasks\Msi\MsiTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
                 />
                 <File
-                    RelPath = "Tasks\Msi\MsiTask.xsd"
-                    BuildAction = "Content"
+                    RelPath="Tasks\Msi\MsiTask.xsd"
+                    BuildAction="Content"
                 />
                 <File
-                    RelPath = "Tasks\Msi\MsiTask.xsx"
-                    DependentUpon = "MsiTask.xsd"
-                    BuildAction = "None"
+                    RelPath="Tasks\Msi\MsiTask.xsx"
+                    DependentUpon="MsiTask.xsd"
+                    BuildAction="None"
                 />
                 <File
-                    RelPath = "Tasks\Msi\MsmCreationCommand.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
+                    RelPath="Tasks\Msi\MsmCreationCommand.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
                 />
                 <File
-                    RelPath = "Tasks\Msi\MsmTask.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
+                    RelPath="Tasks\Msi\MsmTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
                 />
                 <File
-                    RelPath = "Tasks\Msi\TypeLibRecord.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
+                    RelPath="Tasks\Msi\TypeLibRecord.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
                 />
                 <File
                     RelPath="Tasks\SourceSafe\AddTask.cs"
@@ -349,16 +349,79 @@
                 <File RelPath="Tasks\StarTeam\StarTeamList.cs" SubType="Code" BuildAction="Compile" />
                 <File RelPath="Tasks\StarTeam\StarTeamTask.cs" SubType="Code" BuildAction="Compile" />
                 <File RelPath="Tasks\StarTeam\TreeBasedTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Types\SchemaElement.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Types\XmlSchemaReference.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Types\XmlSchemaReferenceCollection.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Util\ChecksumHelper.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Util\FileLogListener.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Util\SqlHelper.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Util\SqlStatementAdapter.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Util\SqlStatementList.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="xsl\NUnitSummary.xsl" BuildAction="Content" />
-                <File RelPath="xsl\toolkit.xsl" BuildAction="Content" />
+                <File
+                    RelPath="Types\Filter.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Types\FilterCollection.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Types\FilterSet.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Types\FilterSetCollection.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Types\SchemaElement.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Types\XmlSchemaReference.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Types\XmlSchemaReferenceCollection.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Util\ChecksumHelper.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Util\FileLogListener.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Util\FileUtils.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Util\SqlHelper.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Util\SqlStatementAdapter.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="Util\SqlStatementList.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
+                    RelPath="xsl\NUnitSummary.xsl"
+                    BuildAction="Content"
+                />
+                <File
+                    RelPath="xsl\toolkit.xsl"
+                    BuildAction="Content"
+                />
             </Include>
         </Files>
     </CSHARP>
