@@ -37,8 +37,8 @@ namespace NAnt.Contrib.Tasks
 	///   <para>Compile a help file.</para>
 	///   <code><![CDATA[<hxcomp contents="MyContents.HxC" output="MyHelpFile.HxS" projectroot="HelpSourceFolder"/>]]></code>
 	/// </example>
-    [TaskName("hxcomp")]
-    public class HxCompTask : ExternalProgramBase
+	[TaskName("hxcomp")]
+	public class HxCompTask : ExternalProgramBase
 	{
 		private string _args;
 		string _contents = null;
@@ -53,56 +53,56 @@ namespace NAnt.Contrib.Tasks
 		string _uncompilefile = null;
 		string _uncompileoutputdir = null;
 
-        /// <summary>The name of the contents (.HxC) file.</summary>
-        [TaskAttribute("contents")]
-        public string Contents {
-            get { return _contents; }
-            set { _contents = value; } 
-        }      
+		/// <summary>The name of the contents (.HxC) file.</summary>
+        	[TaskAttribute("contents")]
+	      public string Contents {
+			get { return _contents; }
+	            set { _contents = value; } 
+		}      
 
-        /// <summary>ANSI/DBCS log filename.</summary>
-        [TaskAttribute("logfile")]        
-        public string LogFile {
-            get { return _logfile; }
-            set { _logfile = value; }
-        }
+        	/// <summary>ANSI/DBCS log filename.</summary>
+        	[TaskAttribute("logfile")]        
+        	public string LogFile {
+            	get { return _logfile; }
+            	set { _logfile = value; }
+        	}
 
-        /// <summary>Unicode log filename. </summary>
-        [TaskAttribute("unicodelogfile")]       
-        public string UnicodeLogFile {
-            get { return _unicodelogfile; }
-            set { _unicodelogfile = value; }
-        }
+        	/// <summary>Unicode log filename. </summary>
+        	[TaskAttribute("unicodelogfile")]       
+        	public string UnicodeLogFile {
+            	get { return _unicodelogfile; }
+            	set { _unicodelogfile = value; }
+        	}
 
-        /// <summary>Root directory containing Help 2.0 project files.</summary>
-        [TaskAttribute("projectroot")]
-        public string ProjectRoot {
-            get { return _projectroot; }
-            set { _projectroot = value; }
-        }
+        	/// <summary>Root directory containing Help 2.0 project files.</summary>
+        	[TaskAttribute("projectroot")]
+        	public string ProjectRoot {
+            	get { return _projectroot; }
+            	set { _projectroot = value; }
+        	}
 
-        /// <summary>Output (.HxS) filename.</summary>
-        [TaskAttribute("output")] 
-        public string Output {
-            get { return _output; }
-            set { _output = value; }
-        }
+        	/// <summary>Output (.HxS) filename.</summary>
+        	[TaskAttribute("output")] 
+        	public string Output {
+            	get { return _output; }
+            	set { _output = value; }
+        	}
 
-        /// <summary>Generate no informational messages.</summary>
-        [TaskAttribute("noinformation")]       
-        [BooleanValidator()]
-        public bool NoInformation {
-            get { return _noinformation; }
-            set { _noinformation = value; }
-        }
+        	/// <summary>Generate no informational messages.</summary>
+        	[TaskAttribute("noinformation")]       
+        	[BooleanValidator()]
+        	public bool NoInformation {
+            	get { return _noinformation; }
+            	set { _noinformation = value; }
+        	}
         
-        /// <summary>Generate no error messages.</summary>
-        [TaskAttribute("noerrors")]       
+        	/// <summary>Generate no error messages.</summary>
+        	[TaskAttribute("noerrors")]       
 		[BooleanValidator()]
-        public bool NoErrors {
-            get { return _noerrors; }
-            set { _noerrors = value; }
-        }
+        	public bool NoErrors {
+            	get { return _noerrors; }
+            	set { _noerrors = value; }
+        	}
 
 		/// <summary>Generate no warning messages.</summary>
 		[TaskAttribute("nowarnings")]       
@@ -113,13 +113,13 @@ namespace NAnt.Contrib.Tasks
 			set { _nowarnings = value; }
 		}
         
-        /// <summary>Quiet mode.</summary>
-        [TaskAttribute("quiet")]
-        [BooleanValidator()]
-        public bool Quiet {
-            get { return _quiet; }
-            set { _quiet = value; }
-        }
+        	/// <summary>Quiet mode.</summary>
+        	[TaskAttribute("quiet")]
+        	[BooleanValidator()]
+        	public bool Quiet {
+            	get { return _quiet; }
+            	set { _quiet = value; }
+        	}
 
 		/// <summary>File to be decompiled.</summary>
 		[TaskAttribute("uncompilefile")] 
@@ -131,13 +131,13 @@ namespace NAnt.Contrib.Tasks
 		/// <summary>Directory to place decompiled files into.</summary>
 		[TaskAttribute("uncompileoutputdir")] 
 		public string UncompileOutputDir {
-		get { return _uncompileoutputdir; }
-		set { _uncompileoutputdir = value; }
+			get { return _uncompileoutputdir; }
+			set { _uncompileoutputdir = value; }
 		}
        
 		public override string ProgramFileName
 		{
-            get
+            	get
 			{
 				RegistryKey helpPackageKey = Registry.LocalMachine.OpenSubKey(
 					@"Software\Microsoft\VisualStudio\7.0\" + 
@@ -183,10 +183,10 @@ namespace NAnt.Contrib.Tasks
 			}
 		}
 
-        protected override void ExecuteTask()
+        	protected override void ExecuteTask()
 		{
-            // If the user wants to see the actual command the -verbose flag
-            // will cause ExternalProgramBase to display the actual call.
+            	// If the user wants to see the actual command the -verbose flag
+            	// will cause ExternalProgramBase to display the actual call.
 			if ( Output != null ) 
 			{
 				Log.WriteLine(LogPrefix + "Compiling HTML Help 2.0 File {0}", Output);
@@ -279,6 +279,6 @@ namespace NAnt.Contrib.Tasks
 			{
 				throw new BuildException(LogPrefix + "ERROR: " + e);
 			}
-        }
-    }
+      	}
+	}
 }
