@@ -19,171 +19,154 @@
 
 using System;
 using System.IO;
-using NAnt.Core;
-using NAnt.Core.Attributes;
+
 using InterOpStarTeam = StarTeam;
 
-namespace NAnt.Contrib.Tasks.StarTeam 
-{
-	/// <summary>
-	/// Allows creation of view labels in StarTeam repositories.
-	/// </summary>
-	/// <remarks>
-	/// <para>Often when building projects you wish to label the source control repository.</para>
-	/// <para>By default this task creates view labels with the build option turned on.</para>
-	/// <para>This task was ported from the Ant task http://jakarta.apache.org/ant/manual/OptionalTasks/starteam.html#stlabel </para>
-	/// <para>You need to have the StarTeam SDK installed for this task to function correctly.</para>
-	/// </remarks>
-	/// <example>
-	///   <para>Creates a label in a StarTeam repository.</para>
-	///   <code><![CDATA[
-	///		<!-- 
-	///		constructs a 'url' containing connection information to pass to the task 
-	///		alternatively you can set each attribute manually 
-	///		-->
-	///		<property name="ST.url" value="user:pass@serverhost:49201/projectname/viewname"/>
-	///		<stlabel label="3.1 (label title goes here)" description="This is a label description" url="${ST.url}"/>	
-	///   ]]></code>
-	/// </example>
-	abstract public class LabelTask : StarTeamTask
-	{
-		/// <summary> 
-		/// The name to be given to the label; required.
-		/// </summary>
-		[TaskAttribute("label", Required=true)]
-		public virtual string Label
-		{
-			get { return _labelName; }			
-			set { _labelName = value; }			
-		}
+using NAnt.Core;
+using NAnt.Core.Attributes;
 
-		/// <summary> Should label be marked build : default is true</summary>
-		[TaskAttribute("buildlabel", Required=false)]
-		[BooleanValidator]         
-		public virtual bool BuildLabel
-		{
-			set { _isBuildLabel = value; }			
-		}
+namespace NAnt.Contrib.Tasks.StarTeam {
+    /// <summary>
+    /// Allows creation of view labels in StarTeam repositories.
+    /// </summary>
+    /// <remarks>
+    /// <para>Often when building projects you wish to label the source control repository.</para>
+    /// <para>By default this task creates view labels with the build option turned on.</para>
+    /// <para>This task was ported from the Ant task http://jakarta.apache.org/ant/manual/OptionalTasks/starteam.html#stlabel </para>
+    /// <para>You need to have the StarTeam SDK installed for this task to function correctly.</para>
+    /// </remarks>
+    /// <example>
+    ///   <para>Creates a label in a StarTeam repository.</para>
+    ///   <code><![CDATA[
+    ///		<!-- 
+    ///		constructs a 'url' containing connection information to pass to the task 
+    ///		alternatively you can set each attribute manually 
+    ///		-->
+    ///		<property name="ST.url" value="user:pass@serverhost:49201/projectname/viewname"/>
+    ///		<stlabel label="3.1 (label title goes here)" description="This is a label description" url="${ST.url}"/>	
+    ///   ]]></code>
+    /// </example>
+    abstract public class LabelTask : StarTeamTask {
+        /// <summary> 
+        /// The name to be given to the label; required.
+        /// </summary>
+        [TaskAttribute("label", Required=true)]
+        public virtual string Label {
+            get { return _labelName; }			
+            set { _labelName = value; }			
+        }
+
+        /// <summary> Should label be marked build : default is true</summary>
+        [TaskAttribute("buildlabel", Required=false)]
+        [BooleanValidator]         
+        public virtual bool BuildLabel {
+            set { _isBuildLabel = value; }			
+        }
 				
-		/// <summary> 
-		/// Should label created be a revision label : default is false
-		/// </summary>
-		/// <remarks>
-		/// <see cref="BuildLabel"/> has no effect if this is set <c>true</c> as revision labels cannot have a build status.
-		/// </remarks>
-		[TaskAttribute("revisionlabel", Required=false)]
-		[BooleanValidator]         
-		public virtual bool RevisionLabel
-		{
-			set { _isRevision = value; }			
-		}
+        /// <summary> 
+        /// Should label created be a revision label : default is false
+        /// </summary>
+        /// <remarks>
+        /// <see cref="BuildLabel"/> has no effect if this is set <c>true</c> as revision labels cannot have a build status.
+        /// </remarks>
+        [TaskAttribute("revisionlabel", Required=false)]
+        [BooleanValidator]         
+        public virtual bool RevisionLabel {
+            set { _isRevision = value; }			
+        }
 				
 
-		/// <summary> Optional description of the label to be stored in the StarTeam project.</summary>
-		[TaskAttribute("description", Required=false)]
-		public virtual string Description
-		{
-			set { _description = value; }			
-		}
+        /// <summary> Optional description of the label to be stored in the StarTeam project.</summary>
+        [TaskAttribute("description", Required=false)]
+        public virtual string Description {
+            set { _description = value; }			
+        }
 		
-		/// <summary> 
-		/// Optional: If this property is set the label will be created as of the datetime specified. 
-		/// Please provide a datetime format that can be parsed via <see cref="System.DateTime.Parse"/>.
-		/// </summary>
-		/// <remarks>
-		/// This property is ignored when <see cref="RevisionLabel"/> set to <c>true</c>. 
-		/// </remarks>
-		[TaskAttribute("timestamp", Required=false)]
-		public virtual string LastBuild
-		{
-			set 
-			{
-				try
-				{
-					_labelAsOfDate = System.DateTime.Parse(value);
-					_isAsOfDateSet = true;					
-				}
-				catch (System.FormatException e)
-				{
-					throw new BuildException(string.Format("Unable to parse the date {0} : {1}", value ,e.Message),Location,e);
-				}
-			}
+        /// <summary> 
+        /// Optional: If this property is set the label will be created as of the datetime specified. 
+        /// Please provide a datetime format that can be parsed via <see cref="System.DateTime.Parse"/>.
+        /// </summary>
+        /// <remarks>
+        /// This property is ignored when <see cref="RevisionLabel"/> set to <c>true</c>. 
+        /// </remarks>
+        [TaskAttribute("timestamp", Required=false)]
+        public virtual string LastBuild {
+            set {
+                try {
+                    _labelAsOfDate = System.DateTime.Parse(value);
+                    _isAsOfDateSet = true;					
+                }
+                catch (System.FormatException e) {
+                    throw new BuildException(string.Format("Unable to parse the date {0} : {1}", value ,e.Message),Location,e);
+                }
+            }
 			
-		}
+        }
 		
-		/// <summary> The name of the label to be set in Starteam.</summary>
-		protected string _labelName = null;
+        /// <summary> The name of the label to be set in Starteam.</summary>
+        protected string _labelName = null;
 		
-		/// <summary> The label description to be set in Starteam.</summary>
-		protected string _description = null;
+        /// <summary> The label description to be set in Starteam.</summary>
+        protected string _description = null;
 				  
-		/// <summary> Is the label being created a build label.</summary>
-		protected bool _isBuildLabel = true;
+        /// <summary> Is the label being created a build label.</summary>
+        protected bool _isBuildLabel = true;
                                                                                             
-		/// <summary> If set the datetime to set the label as of.</summary>
-		protected DateTime _labelAsOfDate;
+        /// <summary> If set the datetime to set the label as of.</summary>
+        protected DateTime _labelAsOfDate;
 		
-		/// <summary> Kludgy flag to keep track if date has been set. 
-		/// Please kill this if you can. Here based on experiences I have had with VB.NET</summary>
-		protected bool _isAsOfDateSet = false;
+        /// <summary> Kludgy flag to keep track if date has been set. 
+        /// Please kill this if you can. Here based on experiences I have had with VB.NET</summary>
+        protected bool _isAsOfDateSet = false;
 
-		/// <summary> Does user wish to make a revision label?</summary>
-		protected bool _isRevision = false;
+        /// <summary> Does user wish to make a revision label?</summary>
+        protected bool _isRevision = false;
 
-		/// <summary> 
-		/// Override of base-class abstract function creates an appropriately configured view.  
-		/// For labels this a view configured as of this.lastBuild.
-		/// </summary>
-		/// <param name="raw">the unconfigured <code>View</code></param>
-		/// <returns>the snapshot <code>View</code> appropriately configured.</returns>
-		protected internal override InterOpStarTeam.StView createSnapshotView(InterOpStarTeam.StView raw)
-		{
-			InterOpStarTeam.StView starTeamView;
-			InterOpStarTeam.StViewFactory starTeamViewFactory = new InterOpStarTeam.StViewFactory();
-			InterOpStarTeam.StViewConfigurationStaticsClass starTeamViewConfiguration = new InterOpStarTeam.StViewConfigurationStaticsClass();
-			if(_isAsOfDateSet && !_isRevision)				
-			{
-				starTeamView = starTeamViewFactory.Create(raw, starTeamViewConfiguration.createFromTime(_labelAsOfDate));
-			}
-			else 
-			{
-				starTeamView = starTeamViewFactory.Create(raw, starTeamViewConfiguration.createTip());
-			}
-			return starTeamView;
-		}
+        /// <summary> 
+        /// Override of base-class abstract function creates an appropriately configured view.  
+        /// For labels this a view configured as of this.lastBuild.
+        /// </summary>
+        /// <param name="raw">the unconfigured <code>View</code></param>
+        /// <returns>the snapshot <code>View</code> appropriately configured.</returns>
+        protected internal override InterOpStarTeam.StView createSnapshotView(InterOpStarTeam.StView raw) {
+            InterOpStarTeam.StView starTeamView;
+            InterOpStarTeam.StViewFactory starTeamViewFactory = new InterOpStarTeam.StViewFactory();
+            InterOpStarTeam.StViewConfigurationStaticsClass starTeamViewConfiguration = new InterOpStarTeam.StViewConfigurationStaticsClass();
+            if(_isAsOfDateSet && !_isRevision) {
+                starTeamView = starTeamViewFactory.Create(raw, starTeamViewConfiguration.createFromTime(_labelAsOfDate));
+            }
+            else {
+                starTeamView = starTeamViewFactory.Create(raw, starTeamViewConfiguration.createTip());
+            }
+            return starTeamView;
+        }
 
-		protected virtual InterOpStarTeam.StLabel createLabel(InterOpStarTeam.StView snapshot)
-		{
-			InterOpStarTeam.StLabel newLabel;
-			InterOpStarTeam.StLabelFactoryClass starTeamLabelFactory = new InterOpStarTeam.StLabelFactoryClass();
+        protected virtual InterOpStarTeam.StLabel createLabel(InterOpStarTeam.StView snapshot) {
+            InterOpStarTeam.StLabel newLabel;
+            InterOpStarTeam.StLabelFactoryClass starTeamLabelFactory = new InterOpStarTeam.StLabelFactoryClass();
 			
-			// Create the new label and update the repository
-			try 
-			{
-				//default is view label
-				if(_isRevision) 				
-				{
-					newLabel = starTeamLabelFactory.CreateRevisionLabel(snapshot,_labelName, _description);
-				}
-				else 
-				{
-					newLabel = starTeamLabelFactory.CreateViewLabel(snapshot,_labelName, _description, _labelAsOfDate, _isBuildLabel);
-				}
-				newLabel.update();
+            // Create the new label and update the repository
+            try {
+                //default is view label
+                if(_isRevision) {
+                    newLabel = starTeamLabelFactory.CreateRevisionLabel(snapshot,_labelName, _description);
+                }
+                else {
+                    newLabel = starTeamLabelFactory.CreateViewLabel(snapshot,_labelName, _description, _labelAsOfDate, _isBuildLabel);
+                }
+                newLabel.update();
 				
-				string sLabelType; 
-				if(this._isRevision) 
-					sLabelType = "Revision";
-				else 
-					sLabelType = (this._isBuildLabel ? "View Build" : "View");
-				Log(Level.Info, LogPrefix + "Created {0} Label: {1}",sLabelType, _labelName);
-			}
-			catch(Exception e)
-			{
-				throw new BuildException(string.Format("Creating label {0} failed : {1}",_labelName,e.Message),Location,e);
-			}
+                string sLabelType; 
+                if(this._isRevision) 
+                    sLabelType = "Revision";
+                else 
+                    sLabelType = (this._isBuildLabel ? "View Build" : "View");
+                Log(Level.Info, LogPrefix + "Created {0} Label: {1}",sLabelType, _labelName);
+            } catch(Exception e) {
+                throw new BuildException(string.Format("Creating label {0} failed : {1}",_labelName,e.Message),Location,e);
+            }
 
-			return newLabel;
-		}
-	}
+            return newLabel;
+        }
+    }
 }

@@ -19,41 +19,46 @@
 
 using System;
 using System.IO;
-using NAnt.Core;
-using NAnt.Core.Attributes;
+
 using InterOpStarTeam = StarTeam;
 
-namespace NAnt.Contrib.Tasks.StarTeam 
-{
-	/// <summary>
-	/// Allows creation of view labels in StarTeam repositories.
-	/// </summary>
-	/// <remarks>
-	/// <para>Often when building projects you wish to label the source control repository.</para>
-	/// <para>By default this task creates view labels with the build option turned on.</para>
-	/// <para>This task was ported from the Ant task http://jakarta.apache.org/ant/manual/OptionalTasks/starteam.html#stlabel </para>
-	/// <para>You need to have the StarTeam SDK installed for this task to function correctly.</para>
-	/// </remarks>
-	/// <example>
-	///   <para>Creates a label in a StarTeam repository.</para>
-	///   <code><![CDATA[
-	///		<!-- 
-	///		constructs a 'url' containing connection information to pass to the task 
-	///		alternatively you can set each attribute manually 
-	///		-->
-	///		<property name="ST.url" value="user:pass@serverhost:49201/projectname/viewname"/>
-	///		<stlabel label="3.1 (label title goes here)" description="This is a label description" url="${ST.url}"/>	
-	///   ]]></code>
-	/// </example>
-	[TaskName("stlabel")]
-	public class StarTeamLabel:LabelTask
-	{
+using NAnt.Core;
+using NAnt.Core.Attributes;
 
-		/// <summary> This method does the work of creating the new view and checking it into Starteam.</summary>
-		protected override void  ExecuteTask()
-		{   
-			InterOpStarTeam.StView snapshot = openView();
-			createLabel(snapshot);
-		}
-	}
+namespace NAnt.Contrib.Tasks.StarTeam {
+    /// <summary>
+    /// Allows creation of view labels in StarTeam repositories.
+    /// </summary>
+    /// <remarks>
+    /// <para>Often when building projects you wish to label the source control repository.</para>
+    /// <para>By default this task creates view labels with the build option turned on.</para>
+    /// <para>This task was ported from the Ant task http://jakarta.apache.org/ant/manual/OptionalTasks/starteam.html#stlabel </para>
+    /// <para>You need to have the StarTeam SDK installed for this task to function correctly.</para>
+    /// </remarks>
+    /// <example>
+    ///   <para>Creates a label in a StarTeam repository.</para>
+    ///   <code><![CDATA[
+    ///		<!-- 
+    ///		constructs a 'url' containing connection information to pass to the task 
+    ///		alternatively you can set each attribute manually 
+    ///		-->
+    ///		<property name="ST.url" value="user:pass@serverhost:49201/projectname/viewname"/>
+    ///		<stlabel label="3.1 (label title goes here)" description="This is a label description" url="${ST.url}"/>	
+    ///   ]]></code>
+    /// </example>
+    [TaskName("stlabel")]
+    public class StarTeamLabel : LabelTask {
+        #region Override implementation of LabelTask
+
+        /// <summary>
+        /// This method does the work of creating the new view and checking it 
+        /// into Starteam.
+        /// </summary>
+        protected override void  ExecuteTask() {   
+            InterOpStarTeam.StView snapshot = openView();
+            createLabel(snapshot);
+        }
+
+        #endregion Override implementation of LabelTask
+    }
 }
