@@ -24,6 +24,7 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using System.Text;
+using System.Resources;
 using System.Reflection;
 using System.Diagnostics;
 using System.ComponentModel;
@@ -43,30 +44,9 @@ namespace NAnt.Contrib.Tasks
     /// <remarks>None.</remarks>
     public abstract class SchemaValidatedTask : Task
     {
-        private bool _validate = true;
         private object _schemaObject;
-
-        /// <summary>
-        /// Returns or sets whether to validate the 
-        /// Task against its XML Schema.
-        /// </summary>
-        /// <value>Whether to validate the 
-        /// Task against its XML Schema.</value>
-        /// <remarks>None.</remarks>
-        [TaskAttribute("validate", Required=false)]
-        [BooleanValidator()]
-        public bool Validate 
-        {
-            get
-            {
-                return _validate;
-            }
-        	
-            set
-            {
-                _validate = value;
-            }
-        }
+        private bool _validated = true;
+        private ArrayList _validationExceptions = new ArrayList();
 
         /// <summary>
         /// Returns the object from the Schema wrapper after 
@@ -84,6 +64,18 @@ namespace NAnt.Contrib.Tasks
         }
 
         /// <summary>
+        /// Occurs when a validation error is raised.
+        /// </summary>
+        /// <param name="sender">The object that sent the event.</param>
+        /// <param name="args">Validation arguments passed in.</param>
+        private void Task_OnSchemaValidate(object sender, ValidationEventArgs args)
+        {
+            _validated = false;
+            _validationExceptions.Add(
+                new BuildException("Validation Error: " + args.Message));
+        }
+
+        /// <summary>
         /// Initializes the task and verifies parameters.
         /// </summary>
         /// <param name="TaskNode">Node that contains the 
@@ -92,6 +84,8 @@ namespace NAnt.Contrib.Tasks
         protected override void InitializeTask(XmlNode TaskNode)
         {
             XmlNode taskNode = TaskNode.Clone();
+
+            // Expand all properties in the task and its child elements
             if (taskNode.ChildNodes != null)
             {
                 ExpandPropertiesInNodes(taskNode.ChildNodes);
@@ -104,29 +98,97 @@ namespace NAnt.Contrib.Tasks
                 }
             }
 
-            if (Validate)
+            // Get the [SchemaValidator(type)] attribute
+            SchemaValidatorAttribute[] taskValidators = 
+                (SchemaValidatorAttribute[])GetType().GetCustomAttributes(
+                typeof(SchemaValidatorAttribute), true);
+
+            if (taskValidators.Length > 0)
             {
-                SchemaValidatorAttribute[] taskValidators = 
-                    (SchemaValidatorAttribute[])GetType().GetCustomAttributes(
-                    typeof(SchemaValidatorAttribute), true);
+                SchemaValidatorAttribute taskValidator = taskValidators[0];
+                XmlSerializer taskSerializer = new XmlSerializer(taskValidator.ValidatorType);
 
-                if (taskValidators.Length > 0)
-                {
-                    SchemaValidatorAttribute taskValidator = taskValidators[0];
-                    XmlSerializer taskSerializer = new XmlSerializer(taskValidator.ValidatorType);
+                // Load the embedded schema resource
+                ResourceManager resMgr = new ResourceManager(
+                    taskValidator.ValidatorType.Namespace,
+                    Assembly.GetExecutingAssembly());
 
-                    NameTable taskNameTable = new NameTable();
-                    XmlNamespaceManager taskNSMgr = new XmlNamespaceManager(taskNameTable);
-                    taskNSMgr.AddNamespace("", GetType().FullName);
+                // Get the "schema" named resource string
+                string schemaXml = resMgr.GetString("schema");
+                XmlTextReader tr = new XmlTextReader(
+                    schemaXml, XmlNodeType.Element, null);
+                
+                // Add the schema to a schema collection
+                XmlSchema schema = XmlSchema.Read(tr, null);
+                XmlSchemaCollection schemas = new XmlSchemaCollection();
+                schemas.Add(schema);
 
-                    XmlParserContext context = new XmlParserContext(
-                        null, taskNSMgr, null, XmlSpace.None);
+                // Create a namespace manager with the schema's namespace
+                NameTable nt = new NameTable();
+                XmlNamespaceManager nsmgr = new XmlNamespaceManager(nt);
+                nsmgr.AddNamespace(String.Empty, GetType().FullName);
 
-                    XmlTextReader taskSchemaReader = new XmlTextReader(
-                        taskNode.OuterXml, XmlNodeType.Element, context);
+                // Create a textreader containing just the Task's Node
+                XmlParserContext ctx = new XmlParserContext(
+                    null, nsmgr, null, XmlSpace.None);
+                ((XmlElement)TaskNode).SetAttribute("xmlns", GetType().FullName);
+                XmlTextReader textReader = new XmlTextReader(
+                    ((XmlElement)TaskNode).OuterXml, XmlNodeType.Element, ctx);
 
-                    _schemaObject = taskSerializer.Deserialize(taskSchemaReader);
+                // Copy the node from the TextReader and indent it (for error
+                // reporting, since NAnt does not retain formatting during a load).
+                StringWriter stringWriter = new StringWriter();
+                XmlTextWriter textWriter = new XmlTextWriter(stringWriter);
+                textWriter.Formatting = Formatting.Indented;
+                
+                textWriter.WriteNode(textReader, true);
+
+                //textWriter.Close();
+                XmlTextReader formattedTextReader = new XmlTextReader(
+                    stringWriter.ToString(), XmlNodeType.Document, ctx);
+
+                // Validate the Task's XML against its schema
+                XmlValidatingReader validatingReader = new XmlValidatingReader(
+                    formattedTextReader);
+                validatingReader.ValidationType = ValidationType.Schema;
+                validatingReader.Schemas.Add(schemas);
+                validatingReader.ValidationEventHandler += 
+                    new ValidationEventHandler(Task_OnSchemaValidate);
+                
+                while (validatingReader.Read()) {
+                    // Read strictly for validation purposes
                 }
+                validatingReader.Close();
+
+                if (!_validated)
+                {
+                    // Log any validation errors that have ocurred
+                    for (int i = 0; i < _validationExceptions.Count; i++)
+                    {
+                        BuildException ve = (BuildException)_validationExceptions[i];
+                        if (i == _validationExceptions.Count - 1)
+                        {
+                            // If this is the last validation error, throw it
+                            throw ve;
+                        }
+                        Log.WriteLine(LogPrefix + ve.Message);
+                    }
+                }
+            
+            
+
+                NameTable taskNameTable = new NameTable();
+                XmlNamespaceManager taskNSMgr = new XmlNamespaceManager(taskNameTable);
+                taskNSMgr.AddNamespace("", GetType().FullName);
+
+                XmlParserContext context = new XmlParserContext(
+                    null, taskNSMgr, null, XmlSpace.None);
+
+                XmlTextReader taskSchemaReader = new XmlTextReader(
+                    taskNode.OuterXml, XmlNodeType.Element, context);
+
+                // Deserialize from the Task's XML to the schema wrapper object
+                _schemaObject = taskSerializer.Deserialize(taskSchemaReader);
             }
         }
 
@@ -152,21 +214,6 @@ namespace NAnt.Contrib.Tasks
                 }
             }
         }
-    }
-
-    /// <summary>
-    /// Wraps an exception thrown by an XML Schema 
-    /// being validated against a task.
-    /// </summary>
-    /// <remarks>None.</remarks>
-    public class SchemaValidationException : Exception
-    {
-        /// <summary>
-        /// Creates a new <see cref="SchemaValidationException"/>.
-        /// </summary>
-        /// <param name="msg">String containing the error message.</param>
-        /// <remarks>None.</remarks>
-        public SchemaValidationException(string msg) : base (msg) {}
     }
 
     /// <summary>
