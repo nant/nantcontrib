@@ -286,7 +286,7 @@ namespace SLiNgshoT.Core
 					{
 						if (reference != null)
 						{
-							if (reference.Value.StartsWith("System"))
+							if (reference.Type == "AssemblyName")
 								writer.WriteReference(reference.Value + ".dll", false);
 							else
 								writer.WriteReference(reference.Value + ".dll", true);

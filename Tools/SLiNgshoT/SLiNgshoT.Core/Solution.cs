@@ -107,6 +107,9 @@ namespace SLiNgshoT.Core
 
 		private Hashtable _Projects = new Hashtable();
 
+		string commonProjectId = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}";
+		string enterproseProjectId = "{FE3BBBB6-72D5-11D2-9ACE-00C04F79A2A4}";
+
 		private void AddProject(string projectLine)
 		{
 			string pattern = @"^Project\(""(?<unknown>\S+)""\) = ""(?<name>\S+)"", ""(?<path>\S+)"", ""(?<id>\S+)""";
@@ -122,24 +125,40 @@ namespace SLiNgshoT.Core
 
 				path = ResolvePath(path);
 
-				Project project = new Project(this, new Guid(id), name);
-				string absoluteProjectPath = Path.Combine(SolutionDirectory, path);
-				project.Read(absoluteProjectPath);
-
-				string relativeProjectPath = Path.GetDirectoryName(path);
-				project.RelativePath = relativeProjectPath;
-
-				if (project.ProjectType == "C# Local" ||
-					project.ProjectType == "C# Web" ||
-					project.ProjectType == "VB Local" ||
-					project.ProjectType == "VB Web")
+				if (unknown == commonProjectId)
 				{
-					_Projects.Add(project.ID, project);
+					Project project = new Project(this, new Guid(id), name);
+
+					string absoluteProjectPath = Path.Combine(SolutionDirectory, path);
+					project.Read(absoluteProjectPath);
+
+					string relativeProjectPath = Path.GetDirectoryName(path);
+					project.RelativePath = relativeProjectPath;
+
+					if (project.ProjectType == "C# Local" ||
+						project.ProjectType == "C# Web" ||
+						project.ProjectType == "VB Local" ||
+						project.ProjectType == "VB Web")
+					{
+						_Projects.Add(project.ID, project);
+					}
+				} 
+				else if (unknown == enterproseProjectId) 
+				{
+					EnterpriseProject etpProject = new EnterpriseProject(this, new Guid(id), name);
+					string absoluteProjectPath = Path.Combine(SolutionDirectory, path);
+					etpProject.Read(absoluteProjectPath);
+					
+					// get the list of projects from enterprise projects
+					foreach(Project project in etpProject.GetProjects())
+					{
+						_Projects.Add(project.ID, project);
+					}
 				}
 			}
 		}
 
-		private string ResolvePath(string path)
+		public string ResolvePath(string path)
 		{
 			if (path.StartsWith("http:"))
 			{

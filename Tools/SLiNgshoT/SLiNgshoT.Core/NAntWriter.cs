@@ -68,6 +68,7 @@ namespace SLiNgshoT.Core
 			writer.WriteAttributeString("default", "Debug");
 
 			WriteProperty("build.basedir", (string)parameters["build.basedir"]);
+			WriteProperty("reference.path", (string)parameters["reference.path"]);
 
 			foreach (string configurationName in solution.GetConfigurationNames())
 			{
@@ -330,7 +331,21 @@ namespace SLiNgshoT.Core
 
 		public void WriteReference(string name, bool built)
 		{
-			string path = built ? "${build.dir}\\" + name : name;
+			#warning remove this once NAnt supports additional reference dirs
+
+			string path;
+
+			if (built)
+			{
+				path = "${build.dir}\\" + name;
+			}
+			else
+			{
+				if (name.StartsWith("System"))
+					path = name;
+				else
+					path = "${reference.path}\\" + name;
+			}
 
 			writer.WriteStartElement("includes");
 			writer.WriteAttributeString("name", path);

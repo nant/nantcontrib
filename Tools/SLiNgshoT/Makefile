@@ -51,6 +51,7 @@ SLINGSHOT_CORE_SOURCE_FILES = \
 	SLiNgshoT.Core\Attributes.cs \
 	SLiNgshoT.Core\Configuration.cs \
 	SLiNgshoT.Core\Driver.cs \
+	SLiNgshoT.Core\EnterpriseProject.cs \
 	SLiNgshoT.Core\File.cs \
 	SLiNgshoT.Core\NAntWriter.cs \
 	SLiNgshoT.Core\NMakeWriter.cs \

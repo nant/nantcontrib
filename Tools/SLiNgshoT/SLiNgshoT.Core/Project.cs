@@ -520,7 +520,6 @@ namespace SLiNgshoT.Core
 
 			if (this.ProjectType.StartsWith("VB")) 
 			{
-
 				XPathNodeIterator nodes =
 					_ProjectNavigator.Select("/VisualStudioProject/VisualBasic/Build/Imports/Import");
 
