@@ -150,10 +150,6 @@
                 <File RelPath="Tasks\HxRegTask.cs" SubType="Code" BuildAction="Compile" />
                 <File RelPath="Tasks\IISTasks.cs" SubType="Code" BuildAction="Compile" />
                 <File RelPath="Tasks\MgmtClassGenTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\MSITask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\MSITask.xsd" BuildAction="Content" />
-                <File RelPath="Tasks\MSMTask.cs" SubType="Code" BuildAction="Compile" />
-                <File RelPath="Tasks\MSMTask.xsd" BuildAction="Content" />
                 <File RelPath="Tasks\NAnt.xsd" BuildAction="Content" />
                 <File RelPath="Tasks\NGenTask.cs" SubType="Code" BuildAction="Compile" />
                 <File RelPath="Tasks\NUnitReportTask.cs" SubType="Code" BuildAction="Compile" />
@@ -169,6 +165,65 @@
                 <File RelPath="Tasks\VersionTask.cs" SubType="Code" BuildAction="Compile" />
                 <File RelPath="Tasks\WsdlTask.cs" SubType="Code" BuildAction="Compile" />
                 <File RelPath="Tasks\XsdTask.cs" SubType="Code" BuildAction="Compile" />
+                <File
+                    RelPath = "Tasks\Msi\InstallerCreationCommand.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Msi\InstallerDatabase.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Msi\InstallerRecordReader.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Msi\InstallerSearchClause.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Msi\InstallerTable.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Msi\MsiCreationCommand.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Msi\MsiTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Msi\MsiTask.xsd"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Tasks\Msi\MsiTask.xsx"
+                    DependentUpon = "MsiTask.xsd"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Tasks\Msi\MsmCreationCommand.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Msi\MsmTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Msi\TypeLibRecord.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
                 <File RelPath="Tasks\StarTeam\LabelTask.cs" SubType="Code" BuildAction="Compile" />
                 <File RelPath="Tasks\StarTeam\StarTeamAutoLabel.cs" SubType="Code" BuildAction="Compile" />
                 <File RelPath="Tasks\StarTeam\StarTeamCheckin.cs" SubType="Code" BuildAction="Compile" />

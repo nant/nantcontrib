@@ -1,0 +1,906 @@
+<?xml version="1.0" ?> <!--
+//
+// NAntContrib
+// Copyright (C) 2002 Jayme C. Edwards (jedwards@wi.rr.com)
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+//
+-->
+<xsd:schema targetNamespace="NAnt.Contrib.Tasks.Msi.MsiTask" xmlns:msi="NAnt.Contrib.Tasks.Msi.MsiTask"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="qualified">
+    <xsd:complexType name="MSIBase">
+        <xsd:sequence>
+            <xsd:element ref="msi:properties" minOccurs="1" maxOccurs="1" />
+            <xsd:element ref="msi:search" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="msi:tables" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="msi:directories" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="msi:environment" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="msi:components" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="msi:dialogs" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="msi:controls" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="msi:controlconditions" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="msi:controlevents" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="msi:registry" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="msi:icons" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="msi:shortcuts" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="msi:binaries" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="msi:customactions" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="msi:sequences" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="msi:actiontext" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="msi:appmappings" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="msi:urlproperties" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="msi:vdirproperties" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="msi:approots" minOccurs="0" maxOccurs="1" />
+            <xsd:element ref="msi:iisproperties" minOccurs="0" maxOccurs="1" />
+        </xsd:sequence>
+        <xsd:attribute name="output" type="xsd:string" use="required" />
+        <xsd:attribute name="sourcedir" type="xsd:string" use="required" />
+        <xsd:attribute name="license" type="xsd:string" use="optional" />
+        <xsd:attribute name="banner" type="xsd:string" use="optional" />
+        <xsd:attribute name="background" type="xsd:string" use="optional" />
+        <!-- Used to override the msi template file used (.msi) -->
+        <xsd:attribute name="template" type="xsd:string" use="optional" />
+        <!-- Used to override the error template file used (.mst) -->
+        <xsd:attribute name="errortemplate" type="xsd:string" use="optional" />
+        <xsd:attribute name="verbose" type="xsd:boolean" use="optional" default="false" />
+        <xsd:attribute name="debug" type="xsd:boolean" use="optional" default="false" />
+        <xsd:attribute name="deterministicguids" type="xsd:boolean" use="optional" default="false" />
+    </xsd:complexType>
+    <!-- msi -->
+    <xsd:element name="msi">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="msi:MSIBase">
+                    <xsd:sequence>
+                        <xsd:element ref="msi:launchconditions" minOccurs="0" maxOccurs="1" />
+                        <xsd:element ref="msi:features" minOccurs="0" maxOccurs="1" />
+                        <xsd:element ref="msi:mergemodules" minOccurs="0" maxOccurs="1" />
+                    </xsd:sequence>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msm -->
+    <xsd:element name="msm">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="msi:MSIBase">
+                    <xsd:sequence>
+                        <xsd:element ref="msi:moduledependencies" minOccurs="0" maxOccurs="1" />
+                        <xsd:element ref="msi:moduleexclusions" minOccurs="0" maxOccurs="1" />
+                        <xsd:element ref="msi:modulesequences" minOccurs="0" maxOccurs="1" />
+                        <xsd:element ref="msi:moduleignoretables" minOccurs="0" maxOccurs="1" />
+                        <xsd:element ref="msi:modulesubstitutions" minOccurs="0" maxOccurs="1" />
+                        <xsd:element ref="msi:moduleconfigurations" minOccurs="0" maxOccurs="1" />
+                    </xsd:sequence>
+                    <xsd:attribute name="id" type="xsd:string" use="required" />
+                    <xsd:attribute name="language" type="xsd:string" use="optional" default="1033" />
+                    <xsd:attribute name="version" type="xsd:string" use="optional" default="1.0.0.0" />
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+    <!--
+        Have had to remove these. Couldn't get them to work with the new inheritance structure - KMC
+
+        <xsd:key name="directoryKey">
+            <xsd:selector xpath=".//msi:directory" />
+            <xsd:field xpath="@name" />
+        </xsd:key>
+        <xsd:key name="featureKey">
+            <xsd:selector xpath=".//msi:feature" />
+            <xsd:field xpath="@name" />
+        </xsd:key>
+        <xsd:key name="componentKey">
+            <xsd:selector xpath="msi:components/msi:component" />
+            <xsd:field xpath="@name" />
+        </xsd:key>
+        <xsd:unique name="propertyKey">
+            <xsd:selector xpath="msi:properties/msi:property" />
+            <xsd:field xpath="@name" />
+        </xsd:unique>
+        <xsd:unique name="dialogKey">
+            <xsd:selector xpath="msi:dialogs/msi:dialog" />
+            <xsd:field xpath="@name" />
+        </xsd:unique>
+        <xsd:unique name="binaryKey">
+            <xsd:selector xpath="msi:binaries/msi:binary" />
+            <xsd:field xpath="@name" />
+        </xsd:unique>
+        <xsd:unique name="iconKey">
+            <xsd:selector xpath="msi:icons/msi:icon" />
+            <xsd:field xpath="@name" />
+        </xsd:unique>
+        <xsd:unique name="customActionKey">
+            <xsd:selector xpath=".//msi:customaction" />
+            <xsd:field xpath="@action" />
+        </xsd:unique>
+        <xsd:unique name="urlpropertyKey">
+            <xsd:selector xpath="msi:urlproperties/msi:urlproperty" />
+            <xsd:field xpath="@name" />
+        </xsd:unique>
+-->
+    <!-- msi/properties -->
+    <xsd:element name="properties">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="msi:property" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msi/properties/property -->
+    <xsd:element name="property">
+        <xsd:complexType>
+            <xsd:attribute name="name" type="xsd:string" use="required" />
+            <xsd:attribute name="value" type="xsd:string" use="required" />
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msi/search -->
+    <xsd:element name="search">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="key" minOccurs="1" maxOccurs="unbounded">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="value" minOccurs="1" maxOccurs="unbounded">
+                                <xsd:complexType>
+                                    <xsd:attribute name="name" type="xsd:string" use="required" />
+                                    <xsd:attribute name="setproperty" type="xsd:string" use="required" />
+                                </xsd:complexType>
+                            </xsd:element>
+                        </xsd:sequence>
+                        <xsd:attribute name="type" type="msi:MSISearchKeyType" use="required" />
+                        <xsd:attribute name="path" type="xsd:string" use="required" />
+                        <xsd:attribute name="root" type="msi:MSIRegistryKeyRoot" use="required" />
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msi/search/key/@type -->
+    <xsd:simpleType name="MSISearchKeyType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="registry" />
+            <xsd:enumeration value="file" />
+        </xsd:restriction>
+    </xsd:simpleType>
+    <!-- msi/launchconditions -->
+    <xsd:element name="launchconditions">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="launchcondition" type="msi:MSILaunchCondition" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msi/launchconditions/launchcondition -->
+    <xsd:complexType name="MSILaunchCondition">
+        <xsd:sequence>
+            <xsd:element name="description" type="xsd:string" minOccurs="1" maxOccurs="1" />
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="condition" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <!-- msi/tables -->
+    <xsd:element name="tables">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="table" type="msi:MSITable" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msi/tables/table -->
+    <xsd:complexType name="MSITable">
+        <xsd:sequence>
+            <xsd:element name="columns" type="msi:MSITableColumns" minOccurs="1" maxOccurs="1" />
+            <xsd:element name="rows" type="msi:MSITableRows" minOccurs="0" maxOccurs="1" />
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <!-- msi/tables/table/columns -->
+    <xsd:complexType name="MSITableColumns">
+        <xsd:sequence>
+            <xsd:element name="column" type="msi:MSITableColumn" minOccurs="1" maxOccurs="unbounded" />
+        </xsd:sequence>
+    </xsd:complexType>
+    <!-- msi/tables/table/rows -->
+    <xsd:complexType name="MSITableRows">
+        <xsd:sequence>
+            <xsd:element name="row" type="msi:MSITableRow" minOccurs="1" maxOccurs="unbounded" />
+        </xsd:sequence>
+    </xsd:complexType>
+    <!-- msi/tables/table/columns/column -->
+    <!-- category and type are optional, but one is required.  Also
+         If both are defined, type gets precidence -->
+    <xsd:complexType name="MSITableColumn">
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="nullable" type="xsd:boolean" use="required" />
+        <xsd:attribute name="category" type="msi:MSITableColumnCategoryType" use="optional" />
+        <xsd:attribute name="type" type="xsd:string" use="optional" />
+        <xsd:attribute name="key" type="xsd:boolean" use="optional" default="false" />
+        <xsd:attribute name="minvalue" type="xsd:int" use="optional" />
+        <xsd:attribute name="maxvalue" type="xsd:int" use="optional" />
+        <xsd:attribute name="keytable" type="xsd:string" use="optional" />
+        <xsd:attribute name="keycolumn" type="xsd:int" use="optional" />
+        <xsd:attribute name="set" type="xsd:string" use="optional" />
+        <xsd:attribute name="description" type="xsd:string" use="optional" />
+    </xsd:complexType>
+    <!-- msi/tables/table/rows/row -->
+    <xsd:complexType name="MSITableRow">
+        <xsd:sequence>
+            <xsd:element name="columns" type="msi:MSITableRowColumns" minOccurs="1" maxOccurs="1" />
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="MSITableRowColumns">
+        <xsd:sequence>
+            <xsd:element name="column" type="msi:MSITableRowColumnData" minOccurs="1" maxOccurs="unbounded" />
+        </xsd:sequence>
+    </xsd:complexType>
+    <!-- msi/tables/table/rows/row/column -->
+    <xsd:complexType name="MSITableRowColumnData">
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="value" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <!-- msi/tables/table/columns/column/type -->
+    <xsd:simpleType name="MSITableColumnCategoryType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Text" />
+            <xsd:enumeration value="UpperCase" />
+            <xsd:enumeration value="LowerCase" />
+            <xsd:enumeration value="Integer" />
+            <xsd:enumeration value="DoubleInteger" />
+            <xsd:enumeration value="Time/Date" />
+            <xsd:enumeration value="Identifier" />
+            <xsd:enumeration value="Property" />
+            <xsd:enumeration value="Filename" />
+            <xsd:enumeration value="WildCardFilename" />
+            <xsd:enumeration value="Path" />
+            <xsd:enumeration value="Paths" />
+            <xsd:enumeration value="AnyPath" />
+            <xsd:enumeration value="DefaultDir" />
+            <xsd:enumeration value="RegPath" />
+            <xsd:enumeration value="Formatted" />
+            <xsd:enumeration value="Template" />
+            <xsd:enumeration value="Condition" />
+            <xsd:enumeration value="GUID" />
+            <xsd:enumeration value="Version" />
+            <xsd:enumeration value="Language" />
+            <xsd:enumeration value="Binary" />
+            <xsd:enumeration value="Cabinet" />
+            <xsd:enumeration value="Shortcut" />
+        </xsd:restriction>
+    </xsd:simpleType>
+    <!-- msi/directories/directory -->
+    <xsd:complexType name="MSIDirectory">
+        <xsd:sequence>
+            <xsd:element name="directory" type="msi:MSIDirectory" minOccurs="0" maxOccurs="unbounded" />
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="foldername" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <!-- msi/directories -->
+    <xsd:element name="directories">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="directory" type="msi:MSIRootDirectory" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msi/directories/directory -->
+    <xsd:complexType name="MSIRootDirectory">
+        <xsd:complexContent>
+            <xsd:extension base="msi:MSIDirectory">
+                <xsd:attribute name="root" type="xsd:string" use="required" />
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <!-- msi/environment -->
+    <xsd:element name="environment">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="variable" type="msi:MSIVariable" minOccurs="1" maxOccurs="unbounded">
+                    <!--
+                        <xsd:keyref name="variableComponentRefs" refer="msi:componentKey">
+                            <xsd:selector xpath="." />
+                            <xsd:field xpath="@component" />
+                        </xsd:keyref>
+                    -->
+                </xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msi/environment/variable -->
+    <xsd:complexType name="MSIVariable">
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="append" type="xsd:string" use="required" />
+        <xsd:attribute name="component" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <!-- msi/features -->
+    <xsd:element name="features">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="feature" type="msi:MSIFeature" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msi/features/feature -->
+    <xsd:complexType name="MSIFeature">
+        <xsd:sequence>
+            <xsd:element name="description" type="xsd:string" minOccurs="0" maxOccurs="1" />
+            <xsd:element name="conditions" type="msi:MSIFeatureConditions" minOccurs="0" maxOccurs="1" />
+            <xsd:element name="feature" type="msi:MSIFeature" minOccurs="0" maxOccurs="unbounded" />
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="attr" type="xsd:int" use="optional" default="0" />
+        <xsd:attribute name="title" type="xsd:string" use="optional" />
+        <xsd:attribute name="display" type="xsd:int" use="required" />
+        <xsd:attribute name="typical" type="xsd:boolean" use="optional" default="false" />
+        <xsd:attribute name="directory" type="xsd:string" use="optional" />
+    </xsd:complexType>
+    <!-- msi/features/feature/conditions -->
+    <xsd:complexType name="MSIFeatureConditions">
+        <xsd:sequence>
+            <xsd:element name="condition" type="msi:MSIFeatureCondition" minOccurs="1" maxOccurs="unbounded" />
+        </xsd:sequence>
+    </xsd:complexType>
+    <!-- msi/features/feature/conditions/condition -->
+    <xsd:complexType name="MSIFeatureCondition">
+        <xsd:attribute name="expression" type="xsd:string" use="optional" />
+        <xsd:attribute name="level" type="xsd:int" use="required" />
+    </xsd:complexType>
+    <!-- msi/components -->
+    <xsd:element name="components">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="component" type="msi:MSIComponent" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msi/components/component -->
+    <xsd:complexType name="MSIComponent">
+        <xsd:sequence>
+            <xsd:element name="key" type="msi:MSIKeyFile" minOccurs="1" />
+            <xsd:element name="fileset" type="msi:NAntFileSet" minOccurs="1" />
+            <xsd:element name="forceid" type="msi:MSIFileOverride" minOccurs="0" maxOccurs="unbounded" />
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="id" type="msi:MSIComponentGUID" use="required" />
+        <xsd:attribute name="attr" type="xsd:int" use="required" />
+        <xsd:attribute name="directory" type="xsd:string" use="required" />
+        <xsd:attribute name="feature" type="xsd:string" use="optional" default="{00000000-0000-0000-0000-000000000000}" />
+        <xsd:attribute name="condition" type="xsd:string" use="optional" />
+        <xsd:attribute name="fileattr" type="xsd:int" use="optional" default="512" />
+        <xsd:attribute name="checkinterop" type="xsd:boolean" use="optional" default="false" />
+    </xsd:complexType>
+    <!-- msi/components/component/key -->
+    <xsd:complexType name="MSIKeyFile">
+        <xsd:attribute name="file" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <!-- msi/components/component/override -->
+    <xsd:complexType name="MSIFileOverride">
+        <xsd:attribute name="file" type="xsd:string" use="required" />
+        <xsd:attribute name="id" type="msi:MSIFileID" use="required" />
+        <xsd:attribute name="attr" type="xsd:int" use="optional" default="0" />
+        <xsd:attribute name="version" type="xsd:string" use="optional" />
+        <xsd:attribute name="language" type="xsd:int" use="optional" default="-1" />
+        <xsd:attribute name="checkinterop" type="xsd:boolean" use="optional" default="false" />
+    </xsd:complexType>
+    <!-- msi/binaries -->
+    <xsd:element name="binaries">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="binary" type="msi:MSIBinary" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msi/binaries/binary -->
+    <xsd:complexType name="MSIBinary">
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="value" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <!-- msi/dialogs -->
+    <xsd:element name="dialogs">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="dialog" type="msi:MSIDialog" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msi/dialogs/dialog -->
+    <xsd:complexType name="MSIDialog">
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="hcenter" type="xsd:int" use="required" />
+        <xsd:attribute name="vcenter" type="xsd:int" use="required" />
+        <xsd:attribute name="width" type="xsd:int" use="required" />
+        <xsd:attribute name="height" type="xsd:int" use="required" />
+        <xsd:attribute name="attr" type="xsd:int" use="required" />
+        <xsd:attribute name="title" type="xsd:string" use="required" />
+        <xsd:attribute name="firstcontrol" type="xsd:string" use="required" />
+        <xsd:attribute name="defaultcontrol" type="xsd:string" use="required" />
+        <xsd:attribute name="cancelcontrol" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <!-- msi/controls -->
+    <xsd:element name="controls">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="control" type="msi:MSIControl" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msi/controls/control -->
+    <xsd:complexType name="MSIControl">
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="dialog" type="xsd:string" use="required" />
+        <xsd:attribute name="type" type="xsd:string" use="required" />
+        <xsd:attribute name="x" type="xsd:int" use="required" />
+        <xsd:attribute name="y" type="xsd:int" use="required" />
+        <xsd:attribute name="width" type="xsd:int" use="required" />
+        <xsd:attribute name="height" type="xsd:int" use="required" />
+        <xsd:attribute name="attr" type="xsd:int" use="required" />
+        <xsd:attribute name="property" type="xsd:string" use="optional" />
+        <xsd:attribute name="text" type="xsd:string" use="optional" />
+        <xsd:attribute name="nextcontrol" type="xsd:string" use="optional" />
+        <xsd:attribute name="help" type="xsd:string" use="optional" default="|" />
+        <xsd:attribute name="remove" type="xsd:boolean" use="optional" default="false" />
+    </xsd:complexType>
+    <!-- msi/controlconditions -->
+    <xsd:element name="controlconditions">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="controlcondition" type="msi:MSIControlCondition" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msi/controlconditions/controlcondition -->
+    <xsd:complexType name="MSIControlCondition">
+        <xsd:attribute name="dialog" type="xsd:string" use="required" />
+        <xsd:attribute name="control" type="xsd:string" use="required" />
+        <xsd:attribute name="action" type="xsd:string" use="required" />
+        <xsd:attribute name="condition" type="xsd:string" use="required" />
+        <xsd:attribute name="remove" type="xsd:boolean" use="optional" default="false" />
+    </xsd:complexType>
+    <!-- msi/controlevents -->
+    <xsd:element name="controlevents">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="controlevent" type="msi:MSIControlEvent" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msi/controlevents/controlevent -->
+    <xsd:complexType name="MSIControlEvent">
+        <xsd:attribute name="dialog" type="xsd:string" use="required" />
+        <xsd:attribute name="control" type="xsd:string" use="required" />
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="argument" type="xsd:string" use="required" />
+        <xsd:attribute name="condition" type="xsd:string" use="optional" />
+        <xsd:attribute name="order" type="msi:nonNegativeInt" use="optional" />
+        <xsd:attribute name="remove" type="xsd:boolean" use="optional" default="false" />
+    </xsd:complexType>
+    <!-- msi/mergemodules -->
+    <xsd:element name="mergemodules">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="merge" type="msi:MSIMerge" minOccurs="1" maxOccurs="unbounded">
+                    <!--
+                        <xsd:keyref name="mergeFeatureRefs" refer="msi:featureKey">
+                            <xsd:selector xpath="." />
+                            <xsd:field xpath="@feature" />
+                        </xsd:keyref>
+                    -->
+                </xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msi/registry -->
+    <xsd:element name="registry">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="key" type="msi:MSIRegistryKey" minOccurs="1" maxOccurs="unbounded">
+                    <!--
+                        <xsd:keyref name="registryKeyComponentRefs" refer="msi:componentKey">
+                            <xsd:selector xpath="." />
+                            <xsd:field xpath="@component" />
+                        </xsd:keyref>
+                    -->
+                </xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msi/registry/key -->
+    <xsd:complexType name="MSIRegistryKey">
+        <xsd:sequence>
+            <xsd:element name="value" type="msi:MSIRegistryKeyValue" minOccurs="1" maxOccurs="unbounded" />
+        </xsd:sequence>
+        <xsd:attribute name="path" type="xsd:string" use="required" />
+        <xsd:attribute name="root" type="msi:MSIRegistryKeyRoot" use="required" />
+        <xsd:attribute name="component" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <!-- msi/registry/key/value -->
+    <xsd:complexType name="MSIRegistryKeyValue">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:string">
+                <xsd:attribute name="name" type="xsd:string" use="required" />
+                <xsd:attribute name="value" type="xsd:string" use="optional" />
+                <xsd:attribute name="dword" type="xsd:string" use="optional" />
+                <xsd:attribute name="id" type="xsd:string" use="optional" />
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <!-- msi/customactions -->
+    <xsd:element name="customactions">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="customaction" type="msi:MSICustomAction" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msi/customactions/customaction -->
+    <xsd:complexType name="MSICustomAction">
+        <xsd:attribute name="action" type="xsd:string" use="required" />
+        <xsd:attribute name="type" type="xsd:int" use="required" />
+        <xsd:attribute name="source" type="xsd:string" use="required" />
+        <xsd:attribute name="target" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <!-- msi/sequences -->
+    <xsd:element name="sequences">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="sequence" type="msi:MSISequence" minOccurs="1" maxOccurs="unbounded">
+                    <!--
+                        <xsd:keyref name="sequenceCustomActionRefs" refer="msi:customActionKey">
+                            <xsd:selector xpath="." />
+                            <xsd:field xpath="@action" />
+                        </xsd:keyref>
+                    -->
+                </xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msi/sequences/sequence -->
+    <xsd:complexType name="MSISequence">
+        <xsd:attribute name="type" type="msi:MSISequenceTable" use="required" />
+        <xsd:attribute name="action" type="xsd:string" use="required" />
+        <xsd:attribute name="value" type="xsd:int" use="required" />
+        <xsd:attribute name="condition" type="xsd:string" use="optional" default="" />
+    </xsd:complexType>
+    <!-- msi/mergemodules/merge -->
+    <xsd:complexType name="MSIMerge">
+        <xsd:sequence>
+            <xsd:element name="modules" type="msi:NAntFileSet" minOccurs="1" maxOccurs="1" />
+        </xsd:sequence>
+        <xsd:attribute name="feature" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <!-- msi/actiontext -->
+    <xsd:element name="actiontext">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="action" type="msi:MSIActionTextAction" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msi/actiontext/action -->
+    <xsd:complexType name="MSIActionTextAction">
+        <xsd:sequence>
+            <xsd:element name="description" type="xsd:string" minOccurs="0" maxOccurs="1" />
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="template" type="xsd:string" use="optional" />
+    </xsd:complexType>
+    <!-- msi/appmappings -->
+    <xsd:element name="appmappings">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="appmapping" type="msi:MSIAppMapping" minOccurs="1" maxOccurs="unbounded">
+                    <!--
+                        <xsd:keyref name="appmapDirectoryRefs" refer="msi:directoryKey">
+                            <xsd:selector xpath="." />
+                            <xsd:field xpath="@directory" />
+                        </xsd:keyref>
+                    -->
+                </xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msi/appmappings/appmapping -->
+    <xsd:complexType name="MSIAppMapping">
+        <xsd:attribute name="directory" type="xsd:string" use="required" />
+        <xsd:attribute name="extension" type="xsd:string" use="required" />
+        <xsd:attribute name="exepath" type="xsd:string" use="required" />
+        <xsd:attribute name="verbs" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <!-- msi/urlproperties -->
+    <xsd:element name="urlproperties">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="urlproperty" type="msi:MSIURLProperty" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msi/urlproperties/urlproperty -->
+    <xsd:complexType name="MSIURLProperty">
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="property" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <!-- msi/vdirproperties -->
+    <xsd:element name="vdirproperties">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="vdirproperty" type="msi:MSIVDirProperty" minOccurs="1" maxOccurs="unbounded">
+                    <!--
+					<xsd:keyref name="vdirpropertyRefs" refer="msi:propertyKey">
+						<xsd:selector xpath="." />
+						<xsd:field xpath="@name" />
+					</xsd:keyref>
+					<xsd:keyref name="vdirportpropertyRefs" refer="msi:propertyKey">
+						<xsd:selector xpath="." />
+						<xsd:field xpath="@portproperty" />
+					</xsd:keyref>
+					<xsd:keyref name="vdirURLPropertyRefs" refer="msi:urlpropertyKey">
+						<xsd:selector xpath="." />
+						<xsd:field xpath="@urlproperty" />
+					</xsd:keyref>
+--></xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msi/vdirproperties/vdirproperty -->
+    <xsd:complexType name="MSIVDirProperty">
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="portproperty" type="xsd:string" use="required" />
+        <xsd:attribute name="urlproperty" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <!-- msi/approots -->
+    <xsd:element name="approots">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="approot" type="msi:MSIAppRoot" minOccurs="1" maxOccurs="unbounded">
+                    <!--
+					<xsd:keyref name="approotComponentRefs" refer="msi:componentKey">
+						<xsd:selector xpath="." />
+						<xsd:field xpath="@component" />
+					</xsd:keyref>
+					<xsd:keyref name="approotURLPropertyRefs" refer="msi:urlpropertyKey">
+						<xsd:selector xpath="." />
+						<xsd:field xpath="@urlproperty" />
+					</xsd:keyref>
+--></xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msi/approots/approot -->
+    <xsd:complexType name="MSIAppRoot">
+        <xsd:attribute name="component" type="xsd:string" use="required" />
+        <xsd:attribute name="urlproperty" type="xsd:string" use="required" />
+        <xsd:attribute name="inprocflag" type="msi:procflag" use="required" />
+    </xsd:complexType>
+    <!-- msi/approots/approot/procflag -->
+    <xsd:simpleType name="procflag">
+        <xsd:restriction base="xsd:int">
+            <xsd:minInclusive value="0" />
+            <xsd:maxInclusive value="2" />
+        </xsd:restriction>
+    </xsd:simpleType>
+    <!-- msi/iisproperties -->
+    <xsd:element name="iisproperties">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="iisproperty" type="msi:MSIIISProperty" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msi/iisproperties/iisproperty -->
+    <xsd:complexType name="MSIIISProperty">
+        <xsd:attribute name="directory" type="xsd:string" use="required" />
+        <xsd:attribute name="attr" type="xsd:int" use="required" />
+        <xsd:attribute name="defaultdoc" type="xsd:string" use="optional" default="" />
+    </xsd:complexType>
+    <!-- msi/icons -->
+    <xsd:element name="icons">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="icon" type="msi:MSIIcon" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msi/icons/icon -->
+    <xsd:complexType name="MSIIcon">
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="value" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <!-- msi/shortcuts -->
+    <xsd:element name="shortcuts">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="shortcut" type="msi:MSIShortcut" minOccurs="1" maxOccurs="unbounded">
+                    <!--
+					<xsd:keyref name="shortcutComponentRefs" refer="msi:componentKey">
+						<xsd:selector xpath="." />
+						<xsd:field xpath="@component" />
+					</xsd:keyref>
+					<xsd:keyref name="shortcutIconRefs" refer="msi:iconKey">
+						<xsd:selector xpath="." />
+						<xsd:field xpath="@icon" />
+					</xsd:keyref>
+					<xsd:keyref name="shortcutPropertyRefs" refer="msi:propertyKey">
+						<xsd:selector xpath="." />
+						<xsd:field xpath="@wkdir" />
+					</xsd:keyref>
+--></xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msi/shortcuts/shortcut -->
+    <xsd:complexType name="MSIShortcut">
+        <xsd:sequence>
+            <xsd:element name="description" type="xsd:string" minOccurs="0" maxOccurs="1" />
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="directory" type="xsd:string" use="required" />
+        <xsd:attribute name="filename" type="xsd:string" use="required" />
+        <xsd:attribute name="displayname" type="xsd:string" use="optional" />
+        <xsd:attribute name="component" type="xsd:string" use="required" />
+        <xsd:attribute name="target" type="xsd:string" use="required" />
+        <xsd:attribute name="arguments" type="xsd:string" use="optional" />
+        <xsd:attribute name="hotkey" type="xsd:string" use="optional" />
+        <xsd:attribute name="icon" type="xsd:string" use="optional" />
+        <xsd:attribute name="iconindex" type="msi:nonNegativeInt" use="optional" />
+        <xsd:attribute name="showcmd" type="msi:nonNegativeInt" use="optional" />
+        <xsd:attribute name="wkdir" type="xsd:string" use="optional" />
+    </xsd:complexType>
+    <!-- shared types -->
+    <!-- msi/nonNegativeInt -->
+    <xsd:simpleType name="nonNegativeInt">
+        <xsd:restriction base="xsd:int">
+            <xsd:minInclusive value="0" />
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="MSISequenceTable">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="installexecute" />
+            <xsd:enumeration value="installui" />
+            <xsd:enumeration value="adminexecute" />
+            <xsd:enumeration value="adminui" />
+            <xsd:enumeration value="advtexecute" />
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="MSIRegistryKeyRoot">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="machine" />
+            <xsd:enumeration value="classes" />
+            <xsd:enumeration value="users" />
+            <xsd:enumeration value="user" />
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="MSIComponentGUID">
+        <xsd:restriction base="xsd:string" />
+    </xsd:simpleType>
+    <xsd:simpleType name="MSIFileID">
+        <xsd:restriction base="xsd:string" />
+    </xsd:simpleType>
+    <xsd:element name="fileset" type="msi:NAntFileSet" />
+    <xsd:complexType name="NAntFileSet">
+        <xsd:sequence>
+            <xsd:element name="includes" type="msi:NAntFileSetPattern" minOccurs="0" maxOccurs="unbounded" />
+            <xsd:element name="excludes" type="msi:NAntFileSetPattern" minOccurs="0" maxOccurs="unbounded" />
+        </xsd:sequence>
+        <xsd:attribute name="basedir" type="xsd:string" use="optional" />
+    </xsd:complexType>
+    <xsd:complexType name="NAntFileSetPattern">
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="asIs" type="xsd:boolean" use="optional" />
+    </xsd:complexType>
+    <!-- msm/moduledependencies -->
+    <xsd:element name="moduledependencies">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="dependency" type="msi:MSMModuleDependency" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msm/moduledependencies/dependency -->
+    <xsd:complexType name="MSMModuleDependency">
+        <xsd:attribute name="id" type="xsd:string" use="required" />
+        <xsd:attribute name="language" type="xsd:integer" use="required" />
+        <xsd:attribute name="version" type="xsd:string" use="optional" />
+    </xsd:complexType>
+    <!-- msm/moduleexclusions -->
+    <xsd:element name="moduleexclusions">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="exclusion" type="msi:MSMModuleExclusion" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msm/moduleexclusions/exclusion -->
+    <xsd:complexType name="MSMModuleExclusion">
+        <xsd:attribute name="id" type="xsd:string" use="required" />
+        <xsd:attribute name="language" type="xsd:integer" use="required" />
+        <xsd:attribute name="minversion" type="xsd:string" use="optional" />
+        <xsd:attribute name="maxversion" type="xsd:string" use="optional" />
+    </xsd:complexType>
+    <!-- msm/modulesequences -->
+    <xsd:element name="modulesequences">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="sequence" type="msi:MSMModuleSequence" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msm/modulesequences/sequence -->
+    <xsd:complexType name="MSMModuleSequence">
+        <xsd:attribute name="type" type="msi:MSISequenceTable" use="required" />
+        <xsd:attribute name="action" type="xsd:string" use="required" />
+        <xsd:attribute name="sequence" type="xsd:int" use="optional" />
+        <xsd:attribute name="baseaction" type="xsd:string" use="optional" />
+        <xsd:attribute name="after" type="xsd:boolean" use="optional" default="true" />
+        <xsd:attribute name="condition" type="xsd:string" use="optional" default="" />
+    </xsd:complexType>
+    <!-- msm/moduleignoretables     -->
+    <xsd:element name="moduleignoretables">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="table" type="msi:MSMModuleIgnoreTable" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msm/moduleignoretables/table -->
+    <xsd:complexType name="MSMModuleIgnoreTable">
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <!-- msm/substitutions     -->
+    <xsd:element name="modulesubstitutions">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="substitution" type="msi:MSMModuleSubstitution" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msm/substitutions/substitution -->
+    <xsd:complexType name="MSMModuleSubstitution">
+        <xsd:attribute name="table" type="xsd:string" use="required" />
+        <xsd:attribute name="row" type="xsd:string" use="required" />
+        <xsd:attribute name="column" type="xsd:string" use="required" />
+        <xsd:attribute name="value" type="xsd:string" use="optional" />
+    </xsd:complexType>
+    <!-- msm/configurations     -->
+    <xsd:element name="moduleconfigurations">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="configuration" type="msi:MSMModuleConfiguration" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msm/configurations/configuration -->
+    <xsd:complexType name="MSMModuleConfiguration">
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="format" type="msi:MSMModuleConfigurationFormat" use="required" />
+        <xsd:attribute name="type" type="xsd:string" use="optional" />
+        <xsd:attribute name="contextdata" type="xsd:string" use="optional" />
+        <xsd:attribute name="defaultvalue" type="xsd:string" use="optional" />
+        <xsd:attribute name="attr" type="xsd:integer" use="optional" default="0" />
+        <xsd:attribute name="displayname" type="xsd:string" use="optional" />
+        <xsd:attribute name="description" type="xsd:string" use="optional" />
+        <xsd:attribute name="helplocation" type="xsd:string" use="optional" />
+        <xsd:attribute name="helpkeyword" type="xsd:string" use="optional" />
+    </xsd:complexType>
+    <xsd:simpleType name="MSMModuleConfigurationFormat">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="text" />
+            <xsd:enumeration value="key" />
+            <xsd:enumeration value="integer" />
+            <xsd:enumeration value="bitfield" />
+        </xsd:restriction>
+    </xsd:simpleType>
+</xsd:schema>
