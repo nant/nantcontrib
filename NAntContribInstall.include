@@ -24,8 +24,6 @@
         <property name="nant.bin.keyfile" value="NAnt.exe.config" />
 
         <property name="nant.doc.keyfile" value="index.html" />
-        <property name="nant.doc.design.dir" value="${nant.doc.dir}/design/" />
-        <property name="nant.doc.design.keyfile" value="FilterChain.JPG" />
         <property name="nant.doc.help.dir" value="${nant.doc.dir}/help/" />
         <property name="nant.doc.help.keyfile" value="index.html" />
         <property name="nant.doc.sdk.dir" value="${nant.doc.dir}/sdk/" />
@@ -307,7 +305,6 @@
                 <directory name="D__NANT" foldername="NAnt" root="TARGETDIR">
                     <directory name="D__NANT_DOC" foldername="doc" >
                         <directory name="D__NANT_DOC_NANT" foldername="NAnt" >
-                            <directory name="D__NANT_DOC_NANT_DESIGN" foldername="design" />
                             <directory name="D__NANT_DOC_NANT_HELP" foldername="help" />
                             <directory name="D__NANT_DOC_NANT_SDK" foldername="sdk" />
                         </directory>
@@ -323,12 +320,6 @@
                     <key file="${nant.doc.keyfile}" />
                     <fileset basedir="${nant.doc.dir}">
                         <include name="*.*" />
-                    </fileset>
-                </component>
-                <component name="C__NAnt_Doc_Design" id="{AA7A1377-5728-4346-9A61-13A645489EE4}" attr="2" directory="D__NANT_DOC_NANT_DESIGN" keepsubdirs="true">
-                    <key file="${nant.doc.design.keyfile}" />
-                    <fileset basedir="${nant.doc.design.dir}">
-                        <include name="**/*.*" />
                     </fileset>
                 </component>
                 <component name="C__NAnt_Doc_Help" id="{CE6712C4-1876-481e-9A45-4B88D081F4B1}" attr="2" directory="D__NANT_DOC_NANT_HELP" keepsubdirs="true">
