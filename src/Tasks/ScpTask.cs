@@ -43,7 +43,7 @@ namespace NAnt.Contrib.Tasks {
     public class ScpTask : ExternalProgramBase {
         protected string _program = "scp";
         protected string _commandline = null;
-        protected string _baseDirectory = null;
+        protected string _baseDirectory = ".";
         protected int _timeout = Int32.MaxValue;
         protected string _server = null;
         protected string _file = null;
@@ -84,7 +84,7 @@ namespace NAnt.Contrib.Tasks {
         /// <para>Defaults to "~".</para>
         /// </summary>
         [TaskAttribute("path")]
-        public virtual string RemotePath { set { _server = value;} }
+        public virtual string RemotePath { set { _path= value;} }
 
         /// <summary> The username to connect as.
         /// <para>Defaults to USERNAME environment var.</para>
@@ -98,53 +98,14 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("program-path-sep")]
         public virtual string ProgramPathSep{ set { _programPathSep = value;} }
 
-        protected override void PrepareProcess(ref System.Diagnostics.Process process) {
-            
-            //process.StartInfo.RedirectStandardInput = true;
-            process.StartInfo.RedirectStandardError = false;
-            base.PrepareProcess(ref process);
-        }
         protected override void ExecuteTask() {
-            Args.Add(string.Format("{3} {0}@{1}:{2}/{3}", _user, _server, _path, _file));
-            Log.WriteLineIf(Project.Verbose, LogPrefix + "{0} {1}", ProgramFileName, GetCommandLine());
+	    //scp.exe (cygwin version) requires that the source file *not* be fully qualified.
+	    FileInfo fileInfo = new FileInfo(Path.Combine(BaseDirectory,_file));
+	    BaseDirectory = fileInfo.DirectoryName;
+            Args.Add(fileInfo.Name);
+            Args.Add(string.Format("{0}@{1}:{2}/{3}", _user, _server, _path, fileInfo.Name));
+	    base.ExecuteTask();
             
-            Process process = StartProcess();
-            //get inputs and outputs
-            //StreamWriter stdIn = process.StandardInput;
-            //StreamReader stdInAsOut = new StreamReader(process.StandardInput.BaseStream);
-            //StreamReader stdErr = process.StandardError;
-            StreamReader stdOut = process.StandardOutput;
-
-            
-            //stdIn.WriteLine("yes");
-
-            // display standard output
-            string output = stdOut.ReadToEnd();
-            if (output.Length > 0) {
-                int indentLevel = Log.IndentLevel;
-                Log.IndentLevel = 0;
-                Log.WriteLine(output);
-                Log.IndentLevel = indentLevel;
-            }
-            
-            /*
-            // display standard Error
-            output = stdErr.ReadToEnd();
-            if (output.Length > 0) {
-                int indentLevel = Log.IndentLevel;
-                Log.IndentLevel = 0;
-                Log.WriteLine(output);
-                Log.IndentLevel = indentLevel;
-            }
-            */
-
-            // wait for program to exit
-            process.WaitForExit(TimeOut);
-
-            // Keep the FailOnError check to prevent programs that return non-zero even if they are not returning errors.
-            if (FailOnError && process!= null && process.ExitCode != 0) {
-                throw new BuildException("External program returned errors, see build log for details.", Location);
-            }
         }
     }
 }
