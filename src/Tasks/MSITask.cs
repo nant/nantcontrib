@@ -408,7 +408,7 @@ namespace NAnt.Contrib.Tasks
                     Record bannerRecord = bannerView.Fetch();
                     if (Verbose)
                     {
-                        Log.WriteLine(LogPrefix + "Storing Banner: " + bannerFile + ".");
+                        Log.WriteLine(LogPrefix + "Storing Banner:\n\t" + bannerFile);
                     }
 
                     // Write the Banner file to the MSI database
@@ -445,7 +445,7 @@ namespace NAnt.Contrib.Tasks
                     Record bgRecord = bgView.Fetch();
                     if (Verbose)
                     {
-                        Log.WriteLine(LogPrefix + "Storing Background: " + bgFile + ".");
+                        Log.WriteLine(LogPrefix + "Storing Background:\n\t" + bgFile);
                     }
 
                     // Write the Background file to the MSI database
@@ -482,7 +482,7 @@ namespace NAnt.Contrib.Tasks
                     Record licRecord = licView.Fetch();
                     if (Verbose)
                     {
-                        Log.WriteLine(LogPrefix + "Storing License: " + licFile + ".");
+                        Log.WriteLine(LogPrefix + "Storing License:\n\t" + licFile);
                     }
                     StreamReader licReader = null;
                     try
@@ -531,6 +531,11 @@ namespace NAnt.Contrib.Tasks
             // Select the "Property" Table
             View propView = Database.OpenView("SELECT * FROM `Property`");
 
+            if (Verbose)
+            {
+                Log.WriteLine(LogPrefix + "Adding Properties:");
+            }
+
             // Add properties from Task definition
             foreach (property property in msi.properties)
             {
@@ -565,7 +570,7 @@ namespace NAnt.Contrib.Tasks
 
                 if (Verbose)
                 {
-                    Log.WriteLine(LogPrefix + "Setting Property: " + name);
+                    Log.WriteLine("\t" + name);
                 }
 
                 propView.Close();
@@ -605,6 +610,11 @@ namespace NAnt.Contrib.Tasks
             // Add components from Task definition
             int componentIndex = 0;
 
+            if (Verbose)
+            {
+                Log.WriteLine(LogPrefix + "Add Files:");
+            }
+
             if (msi.components != null)
             {
                 foreach (MSIComponent component in msi.components)
@@ -618,21 +628,16 @@ namespace NAnt.Contrib.Tasks
 
                     recComp.set_StringData(1, component.name);
                     recComp.set_StringData(2, component.id);
-                    recComp.set_StringData(3, component.directory.name);            		
+                    recComp.set_StringData(3, component.directory);
                     recComp.set_IntegerData(4, component.attr);
 
-                    if (Verbose)
-                    {
-                        Log.WriteLine(LogPrefix + "Component: " + component.name);
-                    }
-
-                    featureComponents.Add(component.name, component.feature.name);
+                    featureComponents.Add(component.name, component.feature);
 
                     componentIndex++;
 
                     bool success = AddFiles(Database, DirectoryView, component, 
                         fileView, InstallerType, InstallerObject, 
-                        component.directory.name, component.name, ref componentIndex, 
+                        component.directory, component.name, ref componentIndex, 
                         ref LastSequence, MsiAssemblyView, MsiAssemblyNameView, 
                         compView, featCompView, ClassView, ProgIdView, selfRegView);
 
@@ -670,6 +675,7 @@ namespace NAnt.Contrib.Tasks
 
                 // Add featureComponents from Task definition
                 IEnumerator keyEnum = featureComponents.Keys.GetEnumerator();
+
                 while (keyEnum.MoveNext())
                 {
                     string component = Project.ExpandProperties((string)keyEnum.Current);
@@ -693,13 +699,6 @@ namespace NAnt.Contrib.Tasks
                     recFeatComps.set_StringData(1, feature);
                     recFeatComps.set_StringData(2, component);
                     featCompView.Modify(MsiViewModify.msiViewModifyInsert, recFeatComps);
-
-                    if (Verbose)
-                    {
-                        Log.WriteLine(LogPrefix + 
-                            "Mapping \"" + feature + 
-                            "\" to \"" + component + "\".");
-                    }
                 }
             }
 
@@ -748,6 +747,11 @@ namespace NAnt.Contrib.Tasks
             msi.directories = directories;
 
             int depth = 1;
+
+            if (Verbose)
+            {
+                Log.WriteLine(LogPrefix + "Adding Directories:");
+            }
 
             // Add directories from Task definition
             foreach (MSIRootDirectory directory in msi.directories)
@@ -819,8 +823,8 @@ namespace NAnt.Contrib.Tasks
 
             if (Verbose)
             {
-                Log.WriteLine(LogPrefix + "Directory: " + 
-                    Path.Combine(Project.BaseDirectory, relativePath.ToString()));
+                Log.WriteLine("\t" + 
+                    Path.Combine(msi.sourcedir, relativePath.ToString()));
             }
         	
             recDir.set_StringData(3, path);
@@ -945,7 +949,7 @@ namespace NAnt.Contrib.Tasks
 
             if (msi.environment != null)
             {
-                foreach (variable variable in msi.environment)
+                foreach (MSIVariable variable in msi.environment)
                 {
                     // Insert the Varible
                     Record recVar = (Record)InstallerType.InvokeMember(
@@ -962,7 +966,7 @@ namespace NAnt.Contrib.Tasks
                         recVar.set_StringData(3, "[~];" + variable.append);
                     }
 
-                    recVar.set_StringData(4, variable.component.name);
+                    recVar.set_StringData(4, variable.component);
 
                     envView.Modify(MsiViewModify.msiViewModifyInsert, recVar);
                 }
@@ -987,6 +991,11 @@ namespace NAnt.Contrib.Tasks
             // Add features from Task definition
             int order = 1;
             int depth = 1;
+
+            if (Verbose)
+            {
+                Log.WriteLine(LogPrefix + "Adding Features:");
+            }
         	
             foreach (MSIFeature feature in msi.features)
             {
@@ -1019,10 +1028,10 @@ namespace NAnt.Contrib.Tasks
             Type InstallerType, Object InstallerObject, 
             MSIFeature Feature, int Depth, int Order)
         {
-            string directory = null;	        
+            string directory = null;   
             if (Feature.directory != null)
             {
-                directory = Feature.directory.name;
+                directory = Feature.directory;
             }
             else
             {
@@ -1080,7 +1089,7 @@ namespace NAnt.Contrib.Tasks
 
             if (Verbose)
             {
-                Log.WriteLine(LogPrefix + "Feature: " + Feature.name);
+                Log.WriteLine("\t" + Feature.name);
             }
 
             if (Feature.feature != null)
@@ -1224,7 +1233,7 @@ namespace NAnt.Contrib.Tasks
 
 		        if (Verbose)
 		        {
-			        Log.WriteLine(LogPrefix + "File: " + 
+			        Log.WriteLine("\t" + 
 				        Path.Combine(Path.Combine(msi.sourcedir, 
 				        relativePath.ToString()), fileName));
 		        }
@@ -1485,6 +1494,11 @@ namespace NAnt.Contrib.Tasks
 
             if (msi.registry != null)
             {
+                if (Verbose)
+                {
+                    Log.WriteLine(LogPrefix + "Adding Registry Values:");
+                }
+
                 foreach (MSIRegistryKey key in msi.registry)
                 {
                     int rootKey = -1;
@@ -1529,8 +1543,8 @@ namespace NAnt.Contrib.Tasks
 
                         if (Verbose)
                         {
-                            Log.WriteLine(LogPrefix + "Storing Value: " + 
-                                key.path + @"\" + value.name);
+                            string keypath = GetDisplayablePath(key.path);
+                            Log.WriteLine("\t" + keypath + @"#" + value.name);
                         }
 
                         if (value.value != null && value.value != "")
@@ -1551,7 +1565,7 @@ namespace NAnt.Contrib.Tasks
                             recVal.set_StringData(5, "#x" + val4);
                         }
 
-                        recVal.set_StringData(6, key.component.name);
+                        recVal.set_StringData(6, key.component);
                         RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recVal);
                     }
                 }
@@ -1597,7 +1611,12 @@ namespace NAnt.Contrib.Tasks
             // Add properties from Task definition
             if (msi.search != null)
             {
-                foreach (MSISearchKey key in msi.search)
+                if (Verbose)
+                {
+                    Log.WriteLine(LogPrefix + "Adding Locators:");
+                }
+
+                foreach (searchKey key in msi.search)
                 {
                     switch (key.type.ToString())
                     {
@@ -1633,7 +1652,7 @@ namespace NAnt.Contrib.Tasks
 
                             if (key.value != null)
                             {
-                                foreach (MSISearchKeyValue value in key.value)
+                                foreach (searchKeyValue value in key.value)
                                 {
                                     string signature = "SIG_" + value.setproperty;
 
@@ -1654,7 +1673,8 @@ namespace NAnt.Contrib.Tasks
 
                                     if (Verbose)
                                     {
-                                        Log.WriteLine(LogPrefix + "Setting Registry Location: " + signature);
+                                        string path = GetDisplayablePath(key.path);
+                                        Log.WriteLine("\t" + path + @"#" + value.name);
                                     }
                                 }
                             }
@@ -1685,7 +1705,7 @@ namespace NAnt.Contrib.Tasks
                 // Add properties from Task definition
                 if (msi.search != null)
                 {
-                    foreach (MSISearchKey key in msi.search)
+                    foreach (searchKey key in msi.search)
                     {
                         switch (key.type.ToString())
                         {
@@ -1696,7 +1716,7 @@ namespace NAnt.Contrib.Tasks
                                 
                                 if (key.value != null)
                                 {
-                                    foreach (MSISearchKeyValue value in key.value)
+                                    foreach (searchKeyValue value in key.value)
                                     {
                                         string signature = "SIG_" + value.setproperty;
 
@@ -1711,11 +1731,6 @@ namespace NAnt.Contrib.Tasks
                                         recAppSearch.set_StringData(2, signature);
 
                                         appSearchView.Modify(MsiViewModify.msiViewModifyInsert, recAppSearch);
-
-                                        if (Verbose)
-                                        {
-                                            Log.WriteLine(LogPrefix + "Setting App Search: " + value.setproperty);
-                                        }
                                     }
                                 }
                                 appSearchView.Close();
@@ -1846,7 +1861,6 @@ namespace NAnt.Contrib.Tasks
 		            View cabView = Database.OpenView("SELECT * FROM `_Streams`");
 		            if (Verbose)
 		            {
-			            Log.WriteLine();
 			            Log.WriteLine(LogPrefix + "Storing Cabinet in MSI Database...");
 		            }
 
@@ -1992,6 +2006,7 @@ namespace NAnt.Contrib.Tasks
 
                             msi.directories = rootDirs;
                         }
+
                         return;
                     }
                 }
@@ -2002,8 +2017,8 @@ namespace NAnt.Contrib.Tasks
 	            }
 
 	            Path.Insert(0, Default);
-	            if (Parent != null)
-	            {
+                if (Parent != null)
+                {
                     MSIDirectory PathInfo = FindDirectory(Parent);
 
                     if (PathInfo == null)
@@ -2036,17 +2051,27 @@ namespace NAnt.Contrib.Tasks
 
                                 DirectoryView.Modify(MsiViewModify.msiViewModifyInsert, recDir);
 
-                                PathInfo = FindDirectory(Parent);
+                                PathInfo = directory;
 
                                 break;
                             }
                         }
+                    }   
+
+                    string newParent = null;
+                    if (PathInfo is MSIRootDirectory)
+                    {
+                        newParent = ((MSIRootDirectory)PathInfo).root;
+                    }
+                    else
+                    {
+                        newParent = FindParent(Parent);
                     }
 
-		            GetRelativePath(Database, InstallerType, InstallerObject, 
-                        Parent, PathInfo is MSIRootDirectory ? ((MSIRootDirectory)PathInfo).root : null, 
+                    GetRelativePath(Database, InstallerType, InstallerObject, 
+                        Parent, newParent, 
                         PathInfo.foldername, Path, DirectoryView);
-	            }
+                }
             }
 
             /// <summary>
@@ -2182,77 +2207,68 @@ namespace NAnt.Contrib.Tasks
 									            UCOMITypeInfo2 typeInfo2 = (UCOMITypeInfo2)typeInfo;
 									            if (typeInfo2 != null)
 									            {
-										            //try
-										            //{
-											            object custData = new object();
-											            Guid g = new Guid("0F21F359-AB84-41E8-9A78-36D110E6D2F9");
-											            typeInfo2.GetCustData(ref g, out custData);
+											        object custData = new object();
+											        Guid g = new Guid("0F21F359-AB84-41E8-9A78-36D110E6D2F9");
+											        typeInfo2.GetCustData(ref g, out custData);
 
-											            if (custData != null)
-											            {
-												            string className = (string)custData;
+											        if (custData != null)
+											        {
+												        string className = (string)custData;
 
-												            if (Verbose)
-												            {
-													            Log.WriteLine(LogPrefix + "Storing Type " + className);
-												            }
+												        // Insert the Class
+												        Record recRegTlbRec = (Record)InstallerType.InvokeMember(
+													        "CreateRecord", 
+													        BindingFlags.InvokeMethod, 
+													        null, InstallerObject, 
+													        new object[] { 6 });
 
-												            // Insert the Class
-												            Record recRegTlbRec = (Record)InstallerType.InvokeMember(
-													            "CreateRecord", 
-													            BindingFlags.InvokeMethod, 
-													            null, InstallerObject, 
-													            new object[] { 6 });
+												        recRegTlbRec.set_StringData(1, 
+													        "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
+												        recRegTlbRec.set_IntegerData(2, 0);
+												        recRegTlbRec.set_StringData(3,
+													        @"CLSID\" + clsid + 
+													        @"\InprocServer32");
+												        recRegTlbRec.set_StringData(4, "Class");
+												        recRegTlbRec.set_StringData(5, className);
+												        recRegTlbRec.set_StringData(6, tlbRecord.AssemblyComponent);
+												        RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
 
-												            recRegTlbRec.set_StringData(1, 
-													            "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
-												            recRegTlbRec.set_IntegerData(2, 0);
-												            recRegTlbRec.set_StringData(3,
-													            @"CLSID\" + clsid + 
-													            @"\InprocServer32");
-												            recRegTlbRec.set_StringData(4, "Class");
-												            recRegTlbRec.set_StringData(5, className);
-												            recRegTlbRec.set_StringData(6, tlbRecord.AssemblyComponent);
-												            RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+												        recRegTlbRec.set_StringData(1, 
+													        "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
+												        recRegTlbRec.set_StringData(4, "ThreadingModel");
+												        recRegTlbRec.set_StringData(5, "Both");
+												        RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
 
-												            recRegTlbRec.set_StringData(1, 
-													            "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
-												            recRegTlbRec.set_StringData(4, "ThreadingModel");
-												            recRegTlbRec.set_StringData(5, "Both");
-												            RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+												        recRegTlbRec.set_StringData(1, 
+													        "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
+												        recRegTlbRec.set_StringData(4, "RuntimeVersion");
+												        recRegTlbRec.set_StringData(5, System.Environment.Version.ToString(3));
+												        RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
 
-												            recRegTlbRec.set_StringData(1, 
-													            "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
-												            recRegTlbRec.set_StringData(4, "RuntimeVersion");
-												            recRegTlbRec.set_StringData(5, System.Environment.Version.ToString(3));
-												            RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+												        recRegTlbRec.set_StringData(1, 
+													        "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
+												        recRegTlbRec.set_StringData(4, "Assembly");
+												        recRegTlbRec.set_StringData(5, tlbRecord.AssemblyName.FullName);
+												        RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
 
-												            recRegTlbRec.set_StringData(1, 
-													            "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
-												            recRegTlbRec.set_StringData(4, "Assembly");
-												            recRegTlbRec.set_StringData(5, tlbRecord.AssemblyName.FullName);
-												            RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+												        recRegTlbRec.set_StringData(1, 
+													        "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
+												        recRegTlbRec.set_StringData(3,
+													        @"CLSID\" + clsid + 
+													        @"\Implemented Categories");
+												        recRegTlbRec.set_StringData(4, "+");
+												        recRegTlbRec.set_StringData(5, null);
+												        RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
 
-												            recRegTlbRec.set_StringData(1, 
-													            "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
-												            recRegTlbRec.set_StringData(3,
-													            @"CLSID\" + clsid + 
-													            @"\Implemented Categories");
-												            recRegTlbRec.set_StringData(4, "+");
-												            recRegTlbRec.set_StringData(5, null);
-												            RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
-
-												            recRegTlbRec.set_StringData(1, 
-													            "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
-												            recRegTlbRec.set_StringData(3,
-													            @"CLSID\" + clsid + 
-													            @"\Implemented Categories\{62C8FE65-4EBB-45e7-B440-6E39B2CDBF29}");
-												            recRegTlbRec.set_StringData(4, "+");
-												            recRegTlbRec.set_StringData(5, null);
-												            RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
-											            }
-										            //}
-										            //catch (Exception) {}
+												        recRegTlbRec.set_StringData(1, 
+													        "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
+												        recRegTlbRec.set_StringData(3,
+													        @"CLSID\" + clsid + 
+													        @"\Implemented Categories\{62C8FE65-4EBB-45e7-B440-6E39B2CDBF29}");
+												        recRegTlbRec.set_StringData(4, "+");
+												        recRegTlbRec.set_StringData(5, null);
+												        RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+											        }
 									            }
 								            }
 							            }
@@ -2272,8 +2288,6 @@ namespace NAnt.Contrib.Tasks
 									            UCOMITypeInfo2 typeInfo2 = (UCOMITypeInfo2)typeInfo;
 									            if (typeInfo2 != null)
 									            {
-										            //try
-										            //{
 										            object custData = new object();
 										            Guid g = new Guid("0F21F359-AB84-41E8-9A78-36D110E6D2F9");
 										            typeInfo2.GetCustData(ref g, out custData);
@@ -2281,11 +2295,6 @@ namespace NAnt.Contrib.Tasks
 										            if (custData != null)
 										            {
 											            string className = (string)custData;
-
-											            if (Verbose)
-											            {
-												            Log.WriteLine(LogPrefix + "Storing Interface " + className);
-											            }
 
 											            // Insert the Interface
 											            Record recRegTlbRec = (Record)InstallerType.InvokeMember(
@@ -2336,8 +2345,6 @@ namespace NAnt.Contrib.Tasks
 											            recRegTlbRec.set_StringData(5, "{00020424-0000-0000-C000-000000000046}");
 											            RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
 										            }
-										            //}
-										            //catch (Exception) {}
 									            }
 								            }
 							            }
@@ -2367,7 +2374,12 @@ namespace NAnt.Contrib.Tasks
 
                 if (msi.mergemodules != null)
                 {
-                    foreach (merge merge in msi.mergemodules)
+                    if (Verbose)
+                    {
+                        Log.WriteLine(LogPrefix + "Storing Merge Modules:");
+                    }
+
+                    foreach (MSIMerge merge in msi.mergemodules)
                     {
                         NAntFileSet modules = merge.modules;
 
@@ -2380,7 +2392,10 @@ namespace NAnt.Contrib.Tasks
 
                         foreach (string mergeModule in mergeSet.FileNames)
                         {
-                            Log.WriteLine(LogPrefix + "Merging {0}", Path.GetFileName(mergeModule) + ".");
+                            if (Verbose)
+                            {
+                                Log.WriteLine("\t" + Path.GetFileName(mergeModule));
+                            }
                             
                             mergeClass.OpenModule(mergeModule, 1033);
 
@@ -2682,145 +2697,154 @@ namespace NAnt.Contrib.Tasks
 
                 return null;
             }
+
+            private string GetDisplayablePath(string path)
+            {
+                if (path.Length > 40)
+                {
+                    return "..." + path.Substring(path.Length-37, 37);
+                }
+                return path;
+            }
+        }
+
+    /// <summary>
+    /// Maintains a forward reference to a .tlb file 
+    /// in the same directory as an assembly .dll 
+    /// that has been registered for COM interop.
+    /// </summary>
+    internal class TypeLibRecord
+    {
+        private AssemblyName assemblyName;
+        private string libId, typeLibFileName, 
+	        featureName, assemblyComponent;
+
+        /// <summary>
+        /// Creates a new <see cref="TypeLibRecord"/>.
+        /// </summary>
+        /// <param name="LibId">The typelibrary id.</param>
+        /// <param name="TypeLibFileName">The typelibrary filename.</param>
+        /// <param name="AssemblyName">The name of the assembly.</param>
+        /// <param name="FeatureName">The feature containing the typelibrary's file.</param>
+        /// <param name="AssemblyComponent">The name of the Assembly's component.</param>
+        public TypeLibRecord(
+	        string LibId, string TypeLibFileName, 
+	        AssemblyName AssemblyName, string FeatureName, 
+	        string AssemblyComponent)
+        {
+	        libId = LibId;
+	        typeLibFileName = TypeLibFileName;
+	        assemblyName = AssemblyName;
+	        featureName = FeatureName;
+	        assemblyComponent = AssemblyComponent;
         }
 
         /// <summary>
-        /// Maintains a forward reference to a .tlb file 
-        /// in the same directory as an assembly .dll 
-        /// that has been registered for COM interop.
+        /// Retrieves the name of the Assembly's component.
         /// </summary>
-        internal class TypeLibRecord
+        /// <value>The Assembly's component Name.</value>
+        /// <remarks>None.</remarks>
+        public string AssemblyComponent
         {
-            private AssemblyName assemblyName;
-            private string libId, typeLibFileName, 
-	            featureName, assemblyComponent;
-
-            /// <summary>
-            /// Creates a new <see cref="TypeLibRecord"/>.
-            /// </summary>
-            /// <param name="LibId">The typelibrary id.</param>
-            /// <param name="TypeLibFileName">The typelibrary filename.</param>
-            /// <param name="AssemblyName">The name of the assembly.</param>
-            /// <param name="FeatureName">The feature containing the typelibrary's file.</param>
-            /// <param name="AssemblyComponent">The name of the Assembly's component.</param>
-            public TypeLibRecord(
-	            string LibId, string TypeLibFileName, 
-	            AssemblyName AssemblyName, string FeatureName, 
-	            string AssemblyComponent)
-            {
-	            libId = LibId;
-	            typeLibFileName = TypeLibFileName;
-	            assemblyName = AssemblyName;
-	            featureName = FeatureName;
-	            assemblyComponent = AssemblyComponent;
-            }
-
-            /// <summary>
-            /// Retrieves the name of the Assembly's component.
-            /// </summary>
-            /// <value>The Assembly's component Name.</value>
-            /// <remarks>None.</remarks>
-            public string AssemblyComponent
-            {
-	            get { return assemblyComponent; }
-            }
-
-            /// <summary>
-            /// Retrieves the typelibrary filename.
-            /// </summary>
-            /// <value>The typelibrary filename.</value>
-            /// <remarks>None.</remarks>
-            public string TypeLibFileName
-            {
-	            get { return typeLibFileName; }
-            }
-
-            /// <summary>
-            /// Retrieves the typelibrary id.
-            /// </summary>
-            /// <value>The typelibrary id.</value>
-            /// <remarks>None.</remarks>
-            public string LibId
-            {
-	            get { return libId; }
-            }
-
-            /// <summary>
-            /// Retrieves the name of the assembly.
-            /// </summary>
-            /// <value>The name of the assembly.</value>
-            /// <remarks>None.</remarks>
-            public AssemblyName AssemblyName
-            {
-	            get { return assemblyName; }
-            }
-
-            /// <summary>
-            /// Retrieves the feature containing the typelibrary's file.
-            /// </summary>
-            /// <value>The feature containing the typelibrary's file.</value>
-            /// <remarks>None.</remarks>
-            public string FeatureName
-            {
-	            get { return featureName; }
-            }
+	        get { return assemblyComponent; }
         }
 
-        [StructLayout(LayoutKind.Sequential)]
-        public struct CUSTDATAITEM
+        /// <summary>
+        /// Retrieves the typelibrary filename.
+        /// </summary>
+        /// <value>The typelibrary filename.</value>
+        /// <remarks>None.</remarks>
+        public string TypeLibFileName
         {
-            public Guid guid;
-            public object varValue;
+	        get { return typeLibFileName; }
         }
 
-        [StructLayout(LayoutKind.Sequential)]
-        public struct CUSTDATA
+        /// <summary>
+        /// Retrieves the typelibrary id.
+        /// </summary>
+        /// <value>The typelibrary id.</value>
+        /// <remarks>None.</remarks>
+        public string LibId
         {
-            public int cCustData;
-            public CUSTDATAITEM[] prgCustData;
+	        get { return libId; }
         }
 
-        [ComImport]
-        [Guid("00020412-0000-0000-C000-000000000046")]
-        [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-        public interface UCOMITypeInfo2
+        /// <summary>
+        /// Retrieves the name of the assembly.
+        /// </summary>
+        /// <value>The name of the assembly.</value>
+        /// <remarks>None.</remarks>
+        public AssemblyName AssemblyName
         {
-            #region Implementation of UCOMITypeInfo
-            void GetContainingTypeLib(out System.Runtime.InteropServices.UCOMITypeLib ppTLB, out int pIndex);
-            void GetIDsOfNames(string[] rgszNames, int cNames, int[] pMemId);
-            void GetRefTypeInfo(int hRef, out System.Runtime.InteropServices.UCOMITypeInfo ppTI);
-            void GetMops(int memid, out string pBstrMops);
-            void ReleaseVarDesc(System.IntPtr pVarDesc);
-            void ReleaseTypeAttr(System.IntPtr pTypeAttr);
-            void GetDllEntry(int memid, System.Runtime.InteropServices.INVOKEKIND invKind, out string pBstrDllName, out string pBstrName, out short pwOrdinal);
-            void GetRefTypeOfImplType(int index, out int href);
-            void GetTypeComp(out System.Runtime.InteropServices.UCOMITypeComp ppTComp);
-            void GetTypeAttr(out System.IntPtr ppTypeAttr);
-            void GetDocumentation(int index, out string strName, out string strDocString, out int dwHelpContext, out string strHelpFile);
-            void AddressOfMember(int memid, System.Runtime.InteropServices.INVOKEKIND invKind, out System.IntPtr ppv);
-            void GetNames(int memid, string[] rgBstrNames, int cMaxNames, out int pcNames);
-            void CreateInstance(object pUnkOuter, ref System.Guid riid, out object ppvObj);
-            void Invoke(object pvInstance, int memid, short wFlags, ref System.Runtime.InteropServices.DISPPARAMS pDispParams, out object pVarResult, out System.Runtime.InteropServices.EXCEPINFO pExcepInfo, out int puArgErr);
-            void GetVarDesc(int index, out System.IntPtr ppVarDesc);
-            void ReleaseFuncDesc(System.IntPtr pFuncDesc);
-            void GetFuncDesc(int index, out System.IntPtr ppFuncDesc);
-            void GetImplTypeFlags(int index, out int pImplTypeFlags);
-            #endregion
-
-            void GetTypeKind([Out] out TYPEKIND pTypeKind);
-            void GetTypeFlags([Out] out int pTypeFlags);
-            void GetFuncIndexOfMemId(int memid, INVOKEKIND invKind, [Out] out int pFuncIndex);
-            void GetVarIndexOfMemId(int memid, [Out] out int pVarIndex);
-            void GetCustData([In] ref Guid guid, [Out] out object pCustData);
-            void GetFuncCustData(int index, [In] ref Guid guid, [Out] out object pVarVal);
-            void GetParamCustData(int indexFunc, int indexParam, [In] ref Guid guid, [Out] out object pVarVal);
-            void GetVarCustData(int index, [In] ref Guid guid, [Out] out object pVarVal);
-            void GetImplTypeCustData(int index, [In] ref Guid guid, [Out] out object pVarVal);
-            void GetDocumentation2(int memid, int lcid, [Out] out string pbstrHelpString, [Out] out int pdwHelpStringContext, [Out] out string pbstrHelpStringDll);
-            void GetAllCustData([In,Out] ref IntPtr pCustData);
-            void GetAllFuncCustData(int index, [Out] out CUSTDATA pCustData);
-            void GetAllParamCustData(int indexFunc, int indexParam, [Out] out CUSTDATA pCustData);
-            void GetAllVarCustData(int index, [Out] out CUSTDATA pCustData);
-            void GetAllImplTypeCustData(int index, [Out] out CUSTDATA pCustData);
+	        get { return assemblyName; }
         }
+
+        /// <summary>
+        /// Retrieves the feature containing the typelibrary's file.
+        /// </summary>
+        /// <value>The feature containing the typelibrary's file.</value>
+        /// <remarks>None.</remarks>
+        public string FeatureName
+        {
+	        get { return featureName; }
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CUSTDATAITEM
+    {
+        public Guid guid;
+        public object varValue;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CUSTDATA
+    {
+        public int cCustData;
+        public CUSTDATAITEM[] prgCustData;
+    }
+
+    [ComImport]
+    [Guid("00020412-0000-0000-C000-000000000046")]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    public interface UCOMITypeInfo2
+    {
+        #region Implementation of UCOMITypeInfo
+        void GetContainingTypeLib(out System.Runtime.InteropServices.UCOMITypeLib ppTLB, out int pIndex);
+        void GetIDsOfNames(string[] rgszNames, int cNames, int[] pMemId);
+        void GetRefTypeInfo(int hRef, out System.Runtime.InteropServices.UCOMITypeInfo ppTI);
+        void GetMops(int memid, out string pBstrMops);
+        void ReleaseVarDesc(System.IntPtr pVarDesc);
+        void ReleaseTypeAttr(System.IntPtr pTypeAttr);
+        void GetDllEntry(int memid, System.Runtime.InteropServices.INVOKEKIND invKind, out string pBstrDllName, out string pBstrName, out short pwOrdinal);
+        void GetRefTypeOfImplType(int index, out int href);
+        void GetTypeComp(out System.Runtime.InteropServices.UCOMITypeComp ppTComp);
+        void GetTypeAttr(out System.IntPtr ppTypeAttr);
+        void GetDocumentation(int index, out string strName, out string strDocString, out int dwHelpContext, out string strHelpFile);
+        void AddressOfMember(int memid, System.Runtime.InteropServices.INVOKEKIND invKind, out System.IntPtr ppv);
+        void GetNames(int memid, string[] rgBstrNames, int cMaxNames, out int pcNames);
+        void CreateInstance(object pUnkOuter, ref System.Guid riid, out object ppvObj);
+        void Invoke(object pvInstance, int memid, short wFlags, ref System.Runtime.InteropServices.DISPPARAMS pDispParams, out object pVarResult, out System.Runtime.InteropServices.EXCEPINFO pExcepInfo, out int puArgErr);
+        void GetVarDesc(int index, out System.IntPtr ppVarDesc);
+        void ReleaseFuncDesc(System.IntPtr pFuncDesc);
+        void GetFuncDesc(int index, out System.IntPtr ppFuncDesc);
+        void GetImplTypeFlags(int index, out int pImplTypeFlags);
+        #endregion
+
+        void GetTypeKind([Out] out TYPEKIND pTypeKind);
+        void GetTypeFlags([Out] out int pTypeFlags);
+        void GetFuncIndexOfMemId(int memid, INVOKEKIND invKind, [Out] out int pFuncIndex);
+        void GetVarIndexOfMemId(int memid, [Out] out int pVarIndex);
+        void GetCustData([In] ref Guid guid, [Out] out object pCustData);
+        void GetFuncCustData(int index, [In] ref Guid guid, [Out] out object pVarVal);
+        void GetParamCustData(int indexFunc, int indexParam, [In] ref Guid guid, [Out] out object pVarVal);
+        void GetVarCustData(int index, [In] ref Guid guid, [Out] out object pVarVal);
+        void GetImplTypeCustData(int index, [In] ref Guid guid, [Out] out object pVarVal);
+        void GetDocumentation2(int memid, int lcid, [Out] out string pbstrHelpString, [Out] out int pdwHelpStringContext, [Out] out string pbstrHelpStringDll);
+        void GetAllCustData([In,Out] ref IntPtr pCustData);
+        void GetAllFuncCustData(int index, [Out] out CUSTDATA pCustData);
+        void GetAllParamCustData(int indexFunc, int indexParam, [Out] out CUSTDATA pCustData);
+        void GetAllVarCustData(int index, [Out] out CUSTDATA pCustData);
+        void GetAllImplTypeCustData(int index, [Out] out CUSTDATA pCustData);
+    }
 }
