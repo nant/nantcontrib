@@ -310,7 +310,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// &lt;mergemodules&gt;
         ///     &lt;merge feature="F__NAntMSM"&gt;
         ///         &lt;modules&gt;
-        ///             &lt;includes name="${nant.dir}\Install\NAnt.msm" /&gt;
+        ///             &lt;include name="${nant.dir}\Install\NAnt.msm" /&gt;
         ///         &lt;/modules&gt;
         ///     &lt;/merge&gt;
         /// &lt;/mergemodules&gt;
@@ -322,7 +322,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// &lt;mergemodules&gt;
         ///   &lt;merge feature="F__DefaultFeature"&gt;
         ///     &lt;modules&gt;
-        ///       &lt;includes name="VsdReadmeDlg.wid" /&gt;
+        ///       &lt;include name="VsdReadmeDlg.wid" /&gt;
         ///     &lt;/modules&gt;
         ///     &lt;configurationitems&gt;
         ///       &lt;configurationitem name="BannerBitmap" value="CONFIGURED_BANNERBITMAP" /&gt;

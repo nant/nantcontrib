@@ -1022,7 +1022,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     &lt;component name="C__MainFiles" id="{26AA7144-E683-441D-9843-3C79AEC1C636}" attr="2" directory="TARGETDIR" feature="F__MainFiles" &gt;
         ///         &lt;key file="default.aspx" /&gt;
         ///         &lt;fileset basedir="${install.dir}"&gt;
-        ///             &lt;includes name="*.*" /&gt;
+        ///             &lt;include name="*.*" /&gt;
         ///         &lt;/fileset&gt;
         ///     &lt;/component&gt;
         /// &lt;/components&gt; 
@@ -1035,7 +1035,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     &lt;component name="C__MainFiles" id="{26AA7144-E683-441D-9843-3C79AEC1C636}" attr="2" directory="TARGETDIR" feature="F__MainFiles" installassembliestogac="true" &gt;
         ///         &lt;key file="MyAssemblyName.xml" /&gt;
         ///         &lt;fileset basedir="${install.dir}"&gt;
-        ///             &lt;includes name="*.*" /&gt;
+        ///             &lt;include name="*.*" /&gt;
         ///         &lt;/fileset&gt;
         ///         &lt;forceid file="MyOtherAssembly.dll" id="_4EB7CCB23D394958988ED817DA00B9D1" installtogac="false" /&gt;
         ///     &lt;/component&gt;
