@@ -12,9 +12,9 @@
     <!-- setup property that holds partial path to be used by scp -->
     <property name="serverpart" value="${sys.env.USERNAME}@${sf.net.ssh.server}:${sf.net.web.path}" />
     <!-- perform a 'release' package and upload to sf.net -->
-    <target name="build-release-self" depends="set-net-1.0-runtime-configuration, release, package, deploy-sf" description="Perform a 'release' package and uploads to sf.net" />
+    <target name="build-release-self" depends="set-net-1.0-framework-configuration, release, package, deploy-sf" description="Perform a 'release' package and uploads to sf.net" />
     <!-- perform a 'release' package and upload to sf.net -->
-    <target name="build-release" depends="set-net-1.0-runtime-configuration" description="Perform a 'release' package and uploads to sf.net">
+    <target name="build-release" depends="set-net-1.0-framework-configuration" description="Perform a 'release' package and uploads to sf.net">
         <property name="NAntReleaseEXE" value="${nant.dir}/bin/nant.exe" />
         <available property="NAntReleaseEXEExists" resource="${NAntReleaseEXE}" type="File" />
         <ifnot propertyexists="NAntReleaseEXEExists" propertytrue="NAntReleaseEXEExists">
@@ -29,7 +29,7 @@
     <!-- deploy content to sourceforge -->
     <target name="deploy-sf" depends="deploy-help-sf, deploy-web-sf" />
     <!-- copy help to sourceforge -->
-    <target name="deploy-help-sf" depends="set-net-1.0-runtime-configuration, package">
+    <target name="deploy-help-sf" depends="set-net-1.0-framework-configuration, package">
         <!-- make sure the directory tree exists -->
         <exec program="ssh">
             <arg value="${sf.net.ssh.server}" />
@@ -59,7 +59,7 @@
         </exec>
     </target>
     <!-- copy website to sourceforge -->
-    <target name="deploy-web-sf" depends="set-net-1.0-runtime-configuration, package">
+    <target name="deploy-web-sf" depends="set-net-1.0-framework-configuration, package">
         <!-- make sure the directory tree exists -->
         <exec program="ssh">
             <arg value="${sf.net.ssh.server}" />

@@ -13,7 +13,7 @@
     <sysinfo />
     <!-- setup property that holds partial path to be used by scp -->
     <property name="serverpart" value="${sys.env.USERNAME}@${sf.net.ssh.server}:${sf.net.web.path}" />
-    <target name="nightly" depends="set-net-1.0-runtime-configuration">
+    <target name="nightly" depends="set-net-1.0-framework-configuration">
         <property name="NAntReleaseEXE" value="${nant.dir}/bin/nant.exe" />
         <available property="NAntReleaseEXEExists" resource="${NAntReleaseEXE}" type="File" />
         <ifnot propertyexists="NAntReleaseEXEExists" propertytrue="NAntReleaseEXEExists">
@@ -25,11 +25,11 @@
             <arg value="-k:${nant.settings.currentframework}" />
         </exec>
     </target>
-    <target name="nightly-self" depends="set-net-1.0-runtime-configuration, package, deploy-sf" />
+    <target name="nightly-self" depends="set-net-1.0-framework-configuration, package, deploy-sf" />
     <!-- deploy content to sourceforge -->
     <target name="deploy-sf" depends="deploy-zip-sf, deploy-help-sf, deploy-web-sf, deploy-nightly-web-sf" />
     <!-- copy the zipped nighly build to sourceforge -->    
-    <target name="deploy-zip-sf" depends="set-net-1.0-runtime-configuration, package" description="Updates SF.Net site with new release build of tasks">
+    <target name="deploy-zip-sf" depends="set-net-1.0-framework-configuration, package" description="Updates SF.Net site with new release build of tasks">
         <regex input="${project.zip-path}" pattern="^(?'execpath'.*(\\|/)|(/|\\))(?'execfilename'.*)$" />
         <!-- determine filename of distribution package on sf.net -->
         <property name="deploy.zip.file" value="${project.name}-${project.version}-${build.date}.zip" />
@@ -56,7 +56,7 @@
         </exec>
     </target>
     <!-- copy help to sourceforge -->    
-    <target name="deploy-help-sf" depends="set-net-1.0-runtime-configuration, package">
+    <target name="deploy-help-sf" depends="set-net-1.0-framework-configuration, package">
         <!-- make sure the directory tree exists -->
         <exec program="ssh">
             <arg value="${sf.net.ssh.server}" />
@@ -86,7 +86,7 @@
         </exec>
     </target>
     <!-- copy website to sourceforge -->
-    <target name="deploy-web-sf" depends="set-net-1.0-runtime-configuration, package">
+    <target name="deploy-web-sf" depends="set-net-1.0-framework-configuration, package">
         <!-- make sure the directory tree exists -->
         <exec program="ssh">
             <arg value="${sf.net.ssh.server}" />
@@ -127,7 +127,7 @@
         </exec>
     </target>
     <!-- copy nightly website to sourceforge -->
-    <target name="deploy-nightly-web-sf" depends="set-net-1.0-runtime-configuration, package">
+    <target name="deploy-nightly-web-sf" depends="set-net-1.0-framework-configuration, package">
         <!-- make sure the directory tree exists -->
         <exec program="ssh">
             <arg value="${sf.net.ssh.server}" />
