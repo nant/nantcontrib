@@ -26,9 +26,9 @@ using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks {
     /// <summary>
-    /// Execute a set of tasks, and optionally catch a build exception to
-    /// allow recovery or rollback steps to be taken, or define some steps
-    /// to be taken regardless if the tasks succeeds or fails, or both.
+    /// Executes a set of tasks, and optionally catches a build exception to
+    /// allow recovery or rollback steps to be taken, or to define some steps
+    /// to be taken regardless if the tasks succeed or fail, or both.
     /// </summary>
     /// <remarks>
     ///   <para>
