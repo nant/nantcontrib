@@ -115,8 +115,8 @@ namespace NAnt.Contrib.Tasks
       /// however, need to be in a line by their own.
       /// Default is Normal.
       /// </remarks>
-      [ TaskAttribute("delimstyle", Required=true) ]
-      public DelimiterStyle DelimiterStyle {
+      [ TaskAttribute("delimstyle", Required=true) ]              
+       public DelimiterStyle DelimiterStyle {
          get { return _delimiterStyle; }
          set { _delimiterStyle = value; }
       }
