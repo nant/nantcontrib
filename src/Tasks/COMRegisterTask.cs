@@ -255,7 +255,7 @@ namespace NAnt.Contrib.Tasks {
                 DynamicPInvoke.DynamicDllFuncInvoke(path, entryPoint);
             } catch (TargetInvocationException ex) {
                 throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                    "Error while registering '{0}'", path), Location, 
+                    "Error while {0}ing '{1}'", action, path), Location, 
                     ex.InnerException);
             } finally {
                 if (handle.ToInt32() != 0) {
