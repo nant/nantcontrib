@@ -18,6 +18,7 @@
 // Jeff Hemry ( jdhemry@qwest.net )
 
 using System;
+using System.Globalization;
 using System.Text;
 
 using NAnt.Core;
@@ -96,6 +97,10 @@ namespace NAnt.Contrib.Tasks.Perforce {
 
             if (Delete) {
                 arguments.Append("-d ");
+            }
+            if (Label != null) {
+                arguments.AppendFormat(CultureInfo.InvariantCulture, "-l \"{0}\" ",
+                    Label);
             }
             if (View != null) {
                 arguments.Append(View);
