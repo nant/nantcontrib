@@ -334,6 +334,26 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Tasks\Mks\BaseTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Mks\CheckpointTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Mks\GetTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Mks\History.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Tasks\Msi\InstallerCreationCommand.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
