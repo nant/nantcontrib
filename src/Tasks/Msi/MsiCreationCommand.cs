@@ -156,18 +156,19 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// <param name="database">The MSI database.</param>
         private void LoadLicense(InstallerDatabase database) {
 
-            // Find the License control
-            using (InstallerRecordReader recordReader = database.FindRecords("Control",
-                       new InstallerSearchClause("Control", Comparison.Equals, "AgreementText"))) {
+            if (msi.license != null) {
+                // Find the License control
+                using (InstallerRecordReader recordReader = database.FindRecords("Control",
+                           new InstallerSearchClause("Control", Comparison.Equals, "AgreementText"))) {
 
-                if (recordReader.Read()) {
-                    if (msi.license != null) {
+                    if (recordReader.Read()) {
                         string licFile = Path.Combine(Project.BaseDirectory, msi.license);
                         Log(Level.Info, LogPrefix + "Storing license '{0}'.", licFile);
                         StreamReader licenseFileReader = null;
                         try {
                             licenseFileReader = File.OpenText(licFile);
-                        } catch (IOException ex) {
+                        } 
+                        catch (IOException ex) {
                             throw new BuildException(String.Format(CultureInfo.InvariantCulture,
                                 "Unable to open License File:\n\t{0}", licFile), Location, ex);
                         }
@@ -175,16 +176,15 @@ namespace NAnt.Contrib.Tasks.Msi {
                         try {
                             recordReader.SetValue(9, licenseFileReader.ReadToEnd());
                             recordReader.Commit();
-                        } finally {
+                        } 
+                        finally {
                             licenseFileReader.Close();
                         }
-                    } else {
-                        // Delete the license control
-                        recordReader.DeleteCurrentRecord();
+                    } 
+                    else {
+                        throw new BuildException("Couldn't find AgreementText Control in template database.", Location);
                     }
-                } else {
-                    throw new BuildException("Couldn't find AgreementText Control in template database.", Location);
-                }
+                }            
             }
         }
 
@@ -350,11 +350,11 @@ namespace NAnt.Contrib.Tasks.Msi {
                     FileSet mergeSet = new FileSet();
                     mergeSet.Parent = this;
                     mergeSet.Project = Project;
-					mergeSet.NamespaceManager = NamespaceManager;
+                    mergeSet.NamespaceManager = NamespaceManager;
 
                     XmlElement modulesElem = (XmlElement)((XmlElement)_xmlNode).SelectSingleNode(
                         "nant:mergemodules/nant:merge[@feature='" + merge.feature + "']/nant:modules", 
-						NamespaceManager);
+                        NamespaceManager);
 
                     mergeSet.Initialize(modulesElem);
 
@@ -382,29 +382,29 @@ namespace NAnt.Contrib.Tasks.Msi {
                         // references in the module and substitutes the feature reference for all
                         // occurrences of the null GUID in the module database.
 
-						if (merge.configurationitems != null) {
-							Log(Level.Verbose, "\t\tConfigurable item(s):", Location);
-							Hashtable configurations = new Hashtable();
-							foreach (MSIConfigurationItem configItem in merge.configurationitems) {
-								if ((configItem.module == null || configItem.module.Equals(String.Empty)) || configItem.module.ToLower().Equals(mergeModule.ToLower()) || configItem.module.ToLower().Equals(Path.GetFileName(mergeModule.ToLower()))) {
-									if (configItem.module == null || configItem.module.Equals(String.Empty)) {
-										if (configurations[configItem.name] == null) {
-											configurations[configItem.name] = configItem.value;
-											Log(Level.Verbose, "\t\t\t" + configItem.name + "\tValue: " + configItem.value, Location);
-										}
-									}
-									else {
-										configurations[configItem.name] = configItem.value;
-										Log(Level.Verbose, "\t\t\t" + configItem.name + "\tValue: " + configItem.value, Location);
-									}
-								}
-							}
+                        if (merge.configurationitems != null) {
+                            Log(Level.Verbose, "\t\tConfigurable item(s):", Location);
+                            Hashtable configurations = new Hashtable();
+                            foreach (MSIConfigurationItem configItem in merge.configurationitems) {
+                                if ((configItem.module == null || configItem.module.Equals(String.Empty)) || configItem.module.ToLower().Equals(mergeModule.ToLower()) || configItem.module.ToLower().Equals(Path.GetFileName(mergeModule.ToLower()))) {
+                                    if (configItem.module == null || configItem.module.Equals(String.Empty)) {
+                                        if (configurations[configItem.name] == null) {
+                                            configurations[configItem.name] = configItem.value;
+                                            Log(Level.Verbose, "\t\t\t" + configItem.name + "\tValue: " + configItem.value, Location);
+                                        }
+                                    }
+                                    else {
+                                        configurations[configItem.name] = configItem.value;
+                                        Log(Level.Verbose, "\t\t\t" + configItem.name + "\tValue: " + configItem.value, Location);
+                                    }
+                                }
+                            }
 
-							mergeClass.MergeEx(merge.feature, null, new MsmConfigureModule(configurations));
-						}
-						else {
-							mergeClass.Merge(merge.feature, null);
-						}
+                            mergeClass.MergeEx(merge.feature, null, new MsmConfigureModule(configurations));
+                        }
+                        else {
+                            mergeClass.Merge(merge.feature, null);
+                        }
 
                         string moduleCab = Path.Combine(Path.GetDirectoryName(Database),
                             "mergemodule" + index + ".cab");
@@ -464,29 +464,29 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
     }
 
-	internal class MsmConfigureModule : IMsmConfigureModule {
-		private Hashtable _configurations;
+    internal class MsmConfigureModule : IMsmConfigureModule {
+        private Hashtable _configurations;
 
-		internal MsmConfigureModule(Hashtable configurations) {
-			_configurations = configurations;
-		}
+        internal MsmConfigureModule(Hashtable configurations) {
+            _configurations = configurations;
+        }
 
-		#region IMsmConfigureModule Members
+        #region IMsmConfigureModule Members
 
-		string MsmMergeTypeLib.IMsmConfigureModule.ProvideTextData(string name) {
-			if (_configurations[name] != null) {
-				return (string) _configurations[name];
-			}
-			return null;
-		}
+        string MsmMergeTypeLib.IMsmConfigureModule.ProvideTextData(string name) {
+            if (_configurations[name] != null) {
+                return (string) _configurations[name];
+            }
+            return null;
+        }
 
-		int MsmMergeTypeLib.IMsmConfigureModule.ProvideIntegerData(string name) {
-			if (_configurations[name] != null) {
-				return int.Parse((string)_configurations[name]);
-			}
-			return 0;
-		}
+        int MsmMergeTypeLib.IMsmConfigureModule.ProvideIntegerData(string name) {
+            if (_configurations[name] != null) {
+                return int.Parse((string)_configurations[name]);
+            }
+            return 0;
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }
