@@ -1,7 +1,14 @@
 <?xml version="1.0"?>
 <project name="nant" default="nightly">
-    
-    <target name="nightly">
+
+	<target name="nightly"
+		<property name="NAntReleaseEXE" value="${nant.dir}/bin/nant.exe"/>
+		<available property="NAntReleaseEXEExists" resource="${NAntReleaseEXE}" type="File"/>
+		<exec program="${NAntReleaseEXE}">
+		</exec>
+	</target>
+	    
+    <target name="nightly-self">
 		<call target="nightly-tasks"/>
 		<call target="nightly-web"/>
 		<call target="nightly-msi"/>
@@ -59,7 +66,11 @@
 		<!-- copy docs -->
 		<scp file="${build.dir}/doc/help" server="${sf.net.ssh.server}" path="${sf.net.web.path}/doc">
 			<arg value="-r"/>
-		</scp>		
+		</scp>
+	
+		<scp file="${build.dir}/doc/style.css" server="${sf.net.ssh.server}" path="${sf.net.web.path}/doc"/>
+		<scp file="${build.dir}/doc/arrow.gif" server="${sf.net.ssh.server}" path="${sf.net.web.path}/doc"/>
+				
 		<!-- make sure files are readable -->
 		<exec program="ssh" failonerror="false">
 			<arg value="${sf.net.ssh.server}"/>
