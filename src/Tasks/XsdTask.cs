@@ -33,15 +33,15 @@ using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks
 {
-    /// <summary>Compiles an XML Schema into a Microsoft.NET Assembly 
-    /// containing types that can marshal back and forth from XML elements 
-    /// and the objects that represent them. Also can create a W3C XML 
-    /// schema from an existing Microsoft.NET Assembly, XML document, 
+    /// <summary>Compiles an XML Schema into a Microsoft.NET Assembly
+    /// containing types that can marshal back and forth from XML elements
+    /// and the objects that represent them. Also can create a W3C XML
+    /// schema from an existing Microsoft.NET Assembly, XML document,
     /// or an old XDR format schema.</summary>
     /// <example>
     ///   <para>Compile a schema.</para>
-    ///   <code><![CDATA[<xsd schema="MySchema.xsd" element="MyRootElement" 
-    ///     language="CS" namespace="MyCompany.MySchema" outputdir="build\bin" 
+    ///   <code><![CDATA[<xsd schema="MySchema.xsd" element="MyRootElement"
+    ///     language="CS" namespace="MyCompany.MySchema" outputdir="build\bin"
     ///     uri="http://MySchema'sTargetNamespace" />]]></code>
     ///   <para>Generate a schema from an Assembly.</para>
     ///   <code><![CDATA[<xsd assembly="MyAssembly.dll" outputdir="build\Schemas" />]]></code>
@@ -51,8 +51,8 @@ namespace NAnt.Contrib.Tasks
     ///   <code><![CDATA[<xsd xdr="MyOldSchema.xdr" outputdir="build\Schemas" />]]></code>
     /// </example>
     [TaskName("xsd")]
-    public class XsdTask : SdkExternalProgramBase
-    {
+    [ProgramLocation(LocationType.FrameworkSdkDir)]
+    public class XsdTask : ExternalProgramBase  {
         private string _args;
         string _schema = null;
         string _target = null;
@@ -71,43 +71,43 @@ namespace NAnt.Contrib.Tasks
         [TaskAttribute("schema")]
         public string Schema {
             get { return _schema; }
-            set { _schema = value; } 
+            set { _schema = value; }
         }
 
         /// <summary>Target of XML Schema compilation. Can be "classes" or "dataset".</summary>
         [TaskAttribute("target")]
-        public string Target 
+        public string Target
         {
             get { return (_target == "dataset" ? _target : "classes"); }
-            set { _target = (value == "dataset" ? value : "classes"); } 
-        }      
+            set { _target = (value == "dataset" ? value : "classes"); }
+        }
 
         /// <summary>XML element in the Schema to process.</summary>
-        [TaskAttribute("element")]        
+        [TaskAttribute("element")]
         public string Element {
             get { return _element; }
             set { _element = value; }
         }
 
-        /// <summary>Language of generated code. 'CS', 'VB', 'JS', 
-        /// or the fully-qualified name of a class implementing 
+        /// <summary>Language of generated code. 'CS', 'VB', 'JS',
+        /// or the fully-qualified name of a class implementing
         /// System.CodeDom.Compiler.CodeDomCompiler. </summary>
-        [TaskAttribute("language")]       
+        [TaskAttribute("language")]
         public string Language {
             get { return _language; }
             set { _language = value; }
         }
 
         /// <summary>Microsoft.NET namespace of generated classes.</summary>
-        [TaskAttribute("namespace")]        
-        public string Namespace 
+        [TaskAttribute("namespace")]
+        public string Namespace
         {
             get { return _namespace; }
             set { _namespace = value; }
         }
 
         /// <summary>Suppresses the banner.</summary>
-        [TaskAttribute("nologo")]        
+        [TaskAttribute("nologo")]
         [BooleanValidator()]
         public bool NoLogo
         {
@@ -116,49 +116,49 @@ namespace NAnt.Contrib.Tasks
         }
 
         /// <summary>Output directory in which to place generated files.</summary>
-        [TaskAttribute("outputdir")]        
-        public string OutputDir 
+        [TaskAttribute("outputdir")]
+        public string OutputDir
         {
             get { return _outputdir; }
             set { _outputdir = value; }
         }
 
         /// <summary>Assembly (.dll or .exe) to generate a W3C XML Schema for.</summary>
-        [TaskAttribute("assembly")]        
-        public string Assembly 
+        [TaskAttribute("assembly")]
+        public string Assembly
         {
             get { return _assembly; }
             set { _assembly = value; }
         }
 
-        /// <summary>Types in the assembly for which an XML schema is being created. 
+        /// <summary>Types in the assembly for which an XML schema is being created.
         /// If you don't specify this, all types in the assembly will be included.</summary>
-        [TaskAttribute("types")]        
-        public string Types 
+        [TaskAttribute("types")]
+        public string Types
         {
             get { return _types; }
             set { _types = value; }
         }
 
         /// <summary>Uri of elements from the Schema to process.</summary>
-        [TaskAttribute("uri")]        
-        public string Uri 
+        [TaskAttribute("uri")]
+        public string Uri
         {
             get { return _uri; }
             set { _uri = value; }
         }
 
         /// <summary>XML document to generate a W3C XML Schema for.</summary>
-        [TaskAttribute("xmldoc")]        
-        public string XmlDoc 
+        [TaskAttribute("xmldoc")]
+        public string XmlDoc
         {
             get { return _xmldoc; }
             set { _xmldoc = value; }
         }
 
         /// <summary>XDR schema to generate a W3C XML Schema for.</summary>
-        [TaskAttribute("xdr")]        
-        public string Xdr 
+        [TaskAttribute("xdr")]
+        public string Xdr
         {
             get { return _xdr; }
             set { _xdr = value; }
@@ -167,7 +167,7 @@ namespace NAnt.Contrib.Tasks
         /// <summary>
         /// Arguments of program to execute
         /// </summary>
-        public override string ProgramArguments 
+        public override string ProgramArguments
         {
             get
             {
@@ -179,7 +179,7 @@ namespace NAnt.Contrib.Tasks
         ///Initializes task and ensures the supplied attributes are valid.
         ///</summary>
         ///<param name="taskNode">Xml node used to define this task instance.</param>
-        protected override void InitializeTask(System.Xml.XmlNode taskNode) 
+        protected override void InitializeTask(System.Xml.XmlNode taskNode)
         {
         }
 
@@ -197,7 +197,7 @@ namespace NAnt.Contrib.Tasks
                 Log(Level.Info, LogPrefix + "Converting {0} to W3C Schema", Xdr);
 
                 arguments.Append(Xdr);
-                
+
                 if (OutputDir != null)
                 {
                     arguments.Append(" /o:");
@@ -209,7 +209,7 @@ namespace NAnt.Contrib.Tasks
                 Log(Level.Info, LogPrefix + "Generating W3C Schema for XML Document {0}", XmlDoc);
 
                 arguments.Append(XmlDoc);
-                
+
                 if (OutputDir != null)
                 {
                     arguments.Append(" /o:");
@@ -221,7 +221,7 @@ namespace NAnt.Contrib.Tasks
                 Log(Level.Info, LogPrefix + "Generating W3C Schema for Assembly {0}", Assembly);
 
                 arguments.Append(Assembly);
-                
+
                 if (OutputDir != null)
                 {
                     arguments.Append(" /o:");

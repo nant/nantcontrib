@@ -32,16 +32,17 @@ using NAnt.DotNet.Tasks;
 using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks {
-    /// <summary>Generates code for web service clients and xml web services 
-    /// using ASP.NET from WSDL contract files, XSD Schemas and .discomap 
+    /// <summary>Generates code for web service clients and xml web services
+    /// using ASP.NET from WSDL contract files, XSD Schemas and .discomap
     /// discovery documents. Can be used in conjunction with .disco files.</summary>
     /// <example>
     ///   <para>Generate a proxy class for a web service.</para>
-    ///   <code><![CDATA[<wsdl path="http://www.somewhere.com/myservice.wsdl" 
+    ///   <code><![CDATA[<wsdl path="http://www.somewhere.com/myservice.wsdl"
     ///     language="CS" namespace="MyCompany.MyService" outfile="MyService.cs" />]]></code>
     /// </example>
     [TaskName("wsdl")]
-    public class WsdlTask : SdkExternalProgramBase {
+    [ProgramLocation(LocationType.FrameworkSdkDir)]
+    public class WsdlTask : ExternalProgramBase {
         private string _args;
         string _path = null;
         bool _nologo = false;
@@ -64,30 +65,30 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("path")]
         public string Path {
             get { return _path; }
-            set { _path = value; } 
-        }      
+            set { _path = value; }
+        }
 
         /// <summary>Suppresses the banner.</summary>
-        [TaskAttribute("nologo")]        
+        [TaskAttribute("nologo")]
         [BooleanValidator()]
         public bool NoLogo {
             get { return _nologo; }
             set { _nologo = value; }
         }
 
-        /// <summary>Language of generated code. 'CS', 'VB', 'JS', 
-        /// or the fully-qualified name of a class implementing 
+        /// <summary>Language of generated code. 'CS', 'VB', 'JS',
+        /// or the fully-qualified name of a class implementing
         /// System.CodeDom.Compiler.CodeDomCompiler. </summary>
-        [TaskAttribute("language")]       
+        [TaskAttribute("language")]
         public string Language {
             get { return _language; }
             set { _language = value; }
         }
 
-        /// <summary>Compiles server-side ASP.NET abstract classes 
-        /// based on the web service contract. The default is to 
+        /// <summary>Compiles server-side ASP.NET abstract classes
+        /// based on the web service contract. The default is to
         /// create client side proxy classes. </summary>
-        [TaskAttribute("forserver")]       
+        [TaskAttribute("forserver")]
         [BooleanValidator()]
         public bool ForServer {
             get { return _forserver; }
@@ -95,96 +96,96 @@ namespace NAnt.Contrib.Tasks {
         }
 
         /// <summary>Microsoft.NET namespace of generated classes.</summary>
-        [TaskAttribute("namespace")]        
+        [TaskAttribute("namespace")]
         public string Namespace {
             get { return _namespace; }
             set { _namespace = value; }
         }
 
         /// <summary>Output filename of the created proxy. Default name is derived from the service name.</summary>
-        [TaskAttribute("outfile")]        
+        [TaskAttribute("outfile")]
         public string OutFile {
             get { return _outfile; }
             set { _outfile = value; }
         }
 
-        /// <summary>Override default protocol to implement. Choose from 'SOAP', 
-        /// 'HttpGet', 'HttpPost', or a custom protocol as specified in the 
+        /// <summary>Override default protocol to implement. Choose from 'SOAP',
+        /// 'HttpGet', 'HttpPost', or a custom protocol as specified in the
         /// configuration file.</summary>
-        [TaskAttribute("protocol")]        
+        [TaskAttribute("protocol")]
         public string Protocol {
             get { return _protocol; }
             set { _protocol = value; }
         }
 
-        /// <summary>Username of an account with credentials to access a 
+        /// <summary>Username of an account with credentials to access a
         /// server that requires authentication.</summary>
-        [TaskAttribute("username")]        
+        [TaskAttribute("username")]
         public string Username {
             get { return _username; }
             set { _username = value; }
         }
 
-        /// <summary>Password of an account with credentials to access a 
+        /// <summary>Password of an account with credentials to access a
         /// server that requires authentication.</summary>
-        [TaskAttribute("password")]        
+        [TaskAttribute("password")]
         public string Password {
             get { return _password; }
             set { _password = value; }
         }
 
-        /// <summary>Domain of an account with credentials to access a 
+        /// <summary>Domain of an account with credentials to access a
         /// server that requires authentication.</summary>
-        [TaskAttribute("domain")]        
+        [TaskAttribute("domain")]
         public string Domain {
             get { return _domain; }
             set { _domain = value; }
         }
 
-        /// <summary>URL of a proxy server to use for HTTP requests. 
+        /// <summary>URL of a proxy server to use for HTTP requests.
         /// The default is to use the system proxy setting.</summary>
-        [TaskAttribute("proxy")]        
+        [TaskAttribute("proxy")]
         public string Proxy {
             get { return _proxy; }
             set { _proxy = value; }
         }
 
-        /// <summary>Username of an account with credentials to access a 
+        /// <summary>Username of an account with credentials to access a
         /// proxy that requires authentication.</summary>
-        [TaskAttribute("proxyusername")]        
+        [TaskAttribute("proxyusername")]
         public string ProxyUsername {
             get { return _proxyusername; }
             set { _proxyusername = value; }
         }
 
-        /// <summary>Password of an account with credentials to access a 
+        /// <summary>Password of an account with credentials to access a
         /// proxy that requires authentication.</summary>
-        [TaskAttribute("proxypassword")]        
+        [TaskAttribute("proxypassword")]
         public string ProxyPassword {
             get { return _proxypassword; }
             set { _proxypassword = value; }
         }
 
-        /// <summary>Domain of an account with credentials to access a 
+        /// <summary>Domain of an account with credentials to access a
         /// proxy that requires authentication.</summary>
-        [TaskAttribute("proxydomain")]        
+        [TaskAttribute("proxydomain")]
         public string ProxyDomain {
             get { return _proxydomain; }
             set { _proxydomain = value; }
         }
 
-        /// <summary>Configuration key to use in the code generation to 
-        /// read the default value for the Url property. The default is 
+        /// <summary>Configuration key to use in the code generation to
+        /// read the default value for the Url property. The default is
         /// not to read from the config file.</summary>
-        [TaskAttribute("urlkey")]        
+        [TaskAttribute("urlkey")]
         public string UrlKey {
             get { return _urlkey; }
             set { _urlkey = value; }
         }
 
-        /// <summary>Base Url to use when calculating the Url fragment. 
+        /// <summary>Base Url to use when calculating the Url fragment.
         /// The UrlKey attribute must also be specified. </summary>
-        [TaskAttribute("baseurl")]        
+        [TaskAttribute("baseurl")]
         public string BaseUrl {
             get { return _baseurl; }
             set { _baseurl = value; }

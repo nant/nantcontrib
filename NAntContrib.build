@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--*****************************************************************-->
 <!--* @(#)NAntContrib.build                                         *-->
-<!--*                                                               *-->  
+<!--*                                                               *-->
 <!--* Builds the NAntContrib Project                                *-->
 <!--*****************************************************************-->
 <project name="NAntContrib" default="build">
@@ -9,43 +9,43 @@
     <property name="project.name" value="nantcontrib"/>
     <property name="project.FormalName" value="NAnt.Contrib"/>
     <property name="project.version" value="0.1.0.0"/>
-    
+
     <property name="project.config" value="debug"/>
 
     <property name="src.dir" value="src"/>
     <property name="tests.dir" value="Tests"/>
-    
+
     <!-- Used to build against. This directory must exist or it will be created. -->
     <property name="nant.dir" value="NAntRelease" />
     <property name="nant.releasebuild.name" value="nant-20030424"/>
-    
+
     <!-- named project configurations (used by self-test and self-doc tasks) -->
     <target name="debug" description="Perform a 'debug' build">
         <property name="project.config" value="debug" />
         <property name="debug" value="true" />
         <property name="build.dir" value="${nant.project.basedir}/build/${project.name}-${project.version}-${project.config}" />
     </target>
-    
+
     <target name="release" description="Perform a 'release' build">
         <property name="project.config" value="release" />
         <property name="debug" value="false" />
         <property name="build.dir" value="${nant.project.basedir}/build/${project.name}-${project.version}" />
     </target>
-    
+
     <!-- build tasks -->
     <target name="init" description="Initializes build properties">
         <call target="${project.config}" />
-        
+
         <call target="UpdateNAntReleaseFiles"/>
-        
+
         <property name="nant-bin.dir" value="${nant.dir}/bin"/>
         <property name="nant-doc.dir" value="${nant.dir}/doc" />
         <echo message="Using nant files from ${nant.dir}"/>
     </target>
-    
+
     <include buildfile="NAntContribInstall.include" />
     <include buildfile="Tools/SLiNgshoT/SLiNgshoTInstall.include" />
-    
+
 
 
     <!--*****************************************************************-->
@@ -54,7 +54,7 @@
     <target name="clean" depends="init" description="cleans up everything">
         <delete dir="${build.dir}" failonerror="false"/>
     </target>
-    
+
     <!--*****************************************************************-->
     <!--* Clean the outputs                                             *-->
     <!--*****************************************************************-->
@@ -63,9 +63,9 @@
             <call target="${target}"/>
             <call target="clean" failonerror="false"/>
         </foreach>
-        <delete dir="build"/>        
+        <delete dir="build"/>
     </target>
-        
+
     <!--*****************************************************************-->
     <!--* Prepare directories and build settings                        *-->
     <!--*****************************************************************-->
@@ -91,7 +91,6 @@
     <!--* Bootstrap the Xsd Task                                        *-->
     <!--*****************************************************************-->
     <target name="compile.schematask" depends="init" description="compiles the Xsd task">
-    
         <csc target="library" output="${build.dir}\NAnt.Xsd.Tasks.dll" doc="${build.dir}\NAnt.Xsd.Tasks.xml" >
             <sources basedir="${src.dir}">
                 <includes name="Tasks/XsdTask.cs"/>
@@ -103,36 +102,36 @@
             <arg value="/nowarn:1591"/>
         </csc>
     </target>
-    
+
     <!--*****************************************************************-->
     <!--* Bootstrap XML Schemas into assemblies for task validation     *-->
     <!--*****************************************************************-->
     <target name="compile.schemas" depends="compile.schematask" description="compiles Task XML Schemas into assemblies">
-        
+
         <loadtasks assembly="${build.dir}\NAnt.Xsd.Tasks.dll"/>
 
         <if uptodate="${src.dir}\Tasks\MSITask.xsd">
             <comparefiles basedir="${build.dir}\Schemas\MSI">
                 <includes name="*"/>
             </comparefiles>
-            
+
             <mkdir dir="${build.dir}\Schemas\MSI" />
-            <xsd schema="${src.dir}\Tasks\MSITask.xsd" 
-                language="CS" namespace="NAnt.Contrib.Schemas.MSI" nologo="true" 
-                outputdir="${build.dir}\Schemas\MSI" uri="NAnt.Contrib.Tasks.MSITask" />    
+            <xsd schema="${src.dir}\Tasks\MSITask.xsd"
+                language="CS" namespace="NAnt.Contrib.Schemas.MSI" nologo="true"
+                outputdir="${build.dir}\Schemas\MSI" uri="NAnt.Contrib.Tasks.MSITask" />
         </if>
 
         <if uptodate="${src.dir}\Tasks\MSMTask.xsd">
             <comparefiles basedir="${build.dir}\Schemas\MSM">
                 <includes name="*"/>
             </comparefiles>
-            
+
             <mkdir dir="${build.dir}\Schemas\MSM" />
-            <xsd schema="${src.dir}\Tasks\MSMTask.xsd" 
-                language="CS" namespace="NAnt.Contrib.Schemas.MSM" nologo="true" 
-                outputdir="${build.dir}\Schemas\MSM" uri="NAnt.Contrib.Tasks.MSMTask" />    
+            <xsd schema="${src.dir}\Tasks\MSMTask.xsd"
+                language="CS" namespace="NAnt.Contrib.Schemas.MSM" nologo="true"
+                outputdir="${build.dir}\Schemas\MSM" uri="NAnt.Contrib.Tasks.MSMTask" />
         </if>
-        
+
         <csc target="library" output="${build.dir}\NAnt.Contrib.Schemas.dll">
             <sources basedir="${build.dir}\Schemas">
                 <includes name="**.cs"/>
@@ -145,9 +144,9 @@
     <!--* Build the NAnt.Contrib.Tasks.dll library                      *-->
     <!--*****************************************************************-->
     <target name="build" depends="prepare, prepare.slingshot, compile.schemas" description="compiles the source code">
-    
-        <csc target="library" debug="${debug}" 
-            output="${build.dir}\${project.FormalName}.Tasks.dll" 
+
+        <csc target="library" debug="${debug}"
+            output="${build.dir}\${project.FormalName}.Tasks.dll"
             doc="${build.dir}\${project.FormalName}.Tasks.xml">
             <sources>
                 <includes name="${src.dir}\**.cs"/>
@@ -201,7 +200,7 @@
                 <includes name="log4net-net-1.0.dll"/>
             </fileset>
         </copy>
-        
+
         <csc target="library" output="${build.dir}\${project.FormalName}.Tests.dll" debug="${debug}">
             <sources basedir="${tests.dir}">
                 <includes name="**/*.cs"/>
@@ -222,7 +221,7 @@
     <!--* can easily load external data files wihtout having to worry   *-->
     <!--* about complicated paths.                                      *-->
     <!--*****************************************************************-->
-    <target name="test" depends="buildtests init" description="run unit tests">        
+    <target name="test" depends="buildtests init" description="run unit tests">
         <nunit2>
             <test assemblyname="${build.dir}\${project.FormalName}.Tests.dll" />
         </nunit2>
@@ -239,9 +238,15 @@
     <!--* Build NDoc documentation                                      *-->
     <!--*****************************************************************-->
     <target name="doc" depends="build" description="build documentation">
-        
-        <copy file="${nant-doc.dir}/style.css" todir="${build.dir}/doc" />
-        <copy file="${nant-doc.dir}/arrow.gif" todir="${build.dir}/doc" />
+
+        <copy file="htdocs/style.css" todir="${build.dir}/doc" />
+        <copy file="htdocs/arrow.gif" todir="${build.dir}/doc" />
+        <available property="NantDocumenterExists" resource="${nant.dir}\bin\NDoc.Documenter.NAnt.dll" type="File"/>
+        <!--  propertyexists="NAntReleaseExists"  -->
+        <ifnot propertytrue="NantDocumenterExists">
+            <fail message=" NDoc.Documenter.NAnt.dll not found. Run the 'userdoc' target in your NAnt source tree " />
+        </ifnot>
+
 
         <echo message="Requires HtmlHelp compiler (hhc.exe) to be in the system path"/>
         <ndoc failonerror="false">
@@ -250,8 +255,8 @@
             </assemblies>
             <documenters>
                 <documenter name="NAntTask">
-                    <property name="OutputDirectory" value="${build.dir}/doc/help/tasks" />                                                      
-                </documenter>            
+                    <property name="OutputDirectory" value="${build.dir}/doc/help/tasks" />
+                </documenter>
                 <documenter name="MSDN">
                     <property name="OutputDirectory" value="${build.dir}/doc/MSDN" />
                     <property name="HtmlHelpName" value="NAntContrib-SDK" />
@@ -273,8 +278,8 @@
                     <property name="IncludeAssemblyVersion" value="False" />
                     <property name="CopyrightText" value="" />
                     <property name="CopyrightHref" value="" />
-                 </documenter>             
-            </documenters> 
+                 </documenter>
+            </documenters>
         </ndoc>
         <copy todir="${build.dir}">
             <fileset basedir="${build.dir}/doc/MSDN" failonempty="true">
@@ -283,15 +288,23 @@
         </copy>
         <echo message="Preview task references: file://${build.dir}/doc/help/tasks/index.html"/>
     </target>
-    
+
     <!-- this target must be defined before that call below it! -->
     <target name="UpdateNAntReleaseFiles">
         <available property="NAntReleaseExists" resource="${nant.dir}" type="Directory"/>
         <ifnot propertyexists="NAntReleaseExists" propertytrue="NAntReleaseExists">
             <echo>
-Missing '${nant.dir}' Folder!
-Creating folder and getting file from NAnt Nightly Build (${nant.releasebuild.name})!
+
+   Folder '${nant.dir}' does not exist. pass the value of nant.dir on the commandline:
+   somthing like
+   nant -D:nant.dir=c:\cvs\nant\build\nant-0.8.4-debug -f:NAntContrib.build
+
+   nant.dir should point to the build directory just above bin.
             </echo>
+            <fail />
+<!--
+Creating folder and getting file from NAnt Nightly Build (${nant.releasebuild.name})!
+
             <mkdir dir="${nant.dir}"/>
             <get dest="${nant.releasebuild.name}.zip" src="http://nant.sourceforge.net/builds/${nant.releasebuild.name}.zip"/>
             <unzip zipfile="${nant.releasebuild.name}.zip"/>
@@ -301,8 +314,7 @@ Creating folder and getting file from NAnt Nightly Build (${nant.releasebuild.na
                 </fileset>
             </move>
             <delete dir="${nant.releasebuild.name}" failonerror="false"/>
-            <delete file="${nant.releasebuild.name}.zip" failonerror="false"/>
+            <delete file="${nant.releasebuild.name}.zip" failonerror="false"/>-->
         </ifnot>
     </target>
-
 </project>
