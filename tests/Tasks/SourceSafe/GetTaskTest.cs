@@ -307,7 +307,7 @@ namespace Tests.NAnt.Contrib.Tasks.SourceSafe {
             //create the instance of the GetTask that we will use in the tests
             _getTask = new GetTask();
             _getTask.Item = _project;
-            _getTask.LocalPath = _workingFolder;
+            _getTask.LocalPath = new DirectoryInfo(_workingFolder);
             _getTask.RemoveDeleted = true;
 
             //make the GetTask happy by giving it a dummy project file to reference
