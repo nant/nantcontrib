@@ -8,29 +8,89 @@ yet or for whatever reason don't belong there.
 
 How to use NAntContrib tasks in NAnt?
 -------------------------------------
-In order to use NAntContrib tasks in NAnt, you should use the NAnt's <loadtasks> task.
+In order to use NAntContrib tasks in NAnt, you can use one of the following procedures:
 
-For example :
+1. Use the <loadtasks> task in your build file(s) to tell NAnt which assembly to scan for tasks
+
+For example:
 
 <project name="NAntContrib" default"test">
 	<target name="test">
-		<loadtasks assembly="c:/NAntContrib/bin/NAnt.Contrib.Tasks.dll" />
+		<loadtasks assembly="c:/nantcontrib-0.85/bin/NAnt.Contrib.Tasks.dll" />
 		...
 	</target>
 </project>
+
+In order to avoid updating all build file when you move the NAnt.Contrib.Tasks assembly to another
+directory, you could register the directory containing the NAnt.Contrib.Tasks assembly in an 
+environment variable and then use the value of that environment variable in your build files.
+
+For example:
+
+<project name="NAntContrib" default"test">
+	<target name="test">
+		<loadtasks assembly="${path::combine(environment::get-variable('NANTCONTRIB_DIR'), 'bin/NAnt.Contrib.Tasks.dll')}" />
+		...
+	</target>
+</project>
+
+This example assumes you've registered an environment variable named "NANTCONTRIB_DIR", holding the 
+path to NAntContrib (eg. c:\nantcontrib-0.85).
+
+
+2. Copy the content of the NAntContrib bin directory to the NAnt directory
+
+In order to make certain tasks available to every build file, you can copy the tasks assembly and 
+all its dependencies to the "<nant>\bin\tasks" directory.
+
+However, as NAntContrib contains tasks that rely on COM Interop, it is only supported on the .NET
+Framework (not on Mono). So, in order to avoid issues when running NAnt on Mono, you should copy
+the content of the NAntContrib bin directory to "<nant>\bin\tasks\net". This will ensure that
+NAnt only loads the NAntContrib tasks when running on one of the MS .NET Framework runtimes.
+
+Note: you'll have to manually create the "tasks\net" subdirectories.
+
+
+3. Modify NAnt configuration file (not recommended)
+
+An <include> element can be added to the <task-assemblies> node in the <framework> node of all
+.NET Framework versions that you intend to use. The "name" attribute of the <include> element 
+would hold the full path to NAnt.Contrib.Tasks.dll.
+
+For example:
+
+	<framework 
+        	name="net-1.1" 
+                family="net" 
+                version="1.1"
+                description="Microsoft .NET Framework 1.1"
+		....
+	>
+        	<task-assemblies>
+			...
+			<include name="c:/nantcontrib-0.85/bin/NAnt.Contrib.Tasks.dll" />
+			...
+                </task-assemblies>
+		....
+	</framework>
+
+You would need to repeat this for all .NET Framework versions that you intend to use.
+
+Note: The NAnt configuration file (NAnt.exe.config) is considered internal, and might change without
+      noticed.
 
 
 How to build.
 -------------
 To build NAntContrib, the following procedure should be followed:
 
-1) Download and extract a binary distribution of NAnt from http://nant.sourceforge.net
+1. Download and extract a binary distribution of NAnt from http://nant.sourceforge.net
 
-2) Change to the NAntContrib directory
+2. Change to the NAntContrib directory
 
-3) Run NAntContrib.build using the version of NAnt that you downloaded.
+3. Run NAntContrib.build using the version of NAnt that you downloaded
 
-	eg.  c:\NAnt\bin\NAnt.exe -D:nant.dir=c:\NAnt -f:NAntContrib.build
+	eg.  c:\NAnt-0.85\bin\NAnt.exe -D:nant.dir=c:\NAnt -f:NAntContrib.build
 
 Note: 
 
