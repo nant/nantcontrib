@@ -26,6 +26,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Runtime.InteropServices;
 
 using SourceForge.NAnt;
 using SourceForge.NAnt.Tasks;
@@ -107,7 +108,7 @@ namespace NAnt.Contrib.Tasks {
         protected StringCollection ParseGroupFile(string groupFile) {
             StringCollection projectFiles = new StringCollection();
 
-            if (!File.Exists(groupFile)) {
+            if (!File.Exists(Project.GetFullPath(groupFile))) {
                 throw new BuildException("Visual Basic group file " + groupFile + " does not exist.");
             }
 
@@ -205,7 +206,7 @@ namespace NAnt.Contrib.Tasks {
         /// <returns>A string containing the output file name for the project.</returns>
         private string ParseProjectFile(string projectFile, FileSet sources, FileSet references) {
             
-            if (!File.Exists(projectFile)) {
+            if (!File.Exists(Project.GetFullPath(projectFile))) {
                 throw new BuildException("Visual Basic project file " + projectFile + " does not exist.");
             }
 
@@ -251,7 +252,30 @@ namespace NAnt.Contrib.Tasks {
                             // This is a source file - extract the reference name and add it to the references fileset
                             match = referenceRegEx.Match(fileLine);
                             if (match.Success) {
-                                references.Includes.Add(match.Groups["tlbname"].Value);
+                                string tlbName = match.Groups["tlbname"].Value;
+                                if (File.Exists(tlbName)) {
+                                    references.Includes.Add(tlbName);
+                                }
+                                else {
+                                    //the tlb filename embedded in the VBP file is just
+                                    //a hint about where to look for it. If the file isn't
+                                    //at that location, the typelib ID is used to lookup
+                                    //the file name
+                                    string tlbGuid = match.Groups["tlbguid"].Value;
+                                    ushort majorVer = ushort.Parse(match.Groups["majorver"].Value);
+                                    ushort minorVer = ushort.Parse(match.Groups["minorver"].Value);
+                                    uint lcid = uint.Parse(match.Groups["lcid"].Value);
+                                    Guid guid = new Guid(tlbGuid);
+                                    try {
+                                        QueryPathOfRegTypeLib(ref guid, majorVer, minorVer, lcid, out tlbName);
+                                        if (File.Exists(tlbName))
+                                            references.Includes.Add(tlbName);
+                                    }
+                                    catch (COMException) {
+                                        //Typelib wasn't found - vb6 will barf
+                                        //when the compile happens, but we won't worry about it.
+                                    }
+                                }
                             }
                         }
                         else if (key == "ExeName32") {
@@ -327,5 +351,7 @@ namespace NAnt.Contrib.Tasks {
                 }
             }
         }
+        [DllImport("oleaut32.dll", PreserveSig=false)]
+        private static extern void QueryPathOfRegTypeLib(ref Guid guid, ushort majorVer, ushort minorVer, uint lcid, [MarshalAs(UnmanagedType.BStr)] out string path);
     }
 }
