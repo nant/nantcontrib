@@ -168,7 +168,7 @@ namespace NAnt.Contrib.Tasks {
             StringCollection fileNames = COMRegisterFileSet.FileNames;
                       
             // display build log message
-            if (Unregister) {   
+            if (Unregister) {
                 Log(Level.Info, "Unregistering {0} files", fileNames.Count);
             } else {
                 Log(Level.Info, "Registering {0} files", fileNames.Count);
@@ -288,45 +288,57 @@ namespace NAnt.Contrib.Tasks {
                     GetWin32ErrorMessage(win32error)), Location);
             }
 
-            if (Unregister) {
-                UCOMITypeLib typeLib = (UCOMITypeLib) Marshal.GetTypedObjectForIUnknown(
-                    Typelib, typeof(UCOMITypeLib));
-                // check for for win32 error
-                error = Marshal.GetLastWin32Error();
-                if (error != 0) {
-                    throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                        "Error retrieving information from typelib '{0}' ({1}: {2}).", 
-                        path, error, GetWin32ErrorMessage(error)), Location);
-                }
+            try {
+                if (Unregister) {
+                    UCOMITypeLib typeLib = null;
 
-                IntPtr libAttrPtr = new IntPtr(0);
-                typeLib.GetLibAttr(out libAttrPtr);
-                TYPELIBATTR typeLibAttr = (TYPELIBATTR) 
-                    Marshal.PtrToStructure(libAttrPtr, typeof(TYPELIBATTR));
+                    try {
+                        typeLib = (UCOMITypeLib) Marshal.GetTypedObjectForIUnknown(
+                            Typelib, typeof(UCOMITypeLib));
+                        // check for for win32 error
+                        error = Marshal.GetLastWin32Error();
+                        if (error != 0) {
+                            throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                                "Error retrieving information from typelib '{0}' ({1}: {2}).", 
+                                path, error, GetWin32ErrorMessage(error)), Location);
+                        }
 
-                // unregister type library
-                UnRegisterTypeLib(ref typeLibAttr.guid, typeLibAttr.wMajorVerNum, 
-                    typeLibAttr.wMinorVerNum, typeLibAttr.lcid, typeLibAttr.syskind);
-                // check for for win32 error
-                error = Marshal.GetLastWin32Error();
-                // release the TYPELIBATTR
-                typeLib.ReleaseTLibAttr(libAttrPtr);
-                if (error != 0) {
-                    // signal error
-                    throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                        "Typelib '{0}' could not be unregistered ({1}: {2}).", 
-                        path, error, GetWin32ErrorMessage(error)), Location);
-                }
-            } else {
-                //Perform registration
-                RegisterTypeLib(Typelib, path, null);
-                error = Marshal.GetLastWin32Error();
+                        IntPtr libAttrPtr = new IntPtr(0);
+                        typeLib.GetLibAttr(out libAttrPtr);
+                        TYPELIBATTR typeLibAttr = (TYPELIBATTR) 
+                            Marshal.PtrToStructure(libAttrPtr, typeof(TYPELIBATTR));
 
-                if (error != 0) {
-                    throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                        "Error registering typelib '{0}' ({1}: {2}).", path, 
-                        error, GetWin32ErrorMessage(error)), Location);
+                        // unregister type library
+                        UnRegisterTypeLib(ref typeLibAttr.guid, typeLibAttr.wMajorVerNum, 
+                            typeLibAttr.wMinorVerNum, typeLibAttr.lcid, typeLibAttr.syskind);
+                        // check for for win32 error
+                        error = Marshal.GetLastWin32Error();
+                        // release the TYPELIBATTR
+                        typeLib.ReleaseTLibAttr(libAttrPtr);
+                        if (error != 0) {
+                            // signal error
+                            throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                                "Typelib '{0}' could not be unregistered ({1}: {2}).", 
+                                path, error, GetWin32ErrorMessage(error)), Location);
+                        }
+                    } finally {
+                        if (typeLib != null) {
+                            Marshal.ReleaseComObject(typeLib);
+                        }
+                    }
+                } else {
+                    //Perform registration
+                    RegisterTypeLib(Typelib, path, null);
+                    error = Marshal.GetLastWin32Error();
+
+                    if (error != 0) {
+                        throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                            "Error registering typelib '{0}' ({1}: {2}).", path, 
+                            error, GetWin32ErrorMessage(error)), Location);
+                    }
                 }
+            } finally {
+                Marshal.Release(Typelib);
             }
         } 
 
