@@ -248,16 +248,20 @@ namespace NAnt.Contrib.Tasks {
             // return true as soon as we know we need to compile
         
             FileSet sources = new FileSet();
-            sources.BaseDirectory = BaseDirectory.FullName;
+            // shouldn't the base directory actually be the directory where
+            // the project file is stored ?
+            sources.BaseDirectory = new DirectoryInfo(Project.BaseDirectory);
             
             FileSet references = new FileSet();
-            references.BaseDirectory = BaseDirectory.FullName;
+            // shouldn't the base directory actually be the directory where
+            // the project file is stored ?
+            references.BaseDirectory = new DirectoryInfo(Project.BaseDirectory);
 
             string outputFile = ParseProjectFile(projectFile, sources, references);
 
             FileInfo outputFileInfo = new FileInfo(OutDir != null ? Path.Combine(OutDir.FullName, outputFile) : outputFile);
             if (!outputFileInfo.Exists) {
-                Log(Level.Info, LogPrefix + "Output file {0} does not exist, recompiling.", outputFileInfo.FullName);
+                Log(Level.Info, LogPrefix + "Output file '{0}' does not exist, recompiling.", outputFileInfo.FullName);
                 return true;
             }
 

@@ -1,6 +1,6 @@
 //
 // NAntContrib
-// Copyright (C) 2001-2002 Gerry Shaw
+// Copyright (C) 2001-2003 Gerry Shaw
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,147 +16,165 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-
 // Jayme C. Edwards (jedwards@wi.rr.com)
 
 using System;
-using System.IO;
-using System.Xml;
-using System.Text;
-using Microsoft.Win32;
 using System.Collections.Specialized;
+using System.IO;
+using System.Text;
+using System.Xml;
+
+using Microsoft.Win32;
 
 using NAnt.Core;
-using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
+using NAnt.Core.Tasks;
 
-namespace NAnt.Contrib.Tasks
-{
-    /// <summary>Compiles a Microsoft HTML Help 2.0 Project.</summary>
+namespace NAnt.Contrib.Tasks {
+    /// <summary>
+    /// Compiles a Microsoft HTML Help 2.0 Project.
+    /// </summary>
     /// <example>
     ///   <para>Compile a help file.</para>
-    ///   <code><![CDATA[<hxcomp contents="MyContents.HxC" output="MyHelpFile.HxS" projectroot="HelpSourceFolder"/>]]></code>
+    ///   <code>
+    ///     <![CDATA[
+    /// <hxcomp contents="MyContents.HxC" output="MyHelpFile.HxS" projectroot="HelpSourceFolder" />
+    ///     ]]>
+    ///   </code>
     /// </example>
     [TaskName("hxcomp")]
-    public class HxCompTask : ExternalProgramBase
-    {
+    public class HxCompTask : ExternalProgramBase {
         private string _args;
-        string _contents = null;
-        string _logfile = null;
-        string _unicodelogfile = null;
-        string _projectroot = null;
-        string _output = null;
-        bool _noinformation = false;
-        bool _noerrors = false;
-        bool _nowarnings = false;
-        bool _quiet = false;
-        string _uncompilefile = null;
-        string _uncompileoutputdir = null;
+        private string _contents = null;
+        private string _logfile = null;
+        private string _unicodelogfile = null;
+        private string _projectroot = null;
+        private string _outputFile = null;
+        private bool _noinformation = false;
+        private bool _noerrors = false;
+        private bool _nowarnings = false;
+        private bool _quiet = false;
+        private string _uncompilefile = null;
+        private string _uncompileoutputdir = null;
 
-        /// <summary>The name of the contents (.HxC) file.</summary>
-            [TaskAttribute("contents")]
-          public string Contents {
+        /// <summary>
+        /// The name of the contents (.HxC) file.
+        /// </summary>
+        [TaskAttribute("contents")]
+        public string Contents {
             get { return _contents; }
-                set { _contents = value; } 
+            set { _contents = value; } 
         }      
 
-            /// <summary>ANSI/DBCS log filename.</summary>
-            [TaskAttribute("logfile")]        
-            public string LogFile {
-                get { return _logfile; }
-                set { _logfile = value; }
-            }
+        /// <summary>
+        /// ANSI/DBCS log filename.
+        /// </summary>
+        [TaskAttribute("logfile")]        
+        public string LogFile {
+            get { return _logfile; }
+            set { _logfile = value; }
+        }
 
-            /// <summary>Unicode log filename. </summary>
-            [TaskAttribute("unicodelogfile")]       
-            public string UnicodeLogFile {
-                get { return _unicodelogfile; }
-                set { _unicodelogfile = value; }
-            }
+        /// <summary>
+        /// Unicode log filename.
+        /// </summary>
+        [TaskAttribute("unicodelogfile")]       
+        public string UnicodeLogFile {
+            get { return _unicodelogfile; }
+            set { _unicodelogfile = value; }
+        }
 
-            /// <summary>Root directory containing Help 2.0 project files.</summary>
-            [TaskAttribute("projectroot")]
-            public string ProjectRoot {
-                get { return _projectroot; }
-                set { _projectroot = value; }
-            }
+        /// <summary>
+        /// Root directory containing Help 2.0 project files.
+        /// </summary>
+        [TaskAttribute("projectroot")]
+        public string ProjectRoot {
+            get { return _projectroot; }
+            set { _projectroot = value; }
+        }
 
-            /// <summary>Output (.HxS) filename.</summary>
-            [TaskAttribute("output")] 
-            public string Output {
-                get { return _output; }
-                set { _output = value; }
-            }
+        /// <summary>
+        /// Output (.HxS) filename.
+        /// </summary>
+        [TaskAttribute("output")] 
+        public string OutputFile {
+            get { return _outputFile; }
+            set { _outputFile = value; }
+        }
 
-            /// <summary>Generate no informational messages.</summary>
-            [TaskAttribute("noinformation")]       
-            [BooleanValidator()]
-            public bool NoInformation {
-                get { return _noinformation; }
-                set { _noinformation = value; }
-            }
-        
-            /// <summary>Generate no error messages.</summary>
-            [TaskAttribute("noerrors")]       
+        /// <summary>
+        /// Generate no informational messages.
+        /// </summary>
+        [TaskAttribute("noinformation")]       
         [BooleanValidator()]
-            public bool NoErrors {
-                get { return _noerrors; }
-                set { _noerrors = value; }
-            }
+        public bool NoInformation {
+            get { return _noinformation; }
+            set { _noinformation = value; }
+        }
+        
+        /// <summary>
+        /// Generate no error messages.
+        /// </summary>
+        [TaskAttribute("noerrors")]       
+        [BooleanValidator()]
+        public bool NoErrors {
+            get { return _noerrors; }
+            set { _noerrors = value; }
+        }
 
-        /// <summary>Generate no warning messages.</summary>
+        /// <summary>
+        /// Generate no warning messages.
+        /// </summary>
         [TaskAttribute("nowarnings")]       
         [BooleanValidator()]
-        public bool NoWarnings 
-        {
+        public bool NoWarnings {
             get { return _nowarnings; }
             set { _nowarnings = value; }
         }
         
-            /// <summary>Quiet mode.</summary>
-            [TaskAttribute("quiet")]
-            [BooleanValidator()]
-            public bool Quiet {
-                get { return _quiet; }
-                set { _quiet = value; }
-            }
+        /// <summary>
+        /// Quiet mode.
+        /// </summary>
+        [TaskAttribute("quiet")]
+        [BooleanValidator()]
+        public bool Quiet {
+            get { return _quiet; }
+            set { _quiet = value; }
+        }
 
-        /// <summary>File to be decompiled.</summary>
+        /// <summary>
+        /// File to be decompiled.
+        /// </summary>
         [TaskAttribute("uncompilefile")] 
         public string UncompileFile {
             get { return _uncompilefile; }
             set { _uncompilefile = value; }
         }
 
-        /// <summary>Directory to place decompiled files into.</summary>
+        /// <summary>
+        /// Directory to place decompiled files into.
+        /// </summary>
         [TaskAttribute("uncompileoutputdir")] 
         public string UncompileOutputDir {
             get { return _uncompileoutputdir; }
             set { _uncompileoutputdir = value; }
         }
        
-        public override string ProgramFileName
-        {
-                get
-            {
+        public override string ProgramFileName {
+            get {
                 RegistryKey helpPackageKey = Registry.LocalMachine.OpenSubKey(
                     @"Software\Microsoft\VisualStudio\7.0\" + 
                     @"Packages\{7D57F111-B9F3-11d2-8EE0-00C04F5E0C38}",
                     false);
 
-                if (helpPackageKey != null)
-                {
+                if (helpPackageKey != null) {
                     string helpPackageVal = (string)helpPackageKey.GetValue("InprocServer32", null);
-                    if (helpPackageVal != null)
-                    {
+                    if (helpPackageVal != null) {
                         string helpPackageDir = Path.GetDirectoryName(helpPackageVal);
-                        if (helpPackageDir != null)
-                        {
-                            if (Directory.Exists(helpPackageDir))
-                            {
+                        if (helpPackageDir != null) {
+                            if (Directory.Exists(helpPackageDir)) {
                                 DirectoryInfo parentDir = Directory.GetParent(helpPackageDir);
-                                if (parentDir != null)
-                                {
+                                if (parentDir != null) {
                                     helpPackageKey.Close();
                                     return "\"" + parentDir.FullName + "\\hxcomp.exe\"";
                                 }
@@ -175,97 +193,76 @@ namespace NAnt.Contrib.Tasks
         /// <summary>
         /// Arguments of program to execute
         /// </summary>
-        public override string ProgramArguments 
-        {
-            get
-            {
+        public override string ProgramArguments {
+            get {
                 return _args;
             }
         }
 
-            protected override void ExecuteTask()
-        {
-                // If the user wants to see the actual command the -verbose flag
-                // will cause ExternalProgramBase to display the actual call.
-            if ( Output != null ) 
-            {
-                Log(Level.Info, LogPrefix + "Compiling HTML Help 2.0 File {0}", Output);
-            }
-            // Lop thru fileset 
-            else if (UncompileFile != null) 
-            {    
-                Log(Level.Info, LogPrefix + "Decompiling HTML Help 2.0 File {0}", UncompileFile);
-            }
-            else 
-            {
+        protected override void ExecuteTask() {
+            // If the user wants to see the actual command the -verbose flag
+            // will cause ExternalProgramBase to display the actual call.
+            if (OutputFile != null ) {
+                Log(Level.Info, LogPrefix + "Compiling HTML Help 2.0 File '{0}'.", OutputFile);
+            } else if (UncompileFile != null) {    
+                Log(Level.Info, LogPrefix + "Decompiling HTML Help 2.0 File '{0}'.", UncompileFile);
+            } else {
                 Log(Level.Error, "ERROR: Must specify file to be compiled or decompiled.");
                 return;
             }
 
-            try
-            {
+            try {
                 bool firstArg = true;
 
                 StringBuilder arguments = new StringBuilder();
                    
-                if (NoInformation)
-                {
+                if (NoInformation) {
                     if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
                     arguments.Append("-i");
                 }
-                if (NoErrors)
-                {
+                if (NoErrors) {
                     if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
                     arguments.Append("-e");
                 }
-                if (NoWarnings)
-                {
+                if (NoWarnings) {
                     if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
                     arguments.Append("-w");
                 }
-                if (Quiet)
-                {
+                if (Quiet) {
                     if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
                     arguments.Append("-q");
                 }
-                if (Contents != null)
-                {
+                if (Contents != null) {
                     if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
                     arguments.Append("-p ");
                     arguments.Append(Contents);
                 }
-                if (LogFile != null)
-                {
+                if (LogFile != null) {
                     if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
                     arguments.Append("-l ");
                     arguments.Append(LogFile);
                 }
-                if (UnicodeLogFile != null)
-                {
+                if (UnicodeLogFile != null) {
                     if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
                     arguments.Append("-n ");
                     arguments.Append(UnicodeLogFile);
                 }
-                if (Output != null)
-                {
+                if (Output != null) {
                     if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
                     arguments.Append("-o ");
                     arguments.Append(Output);
                 }
-                if (ProjectRoot != null)
-                {
+                if (ProjectRoot != null) {
                     if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
                     arguments.Append("-r ");
                     arguments.Append(ProjectRoot);
                 }
-                if (UncompileFile != null)
-                {
+                if (UncompileFile != null) {
                     if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
                     arguments.Append("-u ");
                     arguments.Append(UncompileFile);
                 }
-                if (UncompileOutputDir != null)
-                {
+                if (UncompileOutputDir != null) {
                     if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
                     arguments.Append("-d ");
                     arguments.Append(UncompileOutputDir);
@@ -275,8 +272,7 @@ namespace NAnt.Contrib.Tasks
 
                 base.ExecuteTask();
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 throw new BuildException(LogPrefix + "ERROR: " + e);
             }
         }
