@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <project name="NAntContrib" default="test">
     <include buildfile="../properties.xml" failonerror="false" />
-
+    <!-- global project settings -->
     <property name="project.name" value="nantcontrib" />
     <property name="project.FormalName" value="NAnt.Contrib" />
     <property name="project.version" value="0.85" overwrite="false" />
-
     <!-- default configuration -->
     <property name="project.config" value="debug" /> <!-- debug|release -->
     <property name="build.defines" value="" />
+    <property name="build.number" value="${math::floor(timespan::get-total-days(datetime::now() - '01-01-2000'))}" dynamic="true" overwrite="false" />
 
     <property name="src.dir" value="src" />
     <property name="tests.dir" value="tests" />
@@ -21,13 +21,11 @@
         <property name="build.debug" value="true" />
         <property name="build.dir" value="${nant.project.basedir}/build/${project.name}-${project.version}-${project.config}" />
     </target>
-
     <target name="release" description="Perform a 'release' build">
         <property name="project.config" value="release" />
         <property name="build.debug" value="false" />
         <property name="build.dir" value="${nant.project.basedir}/build/${project.name}-${project.version}" />
     </target>
-
     <!-- build tasks -->
     <target name="init" description="Initializes build properties">
         <call target="${project.config}" />
@@ -40,6 +38,26 @@
             <fail message="The specified folder containing the NAnt build (${nant.dir}) does not exist." />
         </if>
         <echo message="Using nant files from ${nant.dir}"/>
+    </target>
+    <target name="create-common-assemblyinfo">
+        <!-- ensure src/CommonAssemblyInfo.cs is writable if it already exists -->
+        <attrib file="src/CommonAssemblyInfo.cs" readonly="false" if="${file::exists('src/CommonAssemblyInfo.cs')}" />
+        <!-- generate the source file holding the common assembly-level attributes -->
+        <asminfo output="src/CommonAssemblyInfo.cs" language="CSharp">
+            <imports>
+                <import name="System.Reflection" />
+            </imports>
+            <attributes>
+                <attribute type="AssemblyConfigurationAttribute" value="${nant.settings.currentframework}.${nant.platform.name}; nightly" />
+                <attribute type="AssemblyCompanyAttribute" value="http://nantcontrib.sourceforge.net" />
+                <attribute type="AssemblyProductAttribute" value="NAntContrib" />
+                <attribute type="AssemblyCopyrightAttribute" value="Copyright (C) 2001-${datetime::get-year(datetime::now())} Gerry Shaw" />
+                <attribute type="AssemblyTrademarkAttribute" value="" />
+                <attribute type="AssemblyCultureAttribute" value="" />
+                <attribute type="AssemblyVersionAttribute" value="${project.version}.${build.number}.0" />
+                <attribute type="AssemblyInformationalVersionAttribute" value="${project.version}" />
+            </attributes>
+        </asminfo>
     </target>
 
     <include buildfile="NAntContribInstall.include" />
@@ -92,18 +110,23 @@
 
     <!-- Bootstrap XML Schemas into assemblies for task validation -->
     <target name="compile.schemas" depends="compile.schematask" description="compiles Task XML Schemas into assemblies">
-        <loadtasks assembly="${build.dir}/bin/NAnt.Xsd.Tasks.dll"/>
-        <if uptodatefile="${src.dir}/Tasks/Msi/MsiTask.xsd">
-            <comparefiles basedir="${build.dir}/schema/Msi">
+        <uptodate property="schema.uptodate">
+            <sourcefiles>
+                <includes name="${src.dir}/Tasks/Msi/MsiTask.xsd" />
+            </sourcefiles>
+            <targetfiles basedir="${build.dir}/schema/Msi">
                 <includes name="*" />
-            </comparefiles>
-            <mkdir dir="${build.dir}/schema/Msi" />
+            </targetfiles>
+        </uptodate>
+        <if test="${not schema.uptodate}">
+            <mkdir dir="${build.dir}/schema/Msi" unless="${directory::exists(build.dir + '/schema/Msi')}" />
+            <loadtasks assembly="${build.dir}/bin/NAnt.Xsd.Tasks.dll" />
             <xsd schema="${src.dir}/Tasks/Msi/MsiTask.xsd" language="CS" namespace="NAnt.Contrib.Schemas.Msi" nologo="true" outputdir="${build.dir}/schema/Msi" uri="NAnt.Contrib.Tasks.Msi.MsiTask" />
         </if>
     </target>
 
     <!-- Build the NAnt.Contrib.Tasks.dll library -->
-    <target name="build" depends="prepare, prepare.slingshot, compile.schemas" description="compiles the source code">
+    <target name="build" depends="prepare, prepare.slingshot, compile.schemas, create-common-assemblyinfo" description="compiles the source code">
         <csc target="library" warnaserror="true" nowarn="0618,1591" debug="${build.debug}" define="${current.build.defines}" output="${build.dir}/bin/${project.FormalName}.Tasks.dll" doc="${build.dir}/bin/${project.FormalName}.Tasks.xml">
             <sources>
                 <includes name="${src.dir}/**.cs" />
