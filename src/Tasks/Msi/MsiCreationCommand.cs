@@ -333,7 +333,7 @@ namespace NAnt.Contrib.Tasks.Msi {
             // If <mergemodules>...</mergemodules> exists in the nant msi task
 
             if (msi.mergemodules != null) {
-                MsmMergeClass mergeClass = new MsmMergeClass();
+                MsmMerge2Class mergeClass = new MsmMerge2Class();
 
                 int index = 1;
 
@@ -381,7 +381,30 @@ namespace NAnt.Contrib.Tasks.Msi {
                         // an existing feature. Note that the Merge method gets all the feature
                         // references in the module and substitutes the feature reference for all
                         // occurrences of the null GUID in the module database.
-                        mergeClass.Merge(merge.feature, null);
+
+						if (merge.configurationitems != null) {
+							Log(Level.Verbose, "\t\tConfigurable item(s):", Location);
+							Hashtable configurations = new Hashtable();
+							foreach (MSIConfigurationItem configItem in merge.configurationitems) {
+								if ((configItem.module == null || configItem.module.Equals(String.Empty)) || configItem.module.ToLower().Equals(mergeModule.ToLower()) || configItem.module.ToLower().Equals(Path.GetFileName(mergeModule.ToLower()))) {
+									if (configItem.module == null || configItem.module.Equals(String.Empty)) {
+										if (configurations[configItem.name] == null) {
+											configurations[configItem.name] = configItem.value;
+											Log(Level.Verbose, "\t\t\t" + configItem.name + "\tValue: " + configItem.value, Location);
+										}
+									}
+									else {
+										configurations[configItem.name] = configItem.value;
+										Log(Level.Verbose, "\t\t\t" + configItem.name + "\tValue: " + configItem.value, Location);
+									}
+								}
+							}
+
+							mergeClass.MergeEx(merge.feature, null, new MsmConfigureModule(configurations));
+						}
+						else {
+							mergeClass.Merge(merge.feature, null);
+						}
 
                         string moduleCab = Path.Combine(Path.GetDirectoryName(Database),
                             "mergemodule" + index + ".cab");
@@ -440,4 +463,30 @@ namespace NAnt.Contrib.Tasks.Msi {
             }
         }
     }
+
+	internal class MsmConfigureModule : IMsmConfigureModule {
+		private Hashtable _configurations;
+
+		internal MsmConfigureModule(Hashtable configurations) {
+			_configurations = configurations;
+		}
+
+		#region IMsmConfigureModule Members
+
+		string MsmMergeTypeLib.IMsmConfigureModule.ProvideTextData(string name) {
+			if (_configurations[name] != null) {
+				return (string) _configurations[name];
+			}
+			return null;
+		}
+
+		int MsmMergeTypeLib.IMsmConfigureModule.ProvideIntegerData(string name) {
+			if (_configurations[name] != null) {
+				return int.Parse((string)_configurations[name]);
+			}
+			return 0;
+		}
+
+		#endregion
+	}
 }

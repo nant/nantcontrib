@@ -579,8 +579,19 @@
     <xsd:complexType name="MSIMerge">
         <xsd:sequence>
             <xsd:element name="modules" type="msi:NAntFileSet" minOccurs="1" maxOccurs="1" />
+            <xsd:element name="configurationitems" type="msi:MSIConfigurationItems" minOccurs="0" maxOccurs="1" />            
         </xsd:sequence>
         <xsd:attribute name="feature" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <xsd:complexType name="MSIConfigurationItems">
+        <xsd:sequence>
+            <xsd:element name="configurationitem" type="msi:MSIConfigurationItem" minOccurs="1" maxOccurs="unbounded" />
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="MSIConfigurationItem">
+        <xsd:attribute name="module" type="xsd:string" use="optional" />
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="value" type="xsd:string" use="required" />
     </xsd:complexType>
     <!-- msi/actiontext -->
     <xsd:element name="actiontext">
