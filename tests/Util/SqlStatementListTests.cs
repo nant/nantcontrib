@@ -23,13 +23,13 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-//using System.Security.Cryptography;
+
 using NUnit.Framework;
-using NAnt.Core.Attributes;
+
 using NAnt.Core;
+using NAnt.Core.Attributes;
 
 using NAnt.Contrib.Util;
-using Tests.NAnt.Core;
 
 namespace NAnt.Contrib.Tests.Util {
    /// <summary>
@@ -187,5 +187,5 @@ namespace NAnt.Contrib.Tests.Util {
          Assertion.AssertEquals(1, list.Count);
          Assertion.AssertEquals(statements, list[0]);
       }
-   } // class SqlStatementListTests
-} // namespace NAnt.Contrib.Tests.Util
+   }
+}

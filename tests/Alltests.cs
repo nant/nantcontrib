@@ -24,14 +24,13 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Security.Cryptography;
+
 using NUnit.Framework;
-using NAnt.Core.Attributes;
+
 using NAnt.Core;
-using Tests.NAnt.Core;
+using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tests { 
-
-
    /// <summary>
    /// All Tests
    /// </summary>
@@ -60,7 +59,6 @@ namespace NAnt.Contrib.Tests {
             return suite;
          }
       } */
+   }
+}
 
-   } // class AllTests
-
-} // namespace NAnt.Contrib.Tests
