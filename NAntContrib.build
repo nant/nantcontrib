@@ -127,7 +127,13 @@
 
     <!-- Build the NAnt.Contrib.Tasks.dll library -->
     <target name="build" depends="prepare, prepare.slingshot, compile.schemas, create-common-assemblyinfo" description="compiles the source code">
-        <csc target="library" warnaserror="true" nowarn="0618,1591" debug="${build.debug}" define="${current.build.defines}" output="${build.dir}/bin/${project.FormalName}.Tasks.dll" doc="${build.dir}/bin/${project.FormalName}.Tasks.xml">
+        <csc target="library" warnaserror="true" debug="${build.debug}" define="${current.build.defines}" output="${build.dir}/bin/${project.FormalName}.Tasks.dll" doc="${build.dir}/bin/${project.FormalName}.Tasks.xml">
+            <nowarn>
+                <!-- do not report warnings for missing XML comments -->
+                <warning number="1591" />
+                <!-- do not report deprecation warnings -->
+                <warning number="0618" />
+            </nowarn>
             <sources>
 	       <include name="${src.dir}/**/*.cs" />
 	       <include name="${build.dir}/schema/**/*.cs" />
@@ -174,7 +180,11 @@
             </fileset>
         </copy>
         <!-- compile the test assembly -->
-        <csc target="library" warnaserror="true" nowarn="1591" debug="${build.debug}" define="${current.build.defines}" output="${build.dir}/bin/${project.FormalName}.Tests.dll">
+        <csc target="library" warnaserror="true" debug="${build.debug}" define="${current.build.defines}" output="${build.dir}/bin/${project.FormalName}.Tests.dll">
+            <nowarn>
+                <!-- do not report warnings for missing XML comments -->
+                <warning number="1591" />
+            </nowarn>
             <sources>
                 <include name="${tests.dir}/**/*.cs" />
                 <!-- common assembly-level attributes -->
