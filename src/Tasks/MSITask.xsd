@@ -20,36 +20,101 @@
 //
 -->
 <xsd:schema targetNamespace="NAnt.Contrib.Tasks.MSITask" 
-	xmlns="NAnt.Contrib.Tasks.MSITask"
+	xmlns:msi="NAnt.Contrib.Tasks.MSITask" 
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
-	xmlns:nant="http://nant.sourceforge.net">
-	<xsd:import namespace="http://nant.sourceforge.net" schemaLocation="NAnt.xsd" />
+	attributeFormDefault="unqualified" 
+	elementFormDefault="qualified">
 	<!-- msi -->
 	<xsd:element name="msi">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element ref="properties" minOccurs="0" maxOccurs="1" />
-				<xsd:element ref="search" minOccurs="0" maxOccurs="1" />
-				<xsd:element ref="directories" minOccurs="0" maxOccurs="1" />
-				<xsd:element ref="environment" minOccurs="0" maxOccurs="1" />
-				<xsd:element ref="features" minOccurs="0" maxOccurs="1" />
-				<xsd:element ref="components" minOccurs="0" maxOccurs="1" />
-				<xsd:element ref="mergemodules" minOccurs="0" maxOccurs="1" />
-				<xsd:element ref="registry" minOccurs="0" maxOccurs="1" />
+				<xsd:element ref="msi:properties" minOccurs="0" maxOccurs="1" />
+				<xsd:element ref="msi:search" minOccurs="0" maxOccurs="1" />
+				<xsd:element ref="msi:directories" minOccurs="0" maxOccurs="1" />
+				<xsd:element name="environment" minOccurs="0" maxOccurs="1">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="variable" type="msi:MSIVariable" minOccurs="1" maxOccurs="unbounded">
+								<xsd:keyref name="variableComponentRefs" refer="msi:componentKey">
+									<xsd:selector xpath="." />
+									<xsd:field xpath="@component" />
+								</xsd:keyref>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element ref="msi:features" minOccurs="0" maxOccurs="1" />
+				<xsd:element name="components" minOccurs="0" maxOccurs="1">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="component" type="msi:MSIComponent" minOccurs="1" maxOccurs="unbounded">
+								<xsd:keyref name="componentDirectoryRefs" refer="msi:directoryKey">
+									<xsd:selector xpath="." />
+									<xsd:field xpath="@directory" />
+								</xsd:keyref>
+								<xsd:keyref name="componentFeatureRefs" refer="msi:featureKey">
+									<xsd:selector xpath="." />
+									<xsd:field xpath="@feature" />
+								</xsd:keyref>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="mergemodules" minOccurs="0" maxOccurs="1">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="merge" type="msi:MSIMerge" minOccurs="1" maxOccurs="unbounded">
+								<xsd:keyref name="mergeFeatureRefs" refer="msi:featureKey">
+									<xsd:selector xpath="." />
+									<xsd:field xpath="@feature" />
+								</xsd:keyref>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="registry" minOccurs="0" maxOccurs="1">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="key" type="msi:MSIRegistryKey" minOccurs="1" maxOccurs="unbounded">
+								<xsd:keyref name="registryKeyComponentRefs" refer="msi:componentKey">
+									<xsd:selector xpath="." />
+									<xsd:field xpath="@component" />
+								</xsd:keyref>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
 			</xsd:sequence>
 			<xsd:attribute name="output" type="xsd:string" use="required" />
 			<xsd:attribute name="sourcedir" type="xsd:string" use="required" />
 			<xsd:attribute name="license" type="xsd:string" use="required" />
 			<xsd:attribute name="banner" type="xsd:string" use="optional" />
 			<xsd:attribute name="background" type="xsd:string" use="optional" />
+			<xsd:attribute name="verbose" type="xsd:boolean" use="optional" default="false" />
 			<xsd:attribute name="debug" type="xsd:boolean" use="optional" default="false" />
 		</xsd:complexType>
+		<xsd:key name="directoryKey">
+			<xsd:selector xpath=".//msi:directory"/>
+			<xsd:field xpath="@name" />
+		</xsd:key>
+		<xsd:key name="featureKey">
+			<xsd:selector xpath=".//msi:feature"/>
+			<xsd:field xpath="@name" />
+		</xsd:key>
+		<xsd:key name="componentKey">
+			<xsd:selector xpath="msi:components/msi:component"/>
+			<xsd:field xpath="@name" />
+		</xsd:key>
+		<xsd:unique name="propertyKey">
+			<xsd:selector xpath="msi:properties/msi:property"/>
+			<xsd:field xpath="@name" />
+		</xsd:unique>
 	</xsd:element>
 	<!-- msi/properties -->
 	<xsd:element name="properties">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element ref="property" minOccurs="1" maxOccurs="unbounded" />
+				<xsd:element ref="msi:property" minOccurs="1" maxOccurs="unbounded" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
@@ -64,24 +129,24 @@
 	<xsd:element name="search">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element name="key" type="MSISearchKey" minOccurs="1" maxOccurs="unbounded" />
+				<xsd:element name="key" minOccurs="1" maxOccurs="unbounded">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="value" minOccurs="1" maxOccurs="unbounded">
+								<xsd:complexType>
+									<xsd:attribute name="name" type="xsd:string" use="required" />
+									<xsd:attribute name="setproperty" type="xsd:string" use="required" />
+								</xsd:complexType>
+							</xsd:element>
+						</xsd:sequence>
+						<xsd:attribute name="type" type="msi:MSISearchKeyType" use="required" />
+						<xsd:attribute name="path" type="xsd:string" use="required" />
+						<xsd:attribute name="root" type="msi:MSIRegistryKeyRoot" use="required" />
+					</xsd:complexType>
+				</xsd:element>
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-	<!-- msi/search/key -->
-	<xsd:complexType name="MSISearchKey">
-		<xsd:sequence>
-			<xsd:element name="value" minOccurs="1" maxOccurs="unbounded">
-				<xsd:complexType>
-					<xsd:attribute name="name" type="xsd:string" use="required" />
-					<xsd:attribute name="setproperty" type="xsd:string" use="required" />
-				</xsd:complexType>
-			</xsd:element>
-		</xsd:sequence>
-		<xsd:attribute name="type" type="MSISearchKeyType" use="required" />
-		<xsd:attribute name="path" type="xsd:string" use="required" />
-		<xsd:attribute name="root" type="MSIRegistryKeyRoot" use="required" />
-	</xsd:complexType>
 	<!-- msi/search/key/@type -->
 	<xsd:simpleType name="MSISearchKeyType">
 		<xsd:restriction base="xsd:string">
@@ -89,53 +154,41 @@
 			<xsd:enumeration value="file" />
 		</xsd:restriction>
 	</xsd:simpleType>
-	<!-- msi/directories -->
-	<xsd:element name="directories">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="directory" type="MSIRootDirectory" minOccurs="1" maxOccurs="unbounded" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
 	<!-- msi/directories//directory -->
 	<xsd:complexType name="MSIDirectory">
 		<xsd:sequence>
-			<xsd:element name="directory" type="MSIDirectory" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="directory" type="msi:MSIDirectory" minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 		<xsd:attribute name="name" type="xsd:string" use="required" />
 		<xsd:attribute name="foldername" type="xsd:string" use="required" />
 	</xsd:complexType>
+	<!-- msi/directories -->
+	<xsd:element name="directories">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="directory" type="msi:MSIRootDirectory" minOccurs="1" maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
 	<!-- msi/directories/directory -->
 	<xsd:complexType name="MSIRootDirectory">
 		<xsd:complexContent>
-			<xsd:extension base="MSIDirectory">
+			<xsd:extension base="msi:MSIDirectory">
 				<xsd:attribute name="root" type="xsd:string" use="required" />
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-	<!-- msi/environment -->
-	<xsd:element name="environment">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element ref="variable" minOccurs="1" maxOccurs="unbounded" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
 	<!-- msi/environment/variable -->
-	<xsd:element name="variable">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="component" type="componentReference" minOccurs="1" />
-			</xsd:sequence>
-			<xsd:attribute name="name" type="xsd:string" use="required" />
-			<xsd:attribute name="append" type="xsd:string" use="required" />
-		</xsd:complexType>
-	</xsd:element>
+	<xsd:complexType name="MSIVariable">
+		<xsd:attribute name="name" type="xsd:string" use="required" />
+		<xsd:attribute name="append" type="xsd:string" use="required" />
+		<xsd:attribute name="component" type="xsd:string" use="required" />
+	</xsd:complexType>
 	<!-- msi/features -->
 	<xsd:element name="features">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element name="feature" type="MSIFeature" minOccurs="1" maxOccurs="unbounded" />
+				<xsd:element name="feature" type="msi:MSIFeature" minOccurs="1" maxOccurs="unbounded" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
@@ -143,35 +196,27 @@
 	<xsd:complexType name="MSIFeature">
 		<xsd:sequence>
 			<xsd:element name="description" type="xsd:string" minOccurs="0" maxOccurs="1" />
-			<xsd:element name="directory" type="directoryReference" minOccurs="0" maxOccurs="1" />
-			<xsd:element name="feature" type="MSIFeature" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="feature" type="msi:MSIFeature" minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 		<xsd:attribute name="name" type="xsd:string" use="required" />
 		<xsd:attribute name="attr" type="xsd:int" use="optional" default="0" />
 		<xsd:attribute name="title" type="xsd:string" use="optional" />
 		<xsd:attribute name="display" type="xsd:int" use="required" />
 		<xsd:attribute name="typical" type="xsd:boolean" use="optional" default="false" />
+		<xsd:attribute name="directory" type="xsd:string" use="optional" />
 	</xsd:complexType>
-	<!-- msi/components -->
-	<xsd:element name="components">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="component" type="MSIComponent" minOccurs="1" maxOccurs="unbounded" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
 	<!-- msi/components/component -->
 	<xsd:complexType name="MSIComponent">
 		<xsd:sequence>
-			<xsd:element name="directory" type="directoryReference" minOccurs="1" />
-			<xsd:element name="feature" type="featureReference" minOccurs="1" />
-			<xsd:element name="key" type="MSIKeyFile" minOccurs="1" />
-			<xsd:element name="fileset" type="nant:NAntFileSet" minOccurs="1" />
-			<xsd:element name="forceid" type="MSIFileOverride" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="key" type="msi:MSIKeyFile" minOccurs="1" />
+			<xsd:element name="fileset" type="msi:NAntFileSet" minOccurs="1" />
+			<xsd:element name="forceid" type="msi:MSIFileOverride" minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 		<xsd:attribute name="name" type="xsd:string" use="required" />
-		<xsd:attribute name="id" type="MSIComponentGUID" use="required" />
+		<xsd:attribute name="id" type="msi:MSIComponentGUID" use="required" />
 		<xsd:attribute name="attr" type="xsd:int" use="required" />
+		<xsd:attribute name="directory" type="xsd:string" use="required" />
+		<xsd:attribute name="feature" type="xsd:string" use="required" />
 	</xsd:complexType>
 	<!-- msi/components/component/key -->
 	<xsd:complexType name="MSIKeyFile">
@@ -180,41 +225,23 @@
 	<!-- msi/components/component/override -->
 	<xsd:complexType name="MSIFileOverride">
 		<xsd:attribute name="file" type="xsd:string" use="required" />
-		<xsd:attribute name="id" type="MSIFileID" use="required" />
+		<xsd:attribute name="id" type="msi:MSIFileID" use="required" />
 	</xsd:complexType>
-	<!-- msi/mergemodules -->
-	<xsd:element name="mergemodules">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element ref="merge" minOccurs="1" maxOccurs="unbounded" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
 	<!-- msi/mergemodules/merge -->
-	<xsd:element name="merge">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="modules" type="nant:NAntFileSet" minOccurs="1" maxOccurs="1" />
-			</xsd:sequence>
-			<xsd:attribute name="feature" type="xsd:string" use="required" />
-		</xsd:complexType>
-	</xsd:element>
-	<!-- msi/registry -->
-	<xsd:element name="registry">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="key" type="MSIRegistryKey" minOccurs="1" maxOccurs="unbounded" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
+	<xsd:complexType name="MSIMerge">
+		<xsd:sequence>
+			<xsd:element name="modules" type="msi:NAntFileSet" minOccurs="1" maxOccurs="1" />
+		</xsd:sequence>
+		<xsd:attribute name="feature" type="xsd:string" use="required" />
+	</xsd:complexType>
 	<!-- msi/registry/key -->
 	<xsd:complexType name="MSIRegistryKey">
 		<xsd:sequence>
-			<xsd:element name="component" type="componentReference" minOccurs="1" />
-			<xsd:element name="value" type="MSIRegistryKeyValue" minOccurs="1" maxOccurs="unbounded" />
+			<xsd:element name="value" type="msi:MSIRegistryKeyValue" minOccurs="1" maxOccurs="unbounded" />
 		</xsd:sequence>
 		<xsd:attribute name="path" type="xsd:string" use="required" />
-		<xsd:attribute name="root" type="MSIRegistryKeyRoot" use="required" />
+		<xsd:attribute name="root" type="msi:MSIRegistryKeyRoot" use="required" />
+		<xsd:attribute name="component" type="xsd:string" use="required" />
 	</xsd:complexType>
 	<!-- msi/registry/key/value -->
 	<xsd:complexType name="MSIRegistryKeyValue">
@@ -227,15 +254,6 @@
 		</xsd:simpleContent>
 	</xsd:complexType>
 	<!-- shared types -->
-	<xsd:complexType name="directoryReference">
-		<xsd:attribute name="name" type="xsd:string" use="required" />
-	</xsd:complexType>
-	<xsd:complexType name="componentReference">
-		<xsd:attribute name="name" type="xsd:string" use="required" />
-	</xsd:complexType>
-	<xsd:complexType name="featureReference">
-		<xsd:attribute name="name" type="xsd:string" use="required" />
-	</xsd:complexType>
 	<xsd:simpleType name="MSIRegistryKeyRoot">
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="machine" />
@@ -250,5 +268,16 @@
 	<xsd:simpleType name="MSIFileID">
 		<xsd:restriction base="xsd:string" />
 	</xsd:simpleType>
-	
+	<xsd:element name="fileset" type="msi:NAntFileSet" />
+	<xsd:complexType name="NAntFileSet">
+		<xsd:sequence>
+			<xsd:element name="includes" type="msi:NAntFileSetPattern" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="excludes" type="msi:NAntFileSetPattern" minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+		<xsd:attribute name="basedir" type="xsd:string" use="optional" />
+	</xsd:complexType>
+	<xsd:complexType name="NAntFileSetPattern">
+		<xsd:attribute name="name" type="xsd:string" use="required" />
+		<xsd:attribute name="asIs" type="xsd:boolean" use="optional" />
+	</xsd:complexType>
 </xsd:schema>
