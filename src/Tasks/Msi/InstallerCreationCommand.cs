@@ -862,8 +862,9 @@ namespace NAnt.Contrib.Tasks.Msi {
             registryTable.InsertRecord(CreateIdentityGuid(), 0, registryClassIdKeyPart + "InprocServer32",
                 "ThreadingModel", "Both", tlbRecord.AssemblyComponent);
 
+            // clr version should have format major.minor.build 
             registryTable.InsertRecord(CreateIdentityGuid(), 0, registryClassIdKeyPart + "InprocServer32",
-                "RuntimeVersion", "v"+ Project.CurrentFramework.Version, tlbRecord.AssemblyComponent);
+                "RuntimeVersion", "v"+ Project.TargetFramework.ClrVersion, tlbRecord.AssemblyComponent);
 
             registryTable.InsertRecord(CreateIdentityGuid(), 0, registryClassIdKeyPart + "InprocServer32",
                 "Assembly", tlbRecord.AssemblyName.FullName, tlbRecord.AssemblyComponent);
