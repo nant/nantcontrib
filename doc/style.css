@@ -188,3 +188,8 @@ td.required {
 span.parameter {
     color: #606080;
 }
+
+p.topicstatus {
+    display: block;
+    color: red;
+}
