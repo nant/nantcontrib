@@ -10,20 +10,136 @@
         <table width="100%" border="0" cellspacing="0" cellpadding="2" class="NavBar">
             <tr>
                 <td class="NavBar-Cell">
-                    <a title="NAntContrib home page" href="index.html"><b>NAntContrib</b></a>
-                    <img src="arrow.gif" alt="->" width="13" height="9" />Release Notes
+                    <a title="NAntContrib home page" href="index.html"><b>NAntContrib</b></a> <img src="arrow.gif" alt="->" width="13" height="9" />Release 
+                    Notes
                 </td>
             </tr>
         </table>
         <h1>
             <span class="N">N</span><span class="Ant">Ant</span>Contrib Release Notes</h1>
+        <h3>0.85-rc1 (TBD)</h3>
+        <h4>New Tasks</h4>
+        <h5><a class="heading" href="help/tasks/depends.html">&lt;depends&gt;</a></h5>
+        <ul>
+            <li>
+                Guarantees that listed dependencies are resolved before continuing.
+            </li>
+        </ul>
+        <h5><a class="heading" href="help/tasks/grep.html">&lt;grep&gt;</a></h5>
+        <ul>
+            <li>
+                Searches files for a regular-expression and produces an XML 
+                report of the matches.
+            </li>
+        </ul>
+        <h5>&lt;Surround SCM&gt;</h5>
+        <ul>
+            <li>
+                Support for <a href="http://www.seapine.com/surroundscm.html">Surround SCM</a> has been added.
+            </li>
+        </ul>
+        <h5>&lt;Subversion&gt;</h5>
+        <ul>
+            <li>
+                Support for <a href="http://subversion.tigris.org/">Subversion</a> has been introduced.
+            </li>
+        </ul>
+        <h5>&lt;Perforce&gt;</h5>
+        <ul>
+            <li>
+                Support for <a href="http://www.perforce.com/perforce/products.html">Perforce SCM</a> has been added.
+            </li>
+        </ul>
+        <h4>Task changes</h4>
+        <h5><a class="heading" href="help/tasks/aximp.html">&lt;aximp&gt;</a></h5>
+        <ul>
+            <li>
+                Several issues have been fixed.
+            </li>
+        </ul>
+        <h5><a class="heading" href="help/tasks/comregister.html">&lt;comregister&gt;</a></h5>
+        <ul>
+            <li>
+                Minor fix to prevent file locking.
+            </li>
+        </ul>
+        <h5><a class="heading" href="help/tasks/gac.html">&lt;gac&gt;</a></h5>
+        <ul>
+            <li>
+                Documentation has been improved.
+            </li>
+            <li>
+                Several issues have been fixed.
+            </li>
+        </ul>
+        <h5><a class="heading" href="help/tasks/msi.html">&lt;msi&gt;</a> / <a class="heading" href="help/tasks/msm.html">&lt;msm&gt;</a></h5>
+        <ul>
+            <li>
+                Added automatic parsing of subdirectories of components.
+            </li>
+            <li>
+                Added support for registry components.
+            </li>
+            <li>
+                Documentation has been improved.
+            </li>
+            <li>
+                Added support for configurable merge modules.
+            </li>            
+            <li>
+                Several issues have been fixed.
+            </li>
+            <li>
+                Added support for installing assemblies to the GAC.
+            </li>
+        </ul>
+        <h5><a class="heading" href="help/tasks/sql.html">&lt;sql&gt;</a></h5>
+        <ul>
+            <li>
+                Added "append" attribute that indicates whether to overwrite 
+                output file.
+            </li>
+            <li>
+                Added "showheaders" attribute that specifies whether or not to
+                display schema information.
+            </li>
+            <li>
+                Column separator is changed from "  " (two spaces) to ", ".
+            </li>
+            <li>
+                Added "quotechar" attribute which specified the character(s) to 
+                place arround column values to prevent collisions with for 
+                instance the comma character.
+            </li>
+        </ul>
+        <h5><a class="heading" href="help/tasks/vb6.html">&lt;vb6&gt;</a></h5>
+        <ul>
+            <li>
+                Several issues have been fixed.
+            </li>
+        </ul>
+        <h5><a class="heading" href="help/tasks/vssadd.html">&lt;vssadd&gt;</a></h5>
+        <ul>
+            <li>
+                Added support for recursive add.
+            </li>
+        </ul>
+        <h5><a class="heading" href="help/tasks/xsd.html">&lt;xsd&gt;</a></h5>
+        <ul>
+            <li>
+                Documentation has been improved.
+            </li>
+            <li>
+                Several issues have been fixed.
+            </li>
+        </ul>
         <h3>0.84 (December 26, 2003)</h3>
         <h4>Task changes</h4>
         <h5>&lt;regasm&gt;</h5>
         <ul>
             <li>
-                Fixed issue when long filenames were specified for the <code>typelib</code> or <code>regfile</code>
-                attribute.
+                Fixed issue when long filenames were specified for the <code>typelib</code> or <code>
+                    regfile</code> attribute.
             </li>
         </ul>
         <h3>0.84-rc 2 (December 21, 2003)</h3>
@@ -39,11 +155,16 @@
         <h4>Task changes</h4>
         <h5>&lt;msi&gt; and &lt;msm&gt;</h5>
         <ul>
-            <li>For entries in the File table, the language will now be supplied.</li>
-            <li>Nullable columns for a custom table are now properly supported.</li>
-            <li>Added checkinterop attributes to the component and fileoverride elements.</li>
-            <li>Support pure registry components.</li>
-            <li>Improved error reporting.</li>
+            <li>
+                For entries in the File table, the language will now be supplied.</li>
+            <li>
+                Nullable columns for a custom table are now properly supported.</li>
+            <li>
+                Added checkinterop attributes to the component and fileoverride elements.</li>
+            <li>
+                Support pure registry components.</li>
+            <li>
+                Improved error reporting.</li>
         </ul>
         <h5>&lt;slingshot&gt;</h5>
         <ul>
@@ -68,17 +189,19 @@
         </ul>
         <h5>&lt;version&gt;</h5>
         <ul>
-            <li>Improved error reporting and documentation.</li>
+            <li>
+                Improved error reporting and documentation.</li>
         </ul>
         <h5>&lt;vssget&gt;</h5>
         <ul>
             <li>
-                Added <code>removedeleted</code> attribute to support removal of local files that
-                were deleted files from the Visual SourceSafe repository.
+                Added <code>removedeleted</code> attribute to support removal of local files 
+                that were deleted files from the Visual SourceSafe repository.
             </li>
             <li>
-                Added <code>usemodtime</code> attribute to support setting the timestamp of local
-                files to the modification time of these files in the Visual SourceSafe repository.
+                Added <code>usemodtime</code> attribute to support setting the timestamp of 
+                local files to the modification time of these files in the Visual SourceSafe 
+                repository.
             </li>
             <li>
                 Added unit tests.
