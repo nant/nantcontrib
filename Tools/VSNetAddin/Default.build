@@ -29,16 +29,15 @@
   and Microsoft Help 2.0 SDK installed to.
   -->
   <property name="dotnet.dir" value="C:\Program Files\Microsoft.NET" />
-  <property name="vsnet.dir" value="C:\Development\Microsoft Visual Studio .NET" />
+  <property name="vsnet.dir" value="C:\Program Files\Microsoft Visual Studio .NET" />
   <property name="helpsdk.dir" value="C:\Program Files\Microsoft Help 2.0 SDK" />
   <!--*******************************************************************-->
+  <property name="product.name" value="NAntAddin" />
   <property name="nant.dir" value="..\..\..\NAnt" />
   <property name="nantbuild.dir" value="${nant.dir}\build" />
-  <property name="nantcontrib.dir" value="..\..\..\NAntContrib" />
-  <property name="nantcontribbuild.dir" value="${nantcontrib.dir}\build" />
   <property name="build.dir" value="build" />
-  <property name="bin.src.dir" value="bin" />
-  <property name="dest.dir" value="${build.dir}\NAntAddin" />
+  <property name="bin.dir" value="bin" />
+  <property name="dest.dir" value="${build.dir}\${product.name}" />
   <property name="vside.dir" value="${vsnet.dir}\Common7\IDE" />
   <property name="vslibs.dir" value="${vsnet.dir}\Common7\IDE\PublicAssemblies" />
   <property name="vstools.dir" value="${vsnet.dir}\Common7\Tools" />
@@ -50,64 +49,64 @@
   <target name="prepare" description="Prepares the Build Directory">
     <mkdir dir="${build.dir}" />
     <mkdir dir="${dest.dir}" />
-    <copy file="${bin.src.dir}\Interop.VSUserControlHostLib.dll" todir="${dest.dir}" />
-    <echo message="**********************************************************************************"/>
-    <echo message="*"/>
-    <echo message="* Building NAnt Addin for Visual Studio.NET..."/>
-    <echo message="*"/>
-    <echo message="* PLEASE VERIFY YOUR BUILD ENVIRONMENT:"/>
-    <echo message="*"/>
-    <echo message="* Microsoft.NET Primary Interop Assemblies:"/>
-    <echo message="*"/>
-    <echo message="*   ${dotnet.dir}"/>
-    <echo message="*"/>
-    <echo message="* Visual Studio.NET Installed To:"/>
-    <echo message="*"/>
-    <echo message="*   ${vsnet.dir}"/>
-    <echo message="*"/>
-    <echo message="* Microsoft Help 2.0 SDK Installed To:"/>
-    <echo message="*"/>
-    <echo message="*   ${helpsdk.dir}"/>
-    <echo message="*"/>
-    <echo message="*"/>
-    <echo message="**********************************************************************************"/>
+    <copy file="${bin.dir}\Interop.VSUserControlHostLib.dll" todir="${dest.dir}" />
+    <echo message="**********************************************************************************" />
+    <echo message="*" />
+    <echo message="* Building NAnt Addin for Visual Studio.NET..." />
+    <echo message="*" />
+    <echo message="* PLEASE VERIFY YOUR BUILD ENVIRONMENT:" />
+    <echo message="*" />
+    <echo message="* Microsoft.NET Primary Interop Assemblies:" />
+    <echo message="*" />
+    <echo message="*   ${dotnetlibs.dir}" />
+    <echo message="*" />
+    <echo message="* Visual Studio.NET Installed To:" />
+    <echo message="*" />
+    <echo message="*   ${vsnet.dir}" />
+    <echo message="*" />
+    <echo message="* Microsoft Help 2.0 SDK Installed To:" />
+    <echo message="*" />
+    <echo message="*   ${helpsdk.dir}" />
+    <echo message="*" />
+    <echo message="*" />
+    <echo message="**********************************************************************************" />
     <sysinfo />
   </target>
   <target name="addin.compile" description="Compiles the Addin">
-    <echo message="**************************************************"/>
-    <echo message="*"/>
-    <echo message="* Compiling C# Addin Class Library"/>
-    <echo message="*"/>
-    <echo message="**************************************************"/>
-    <resgen input="NAntAddin.resx" output="${dest.dir}\NAnt.Contrib.NAntAddin.Addin.resources" />
-    <resgen input="Controls\AboutDialog.resx" output="${dest.dir}\NAnt.Contrib.NAntAddin.Dialogs.AboutDialog.resources" />
-    <resgen input="Controls\AddPropertyDialog.resx" output="${dest.dir}\NAnt.Contrib.NAntAddin.Dialogs.AddPropertyDialog.resources" />
-    <resgen input="Controls\AddTargetDialog.resx" output="${dest.dir}\NAnt.Contrib.NAntAddin.Dialogs.AddTargetDialog.resources" />
-    <resgen input="Controls\AddTaskDialog.resx" output="${dest.dir}\NAnt.Contrib.NAntAddin.Dialogs.AddTaskDialog.resources" />
-    <resgen input="Controls\ScriptExplorerControl.resx" output="${dest.dir}\NAnt.Contrib.NAntAddin.Controls.ScriptExplorerControl.resources" />
-    <resgen input="Controls\TaskNodeDialog.resx" output="${dest.dir}\NAnt.Contrib.NAntAddin.Dialogs.TaskNodeDialog.resources" />
-    <resgen input="Controls\VSNetToolbarControl.resx" output="${dest.dir}\NAnt.Contrib.NAntAddin.Controls.VSNetToolbarDesigner.resources" />
-    <csc target="library" debug="true" define="DEBUG;TRACE" output="${dest.dir}/NAntAddin.dll" doc="${dest.dir}\NAntAddinAPI.xml">
-	<resources>
-	  <includes name="${dest.dir}\**.resources"/>
-	</resources>
+    <echo message="**************************************************" />
+    <echo message="*" />
+    <echo message="* Compiling C# Addin Class Library" />
+    <echo message="*" />
+    <echo message="**************************************************" />
+    <exec program="resgen" commandline="NAntAddin.resx ${dest.dir}\NAnt.Contrib.NAntAddin.Addin.resources" />
+    <exec program="resgen" commandline="Controls\AboutDialog.resx ${dest.dir}\NAnt.Contrib.NAntAddin.Dialogs.AboutDialog.resources" />
+    <exec program="resgen" commandline="Controls\AddPropertyDialog.resx ${dest.dir}\NAnt.Contrib.NAntAddin.Dialogs.AddPropertyDialog.resources" />
+    <exec program="resgen" commandline="Controls\AddTargetDialog.resx ${dest.dir}\NAnt.Contrib.NAntAddin.Dialogs.AddTargetDialog.resources" />
+    <exec program="resgen" commandline="Controls\AddTaskDialog.resx ${dest.dir}\NAnt.Contrib.NAntAddin.Dialogs.AddTaskDialog.resources" />
+    <exec program="resgen" commandline="Controls\ScriptExplorerControl.resx ${dest.dir}\NAnt.Contrib.NAntAddin.Controls.ScriptExplorerControl.resources" />
+    <exec program="resgen" commandline="Controls\TaskNodeDialog.resx ${dest.dir}\NAnt.Contrib.NAntAddin.Dialogs.TaskNodeDialog.resources" />
+    <exec program="resgen" commandline="Controls\VSNetToolbarControl.resx ${dest.dir}\NAnt.Contrib.NAntAddin.Controls.VSNetToolbarDesigner.resources" />
+    <csc target="library" debug="true" define="DEBUG;TRACE" output="${dest.dir}/${product.name}.dll" doc="${dest.dir}\${product.name}.xml">
+      <resources>
+        <includes name="${dest.dir}\**.resources" />
+      </resources>
       <sources baseDir=".">
         <includes name="**.cs" />
         <excludes name="SampleTaskNode/**" />
-	  <excludes name="build/**"/>
+        <excludes name="build/**" />
       </sources>
       <arg value="${buildlibs.arg}" />
       <references>
-	  <includes name="System" />
-	  <includes name="System.Design" />
-	  <includes name="System.Drawing.Design" />
-	  <includes name="System.Data" />
-	  <includes name="System.Xml" />
+        <includes name="System" />
+        <includes name="System.Design" />
+        <includes name="System.Drawing.Design" />
+        <includes name="System.Data" />
+        <includes name="System.Xml" />
         <includes name="System.Windows.Forms" />
         <includes name="System.Drawing" />
-	  <includes name="Extensibility.dll" asis="true"/>
+        <includes name="Extensibility.dll" asis="true" />
         <includes name="EnvDTE.dll" asis="true" />
-	  <includes name="VSLangProj.dll" asis="true"/>
+        <includes name="VSLangProj.dll" asis="true" />
         <includes name="stdole.dll" asis="true" />
         <includes name="office.dll" asis="true" />
         <includes name="${dest.dir}\NAnt.Core.dll" asis="true" />
@@ -116,16 +115,16 @@
     </csc>
     <delete>
       <fileset>
-        <includes name="${dest.dir}\**.resources"/>
+        <includes name="${dest.dir}\**.resources" />
       </fileset>
     </delete>
   </target>
   <target name="resources.compile" description="Compiles Addin Resources">
-    <echo message="**************************************************"/>
-    <echo message="*"/>
-    <echo message="* Compiling C++ Resource Library Source"/>
-    <echo message="*"/>
-    <echo message="**************************************************"/>
+    <echo message="**************************************************" />
+    <echo message="*" />
+    <echo message="* Compiling C++ Resource Library Source" />
+    <echo message="*" />
+    <echo message="**************************************************" />
     <mkdir dir="${resources.dest.dir}" />
     <cl outputdir="${resources.dest.dir}">
       <includedirs>
@@ -157,11 +156,11 @@
       <arg value="&quot;${resources.dir}\NAntAddinResources.cpp&quot;" />
     </cl>
     <exec program="${vstools.dir}\bin\rc" basedir="${resources.dir}" commandline="/fo&quot;..\${resources.dest.dir}\NAntAddinResources.res&quot; &quot;NAntAddinResources.rc&quot;" />
-    <echo message="**************************************************"/>
-    <echo message="*"/>
-    <echo message="* Linking C++ Resource Library"/>
-    <echo message="*"/>
-    <echo message="**************************************************"/>
+    <echo message="**************************************************" />
+    <echo message="*" />
+    <echo message="* Linking C++ Resource Library" />
+    <echo message="*" />
+    <echo message="**************************************************" />
     <link output="${resources.dest.dir}\NAntAddinResources.dll">
       <libdirs>
         <includes name="${sys.env.LIB}" asis="true" />
@@ -201,11 +200,11 @@
   </target>
   <target name="build" description="Builds the NAnt Addin" depends="prepare,build.nant,addin.compile,resources.compile,content.deploy,vsdocs,assemblies.deploy" />
   <target name="build.nant" description="Compiles NAnt">
-    <echo message="**************************************************"/>
-    <echo message="*"/>
-    <echo message="* Building NAnt..."/>
-    <echo message="*"/>
-    <echo message="**************************************************"/>
+    <echo message="**************************************************" />
+    <echo message="*" />
+    <echo message="* Building NAnt..." />
+    <echo message="*" />
+    <echo message="**************************************************" />
     <nant buildfile="${nant.dir}\NAnt.build" target="build" basedir="${nant.dir}" />
     <copy file="${nantbuild.dir}\CollectionGen.dll" todir="${dest.dir}" />
     <copy file="${nantbuild.dir}\NAnt.Core.dll" todir="${dest.dir}" />
@@ -214,20 +213,17 @@
     <copy file="${nantbuild.dir}\NDoc.Documenter.Msdn.dll" todir="${dest.dir}" />
     <copy file="${nantbuild.dir}\NUnitCore.dll" todir="${dest.dir}" />
     <copy file="${nantbuild.dir}\NZipLib.dll" todir="${dest.dir}" />
-    <nant buildfile="${nantcontrib.dir}\NAntContrib.build" target="build" basedir="${nantcontrib.dir}" />
-    <mkdir dir="${nant.dir}\bin\tasks" />
-    <copy file="${nantcontribbuild.dir}\NAnt.Contrib.Tasks.dll" todir="${nant.dir}\bin\tasks" />
   </target>
   <target name="clean" description="Deletes Build Output">
     <delete dir="${dest.dir}" failonerror="false" />
   </target>
   <target name="rebuild" description="Cleans and Builds the Addin" depends="clean,build" />
   <target name="content.deploy" description="Copies Static Content to the Build Directory">
-    <echo message="**************************************************"/>
-    <echo message="*"/>
-    <echo message="* Deploying Static Files..."/>
-    <echo message="*"/>
-    <echo message="**************************************************"/>
+    <echo message="**************************************************" />
+    <echo message="*" />
+    <echo message="* Deploying Static Files..." />
+    <echo message="*" />
+    <echo message="**************************************************" />
     <copy todir="${dest.dir}">
       <fileset>
         <includes name="*.bmp" />
@@ -245,11 +241,11 @@
     </copy>
   </target>
   <target name="vsdocs" description="Builds the User Documentation">
-    <echo message="**************************************************"/>
-    <echo message="*"/>
-    <echo message="* Compiling HTML Help..."/>
-    <echo message="*"/>
-    <echo message="**************************************************"/>
+    <echo message="**************************************************" />
+    <echo message="*" />
+    <echo message="* Compiling HTML Help..." />
+    <echo message="*" />
+    <echo message="**************************************************" />
     <exec program="&quot;${helpsdk.dir}\hxcomp&quot;" commandline="-p ${help.dir}\NAntAddinDocs.HxC -o ${dest.dir}\NAntAddinDocs.HxS -r ${help.dir}" />
     <copy todir="${dest.dir}">
       <fileset basedir="${help.dir}\CollectionFiles">
@@ -265,47 +261,86 @@
         <includes name="NAntAddinDocs.HxA" />
       </fileset>
     </copy>
-    <echo message="**************************************************"/>
-    <echo message="*"/>
-    <echo message="* Registering Help in Shared Help Collection..."/>
-    <echo message="*"/>
-    <echo message="**************************************************"/>
-    <exec program="&quot;${helpsdk.dir}\hxreg&quot;" commandline="-n NAntAddin -i NAntAddin -c ${dest.dir}\NAntAddinDocs.HxC -s ${dest.dir}\NAntAddinDocs.HxS " />
+    <echo message="**************************************************" />
+    <echo message="*" />
+    <echo message="* Registering Help in Shared Help Collection..." />
+    <echo message="*" />
+    <echo message="**************************************************" />
+    <exec program="&quot;${helpsdk.dir}\hxreg&quot;" commandline="-n ${product.name} -i ${product.name} -c ${dest.dir}\NAntAddinDocs.HxC -s ${dest.dir}\NAntAddinDocs.HxS " />
   </target>
   <target name="assemblies.deploy" description="Copies Assemblies to the Build Directory">
-    <echo message="**************************************************"/>
-    <echo message="*"/>
-    <echo message="* Deploying Shared Assemblies..."/>
-    <echo message="*"/>
-    <echo message="**************************************************"/>
-    <copy todir="${dest.dir}">
-      <fileset basedir="${vslibs.dir}">
-        <includes name="extensibility.dll" />
-        <includes name="Extensibility.dll" />
-        <includes name="VSLangProj.dll" />
-      </fileset>
-    </copy>
-    <copy todir="${dest.dir}">
-      <fileset basedir="${vside.dir}">
-        <includes name="microsoft.visualstudio.designer.interfaces.dll" />
-        <includes name="Microsoft.VisualStudio.WizardFramework.Dll" />
-        <includes name="Microsoft.VisualStudio.dll" />
-        <includes name="Microsoft.VSDesigner.dll" />
-      </fileset>
-    </copy>
-    <copy todir="${dest.dir}">
-      <fileset basedir="${dotnetlibs.dir}">
-        <includes name="msddsp.dll" />
-        <includes name="msddslmp.dll" />
-      </fileset>
-    </copy>
-    <echo message="**************************************************"/>
-    <echo message="*"/>
-    <echo message="* Registering Addin TypeLibrary..."/>
-    <echo message="*"/>
-    <echo message="**************************************************"/>
+    <echo message="**************************************************" />
+    <echo message="*" />
+    <echo message="* Deploying Shared Assemblies..." />
+    <echo message="*" />
+    <echo message="**************************************************" />
+    <copy todir="${dest.dir}" file="${vslibs.dir}\extensibility.dll"/>
+    <copy todir="${dest.dir}" file="${vslibs.dir}\vslangproj.dll"/>
+    <copy todir="${dest.dir}" file="${vside.dir}\microsoft.visualstudio.designer.interfaces.dll"/>
+    <copy todir="${dest.dir}" file="${vside.dir}\microsoft.visualstudio.wizardframework.dll"/>
+    <copy todir="${dest.dir}" file="${vside.dir}\microsoft.visualstudio.dll"/>
+    <copy todir="${dest.dir}" file="${vside.dir}\microsoft.vsdesigner.dll"/>
+    <copy todir="${dest.dir}" file="${dotnetlibs.dir}\msddsp.dll"/>
+    <copy todir="${dest.dir}" file="${dotnetlibs.dir}\msddslmp.dll"/>
+    <echo message="**************************************************" />
+    <echo message="*" />
+    <echo message="* Registering Addin TypeLibrary..." />
+    <echo message="*" />
+    <echo message="**************************************************" />
     <exec program="regsvr32" commandline="/s ${dest.dir}\VSUserControlHost.dll" />
-    <exec program="regasm" commandline="${dest.dir}\NAntAddin.dll /tlb:${dest.dir}\NAntAddin.tlb /codebase ${dest.dir}\NAntAddin.dll" />
-    <echo message="Done. Remember to run RegisterAddin.reg."/>
+    <exec program="regasm" commandline="${dest.dir}\${product.name}.dll /tlb:${dest.dir}\${product.name}.tlb /codebase ${dest.dir}\${product.name}.dll" />
+    <echo message="Done. Remember to run RegisterAddin.reg." />
+  </target>
+  <target name="apidocs" reference="Builds API Documentation" description="Builds the API Reference" depends="build">
+    <echo message="**************************************************" />
+    <echo message="*" />
+    <echo message="* Building API Reference Help..." />
+    <echo message="*" />
+    <echo message="**************************************************" />
+    <ndoc>
+      <assemblies basedir="${dest.dir}">
+        <includes name="${product.name}.dll" />
+      </assemblies>
+      <summaries>
+        <includes name="NamespaceSummary.xml" />
+      </summaries>
+      <documenters>
+        <documenter name="MSDN">
+          <property name="OutputDirectory" value="${dest.dir}\APIDocs" />
+          <property name="HtmlHelpName" value="NAnt.Contrib.NAntAddin" />
+          <property name="IncludeFavorites" value="False" />
+          <property name="Title" value="NAnt Addin for Visual Studio.NET Class Library" />
+          <property name="SplitTOCs" value="False" />
+          <property name="DefaulTOC" value="" />
+          <property name="ShowVisualBasic" value="False" />
+          <property name="OmitObjectTags" value="False" />
+          <property name="ShowMissingSummaries" value="True" />
+          <property name="ShowMissingRemarks" value="True" />
+          <property name="ShowMissingParams" value="True" />
+          <property name="ShowMissingReturns" value="True" />
+          <property name="ShowMissingValues" value="True" />
+          <property name="DocumentInternals" value="False" />
+          <property name="DocumentProtected" value="True" />
+          <property name="DocumentPrivates" value="False" />
+          <property name="DocumentEmptyNamespaces" value="False" />
+          <property name="IncludeAssemblyVersion" value="True" />
+          <property name="CopyrightText" value="" />
+          <property name="CopyrightHref" value="" />
+          <property name="ReferencesPath" value="${dest.dir}" />
+          <property name="SkipNamespacesWithoutSummaries" value="False" />
+          <property name="AddPropertyBackerSummaries" value="False" />
+        </documenter>
+      </documenters>
+    </ndoc>
+    <delete>
+      <fileset>
+        <includes name="${dest.dir}\APIDocs\*.css"/>
+        <includes name="${dest.dir}\APIDocs\*.html"/>
+        <includes name="${dest.dir}\APIDocs\*.hhc"/>
+        <includes name="${dest.dir}\APIDocs\*.hhk"/>
+        <includes name="${dest.dir}\APIDocs\*.hhp"/>
+        <includes name="${dest.dir}\APIDocs\*.log"/>
+      </fileset>
+    </delete>
   </target>
 </project>
