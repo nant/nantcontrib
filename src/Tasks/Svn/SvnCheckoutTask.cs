@@ -102,8 +102,8 @@ namespace NAnt.Contrib.Tasks.Svn {
         [TaskAttribute("recursive", Required=false)]
         [BooleanValidator()]
         public bool Recursive {
-            get {return ((Option)this.CommandOptions["recursive"]).IfDefined;}
-            set {this.SetCommandOption("recursive", "recursive", !value);}
+            get {return ((Option)this.CommandOptions["non-recursive"]).IfDefined;}
+            set {this.SetCommandOption("non-recursive", "non-recursive", !value);}
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace NAnt.Contrib.Tasks.Svn {
                 if ((new Regex(number_regex)).IsMatch(value) ||
                     ((new Regex(date_regex)).IsMatch(value)) ||
                     ((new Regex(magic_ref_regex)).IsMatch(value))) {
-                    this.SetCommandOption("revision", String.Format("revision={0}", value), true);
+                    this.SetCommandOption("revision", string.Format("revision={0}", value), true);
                 } else {
                     throw new BuildException(string.Format(CultureInfo.InvariantCulture,
                         "Invalid argument specified: {0}.", value), Location);
