@@ -151,6 +151,20 @@ namespace NAnt.Contrib.Util {
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to produce emacs (and other
+        /// editor) friendly output.
+        /// </summary>
+        /// <value>
+        /// <see langword="true" /> if output is to be unadorned so that emacs 
+        /// and other editors can parse files names, etc. The default is
+        /// <see langword="false" />.
+        /// </value>
+        public virtual bool EmacsMode {
+            get { return _emacsMode; }
+            set { _emacsMode = value; }
+        }
+
+        /// <summary>
         /// Gets or sets the <see cref="TextWriter" /> to which the logger is
         /// to send its output.
         /// </summary>
@@ -295,15 +309,8 @@ namespace NAnt.Contrib.Util {
         /// the logger will actually be output in the build log.
         /// </remarks>
         public virtual void MessageLogged(object sender, BuildEventArgs e) {
-            int indentationLength = 0;
-
-            // calculate indentation length from Project
-            if (e.Project != null)  {
-                indentationLength = e.Project.IndentationLevel * e.Project.IndentationSize;
-            }
-
             // output the message
-            OutputMessage(e.MessageLevel, e.Message, indentationLength);
+            OutputMessage(e);
         }
 
         #endregion Implementation of IBuildListener
@@ -365,46 +372,103 @@ namespace NAnt.Contrib.Util {
         #region Private Instance Methods
 
         /// <summary>
-        /// Outputs an indented message to the build log if its priority is
-        /// greather than or equal to the <see cref="Threshold" /> of the
+        /// Outputs an indented message to the build log if its priority is 
+        /// greather than or equal to the <see cref="Threshold" /> of the 
         /// logger.
         /// </summary>
-        /// <param name="mesageLevel">The priority of the message to output.</param>
+        /// <param name="messageLevel">The priority of the message to output.</param>
         /// <param name="message">The message to output.</param>
         /// <param name="indentationLength">The number of characters that the message should be indented.</param>
-        private void OutputMessage(Level mesageLevel, string message, int indentationLength) {
-            string indentedMessage = null;
+        private void OutputMessage(Level messageLevel, string message, int indentationLength) {
+            OutputMessage(CreateBuildEvent(messageLevel, message), indentationLength);
+        }
 
-            if (!_stopped && (mesageLevel >= Threshold)) {
+        /// <summary>
+        /// Outputs an indented message to the build log if its priority is 
+        /// greather than or equal to the <see cref="Threshold" /> of the 
+        /// logger.
+        /// </summary>
+        /// <param name="e">The event to output.</param>
+        private void OutputMessage(BuildEventArgs e) {
+            int indentationLength = 0;
+            
+            if (e.Project != null) {
+                indentationLength = e.Project.IndentationLevel * e.Project.IndentationSize;
+            }
+
+            OutputMessage(e, indentationLength);
+        }
+
+        /// <summary>
+        /// Outputs an indented message to the build log if its priority is 
+        /// greather than or equal to the <see cref="Threshold" /> of the 
+        /// logger.
+        /// </summary>
+        /// <param name="e">The event to output.</param>
+        /// <param name="indentationLength">TODO</param>
+        private void OutputMessage(BuildEventArgs e, int indentationLength) {
+            if (!_stopped && (e.MessageLevel >= Threshold)) {
                 if (OutputWriter == null) {
                     throw new BuildException(string.Format(CultureInfo.InvariantCulture,
                         "Tried to write to an invalid FileLogListener instance '{0}'!",
                         Name), Location.UnknownLocation);
                 }
 
-                if (indentationLength > 0) {
-                    StringBuilder sb = new StringBuilder(message);
-                    sb.Insert(0, " ", indentationLength);
-                    indentedMessage = sb.ToString();
-                } else {
-                    indentedMessage = message;
+                string txt = e.Message;
+
+                // beautify the message a bit
+                txt = txt.Replace("\t", " "); // replace tabs with spaces
+                txt = txt.Replace("\r", ""); // get rid of carriage returns
+
+                // split the message by lines - the separator is "\n" since we've eliminated
+                // \r characters
+                string[] lines = txt.Split('\n');
+                string label = String.Empty;
+
+                if (e.Task != null && !EmacsMode) {
+                    label = "[" + e.Task.Name + "] ";
+                    label = label.PadLeft(e.Project.IndentationSize);
                 }
 
-                OutputWriter.WriteLine(indentedMessage);
+                if (indentationLength > 0) {
+                    label = new String(' ', indentationLength) + label;
+                }
 
-                Log(indentedMessage);
+                foreach (string line in lines) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append(label);
+                    sb.Append(line);
+
+                    string indentedMessage = sb.ToString();
+
+                    OutputWriter.WriteLine(indentedMessage);
+
+                    Log(indentedMessage);
+                }
             }
         }
 
         #endregion Private Instance Methods
 
+        #region Private Static Methods
+
+        private static BuildEventArgs CreateBuildEvent(Level messageLevel, string message) {
+            BuildEventArgs buildEvent = new BuildEventArgs();
+            buildEvent.MessageLevel = messageLevel;
+            buildEvent.Message = message;
+            return buildEvent;
+        }
+
+        #endregion Private Static Methods
+
         #region Private Instance Fields
 
         private Level _threshold = Level.Info;
-        private TextWriter _outputWriter = null;
+        private bool _emacsMode;
+        private TextWriter _outputWriter;
         private string _name = string.Empty;
         private bool _stopped = true;
-        private bool _autoFlush = false;
+        private bool _autoFlush;
 
         #endregion Private Instance Fields
     }

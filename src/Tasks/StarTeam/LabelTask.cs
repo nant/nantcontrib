@@ -18,6 +18,7 @@
 //
 
 using System;
+using System.Globalization;
 using System.IO;
 
 using InterOpStarTeam = StarTeam;
@@ -37,14 +38,16 @@ namespace NAnt.Contrib.Tasks.StarTeam {
     /// </remarks>
     /// <example>
     ///   <para>Creates a label in a StarTeam repository.</para>
-    ///   <code><![CDATA[
-    ///		<!-- 
-    ///		constructs a 'url' containing connection information to pass to the task 
-    ///		alternatively you can set each attribute manually 
-    ///		-->
-    ///		<property name="ST.url" value="user:pass@serverhost:49201/projectname/viewname"/>
-    ///		<stlabel label="3.1 (label title goes here)" description="This is a label description" url="${ST.url}"/>	
-    ///   ]]></code>
+    ///   <code>
+    ///     <![CDATA[
+    /// <!-- 
+    ///   constructs a 'url' containing connection information to pass to the task 
+    ///   alternatively you can set each attribute manually 
+    /// -->
+    /// <property name="ST.url" value="user:pass@serverhost:49201/projectname/viewname" />
+    /// <stlabel label="3.1 (label title goes here)" description="This is a label description" url="${ST.url}" />
+    ///     ]]>
+    ///   </code>
     /// </example>
     abstract public class LabelTask : StarTeamTask {
         /// <summary> 
@@ -52,69 +55,71 @@ namespace NAnt.Contrib.Tasks.StarTeam {
         /// </summary>
         [TaskAttribute("label", Required=true)]
         public virtual string Label {
-            get { return _labelName; }			
-            set { _labelName = value; }			
+            get { return _labelName; }
+            set { _labelName = value; }
         }
 
         /// <summary> Should label be marked build : default is true</summary>
         [TaskAttribute("buildlabel", Required=false)]
-        [BooleanValidator]         
+        [BooleanValidator]
         public virtual bool BuildLabel {
-            set { _isBuildLabel = value; }			
+            set { _isBuildLabel = value; }
         }
-				
+
         /// <summary> 
-        /// Should label created be a revision label : default is false
+        /// Should label created be a revision label. The default is 
+        /// <see langword="false" />.
         /// </summary>
         /// <remarks>
-        /// <see cref="BuildLabel"/> has no effect if this is set <c>true</c> as revision labels cannot have a build status.
+        /// <see cref="BuildLabel" /> has no effect if this is set to <see langword="true" />
+        /// as revision labels cannot have a build status.
         /// </remarks>
         [TaskAttribute("revisionlabel", Required=false)]
-        [BooleanValidator]         
+        [BooleanValidator]
         public virtual bool RevisionLabel {
-            set { _isRevision = value; }			
+            set { _isRevision = value; }
         }
-				
 
         /// <summary> Optional description of the label to be stored in the StarTeam project.</summary>
         [TaskAttribute("description", Required=false)]
         public virtual string Description {
-            set { _description = value; }			
+            set { _description = value; }
         }
-		
+
         /// <summary> 
         /// Optional: If this property is set the label will be created as of the datetime specified. 
-        /// Please provide a datetime format that can be parsed via <see cref="System.DateTime.Parse"/>.
+        /// Please provide a datetime format that can be parsed via 
+        /// <see cref="DateTime.Parse(string, IFormatProvider)"/>.
         /// </summary>
         /// <remarks>
-        /// This property is ignored when <see cref="RevisionLabel"/> set to <c>true</c>. 
+        /// This property is ignored when <see cref="RevisionLabel" /> set to 
+        /// <see langword="true" />.
         /// </remarks>
         [TaskAttribute("timestamp", Required=false)]
         public virtual string LastBuild {
             set {
                 try {
-                    _labelAsOfDate = System.DateTime.Parse(value);
-                    _isAsOfDateSet = true;					
-                }
-                catch (System.FormatException e) {
-                    throw new BuildException(string.Format("Unable to parse the date {0} : {1}", value ,e.Message),Location,e);
+                    _labelAsOfDate = DateTime.Parse(value, CultureInfo.InvariantCulture);
+                    _isAsOfDateSet = true;
+                } catch (System.FormatException ex) {
+                    throw new BuildException(string.Format("Unable to parse '{0}' as datetime.", 
+                        value), Location, ex);
                 }
             }
-			
         }
-		
+
         /// <summary> The name of the label to be set in Starteam.</summary>
         protected string _labelName = null;
-		
+
         /// <summary> The label description to be set in Starteam.</summary>
         protected string _description = null;
-				  
+
         /// <summary> Is the label being created a build label.</summary>
         protected bool _isBuildLabel = true;
-                                                                                            
+
         /// <summary> If set the datetime to set the label as of.</summary>
         protected DateTime _labelAsOfDate;
-		
+
         /// <summary> Kludgy flag to keep track if date has been set. 
         /// Please kill this if you can. Here based on experiences I have had with VB.NET</summary>
         protected bool _isAsOfDateSet = false;
@@ -144,7 +149,7 @@ namespace NAnt.Contrib.Tasks.StarTeam {
         protected virtual InterOpStarTeam.StLabel createLabel(InterOpStarTeam.StView snapshot) {
             InterOpStarTeam.StLabel newLabel;
             InterOpStarTeam.StLabelFactoryClass starTeamLabelFactory = new InterOpStarTeam.StLabelFactoryClass();
-			
+
             // Create the new label and update the repository
             try {
                 //default is view label
@@ -155,18 +160,22 @@ namespace NAnt.Contrib.Tasks.StarTeam {
                     newLabel = starTeamLabelFactory.CreateViewLabel(snapshot,_labelName, _description, _labelAsOfDate, _isBuildLabel);
                 }
                 newLabel.update();
-				
-                string sLabelType; 
-                if(this._isRevision) 
-                    sLabelType = "Revision";
-                else 
-                    sLabelType = (this._isBuildLabel ? "View Build" : "View");
-                Log(Level.Info, LogPrefix + "Created {0} Label: {1}",sLabelType, _labelName);
-            } catch(Exception e) {
-                throw new BuildException(string.Format("Creating label {0} failed : {1}",_labelName,e.Message),Location,e);
-            }
 
-            return newLabel;
+                string sLabelType; 
+                if (this._isRevision) {
+                    sLabelType = "Revision";
+                } else {
+                    sLabelType = (this._isBuildLabel ? "View Build" : "View");
+                }
+
+                Log(Level.Info, "Created '{0}' label '{1}'", 
+                    sLabelType, _labelName);
+
+                return newLabel;
+            } catch(Exception ex) {
+                throw new BuildException(string.Format("Creating label '{0}' failed.", 
+                    _labelName), Location, ex);
+            }
         }
     }
 }

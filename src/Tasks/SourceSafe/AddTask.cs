@@ -101,10 +101,10 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
                     else
                         Item.Add(currentFile, Comment, 0);
 
-                    Log(Level.Info, LogPrefix + "Added File : " + currentFile);
+                    Log(Level.Info, "Added File : " + currentFile);
                 } catch (System.Runtime.InteropServices.COMException e) {
                     if (e.ErrorCode == FILE_ALREADY_ADDED) {
-                        Log(Level.Info, LogPrefix + "File already added : " + currentFile);
+                        Log(Level.Info, "File already added : " + currentFile);
                         // just continue here
                     } else {
                         throw new BuildException("Adding files to SourceSafe failed.", Location, e);
@@ -144,8 +144,8 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
                 currentPath = Path;
                 currentItem = Database.get_VSSItem( currentPath, false );
 
-                Log(Level.Info, LogPrefix + "RelativePath: " + relativePath);
-                Log(Level.Info, LogPrefix + "BaseDir: " + AddFileSet.BaseDirectory.FullName );
+                Log(Level.Info, "RelativePath: " + relativePath);
+                Log(Level.Info, "BaseDir: " + AddFileSet.BaseDirectory.FullName );
 
                 //Walk the path creating as we go
                 foreach( string project in projects ) {
@@ -160,7 +160,7 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
                     //Create it if it doesn't exist
                     if ( newItem == null ) {
                         newItem = currentItem.NewSubproject( project, "NAntContrib vssadd" );
-                        Log(Level.Info, LogPrefix + "Adding VSS Project : " + newPath);
+                        Log(Level.Info, "Adding VSS Project : " + newPath);
                     }
                     //Move on
                     currentItem = newItem;

@@ -37,14 +37,16 @@ namespace NAnt.Contrib.Tasks.StarTeam {
     /// </remarks>
     /// <example>
     ///   <para>Creates a label in a StarTeam repository.</para>
-    ///   <code><![CDATA[
-    ///		<!-- 
-    ///		constructs a 'url' containing connection information to pass to the task 
-    ///		alternatively you can set each attribute manually 
-    ///		-->
-    ///		<property name="ST.url" value="user:pass@serverhost:49201/projectname/viewname"/>
-    ///		<stlabel label="3.1 (label title goes here)" description="This is a label description" url="${ST.url}"/>	
-    ///   ]]></code>
+    ///   <code>
+    ///     <![CDATA[
+    /// <!-- 
+    ///   constructs a 'url' containing connection information to pass to the task 
+    ///   alternatively you can set each attribute manually 
+    /// -->
+    /// <property name="ST.url" value="user:pass@serverhost:49201/projectname/viewname" />
+    /// <stlabel label="3.1 (label title goes here)" description="This is a label description" url="${ST.url}" />
+    ///     ]]>
+    ///   </code>
     /// </example>
     [TaskName("stlabel")]
     public class StarTeamLabel : LabelTask {

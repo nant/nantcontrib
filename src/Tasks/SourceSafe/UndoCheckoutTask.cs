@@ -31,37 +31,36 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
     /// <summary>
     /// Task is used to undo a checkout from SourceSafe
     /// </summary>
-	/// <example>
-	///   <para>Undo a checkout of all of the files from a local sourcesafe database.</para>
-	///   <code><![CDATA[
-	///	    <vssundocheckout 
-	///	      user="myusername" 
-	///	      password="mypassword" 
-	///	      localpath="C:\Dev\Latest"
-	///	      recursive="true"
-	///	      dbpath="C:\VSS\srcsafe.ini"
-	///	      path="$/MyProduct"
-	///	    />
-	///   ]]></code>
-	/// </example>
-	/// <example>
-	///   <para>Checkout a file from a remote sourcesafe database.  Put it in a relative directory.</para>
-	///   <code><![CDATA[
-	///	    <vssundocheckout 
-	///	      user="myusername" 
-	///	      password="mypassword" 
-	///	      localpath="Latest"
-	///	      recursive="false"
-	///	      dbpath="\\MyServer\VSS\srcsafe.ini"
-	///	      path="$/MyProduct/myFile.cs"
-	///	    />
-	///   ]]></code>
-	/// </example>
-	[TaskName("vssundocheckout")]
+    /// <example>
+    ///   <para>Undo a checkout of all of the files from a local sourcesafe database.</para>
+    ///   <code><![CDATA[
+    ///     <vssundocheckout 
+    ///       user="myusername" 
+    ///       password="mypassword" 
+    ///       localpath="C:\Dev\Latest"
+    ///       recursive="true"
+    ///       dbpath="C:\VSS\srcsafe.ini"
+    ///       path="$/MyProduct"
+    ///     />
+    ///   ]]></code>
+    /// </example>
+    /// <example>
+    ///   <para>Checkout a file from a remote sourcesafe database.  Put it in a relative directory.</para>
+    ///   <code><![CDATA[
+    ///     <vssundocheckout 
+    ///       user="myusername" 
+    ///       password="mypassword" 
+    ///       localpath="Latest"
+    ///       recursive="false"
+    ///       dbpath="\\MyServer\VSS\srcsafe.ini"
+    ///       path="$/MyProduct/myFile.cs"
+    ///     />
+    ///   ]]></code>
+    /// </example>
+    [TaskName("vssundocheckout")]
     public sealed class UndoCheckoutTask : BaseTask {
-        
-        string _recursive = Boolean.TrueString;
-        string _localpath = ""; 
+        private string _recursive = Boolean.TrueString;
+        private string _localpath = ""; 
 
         /// <summary>
         /// The absolute path to the local working directory. This is required if you wish to 
@@ -90,14 +89,13 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
             int flags = (Convert.ToBoolean(_recursive) ? Convert.ToInt32(RecursiveFlag) : 0);
 
             try {
-                Log(Level.Info, LogPrefix + "localpath : " + _localpath);
+                Log(Level.Info, "localpath : " + _localpath);
                 Item.UndoCheckout(_localpath,flags);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new BuildException("UndoCheckout failed", Location, e);
             }
 
-            Log(Level.Info, LogPrefix + "UndoCheckOut " + Path);
-        }		
+            Log(Level.Info, "UndoCheckOut " + Path);
+        }
     }
 }

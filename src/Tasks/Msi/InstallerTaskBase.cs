@@ -1837,23 +1837,23 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// &lt;/registry&gt;
         ///     </code>
         /// </example>
-		/// <example>
-		///     <para>Specify hexadecimal value (REG_BINARY) for the default key</para>
-		///     <code>
-		/// &lt;registry&gt;
-		///     &lt;key component="C__MainFiles" root="machine" path="SOFTWARE\ACME\My Product\" &gt;
-		///         &lt;value&gt;
-		/// 1a,81,0a,03,01,00,06,00,00,00,d3,15,fd,00,01,00,00,00,00,00,01,
-		/// 00,00,00,00,00,00,00,00,00,00,00,b0,90,ce,09,01,00,00,00,00,00,ff,ff,ff,00,
-		/// 00,00,00,00,00,00,00,00,6d,7a,0a,03,01,00,00,00,00,00,00,00,38,40,00,00,00,
-		/// 00,00,00,00,00,00,00,00,00,90,01,00,00,00,00,00,01,00,00,00,00,0f,00,00,00,
-		/// f0,ff,ff,ff,54,69,6d,65,73,20,4e,65,77,20,52,6f,6d,61,6e,f4,6f,d4,08,02,00
-		///         &lt;/value&gt;
-		///     &lt;/key&gt;
-		/// &lt;/registry&gt;
-		///     </code>
-		/// </example>
-		/// </summary>
+        /// <example>
+        ///     <para>Specify hexadecimal value (REG_BINARY) for the default key</para>
+        ///     <code>
+        /// &lt;registry&gt;
+        ///     &lt;key component="C__MainFiles" root="machine" path="SOFTWARE\ACME\My Product\" &gt;
+        ///         &lt;value&gt;
+        /// 1a,81,0a,03,01,00,06,00,00,00,d3,15,fd,00,01,00,00,00,00,00,01,
+        /// 00,00,00,00,00,00,00,00,00,00,00,b0,90,ce,09,01,00,00,00,00,00,ff,ff,ff,00,
+        /// 00,00,00,00,00,00,00,00,6d,7a,0a,03,01,00,00,00,00,00,00,00,38,40,00,00,00,
+        /// 00,00,00,00,00,00,00,00,00,90,01,00,00,00,00,00,01,00,00,00,00,0f,00,00,00,
+        /// f0,ff,ff,ff,54,69,6d,65,73,20,4e,65,77,20,52,6f,6d,61,6e,f4,6f,d4,08,02,00
+        ///         &lt;/value&gt;
+        ///     &lt;/key&gt;
+        /// &lt;/registry&gt;
+        ///     </code>
+        /// </example>
+        /// </summary>
         [BuildElement("registry")]
         protected SchemaElement[] InstallerRegistryElement {
             get { return null; }

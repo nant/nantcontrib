@@ -48,15 +48,11 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
 
         protected override string TemplateFileName {
-            get {
-                return "MSITaskTemplate.msi";
-            }
+            get { return "MSITaskTemplate.msi"; }
         }
 
         protected override string ErrorTemplateFileName {
-            get {
-                return "MSITaskErrors.mst";
-            }
+            get { return "MSITaskErrors.mst"; }
         }
 
         protected override string CabFileName {
@@ -66,14 +62,11 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
 
         protected override string AdvtExecuteName {
-            get {
-                return "AdvtExecuteSequence";
-            }
+            get { return "AdvtExecuteSequence"; }
         }
 
         protected override void AddModuleComponentVirtual(InstallerDatabase database, InstallerTable modComponentTable, string componentName) {
         }
-
 
         protected override void LoadTypeSpecificDataFromTask(InstallerDatabase database, int lastSequence) {
             LoadLaunchCondition(database);
@@ -103,21 +96,21 @@ namespace NAnt.Contrib.Tasks.Msi {
             if (msi.banner != null) {
                 string bannerFile = Path.Combine(Project.BaseDirectory, msi.banner);
                 if (File.Exists(bannerFile)) {
-                    Log(Level.Verbose, LogPrefix + "Storing Banner:\n\t" + bannerFile);
+                    Log(Level.Verbose, "Storing banner '{0}'.", bannerFile);
 
-                    using (InstallerRecordReader reader = database.FindRecords("Binary",
-                               new InstallerSearchClause("Name", Comparison.Equals, "bannrbmp"))) {
+                    using (InstallerRecordReader reader = database.FindRecords("Binary", new InstallerSearchClause("Name", Comparison.Equals, "bannrbmp"))) {
                         if (reader.Read()) {
                             // Write the Banner file to the MSI database
                             reader.SetValue(1, new InstallerStream(bannerFile));
                             reader.Commit();
                         } else {
-                            throw new BuildException("Banner Binary record not found in template database.");
+                            throw new BuildException("Banner Binary record not found in template database.",
+                                Location);
                         }
                     }
-                }
-                else {
-                    throw new BuildException(String.Format(CultureInfo.InvariantCulture, "Unable to open Banner Image:\n\t{0}", bannerFile), Location);
+                } else {
+                    throw new BuildException(string.Format(CultureInfo.InvariantCulture, 
+                        "Unable to open banner image '{0}'.", bannerFile), Location);
                 }
             }
         }
@@ -131,21 +124,21 @@ namespace NAnt.Contrib.Tasks.Msi {
             if (msi.background != null) {
                 string bgFile = Path.Combine(Project.BaseDirectory, msi.background);
                 if (File.Exists(bgFile)) {
-                    Log(Level.Info, LogPrefix + "Storing Background:\n\t" + bgFile);
+                    Log(Level.Info, "Storing background '{0}'.", bgFile);
 
-                    using (InstallerRecordReader reader = database.FindRecords("Binary",
-                               new InstallerSearchClause("Name", Comparison.Equals, "dlgbmp"))) {
+                    using (InstallerRecordReader reader = database.FindRecords("Binary", new InstallerSearchClause("Name", Comparison.Equals, "dlgbmp"))) {
                         if (reader.Read()) {
                             // Write the Background file to the MSI database
                             reader.SetValue(1, new InstallerStream(bgFile));
                             reader.Commit();
                         } else {
-                            throw new BuildException("Background Binary record not found in template database.");
+                            throw new BuildException("Background Binary record not found in template database.",
+                                Location);
                         }
                     }
-                }
-                else {
-                    throw new BuildException(String.Format(CultureInfo.InvariantCulture, "Unable to open Background Image:\n\t{0}", bgFile), Location);
+                } else {
+                    throw new BuildException(string.Format(CultureInfo.InvariantCulture, 
+                        "Unable to open background image '{0}'.", bgFile), Location);
                 }
             }
         }
@@ -155,34 +148,30 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// </summary>
         /// <param name="database">The MSI database.</param>
         private void LoadLicense(InstallerDatabase database) {
-
             if (msi.license != null) {
                 // Find the License control
-                using (InstallerRecordReader recordReader = database.FindRecords("Control",
-                           new InstallerSearchClause("Control", Comparison.Equals, "AgreementText"))) {
-
+                using (InstallerRecordReader recordReader = database.FindRecords("Control", new InstallerSearchClause("Control", Comparison.Equals, "AgreementText"))) {
                     if (recordReader.Read()) {
                         string licFile = Path.Combine(Project.BaseDirectory, msi.license);
-                        Log(Level.Info, LogPrefix + "Storing license '{0}'.", licFile);
+                        Log(Level.Info, "Storing license '{0}'.", licFile);
                         StreamReader licenseFileReader = null;
                         try {
                             licenseFileReader = File.OpenText(licFile);
-                        } 
-                        catch (IOException ex) {
-                            throw new BuildException(String.Format(CultureInfo.InvariantCulture,
-                                "Unable to open License File:\n\t{0}", licFile), Location, ex);
+                        } catch (IOException ex) {
+                            throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                                "Unable to open license file '{0}'.", licFile), 
+                                Location, ex);
                         }
 
                         try {
                             recordReader.SetValue(9, licenseFileReader.ReadToEnd());
                             recordReader.Commit();
-                        } 
-                        finally {
+                        } finally {
                             licenseFileReader.Close();
                         }
-                    } 
-                    else {
-                        throw new BuildException("Couldn't find AgreementText Control in template database.", Location);
+                    } else {
+                        throw new BuildException("Couldn't find AgreementText Control in template database.", 
+                            Location);
                     }
                 }            
             }
@@ -196,8 +185,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         private void LoadMedia(InstallerDatabase database, int LastSequence) {
             // Open the "Media" Table
             using (InstallerTable mediaTable = database.OpenTable("Media")) {
-                mediaTable.InsertRecord( "1", LastSequence.ToString(), null, 
-                    "#" + Path.GetFileNameWithoutExtension(msi.output) + ".cab", null, null );
+                mediaTable.InsertRecord("1", LastSequence.ToString(), null, 
+                    "#" + Path.GetFileNameWithoutExtension(msi.output) + ".cab", null, null);
             }
         }
 
@@ -206,11 +195,9 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// </summary>
         /// <param name="database">The MSI database.</param>
         private void LoadFeatures(InstallerDatabase database) {
-            Log(Level.Verbose, LogPrefix + "Adding Features:");
+            Log(Level.Verbose, "Adding Features:");
 
-            using (InstallerTable
-                       featureTable = database.OpenTable("Feature"),
-                       conditionTable = database.OpenTable("Condition")) {
+            using (InstallerTable featureTable = database.OpenTable("Feature"), conditionTable = database.OpenTable("Condition")) {
                 // Add features from Task definition
                 int order = 1;
                 int depth = 1;
@@ -221,8 +208,6 @@ namespace NAnt.Contrib.Tasks.Msi {
                 }
             }
         }
-
-
 
         /// <summary>
         /// Adds a feature record to the Features table.
@@ -243,7 +228,7 @@ namespace NAnt.Contrib.Tasks.Msi {
 
             // Insert the Feature
             featureTable.InsertRecord( Feature.name, ParentFeature, Feature.title, Feature.description, Feature.display, 
-                ( Feature.typical ? TypicalInstallLevel : NonTypicalInstallLevel ), GetFeatureDirectory(Feature), Feature.attr );
+                (Feature.typical ? TypicalInstallLevel : NonTypicalInstallLevel ), GetFeatureDirectory(Feature), Feature.attr);
 
             Log(Level.Verbose, "\t" + Feature.name);
 
@@ -276,8 +261,9 @@ namespace NAnt.Contrib.Tasks.Msi {
                     }
                 }
 
-                throw new BuildException("Feature " + Feature.name +
-                    " needs to be assigned a component or directory.", Location);
+                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                    "Feature '{0}' needs to be assigned a component or directory.", 
+                    Feature.name), Location);
             }
         }
 
@@ -289,17 +275,14 @@ namespace NAnt.Contrib.Tasks.Msi {
                     try {
                         // Insert the feature's condition
                         conditionTable.InsertRecord(Feature.name, featureCondition.level, featureCondition.expression);
-                    }
-                    catch (Exception e) {
-                        Log(Level.Info, "\nError adding feature condition: " + e.ToString());
+                    } catch (Exception ex) {
+                        Log(Level.Info, "Error adding feature condition: " + ex.Message);
                     }
                 }
 
                 Log(Level.Verbose, "Done");
             }
         }
-
-
 
         /// <summary>
         /// Loads records for the LaunchCondition table
@@ -308,7 +291,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         private void LoadLaunchCondition(InstallerDatabase database) {
             // Add properties from Task definition
             if (msi.launchconditions != null) {
-                Log(Level.Verbose, LogPrefix + "Adding Launch Conditions:");
+                Log(Level.Verbose, "Adding Launch Conditions:");
 
                 // Open the Launch Condition Table
                 using (InstallerTable table = database.OpenTable("LaunchCondition")) {
@@ -321,8 +304,6 @@ namespace NAnt.Contrib.Tasks.Msi {
                 }
             }
         }
-
-
 
         /// <summary>
         /// Merges Merge Modules into the MSI Database.
@@ -337,7 +318,7 @@ namespace NAnt.Contrib.Tasks.Msi {
 
                 int index = 1;
 
-                Log(Level.Verbose, LogPrefix + "Storing Merge Modules:");
+                Log(Level.Verbose, "Storing Merge Modules:");
 
                 if (!Directory.Exists(TempPath))
                     Directory.CreateDirectory(TempPath);
@@ -360,9 +341,9 @@ namespace NAnt.Contrib.Tasks.Msi {
 
                     try {
                         mergeClass.OpenDatabase(Database);
-                    }
-                    catch (FileLoadException fle) {
-                        throw new BuildException("Error while opening the database for merging.", Location, fle);
+                    } catch (FileLoadException fle) {
+                        throw new BuildException("Error while opening the database for merging.", 
+                            Location, fle);
                     }
 
                     // Iterate each module assigned to this feature
@@ -372,8 +353,9 @@ namespace NAnt.Contrib.Tasks.Msi {
                         // Open the merge module (by Filename)
                         try {
                             mergeClass.OpenModule(mergeModule, 1033);
-                        } catch {
-                            throw new BuildException("File " + mergeModule + " is not found.", Location);
+                        } catch (Exception ex) {
+                            throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                                "File '{0}' cannot be openen.", mergeModule), Location, ex);
                         }
 
                         // Once the merge is complete, components in the module are attached to the
@@ -383,26 +365,25 @@ namespace NAnt.Contrib.Tasks.Msi {
                         // occurrences of the null GUID in the module database.
 
                         if (merge.configurationitems != null) {
-                            Log(Level.Verbose, "\t\tConfigurable item(s):", Location);
+                            Log(Level.Verbose, "\t\tConfigurable item(s):");
                             Hashtable configurations = new Hashtable();
                             foreach (MSIConfigurationItem configItem in merge.configurationitems) {
                                 if ((configItem.module == null || configItem.module.Equals(String.Empty)) || configItem.module.ToLower().Equals(mergeModule.ToLower()) || configItem.module.ToLower().Equals(Path.GetFileName(mergeModule.ToLower()))) {
                                     if (configItem.module == null || configItem.module.Equals(String.Empty)) {
                                         if (configurations[configItem.name] == null) {
                                             configurations[configItem.name] = configItem.value;
-                                            Log(Level.Verbose, "\t\t\t" + configItem.name + "\tValue: " + configItem.value, Location);
+                                            Log(Level.Verbose, "\t\t\t{0}\tValue: {1}", 
+                                                configItem.name, configItem.value);
                                         }
-                                    }
-                                    else {
+                                    } else {
                                         configurations[configItem.name] = configItem.value;
-                                        Log(Level.Verbose, "\t\t\t" + configItem.name + "\tValue: " + configItem.value, Location);
+                                        Log(Level.Verbose, "\t\t\t{0}\tValue: {1}", 
+                                            configItem.name, configItem.value);
                                     }
                                 }
                             }
-
                             mergeClass.MergeEx(merge.feature, null, new MsmConfigureModule(configurations));
-                        }
-                        else {
+                        } else {
                             mergeClass.Merge(merge.feature, null);
                         }
 
@@ -453,25 +434,36 @@ namespace NAnt.Contrib.Tasks.Msi {
 
             try {
                 process.WaitForExit();
-            }
-            catch (Exception e) {
-                throw new BuildException("Error extracting merge module cab file: " + moduleCab, Location, e);
+            } catch (Exception ex) {
+                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                    "Error extracting merge module cab file '{0}'.", moduleCab), 
+                    Location, ex);
             }
 
             if (process.ExitCode != 0) {
-                throw new BuildException("Error extracting merge module cab file: " + moduleCab + "\nApplication returned ERROR: " + process.ExitCode, Location);
+                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                    "Error extracting merge module cab file '{0}'.\nExit code: {1}.", 
+                    moduleCab, process.ExitCode), Location);
             }
         }
     }
 
     internal class MsmConfigureModule : IMsmConfigureModule {
+        #region Private Instance Fields
+
         private Hashtable _configurations;
+
+        #endregion Private Instance Fields
+
+        #region Internal Instance Constructors
 
         internal MsmConfigureModule(Hashtable configurations) {
             _configurations = configurations;
         }
 
-        #region IMsmConfigureModule Members
+        #endregion Internal Instance Constructors
+
+        #region Implementation of IMsmConfigureModule 
 
         string MsmMergeTypeLib.IMsmConfigureModule.ProvideTextData(string name) {
             if (_configurations[name] != null) {
@@ -482,11 +474,12 @@ namespace NAnt.Contrib.Tasks.Msi {
 
         int MsmMergeTypeLib.IMsmConfigureModule.ProvideIntegerData(string name) {
             if (_configurations[name] != null) {
-                return int.Parse((string)_configurations[name]);
+                return int.Parse((string)_configurations[name], 
+                    CultureInfo.InvariantCulture);
             }
             return 0;
         }
 
-        #endregion
+        #endregion Implementation of IMsmConfigureModule 
     }
 }

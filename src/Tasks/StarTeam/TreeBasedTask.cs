@@ -54,7 +54,7 @@ namespace NAnt.Contrib.Tasks.StarTeam {
         protected StringCollection _include = new StringCollection();
         protected StringCollection _excludePatterns = new StringCollection();
         protected StringCollection _includePatterns = new StringCollection();
-		
+
         /// <summary>
         /// Root StarTeam folder to begin operations on. Defaults to the root of the view.
         /// </summary>
@@ -119,11 +119,11 @@ namespace NAnt.Contrib.Tasks.StarTeam {
         ///Default : true - should tasks recurse through tree.
         /// </summary>
         [TaskAttribute("recursive")]
-        [BooleanValidator]         
+        [BooleanValidator]
         public virtual bool recursive {
             get { return _recursive;}
-            set { _recursive = value; }		
-        }	
+            set { _recursive = value; }
+        }
 
         /// <summary>
         /// Default : false - force check in/out actions regardless of the status that StarTeam is maintaining for the file. 
@@ -140,7 +140,7 @@ namespace NAnt.Contrib.Tasks.StarTeam {
             get { return _forced; }
             set { _forced = value;}
         }
-	    	
+
         /// <summary> 
         /// Label used for checkout. If no label is set latest state of repository is checked out.
         /// </summary>
@@ -149,16 +149,16 @@ namespace NAnt.Contrib.Tasks.StarTeam {
         /// </remarks>
         [TaskAttribute("label", Required=false)]
         public virtual string Label {
-            get { return _label; }			
-            set { 
-			 	//trim up label
+            get { return _label; }
+            set {
+                //trim up label
                 if (null != value) {
                     value = value.Trim();
                     if (value.Length > 0) {
                         _label = value;
                     }
                 }
-            }			
+            }
         }
 
         /// <summary>
@@ -168,12 +168,12 @@ namespace NAnt.Contrib.Tasks.StarTeam {
         protected override void ExecuteTask() {
             _filesAffected = 0;
             testPreconditions();
-		
+
             InterOpStarTeam.StView snapshot = openView();
             try {
                 InterOpStarTeam.StStarTeamFinderStatics starTeamFinder = new InterOpStarTeam.StStarTeamFinderStatics();
                 InterOpStarTeam.StFolder starTeamRootFolder = starTeamFinder.findFolder(snapshot.RootFolder, _rootStarTeamFolder);
-			    
+
                 // set the local folder.
                 FileInfo localrootfolder;
 
@@ -188,27 +188,25 @@ namespace NAnt.Contrib.Tasks.StarTeam {
                     catch(Exception e) {
                         throw new BuildException(string.Format("Could not get handle to root folder ({0}) found.",starTeamRootFolder.Path),Location,e);
                     }
-                }
-                else {
+                } else {
                     // force StarTeam to use our folder
                     try {
-                        Log(Level.Info, LogPrefix + "Overriding local folder to {0}",_rootLocalFolder);
+                        Log(Level.Info, "Overriding local folder to '{0}'", _rootLocalFolder);
                         localrootfolder = new FileInfo(_rootLocalFolder);
-                    }
-                    catch(Exception e) {
-                        throw new BuildException(string.Format("Could not get handle to root folder ({0}) found.",starTeamRootFolder.Path),Location,e);
+                    } catch(Exception e) {
+                        throw new BuildException(string.Format("Could not get handle to root folder '{0}'.",
+                            starTeamRootFolder.Path), Location, e);
                     }
                 }
-				
+
                 // Inspect everything in the root folder and then recursively
                 visit(starTeamRootFolder, localrootfolder);
-                Log(Level.Info, LogPrefix + "{0} Files Affected",_filesAffected.ToString());
-            }
-            catch (System.Exception e) {
-                throw new BuildException(e.Message,Location,e);
+                Log(Level.Info, "{0} files affected", _filesAffected.ToString());
+            } catch (System.Exception e) {
+                throw new BuildException(e.Message, Location, e);
             }
         }
-	
+
         /// <summary> 
         /// Helper method calls on the StarTeam API to retrieve an ID number for the specified view, corresponding to this.label.
         /// </summary>
@@ -225,19 +223,19 @@ namespace NAnt.Contrib.Tasks.StarTeam {
             }
             return null;
         }
-	
+
         /// <summary> Derived classes must override this class to define actual processing to be performed on each folder in the tree defined for the task</summary>
         /// <param name="rootStarteamFolder">the StarTeam folderto be visited</param>
         /// <param name="rootLocalFolder">the local mapping of rootStarteamFolder</param>
         protected abstract void visit(InterOpStarTeam.StFolder rootStarteamFolder, FileInfo rootLocalFolder);
-	
+
         /// <summary> 
         /// Derived classes must override this method to define tests for any preconditons required by the task.  
         /// This method is called at the beginning of the ExecuteTask method. 
         /// </summary>
         /// <seealso cref="ExecuteTask"/>
         protected abstract void testPreconditions();
-	
+
         /// <summary> 
         /// Gets the collection of the local file names in the supplied directory.
         /// We need to check this collection against what we find in Starteam to
@@ -248,12 +246,12 @@ namespace NAnt.Contrib.Tasks.StarTeam {
         /// </remarks>
         /// <param name="localFolder">Local folder to scan</param>
         /// <returns>hashtable whose keys represent a file or directory in localFolder.</returns>
-        protected static System.Collections.Hashtable listLocalFiles(FileInfo localFolder) {   		
+        protected static System.Collections.Hashtable listLocalFiles(FileInfo localFolder) {
             System.Collections.Hashtable localFileList = new System.Collections.Hashtable();
             // we can't use java 2 collections so we will use an identity
             // Hashtable to  hold the file names.  We only care about the keys,
             // not the values (which will all be "").
-		
+
             bool bExists;
             if (File.Exists(localFolder.FullName))
                 bExists = true;
@@ -267,7 +265,7 @@ namespace NAnt.Contrib.Tasks.StarTeam {
             }
             return localFileList;
         }
-	
+
         /// <summary> 
         /// Removes file being worked with from the <see cref="listLocalFiles" /> generated hashtable.
         /// </summary>
@@ -293,9 +291,9 @@ namespace NAnt.Contrib.Tasks.StarTeam {
             if(_excludePatterns.Count > 1 && _includePatterns.Count == 0) {
                 _includePatterns.Add(ToRegexPattern("*"));
             }
-	
+
             bool included = false;
-			
+
             // check path against includes
             foreach (string pattern in _includePatterns) {
                 Match m = Regex.Match(filePath, pattern);

@@ -99,7 +99,7 @@ namespace NAnt.Contrib.Tasks.StarTeam {
     ///     <![CDATA[
     /// <?xml version="1.0"?>
     /// <stautolabel>
-    ///		<version major="1" minor="0" build="0" />
+    ///     <version major="1" minor="0" build="0" />
     /// </stautolabel>
     ///     ]]>
     ///   </code>
@@ -112,7 +112,7 @@ namespace NAnt.Contrib.Tasks.StarTeam {
         private bool _incrementMajor= false;
         private bool _incrementMinor = false;
         private bool _incrementBuild = true;
-        private int	_versionMajor = -1;
+        private int _versionMajor = -1;
         private int _versionMinor = -1;
         private int _versionBuild = -1;
         private string _versionFile = "versionnumber.xml";
@@ -129,35 +129,35 @@ namespace NAnt.Contrib.Tasks.StarTeam {
             get { return _versionFile; }
             set { _versionFile = value; }
         }
-		
+
         /// <summary> 
         /// Increment major version number. The default is <see langword="false" />.
         /// If <see cref="MajorVersion"/> is set, this property is ignored.
         /// </summary>
         [TaskAttribute("incrementmajor", Required=false)]
-        [BooleanValidator]         
+        [BooleanValidator]
         public virtual bool IncrementMajor {
             get { return _incrementMajor; }
             set { _incrementMajor = value; }
         }
-		
+
         /// <summary> 
         /// Increment minor version number. The default is <see langword="false" />. 
         /// If <see cref="MinorVersion"/> is set, this property is ignored.
         /// </summary>
         [TaskAttribute("incrementminor", Required=false)]
-        [BooleanValidator]         
+        [BooleanValidator]
         public virtual bool IncrementMinor {
             get { return _incrementMinor; }
             set { _incrementMinor = value; }
         }
-		
+
         /// <summary> 
         /// Increment build version number. The default is <see langword="true" />.
         /// If <see cref="BuildVersion"/> is set, this property is ignored.
         /// </summary>
         [TaskAttribute("incrementbuild", Required=false)]
-        [BooleanValidator]         
+        [BooleanValidator]
         public virtual bool IncrementBuild {
             get { return _incrementBuild; }
             set { _incrementBuild = value; }
@@ -216,11 +216,11 @@ namespace NAnt.Contrib.Tasks.StarTeam {
         /// and the exact version set and/or read from versionnumber.xml is used.
         /// <para>The title of the Label is the <see cref="LabelTask.Label"/> property concatenated with the version number Major.Minor.Build</para>
         /// </remarks>
-        protected override void  ExecuteTask() {                         			
+        protected override void  ExecuteTask() {
             InterOpStarTeam.StView snapshot = openView();
             InterOpStarTeam.StFile stFile = getVersionStFile(snapshot);
-			
-            try {      
+
+            try {
                 //load xml document find versions and save incremented version 
                 XmlDocument xmlDoc = new XmlDocument();
                 xmlDoc.Load(stFile.FullName);
@@ -234,7 +234,7 @@ namespace NAnt.Contrib.Tasks.StarTeam {
                 if ( _versionBuild < 0) {
                     _versionBuild = Convert.ToInt32(nodeVersion.Attributes.GetNamedItem("build").InnerText);
                 }
-				
+
                 if (_doIncrement == true) {
                     if (_incrementMajor == true) {
                         _versionMajor++;
@@ -270,7 +270,7 @@ namespace NAnt.Contrib.Tasks.StarTeam {
             this.Properties["Version.major"] = _versionMajor.ToString(CultureInfo.InvariantCulture);
             this.Properties["Version.minor"] = _versionMinor.ToString(CultureInfo.InvariantCulture);
             this.Properties["Version.build"] = _versionBuild.ToString(CultureInfo.InvariantCulture);
-	
+
             createLabel(snapshot);
         }
 
@@ -287,7 +287,7 @@ namespace NAnt.Contrib.Tasks.StarTeam {
             InterOpStarTeam.StFile stVersionFile = null; 
             //connect to starteam and get root folder 
             InterOpStarTeam.StFolder starTeamRootFolder = snapshot.RootFolder;
-			
+
             //get contents of root folder and look for version file
             //this is weird as I cannot see how to ask StarTeam for an individual file
             foreach(InterOpStarTeam.StFile stFile in starTeamRootFolder.getItems("File")) {
@@ -336,7 +336,7 @@ namespace NAnt.Contrib.Tasks.StarTeam {
                 throw new BuildException(string.Format(CultureInfo.InvariantCulture, 
                     "Version filepath '{0}' is invalid.", versionFilePath), Location, ex);
             }
-			
+
             //add local file to starteam 
             InterOpStarTeam.StFile newFile = starteamFileFactory.Create(stFolder);
             string comment = "version number xml created by stautonumber NAnt task";

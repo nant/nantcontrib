@@ -36,14 +36,16 @@ namespace NAnt.Contrib.Tasks.StarTeam {
     /// </remarks>
     /// <example>
     ///   <para>Recursively checks in all files in the project.</para>
-    ///   <code><![CDATA[
-    ///		<!-- 
-    ///		constructs a 'url' containing connection information to pass to the task 
-    ///		alternatively you can set each attribute manually 
-    ///		-->
-    ///		<property name="ST.url" value="user:pass@serverhost:49201/projectname/viewname"/>
-    ///		<stcheckin forced="true" rootstarteamfolder="/" recursive="true" url="${ST.url}" />
-    ///   ]]></code>
+    ///   <code>
+    ///     <![CDATA[
+    /// <!-- 
+    ///   constructs a 'url' containing connection information to pass to the task 
+    ///   alternatively you can set each attribute manually 
+    /// -->
+    /// <property name="ST.url" value="user:pass@serverhost:49201/projectname/viewname" />
+    /// <stcheckin forced="true" rootstarteamfolder="/" recursive="true" url="${ST.url}" />
+    ///     ]]>
+    ///   </code>
     /// </example>
     [TaskName("stcheckin")]
     public class StarTeamCheckin : TreeBasedTask {
@@ -59,11 +61,11 @@ namespace NAnt.Contrib.Tasks.StarTeam {
             _lockStatus = starTeamLockTypeStatics.UNLOCKED; 
             this.recursive = false;
         }
-		
+
         [TaskAttribute("comment")]
         public virtual string comment {
-            get { return _comment; }			
-            set { _comment = value;}			
+            get { return _comment; }
+            set { _comment = value; }
         }
 
         /// <summary> 
@@ -79,7 +81,7 @@ namespace NAnt.Contrib.Tasks.StarTeam {
                     starteamFolderFactory = new InterOpStarTeam.StFolderFactoryClass();
                     starteamFileFactory = new InterOpStarTeam.StFileFactoryClass();
                 }
-            }			
+            }
         }
 
         /// <summary> 
@@ -95,25 +97,24 @@ namespace NAnt.Contrib.Tasks.StarTeam {
                 else {
                     _lockStatus = starTeamLockTypeStatics.UNCHANGED;
                 }
-            }   			
+            }
         }
-		
+
         /// <value> will folders be created for new items found with the checkin.</value>
         private bool _createFolders = false;
-		
+
         /// <value> The comment which will be stored with the checkin.</value>
         private string _comment = null;
-		
+
         /// <value> holder for the add Uncontrolled attribute.  If true, all local files not in StarTeam will be added to the repository.</value>
         private bool _addUncontrolled = false;
-				
         private InterOpStarTeam.IStLabel _stLabel = null;
 
         /// <value> This attribute tells whether unlocked files on checkin (so that other users may access them) checkout or to 
         /// leave the checkout status alone (default).
         /// </value>
         private int _lockStatus;
-				
+
         /// <summary>
         /// Override of base-class abstract function creates an appropriately configured view.  For checkins this is
         /// always the current or "tip" view.
@@ -130,14 +131,14 @@ namespace NAnt.Contrib.Tasks.StarTeam {
             }
             return snapshot;
         }
-		
+
         /// <summary> Implements base-class abstract function to define tests for any preconditons required by the task</summary>
         protected override void testPreconditions() {
             if (null != _rootLocalFolder && this.Forced) {
-                Log(Level.Info, LogPrefix + "Warning: rootLocalFolder specified, but forcing off.");
+                Log(Level.Warning, "rootLocalFolder specified, but forcing off.");
             }
         }
-		
+
         /// <summary> Implements base-class abstract function to perform the checkin operation on the files in each folder of the tree.</summary>
         /// <param name="starteamFolder">the StarTeam folder to which files will be checked in</param>
         /// <param name="targetFolder">local folder from which files will be checked in</param>
@@ -147,56 +148,55 @@ namespace NAnt.Contrib.Tasks.StarTeam {
 
             try {
                 System.Collections.Hashtable localFiles = listLocalFiles(targetFolder);
-				
+
                 // If we have been told to create the working folders
                 // For all Files in this folder, we need to check
                 // if there have been modifications.
-				
+
                 foreach(InterOpStarTeam.StFile stFile in starteamFolder.getItems("File")) {
                     string filename = stFile.Name;
                     FileInfo localFile = new FileInfo(Path.Combine(targetFolder.FullName, filename));
-					
+
                     delistLocalFile(localFiles, localFile);
-					
+
                     // If the file doesn't pass the include/exclude tests, skip it.
                     if (!IsIncluded(filename)) {
                         if(this.Verbose) {
-                            Log(Level.Info, LogPrefix + "Skipping : {0}",localFile.ToString());
+                            Log(Level.Info, "Skipping : {0}",localFile.ToString());
                         }
                         notMatched++;
                         continue;
                     }
-					           					
+
                     // If forced is not set then we may save ourselves some work by looking at the status flag.
                     // Otherwise, we care nothing about these statuses.
-					
+
                     if (!this.Forced) {
                         int fileStatus = (stFile.Status);
-						
+
                         // We try to update the status once to give StarTeam another chance.
                         if (fileStatus == starTeamStatusStatics.merge || fileStatus == starTeamStatusStatics.UNKNOWN) {
                             stFile.updateStatus(true, true);
                             fileStatus = (stFile.Status);
                         }
                         if(fileStatus == starTeamStatusStatics.merge) {
-                            Log(Level.Info, LogPrefix + "Not processing {0} as it needs Merging and Forced is not on.",stFile.toString());
+                            Log(Level.Info, "Not processing {0} as it needs Merging and Forced is not on.",stFile.toString());
                             continue;
                         }
                         if (fileStatus == starTeamStatusStatics.CURRENT) {
                             //count files not processed so we can inform later
                             notProcessed++;
-                            //Log(Level.Info, LogPrefix + "Not processing {0} as it is current.",stFile.toString());
                             continue;
                         }
                     }
-					
+
                     //may want to offer this to be surpressed but usually it is a good idea to have
                     //in the build log what changed for that build.
-                    Log(Level.Info, LogPrefix + "Checking In: {0}", localFile.ToString());
+                    Log(Level.Info, "Checking In: {0}", localFile.ToString());
 
                     //check in anything else
                     stFile.checkinFrom(localFile.FullName, _comment, _lockStatus, true, true, true);
-					
+
                     _updateLabel(stFile);
 
                     //track files affected for non-verbose output
@@ -206,18 +206,19 @@ namespace NAnt.Contrib.Tasks.StarTeam {
                 //if we are being verbose emit count of files not processed 
                 if(this.Verbose) {
                     if(notProcessed > 0) 
-                        Log(Level.Info, LogPrefix + "{0} : {1} files not processed because they were current.",targetFolder.FullName,notProcessed.ToString());
+                        Log(Level.Info, "{0} : {1} files not processed because they were current.",
+                            targetFolder.FullName, notProcessed.ToString());
                     if(notMatched > 0) 
-                        Log(Level.Info, LogPrefix + "{0} : {1} files not processed because they did not match includes/excludes.",targetFolder.FullName,notMatched.ToString());
+                        Log(Level.Info, "{0} : {1} files not processed because they did not match includes/excludes.",
+                            targetFolder.FullName, notMatched.ToString());
                 }
 
-				
                 // Now we recursively call this method on all sub folders in this
                 // folder unless recursive attribute is off.
                 foreach (InterOpStarTeam.StFolder stFolder in starteamFolder.SubFolders) {
                     FileInfo targetSubfolder = new FileInfo(stFolder.Path);
                     delistLocalFile(localFiles, targetSubfolder);
-					
+
                     if (this.recursive) {
                         visit(stFolder, targetSubfolder);
                     }
@@ -229,7 +230,7 @@ namespace NAnt.Contrib.Tasks.StarTeam {
                 throw new BuildException(ex.Message, Location, ex);
             }
         }
-		
+
         /// <summary> Adds to the StarTeam repository everything on the local machine that is not currently in the repository.</summary>
         /// <param name="localFiles">Hasttable containing files missing in the repository for the current folder</param>
         /// <param name="folder">StarTeam folder to which these items are to be added.</param>
@@ -242,10 +243,10 @@ namespace NAnt.Contrib.Tasks.StarTeam {
             }
                 //TODO: Move security catch into add()
             catch (System.Security.SecurityException e) {
-                Log(Level.Error, LogPrefix + "Error adding file: {0}",e.Message);
+                Log(Level.Error, "Error adding file: {0}", e.Message);
             }
         }
-		
+
         /// <summary> Adds the file or directpry to the repository.</summary>
         /// <param name="parentFolder">StarTeam folder underwhich items will be added.</param>
         /// <param name="file">the file or directory to add</param>
@@ -254,29 +255,30 @@ namespace NAnt.Contrib.Tasks.StarTeam {
             // If the current file is a Directory, we need to process all of its children as well.
             if (Directory.Exists(file.FullName)) {
                 if(!_createFolders) {
-                    Log(Level.Info, LogPrefix + "Could not add new folder as createfolders is disabled: {0}",file.FullName);
+                    Log(Level.Info, "Could not add new folder as createfolders is disabled: {0}",
+                        file.FullName);
                     return false;
                 }
 
-                Log(Level.Info, LogPrefix + "Adding new folder to repository: {0}",file.FullName);
+                Log(Level.Info, "Adding new folder to repository: {0}", file.FullName);
                 InterOpStarTeam.StFolder newFolder = starteamFolderFactory.Create(parentFolder);
                 newFolder.Name = file.Name;
                 newFolder.update();
-				
+
                 // now visit this new folder to take care of adding any files or subfolders within it.
                 if (this.recursive) {
                     visit(newFolder, file);
                 }
             } else {
-                Log(Level.Info, LogPrefix + "Adding new file to repository: {0}",file.FullName);
+                Log(Level.Info, "Adding new file to repository: {0}", file.FullName);
                 InterOpStarTeam.StFile newFile = starteamFileFactory.Create(parentFolder);
                 newFile.Add(file.FullName, file.Name, null, _comment, starTeamLockTypeStatics.UNLOCKED, true, true);
-				
+
                 _updateLabel(newFile);
             }
 
             return true;
-        }               
+        }
 
         private void _updateLabel(InterOpStarTeam.StFile stFile) {
             //if user defined a label attach the item checked to that label

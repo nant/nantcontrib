@@ -31,40 +31,39 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
     /// <summary>
     /// Task used to checkout files from Visual Source Safe.
     /// </summary>
-	/// <example>
-	///   <para>Checkout the latest files from a local sourcesafe database.</para>
-	///   <code><![CDATA[
-	///	    <vsscheckout 
-	///	      user="myusername" 
-	///	      password="mypassword" 
-	///	      localpath="C:\Dev\Latest"
-	///	      recursive="true"
-	///	      writable="true"
-	///	      dbpath="C:\VSS\srcsafe.ini"
-	///	      path="$/MyProduct"
-	///	    />
-	///   ]]></code>
-	/// </example>
-	/// <example>
-	///   <para>Checkout a file from a remote sourcesafe database.  Put it in a relative directory.</para>
-	///   <code><![CDATA[
-	///	    <vsscheckout 
-	///	      user="myusername" 
-	///	      password="mypassword" 
-	///	      localpath="Latest"
-	///	      recursive="false"
-	///	      writable="true"
-	///	      dbpath="\\MyServer\VSS\srcsafe.ini"
-	///	      path="$/MyProduct/myFile.cs"
-	///	    />
-	///   ]]></code>
-	/// </example>
-	[TaskName("vsscheckout")]
+    /// <example>
+    ///   <para>Checkout the latest files from a local sourcesafe database.</para>
+    ///   <code><![CDATA[
+    ///     <vsscheckout 
+    ///       user="myusername" 
+    ///       password="mypassword" 
+    ///       localpath="C:\Dev\Latest"
+    ///       recursive="true"
+    ///       writable="true"
+    ///       dbpath="C:\VSS\srcsafe.ini"
+    ///       path="$/MyProduct"
+    ///     />
+    ///   ]]></code>
+    /// </example>
+    /// <example>
+    ///   <para>Checkout a file from a remote sourcesafe database.  Put it in a relative directory.</para>
+    ///   <code><![CDATA[
+    ///     <vsscheckout 
+    ///       user="myusername" 
+    ///       password="mypassword" 
+    ///       localpath="Latest"
+    ///       recursive="false"
+    ///       writable="true"
+    ///       dbpath="\\MyServer\VSS\srcsafe.ini"
+    ///       path="$/MyProduct/myFile.cs"
+    ///     />
+    ///   ]]></code>
+    /// </example>
+    [TaskName("vsscheckout")]
     public sealed class CheckoutTask : BaseTask {
-		
-        string _localpath = "";
-        string _recursive = Boolean.TrueString;
-        string _writable = Boolean.TrueString;
+        private string _localpath = "";
+        private string _recursive = Boolean.TrueString;
+        private string _writable = Boolean.TrueString;
 
         /// <summary>
         /// The absolute path to the local working directory. Required.
@@ -99,7 +98,7 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
 
         protected override void ExecuteTask() {
             Open();
-			
+
             /* -- Allowed flag categories --
              * GET, RECURS, USERO, CMPMETHOD, TIMESTAMP, EOL, REPLACE, 
              * FORCE, and CHKEXCLUSIVE
@@ -109,12 +108,11 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
 
             try {
                 Item.Checkout("", _localpath, flags);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new BuildException("Checkout failed", Location, e);
             }
 
-            Log(Level.Info, LogPrefix + "Checked out " + Path);
-        }		
+            Log(Level.Info, "Checked out " + Path);
+        }
     }
 }

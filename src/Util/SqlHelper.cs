@@ -21,75 +21,64 @@ using System;
 using System.Data;
 using System.Data.OleDb;
 
-namespace NAnt.Contrib.Util
-{ 
+namespace NAnt.Contrib.Util { 
+    /// <summary>
+    /// Helper class used to execute Sql Statements.
+    /// </summary>
+    public class SqlHelper {
+        private OleDbConnection _connection;
+        private OleDbTransaction _transaction;
 
-   /// <summary>
-   /// Helper class used to execute Sql Statements.
-   /// </summary>
-   public class SqlHelper
-   {
-      private OleDbConnection _connection;
-      private OleDbTransaction _transaction;
-      
-		/// <summary>
-		/// OleDB Connection object
-		/// </summary>
-	   public OleDbConnection Connection {
-		   get { return _connection;}
-	   }
+        /// <summary>
+        /// OleDB Connection object
+        /// </summary>
+        public OleDbConnection Connection {
+            get { return _connection; }
+        }
 
-
-      /// <summary>
-      /// Initializes a new instance.
-      /// </summary>
-      /// <param name="connectionString">OleDB Connection string</param>
-      /// <param name="useTransaction">True if you want to use a transaction</param>
-      public SqlHelper(string connectionString, bool useTransaction)
-      {
-         _connection = new OleDbConnection(connectionString);
-         _connection.Open();
+        /// <summary>
+        /// Initializes a new instance.
+        /// </summary>
+        /// <param name="connectionString">OleDB Connection string</param>
+        /// <param name="useTransaction">True if you want to use a transaction</param>
+        public SqlHelper(string connectionString, bool useTransaction) {
+            _connection = new OleDbConnection(connectionString);
+            _connection.Open();
          
-         if ( useTransaction ) {
-            _transaction = _connection.BeginTransaction();
-         }
-      }
-
-      /// <summary>
-      /// Close the connection and terminate
-      /// </summary>
-      /// <param name="commit">true if the transaction should be commited</param>
-      public void Close(bool commit)
-      {
-         if ( _transaction != null ) {
-            if ( commit ) {
-               _transaction.Commit();
-            } else {
-               _transaction.Rollback();
+            if (useTransaction) {
+                _transaction = _connection.BeginTransaction();
             }
-         }
+        }
 
-         _connection.Close();
-      }
+        /// <summary>
+        /// Close the connection and terminate
+        /// </summary>
+        /// <param name="commit">true if the transaction should be commited</param>
+        public void Close(bool commit) {
+            if (_transaction != null) {
+                if (commit) {
+                    _transaction.Commit();
+                } else {
+                    _transaction.Rollback();
+                }
+            }
 
+            _connection.Close();
+        }
 
-      /// <summary>
-      /// Executes a SQL statement.
-      /// </summary>
-      /// <param name="sql">SQL statement to execute</param>
-      /// <param name="cmdTimeout">Command timeout to use</param>
-      /// <returns>Data reader used to check the result</returns>
-      public IDataReader Execute(string sql, int cmdTimeout)
-      {
-         OleDbCommand command = new OleDbCommand(sql, _connection);
-         command.CommandTimeout = cmdTimeout;
-         if ( _transaction != null )
-            command.Transaction = _transaction;
-         return command.ExecuteReader();
-      }
-
-
-
-   } // class SqlHelper
-
-} // namespace NAnt.Contrib.Util
+        /// <summary>
+        /// Executes a SQL statement.
+        /// </summary>
+        /// <param name="sql">SQL statement to execute</param>
+        /// <param name="cmdTimeout">Command timeout to use</param>
+        /// <returns>Data reader used to check the result</returns>
+        public IDataReader Execute(string sql, int cmdTimeout) {
+            OleDbCommand command = new OleDbCommand(sql, _connection);
+            command.CommandTimeout = cmdTimeout;
+            if (_transaction != null) {
+                command.Transaction = _transaction;
+            }
+            return command.ExecuteReader();
+        }
+    }
+}

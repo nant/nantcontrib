@@ -53,7 +53,7 @@ namespace NAnt.Contrib.Tasks.StarTeam {
             get  { return _servername; }
             set  { _servername = value; }
         }
-		
+
         /// <summary>
         /// Port number of the StarTeam connection.
         /// </summary>
@@ -63,10 +63,10 @@ namespace NAnt.Contrib.Tasks.StarTeam {
         /// </remarks>
         [TaskAttribute("serverport", Required=false)]
         public virtual string serverport {
-            get	{ return _serverport; }
-            set	{ _serverport = value; }
+            get { return _serverport; }
+            set { _serverport = value; }
         }
-		
+
         /// <summary>
         /// The name of the StarTeam project to be acted on
         /// </summary>
@@ -91,9 +91,8 @@ namespace NAnt.Contrib.Tasks.StarTeam {
         public virtual string viewname {
             get { return _viewname; }
             set { _viewname = value; }
-        }                                
+        }
 
-		
         /// <summary>
         /// The StarTeam user name used for login.
         /// </summary>
@@ -106,7 +105,7 @@ namespace NAnt.Contrib.Tasks.StarTeam {
             get { return _username; }
             set { _username = value; }
         }
-	
+
         /// <summary> 
         /// The password used for login.
         /// </summary>
@@ -119,7 +118,7 @@ namespace NAnt.Contrib.Tasks.StarTeam {
             get { return _password; }
             set { _password = value; }
         }
-		
+
         /// <summary> 
         /// One stop to set all parameters needed to connect to a StarTeam server.
         /// </summary>
@@ -145,7 +144,7 @@ namespace NAnt.Contrib.Tasks.StarTeam {
                 return string.Format("{0}:{1}@{2}:{3}/{4}/{5}", _username, _password,
                     _servername, _serverport, _projectname, _viewname);
             }
-            set {	
+            set {
                 //TODO: Convert this to a regular expression
                 string[] path = value.Split('@');
                 //see if url string looks like:
@@ -166,38 +165,37 @@ namespace NAnt.Contrib.Tasks.StarTeam {
                 path = path[0].Split(':');
                 _servername = path[0];
                 _serverport = path[1];
-            }	
-					
+            }
         }
 
         /// <value> The username of the connection</value>
         private string _username;
-	
+
         /// <value> The username of the connection</value>
         private string _password;
-	
+
         /// <value> name of Starteam server to connect to</value>
         private string _servername;
-	
+
         /// <value> port of Starteam server to connect to</value>
         private string _serverport;
-	
+
         /// <value> name of Starteam project to connect to</value>
         private string _projectname;
-	
+
         /// <value> name of Starteam view to connect to</value>
         private string _viewname;
-	
+
         /// <value>The starteam server through which all activities will be done.</value>
-        protected InterOpStarTeam.StServer _server = null;	
-	
+        protected InterOpStarTeam.StServer _server = null;
+
         /// <summary>
         /// Derived classes must override this method to instantiate a view configured appropriately to its task.
         /// </summary>
         /// <param name="rawview">the unconfigured <code>View</code></param>
         /// <returns>the view appropriately configured.</returns>
         protected internal abstract InterOpStarTeam.StView createSnapshotView(InterOpStarTeam.StView rawview);
-	
+
         /// <summary>
         /// All tasks will call on this method to connect to StarTeam and open the view for processing.  
         /// </summary>
@@ -206,16 +204,16 @@ namespace NAnt.Contrib.Tasks.StarTeam {
         protected internal virtual InterOpStarTeam.StView openView() {
             InterOpStarTeam.StStarTeamFinderStatics starTeamFinder = new InterOpStarTeam.StStarTeamFinderStatics();
             InterOpStarTeam.StView view = starTeamFinder.openView(this.url);
-		
+
             if (null == view) {
                 throw new BuildException("Cannot find view" + this.url + " in repository()",Location);
             }
-		
+
             InterOpStarTeam.StView snapshot = createSnapshotView(view);
             _server = snapshot.Server;
             return snapshot;
         }
-	
+
         /// <summary> Returns the name of the user or a blank string if the user is not found.</summary>
         /// <param name="userID">a user's ID</param>
         /// <returns>the name of the user</returns>

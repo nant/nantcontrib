@@ -31,37 +31,36 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
     /// <summary>
     /// Used to apply a label to a Visual Source Safe item.
     /// </summary>
-	/// <example>
-	///   <para>Label all files in a local sourcesafe database. (Automatically applies the label recursively)</para>
-	///   <code><![CDATA[
-	///	    <vsslabel 
-	///	      user="myusername" 
-	///	      password="mypassword" 
-	///	      dbpath="C:\VSS\srcsafe.ini"
-	///	      path="$/MyProduct"
-	///	      comment="NAnt label"
-	///	      label="myLabel"
-	///	    />
-	///   ]]></code>
-	/// </example>
-	/// <example>
-	///   <para>Label a file in a remote sourcesafe database.</para>
-	///   <code><![CDATA[
-	///	    <vsslabel 
-	///	      user="myusername" 
-	///	      password="mypassword" 
-	///	      dbpath="\\MyServer\VSS\srcsafe.ini"
-	///	      path="$/MyProduct/myFile.cs"
-	///	      comment="NAnt label"
-	///	      label="myLabel"
-	///	    />
-	///   ]]></code>
-	/// </example>
-	[TaskName("vsslabel")]
+    /// <example>
+    ///   <para>Label all files in a local sourcesafe database. (Automatically applies the label recursively)</para>
+    ///   <code><![CDATA[
+    ///     <vsslabel 
+    ///       user="myusername" 
+    ///       password="mypassword" 
+    ///       dbpath="C:\VSS\srcsafe.ini"
+    ///       path="$/MyProduct"
+    ///       comment="NAnt label"
+    ///       label="myLabel"
+    ///     />
+    ///   ]]></code>
+    /// </example>
+    /// <example>
+    ///   <para>Label a file in a remote sourcesafe database.</para>
+    ///   <code><![CDATA[
+    ///     <vsslabel 
+    ///       user="myusername" 
+    ///       password="mypassword" 
+    ///       dbpath="\\MyServer\VSS\srcsafe.ini"
+    ///       path="$/MyProduct/myFile.cs"
+    ///       comment="NAnt label"
+    ///       label="myLabel"
+    ///     />
+    ///   ]]></code>
+    /// </example>
+    [TaskName("vsslabel")]
     public sealed class LabelTask : BaseTask {
-		
-        string _comment = "";
-        string _label = "";
+        private string _comment = "";
+        private string _label = "";
 
         /// <summary>
         /// The label comment.
@@ -71,7 +70,7 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
             get { return _comment; }
             set { _comment = value; }
         }
-		
+
         /// <summary>
         /// The value of the label. Required.
         /// </summary>
@@ -80,18 +79,17 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
             get { return _label; }
             set { _label = value; }
         }
-		
+
         protected override void ExecuteTask() {
             Open();
 
             try {
                 Item.Label(_label, _comment);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new BuildException("label failed", Location, e);
             }
 
-            Log(Level.Info, LogPrefix + "Applied label \"" + _label + "\" to " + Path);
+            Log(Level.Info, "Applied label \"" + _label + "\" to " + Path);
         }
     }
 }

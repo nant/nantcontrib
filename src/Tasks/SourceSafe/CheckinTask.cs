@@ -31,43 +31,42 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
     /// <summary>
     /// Used to checkin files into Visual Source Safe.
     /// </summary>
-	/// <example>
-	///   <para>Checkin all files from an absolute directory to a local sourcesafe database.</para>
-	///   <code><![CDATA[
-	///	    <vsscheckin 
-	///	      user="myusername" 
-	///	      password="mypassword" 
-	///	      localpath="C:\Dev\Latest"
-	///	      recursive="true"
-	///	      writable="true"
-	///	      dbpath="C:\VSS\srcsafe.ini"
-	///	      path="$/MyProduct"
-	///	      comment="NAnt checkin"
-	///	    />
-	///   ]]></code>
-	/// </example>
-	/// <example>
-	///   <para>Checkin a file from a relative directory to a remote sourcesafe database.</para>
-	///   <code><![CDATA[
-	///	    <vsscheckin 
-	///	      user="myusername" 
-	///	      password="mypassword" 
-	///	      localpath="Latest\myFile.cs"
-	///	      recursive="false"
-	///	      writable="true"
-	///	      dbpath="\\MyServer\VSS\srcsafe.ini"
-	///	      path="$/MyProduct/myFile.cs"
-	///	      comment="NAnt checkin"
-	///	    />
-	///   ]]></code>
-	/// </example>
-	[TaskName("vsscheckin")]
+    /// <example>
+    ///   <para>Checkin all files from an absolute directory to a local sourcesafe database.</para>
+    ///   <code><![CDATA[
+    ///     <vsscheckin 
+    ///       user="myusername" 
+    ///       password="mypassword" 
+    ///       localpath="C:\Dev\Latest"
+    ///       recursive="true"
+    ///       writable="true"
+    ///       dbpath="C:\VSS\srcsafe.ini"
+    ///       path="$/MyProduct"
+    ///       comment="NAnt checkin"
+    ///     />
+    ///   ]]></code>
+    /// </example>
+    /// <example>
+    ///   <para>Checkin a file from a relative directory to a remote sourcesafe database.</para>
+    ///   <code><![CDATA[
+    ///     <vsscheckin 
+    ///       user="myusername" 
+    ///       password="mypassword" 
+    ///       localpath="Latest\myFile.cs"
+    ///       recursive="false"
+    ///       writable="true"
+    ///       dbpath="\\MyServer\VSS\srcsafe.ini"
+    ///       path="$/MyProduct/myFile.cs"
+    ///       comment="NAnt checkin"
+    ///     />
+    ///   ]]></code>
+    /// </example>
+    [TaskName("vsscheckin")]
     public sealed class CheckinTask : BaseTask {
-		
-        string _comment = "";
-        string _localpath = "";
-        string _recursive = Boolean.TrueString;
-        string _writable = Boolean.FalseString;
+        private string _comment = "";
+        private string _localpath = "";
+        private string _recursive = Boolean.TrueString;
+        private string _writable = Boolean.FalseString;
 
         /// <summary>
         /// The comment for the new version.
@@ -121,12 +120,11 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
 
             try {
                 Item.Checkin(_comment, _localpath, flags);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new BuildException("check-in failed.", Location, e);
             }
 
-            Log(Level.Info, LogPrefix + "Checked in " + Path);
+            Log(Level.Info, "Checked in " + Path);
         }
 
     }

@@ -69,10 +69,6 @@ namespace NAnt.Contrib.Tasks.Msi {
             task.Log(messageLevel, message, args);
         }
 
-        protected string LogPrefix {
-            get { return task.LogPrefix; }
-        }
-
         protected bool Verbose {
             get { return task.Verbose; }
         }
@@ -272,7 +268,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         private void LoadProperties(InstallerDatabase database) {
             // Select the "Property" Table
             using (InstallerTable propertyTable = database.OpenTable("Property")) {
-                Log(Level.Verbose, LogPrefix + "Adding Properties:");
+                Log(Level.Verbose, "Adding Properties:");
 
                 property productName = null;
                 property productCode = null;
@@ -339,7 +335,7 @@ namespace NAnt.Contrib.Tasks.Msi {
 
                     int depth = 1;
 
-                    Log(Level.Verbose, LogPrefix + "Adding Directories:");
+                    Log(Level.Verbose, "Adding Directories:");
 
                     // Add directories from Task definition
                     foreach (MSIRootDirectory directory in msi.directories) {
@@ -914,7 +910,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         private void LoadRegistry(InstallerDatabase database) {
 
             if (msi.registry != null) {
-                Log(Level.Verbose, LogPrefix + "Adding Registry Values:");
+                Log(Level.Verbose, "Adding Registry Values:");
 
                 // Open the "Registry" Table
                 using (InstallerTable registryTable = database.OpenTable("Registry")) {
@@ -975,7 +971,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         private void LoadRegistryLocators(InstallerDatabase database) {
             // Add properties from Task definition
             if (msi.search != null) {
-                Log(Level.Verbose, LogPrefix + "Adding Locators:");
+                Log(Level.Verbose, "Adding Locators:");
 
                 foreach (searchKey key in msi.search) {
                     switch (key.type.ToString()) {
@@ -1068,7 +1064,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// <param name="database">The MSI database.</param>
         private void LoadIconData(InstallerDatabase database) {
             if (msi.icons != null) {
-                Log(Level.Verbose, LogPrefix + "Adding Icon Data:");
+                Log(Level.Verbose, "Adding Icon Data:");
 
                 // Open the Icon Table
                 using (InstallerTable iconTable = database.OpenTable("Icon")) {
@@ -1095,7 +1091,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         private void LoadShortcutData(InstallerDatabase database) {
             // Add properties from Task definition
             if (msi.shortcuts != null) {
-                Log(Level.Verbose, LogPrefix + "Adding Shortcuts:");
+                Log(Level.Verbose, "Adding Shortcuts:");
 
                 using (InstallerTable table = database.OpenTable("Shortcut")) {
                     foreach (MSIShortcut shortcut in msi.shortcuts) {
@@ -1118,7 +1114,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         private void LoadUserDefinedTables(InstallerDatabase database) {
             // Add properties from Task definition
             if (msi.tables != null) {
-                Log(Level.Verbose, LogPrefix + "Adding Tables:");
+                Log(Level.Verbose, "Adding Tables:");
 
                 foreach (MSITable table in msi.tables) {
                     Log(Level.Verbose, "\t" + table.name);
@@ -1307,7 +1303,7 @@ namespace NAnt.Contrib.Tasks.Msi {
             } else if (column.categorySpecified) {
                 currentColumnType = GetType(column.category);
             } else {
-                Log(Level.Verbose, LogPrefix + "Must specify a valid category or type.  Defaulting to category type: s0");
+                Log(Level.Verbose, "Must specify a valid category or type.  Defaulting to category type: s0");
                 currentColumnType = "string";
             }
             return currentColumnType;
@@ -1442,11 +1438,11 @@ namespace NAnt.Contrib.Tasks.Msi {
                             }
                         }
                     }
+
                     try {
                         table.InsertRecord(record);
-                    }
-                    catch (Exception e) {
-                        Log(Level.Info, LogPrefix + "Incorrect row data format.\n\n" + e.ToString());
+                    } catch (Exception ex) {
+                        Log(Level.Info, "Incorrect row data format.\n\n" + ex.ToString());
                     }
                 }
             }
@@ -1462,7 +1458,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// <param name="database">The MSI database.</param>
         private void LoadBinaryData(InstallerDatabase database) {
             if (msi.binaries != null) {
-                Log(Level.Verbose, LogPrefix + "Adding Binary Data:");
+                Log(Level.Verbose, "Adding Binary Data:");
 
                 // Open the Binary Table
                 using (InstallerTable binaryTable = database.OpenTable("Binary")) {
@@ -1476,17 +1472,15 @@ namespace NAnt.Contrib.Tasks.Msi {
                         int nameColSize = 50;
 
                         if (binary.name.Length > nameColSize) {
-                            Log(Level.Warning, LogPrefix +
-                                "WARNING: Binary key name longer than " + nameColSize + " characters:\n\tName: " +
+                            Log(Level.Warning, "Binary key name longer than " + nameColSize + " characters:\n\tName: " +
                                 binary.name + "\n\tLength: " + binary.name.Length.ToString());
-
                         }
 
                         if (File.Exists(filePath)) {
                             binaryTable.InsertRecord(binary.name, new InstallerStream(filePath));
-                        }
-                        else {
-                            throw new BuildException(String.Format(CultureInfo.InvariantCulture, "Unable to open file:\n\t{0}", filePath), Location);
+                        } else {
+                            throw new BuildException(string.Format(CultureInfo.InvariantCulture, 
+                                "Unable to open file '{0}'.", filePath), Location);
                         }
                     }
                 }
@@ -1500,7 +1494,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         private void LoadDialogData(InstallerDatabase database) {
             if (msi.dialogs != null) {
 
-                Log(Level.Verbose, LogPrefix + "Adding Dialogs:");
+                Log(Level.Verbose, "Adding Dialogs:");
 
                 // Open the Dialog Table
                 using (InstallerTable table = database.OpenTable("Dialog")) {
@@ -1523,7 +1517,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// <param name="database">The MSI database.</param>
         private void LoadDialogControlData(InstallerDatabase database) {
             if (msi.controls != null) {
-                Log(Level.Verbose, LogPrefix + "Dialog Controls:");
+                Log(Level.Verbose, "Dialog Controls:");
 
                 using (InstallerTable controlTable = database.OpenTable("Control")) {
                     foreach (MSIControl control in msi.controls) {
@@ -1574,7 +1568,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// <param name="database">The MSI database.</param>
         private void LoadDialogControlConditionData(InstallerDatabase database) {
             if (msi.controlconditions != null) {
-                Log(Level.Verbose, LogPrefix + "Adding Dialog Control Conditions For:");
+                Log(Level.Verbose, "Adding Dialog Control Conditions for:");
 
                 using (InstallerTable controlConditionTable = database.OpenTable("ControlCondition")) {
                     foreach (MSIControlCondition controlCondition in msi.controlconditions) {
@@ -1620,7 +1614,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// <param name="database">The MSI database.</param>
         private void LoadDialogControlEventData(InstallerDatabase database) {
             if (msi.controlevents != null) {
-                Log(Level.Verbose, LogPrefix + "Modifying Dialog Control Events:");
+                Log(Level.Verbose, "Modifying Dialog Control Events:");
 
                 using (InstallerTable controlEventTable = database.OpenTable("ControlEvent")) {
                     foreach (MSIControlEvent controlEvent in msi.controlevents) {
@@ -1651,7 +1645,7 @@ namespace NAnt.Contrib.Tasks.Msi {
                     // If the record is found, delete it
                     reader.DeleteCurrentRecord();
                 } else {
-                    throw new BuildException(String.Format(CultureInfo.InvariantCulture, 
+                    throw new BuildException(string.Format(CultureInfo.InvariantCulture, 
                         "ControlEvent not found for removal: Dialog={0}, Control={1}, Event={2}, Argument={3}, Condition={4}.",
                         controlEvent.dialog, controlEvent.control, controlEvent.name, controlEvent.argument, controlEvent.condition), Location);
                 }
@@ -1667,7 +1661,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         private void LoadCustomAction(InstallerDatabase database) {
             // Add custom actions from Task definition
             if (msi.customactions != null) {
-                Log(Level.Verbose, LogPrefix + "Adding Custom Actions:");
+                Log(Level.Verbose, "Adding Custom Actions:");
 
                 using (InstallerTable customActionTable = database.OpenTable("CustomAction")) {
                     foreach (MSICustomAction customAction in msi.customactions) {
@@ -1687,7 +1681,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// <param name="database">The MSI database.</param>
         private void LoadActionText(InstallerDatabase database) {
             if (msi.actiontext != null) {
-                Log(Level.Verbose, LogPrefix + "Adding ActionText:");
+                Log(Level.Verbose, "Adding ActionText:");
 
                 using (InstallerTable actionTextTable = database.OpenTable("ActionText")) {
                     foreach (MSIActionTextAction action in msi.actiontext) {
@@ -1695,9 +1689,9 @@ namespace NAnt.Contrib.Tasks.Msi {
 
                         try {
                             actionTextTable.InsertRecord(action.name, action.description, action.template);
-                        }
-                        catch (Exception) {
-                            Log(Level.Warning, LogPrefix + "Warning: Action text for \"" + action.name + "\" already exists in database.");
+                        } catch (Exception) {
+                            Log(Level.Warning, "Action text for '{0}' already"
+                                + " exists in the database.", action.name);
                         }
                     }
                 }
@@ -1710,7 +1704,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// <param name="database">The MSI database.</param>
         private void LoadAppMappings(InstallerDatabase database) {
             if (msi.appmappings != null) {
-                Log(Level.Verbose, LogPrefix + "Adding Application Mappings:");
+                Log(Level.Verbose, "Adding Application Mappings:");
 
                 using (InstallerTable appmapTable = database.OpenTable("_AppMappings")) {
                     foreach (MSIAppMapping appmap in msi.appmappings) {
@@ -1730,7 +1724,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// <param name="database">The MSI database.</param>
         private void LoadUrlProperties(InstallerDatabase database) {
             if (msi.urlproperties != null) {
-                Log(Level.Verbose, LogPrefix + "Adding URL Properties:");
+                Log(Level.Verbose, "Adding URL Properties:");
 
                 using (InstallerTable urlpropTable = database.OpenTable("_UrlToDir")) {
                     foreach (MSIURLProperty urlprop in msi.urlproperties) {
@@ -1749,7 +1743,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// <param name="database">The MSI database.</param>
         private void LoadVDirProperties(InstallerDatabase database) {
             if (msi.vdirproperties != null) {
-                Log(Level.Verbose, LogPrefix + "Adding VDir Properties:");
+                Log(Level.Verbose, "Adding VDir Properties:");
 
                 using (InstallerTable vdirpropTable = database.OpenTable("_VDirToUrl")) {
                     foreach (MSIVDirProperty vdirprop in msi.vdirproperties) {
@@ -1768,7 +1762,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// <param name="database">The MSI database.</param>
         private void LoadAppRootCreate(InstallerDatabase database) {
             if (msi.approots != null) {
-                Log(Level.Verbose, LogPrefix + "Adding Application Roots:");
+                Log(Level.Verbose, "Adding Application Roots:");
 
                 using (InstallerTable approotTable = database.OpenTable("_AppRootCreate")) {
                     foreach (MSIAppRoot appRoot in msi.approots) {
@@ -1786,7 +1780,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// <param name="database">The MSI database.</param>
         private void LoadIISDirectoryProperties(InstallerDatabase database) {
             if (msi.iisproperties != null) {
-                Log(Level.Verbose, LogPrefix + "Adding IIS Directory Properties:");
+                Log(Level.Verbose, "Adding IIS Directory Properties:");
 
                 using (InstallerTable iispropTable = database.OpenTable("_IISProperties")) {
                     foreach (MSIIISProperty iisprop in msi.iisproperties) {
@@ -1834,7 +1828,8 @@ namespace NAnt.Contrib.Tasks.Msi {
                             string curTypeLibFileName = (string)win32Key.GetValue(null, null);
                             if (curTypeLibFileName != null) {
                                 if (String.Compare(curTypeLibFileName, typeLibFileName, true) == 0) {
-                                    Log(Level.Info, LogPrefix + "Configuring " + typeLibName + " for COM Interop...");
+                                    Log(Level.Info, "Configuring '{0}' for COM Interop...", 
+                                        typeLibName);
 
                                     TypeLibRecord tlbRecord = new TypeLibRecord(
                                         typeLib, typeLibFileName,
@@ -1945,7 +1940,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// </summary>
         /// <param name="database">The MSI database.</param>
         private void CreateCabFile(InstallerDatabase database) {
-            Log(Level.Info, LogPrefix + "Compressing Files...");
+            Log(Level.Info, "Compressing Files...");
 
             // Create the CabFile
             ProcessStartInfo processInfo = new ProcessStartInfo();
@@ -1997,7 +1992,7 @@ namespace NAnt.Contrib.Tasks.Msi {
             Log(Level.Info, "Done.");
 
             if (File.Exists(cabFilePath)) {
-                Log(Level.Verbose, LogPrefix + "Storing Cabinet in MSI Database...");
+                Log(Level.Verbose, "Storing Cabinet in MSI Database...");
 
                 using (InstallerTable cabTable = database.OpenTable("_Streams")) {
                     cabTable.InsertRecord(Path.GetFileName(cabFilePath), new InstallerStream(cabFilePath));
@@ -2015,7 +2010,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         private void LoadSequence(InstallerDatabase database) {
             // Add custom actions from Task definition
             if (msi.sequences != null) {
-                Log(Level.Verbose, LogPrefix + "Adding Install/Admin Sequences:");
+                Log(Level.Verbose, "Adding Install/Admin Sequences:");
 
                 // Open the sequence tables
                 using (InstallerTable
@@ -2229,10 +2224,8 @@ namespace NAnt.Contrib.Tasks.Msi {
                     if (hmod != 0) {
                         int regSvr = GetProcAddress(hmod, "DllRegisterServer");
                         if (regSvr != 0) {
-                            Log(Level.Info, LogPrefix +
-                                "Configuring " +
-                                Path.GetFileName(filePath) +
-                                " for COM Self Registration...");
+                            Log(Level.Info, "Configuring '{0}' for COM Self Registration...",
+                                Path.GetFileName(filePath));
 
                             // Add a record for a new Component
                             selfRegTable.InsertRecord(fileId, null);
@@ -2346,7 +2339,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         private void LoadComponents(InstallerDatabase database, ref int LastSequence) {
 
             if (msi.components != null) {
-                Log(Level.Verbose, LogPrefix + "Add Files:");
+                Log(Level.Verbose, "Add Files:");
 
                 using (InstallerTable
                            msiAssemblyTable = database.OpenTable("MsiAssembly"),
@@ -2372,7 +2365,9 @@ namespace NAnt.Contrib.Tasks.Msi {
                             if (component.fileset == null) {
                                 // Make sure the keyfile maps to a valid registry entry
                                 if (((XmlElement)_xmlNode).SelectSingleNode("registry/key[@component='" + component.name + "']/value[@id='" + keyFileName + "']") == null) {
-                                    Log(Level.Warning, LogPrefix + "Component '{0}' does not map to a valid registry key.  Skipping...\n", component.name);
+                                    Log(Level.Warning, "Component '{0}' does not"
+                                        + " map to a valid registry key.  Skipping...", 
+                                        component.name);
                                     continue;
                                 }
                             }
@@ -2465,7 +2460,7 @@ namespace NAnt.Contrib.Tasks.Msi {
                 // Copy the template MSI file
                 CopyFile(source, dest);
 
-                Log(Level.Info, LogPrefix + "Building MSI Database '{0}'.", msi.output);
+                Log(Level.Info, "Building MSI Database '{0}'.", msi.output);
 
                 // Open the Output Database.
                 InstallerDatabase database = new InstallerDatabase(dest);
@@ -2485,7 +2480,7 @@ namespace NAnt.Contrib.Tasks.Msi {
                 // Compress Files
                 CreateCabFile(database);
 
-                Log(Level.Info, LogPrefix + "Saving MSI Database...");
+                Log(Level.Info, "Saving MSI Database...");
 
                 // Commit the MSI Database
                 database.Close();

@@ -178,7 +178,7 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
                 throw new BuildException("vssget failed", Location, e);
             }
 
-            Log(Level.Info, LogPrefix + "Put " + Path + " to " + _localpath);
+            Log(Level.Info, "Put " + Path + " to " + _localpath);
 
             RemoveDeletedFromLocalImage();
         }
@@ -189,9 +189,9 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         /// </summary>
         public void RemoveDeletedFromLocalImage() {
             if(Convert.ToBoolean(RemoveDeleted)) {
-                Log(Level.Info, LogPrefix + "Removing deleted files from local image...");
+                Log(Level.Info, "Removing deleted files from local image...");
                 RemoveDeletedFromLocalImage(Item, LocalPath);
-                Log(Level.Info, LogPrefix + String.Format("Removed: {0} deleted files from local image.", _deleteCount));
+                Log(Level.Info, string.Format("Removed: {0} deleted files from local image.", _deleteCount));
             }
         }
 
@@ -261,7 +261,7 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
 
         private void Delete(string path) {
             _deleteCount++;
-            Log(Level.Verbose, LogPrefix + "Deleting: " + path);
+            Log(Level.Verbose, "Deleting: " + path);
             if(IsDirectory(path)) {
                 Directory.Delete(path, true);
             } else {

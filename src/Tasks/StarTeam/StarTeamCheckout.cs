@@ -37,64 +37,68 @@ namespace NAnt.Contrib.Tasks.StarTeam {
     /// </remarks>
     /// <example>
     ///   <para>Recursively checks out all files in the project with an exclusive lock.</para>
-    ///   <code><![CDATA[
-    ///		<!-- 
-    ///		constructs a 'url' containing connection information to pass to the task 
-    ///		alternatively you can set each attribute manually 
-    ///		-->
-    ///		<property name="ST.url" value="user:pass@serverhost:49201/projectname/viewname"/>
-    ///		<stcheckout locktype="exclusive" rootstarteamfolder="/" recursive="true" url="${ST.url}" />
-    ///   ]]></code>
+    ///   <code>
+    ///     <![CDATA[
+    /// <!-- 
+    ///   constructs a 'url' containing connection information to pass to the task 
+    ///   alternatively you can set each attribute manually 
+    /// -->
+    /// <property name="ST.url" value="user:pass@serverhost:49201/projectname/viewname" />
+    /// <stcheckout locktype="exclusive" rootstarteamfolder="/" recursive="true" url="${ST.url}" />
+    ///     ]]>
+    ///   </code>
     /// </example>
     [TaskName("stcheckout")]
     public class StarTeamCheckout : TreeBasedTask {
         private InterOpStarTeam.StItem_LockTypeStaticsClass starTeamLockTypeStatics;
         private InterOpStarTeam.StStatusStaticsClass starTeamStatusStatics;
+
         public StarTeamCheckout() {
             starTeamLockTypeStatics = new InterOpStarTeam.StItem_LockTypeStaticsClass(); 
             starTeamStatusStatics = new InterOpStarTeam.StStatusStaticsClass();
             _lockStatus = starTeamLockTypeStatics.UNCHANGED; 
         }
+
         /// <summary> 
         /// Default : true - Create directories that are in the Starteam repository even if they are empty.
         /// </summary>
         [TaskAttribute("createworkingdirs", Required=false)]
-        [BooleanValidator]         
+        [BooleanValidator]
         public virtual bool createworkingdirs {
-            set { _createDirs = value; }			
+            set { _createDirs = value; }
         }
 
         /// <summary> 
         /// <b>Not fully tested CAREFUL</b> Default : false - Should all local files <b>NOT</b> in StarTeam be deleted?
         /// </summary>
         [TaskAttribute("deleteuncontrolled", Required=false)]
-        [BooleanValidator]         
+        [BooleanValidator]
         public virtual bool deleteuncontrolled {
-            set { _deleteUncontrolled = value; }			
+            set { _deleteUncontrolled = value; }
         }
-		
+
         /// <summary> 
-        /// What type of lock to apply to files checked out. 
+        /// What type of lock to apply to files checked out.
         /// <list type="bullet">
-        /// 	<listheader>
-        ///			<term>LockType</term>
-        /// 	</listheader>
-        /// 	<item>
-        ///			<term>unchanged</term>
-        /// 		<description>default: do not make any changes to the lock state of items.</description>
-        ///		</item>
-        /// 	<item>
-        ///			<term>exclusive</term>
-        /// 		<description>Exclusively lock items. No other users can update the object while it is exclusively locked.</description>
-        ///		</item>
-        /// 	<item>
-        ///			<term>nonexclusive</term>
-        /// 		<description>Put a non-exclusive lock on the item.</description>
-        ///		</item>
-        /// 	<item>
-        ///			<term>unlocked</term>
-        /// 		<description>Remove locks from all items checked out. This accompanied by force would effectively override a lock and replace local contents with the current version.</description>
-        ///		</item>
+        ///   <listheader>
+        ///     <term>LockType</term>
+        ///   </listheader>
+        ///   <item>
+        ///     <term>unchanged</term>
+        ///     <description>default: do not make any changes to the lock state of items.</description>
+        ///   </item>
+        ///   <item>
+        ///     <term>exclusive</term>
+        ///     <description>Exclusively lock items. No other users can update the object while it is exclusively locked.</description>
+        ///   </item>
+        ///   <item>
+        ///     <term>nonexclusive</term>
+        ///     <description>Put a non-exclusive lock on the item.</description>
+        ///   </item>
+        ///   <item>
+        ///     <term>unlocked</term>
+        ///     <description>Remove locks from all items checked out. This accompanied by force would effectively override a lock and replace local contents with the current version.</description>
+        ///   </item>
         /// </list>
         /// </summary>
         [TaskAttribute("locktype")]
@@ -111,18 +115,18 @@ namespace NAnt.Contrib.Tasks.StarTeam {
                     case "unlocked" :
                         _lockStatus = starTeamLockTypeStatics.UNLOCKED; break;
                 }
-            }			
+            }
         }
-		
+
         /// <value> holder for the createDirs property.</value>
         private bool _createDirs = true;
-		
+
         /// <value> holder for the deleteUncontrolled property.</value>
         private bool _deleteUncontrolled = false;
-		
+
         /// <value> holder for the lockstatus property. </value>
         private int _lockStatus;
-		
+
         /// <summary> 
         /// Override of base-class abstract function creates an appropriately configured view for checkout. 
         /// If a label is specified it is used otherwise the current view of the repository is used.
@@ -133,7 +137,7 @@ namespace NAnt.Contrib.Tasks.StarTeam {
             InterOpStarTeam.StViewConfigurationStaticsClass starTeamViewConfiguration = new InterOpStarTeam.StViewConfigurationStaticsClass();
             InterOpStarTeam.StViewFactory starTeamViewFactory = new InterOpStarTeam.StViewFactory();
             InterOpStarTeam.IStLabel stLabel = getLabelID(raw);
-		
+
             // if a label has been supplied, use it to configure the view
             // otherwise use current view
             if (stLabel != null) {
@@ -143,14 +147,14 @@ namespace NAnt.Contrib.Tasks.StarTeam {
                 return starTeamViewFactory.Create(raw, starTeamViewConfiguration.createTip());
             }
         }
-	
+
         /// <summary> Implements base-class abstract function to define tests for any preconditons required by the task</summary>
         protected override void testPreconditions() {
             if (null != _rootLocalFolder && !this.Forced) {
-                Log(Level.Warning, LogPrefix + "Warning: rootLocalFolder specified, but forcing off.");
+                Log(Level.Warning, "Warning: rootLocalFolder specified, but forcing off.");
             }
         }
-		
+
         /// <summary> 
         /// Implements base-class abstract function to perform the checkout operation on the files in each folder of the tree.
         /// </summary>
@@ -162,7 +166,7 @@ namespace NAnt.Contrib.Tasks.StarTeam {
 
             try {
                 System.Collections.Hashtable localFiles = listLocalFiles(targetFolder);
-				
+
                 // If we have been told to create the working folders
                 if (_createDirs) {
                     // Create if it doesn't exist
@@ -180,25 +184,23 @@ namespace NAnt.Contrib.Tasks.StarTeam {
                 foreach(InterOpStarTeam.StFile stFile in starteamFolder.getItems("File")) {
                     string filename = stFile.Name;
                     FileInfo localFile = new FileInfo(Path.Combine(targetFolder.FullName, filename));
-				
+
                     delistLocalFile(localFiles, localFile);
-					
+
                     // If the file doesn't pass the include/exclude tests, skip it.
                     if (!IsIncluded(filename)) {
-                        if(this.Verbose) {
-                            Log(Level.Info, LogPrefix + "Skipping : {0}",localFile.ToString());
-                        }
+                        Log(Level.Verbose, "Skipping '{0}'", localFile.ToString());
                         notMatched++;
                         continue;
                     }
-					
+
                     // If forced is not set then we may save ourselves some work by
                     // looking at the status flag.
                     // Otherwise, we care nothing about these statuses.
-					
+
                     if (!this.Forced) {
                         int fileStatus = (stFile.Status);
-						
+
                         // We try to update the status once to give StarTeam
                         // another chance.
                         if (fileStatus == starTeamStatusStatics.merge || fileStatus == starTeamStatusStatics.UNKNOWN) {
@@ -206,19 +208,20 @@ namespace NAnt.Contrib.Tasks.StarTeam {
                             fileStatus = (stFile.Status);
                         }
                         if(fileStatus == starTeamStatusStatics.merge || fileStatus == starTeamStatusStatics.Modified) {
-                            Log(Level.Info, LogPrefix + "Not processing {0} as it is Modified or needs Merging and Forced parameter is not on.",stFile.toString());
+                            Log(Level.Info, "Not processing '{0}' as it is"
+                                + " modified or needs merging and \"forced\""
+                                + " attribute is not set.", stFile.toString());
                             continue;
                         }
                         if (fileStatus == starTeamStatusStatics.CURRENT) {
                             //count files not processed so we can inform later
                             notProcessed++;
-                            //Log(Level.Info, LogPrefix + "Not processing {0} as it is current.", stFile.toString());
                             continue;
                         }
                         //TODO merged files get processed. We may want to provide a flag to allow merges to be skipped as well
                         //this would help prevent accidental overwrites 
                     }
-					
+
                     // <wisdom source="from the Ant">
                     // Check out anything else.
                     // Just a note: StarTeam has a status for NEW which implies
@@ -232,26 +235,28 @@ namespace NAnt.Contrib.Tasks.StarTeam {
                     // we can just check out  everything here without worrying
                     // about losing anything.
                     // </wisdom>
-					
+
                     //may want to offer this to be surpressed but usually it is a good idea to have
                     //in the build log what changed for that build.
-					
+
                     //debug to skip build files- remove this after include/exclude is added
                     if(localFile.FullName.IndexOf(".build") > 0)
                         continue;
 
-                    Log(Level.Info, LogPrefix + "Checking Out: " + (localFile.ToString()));
+                    Log(Level.Info, "Checking out '{0}'", localFile.ToString());
 
                     stFile.checkoutTo(localFile.FullName, _lockStatus, true, true, true);
                     _filesAffected++;
                 }
-				
+
                 //if we are being verbose emit count of files not processed 
                 if(this.Verbose) {
                     if(notProcessed > 0) 
-                        Log(Level.Info, LogPrefix + "{0} : {1} files not processed because they were current.",targetFolder.FullName,notProcessed.ToString());
+                        Log(Level.Info, "{0} : {1} files not processed because they were current.",
+                            targetFolder.FullName, notProcessed.ToString());
                     if(notMatched > 0) 
-                        Log(Level.Info, LogPrefix + "{0} : {1} files not processed because they did not match includes/excludes.",targetFolder.FullName,notMatched.ToString());
+                        Log(Level.Info, "{0} : {1} files not processed because they did not match includes/excludes.",
+                            targetFolder.FullName,notMatched.ToString());
                 }
 
                 // Now we recursively call this method on all sub folders in this
@@ -263,52 +268,48 @@ namespace NAnt.Contrib.Tasks.StarTeam {
                         visit(stFolder, targetSubfolder);
                     }
                 }
-				
+
                 if (_deleteUncontrolled) {
                     deleteUncontrolledItems(localFiles);
                 }
-				
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 throw new BuildException(e.Message,Location,e);
             }
         }
-		                                                         		
+
         /// <summary> 
         /// Deletes everything on the local machine that is not in the repository.
         /// </summary>
         /// <param name="localFiles">Hashtable containing filenames to be deleted</param>
         private void  deleteUncontrolledItems(System.Collections.Hashtable localFiles) {
             try {
-                Log(Level.Info, LogPrefix + "Deleting {0} uncontrolled items.",localFiles.Count);
+                Log(Level.Info, "Deleting {0} uncontrolled items.",localFiles.Count);
 
                 foreach(string fileName in localFiles.Keys) {
-                    //					if(Directory.Exists(fileName)) 
-                    //					{
-                    //						Log(Level.Info, LogPrefix + "NOT Deleting {0} as it is a directory.",fileName);
-                    //						Directory.Delete(fileName,true);
-                    //						continue;
-                    //					}            
+                    // if(Directory.Exists(fileName)) {
+                    //      Log(Level.Info, "NOT Deleting {0} as it is a directory.",fileName);
+                    //      Directory.Delete(fileName,true);
+                    //      continue;
+                    // }
                     FileInfo file = new FileInfo(fileName);
                     try {
                         this.delete(file);
-                        //						Log(Level.Info, LogPrefix + "Deleting {0}",fileName);
-                        //						System.IO.File.SetAttributes(fileName,System.IO.FileAttributes.Normal);
-                        //						file.Delete();
-                    }
-                    catch(Exception e) {
-                        Log(Level.Error, LogPrefix + "NOT Deleting {0} - {1}.",fileName,e.Message);
+                        // Log(Level.Info, "Deleting {0}",fileName);
+                        // System.IO.File.SetAttributes(fileName,System.IO.FileAttributes.Normal);
+                        // file.Delete();
+                    } catch(Exception e) {
+                        Log(Level.Error, "Failure deleting '{0}': {1}.", fileName,
+                            e.Message);
                         continue;
                     }
-                    //delete(file);
                 }
             }
                 //TODO: Move security catch into delete()
             catch (System.Security.SecurityException e) {
-                Log(Level.Error, LogPrefix + "Error deleting file: {0}", e);
+                Log(Level.Error, "Error deleting files: {0}", e.Message);
             }
         }
-		
+
         /// <summary> Utility method to delete the file (and it's children) from the local drive.</summary>
         /// <param name="file">the file or directory to delete.</param>
         /// <returns>was the file successfully deleted</returns>
@@ -320,18 +321,15 @@ namespace NAnt.Contrib.Tasks.StarTeam {
                     delete(dirfiles);
                 }
             }
-			
-            Log(Level.Info, LogPrefix + "Deleting: {0}",file.FullName);
+
+            Log(Level.Info, "Deleting '{0}'", file.FullName);
             if (File.Exists(file.FullName)) {
-                System.IO.File.SetAttributes(file.FullName,System.IO.FileAttributes.Normal);
+                System.IO.File.SetAttributes(file.FullName, System.IO.FileAttributes.Normal);
                 File.Delete(file.FullName);
-            }
-            else if (Directory.Exists(file.FullName)) {
+            } else if (Directory.Exists(file.FullName)) {
                 Directory.Delete(file.FullName);
             }
-            else
-                return false;
-			
+
             return true;
         }
     }

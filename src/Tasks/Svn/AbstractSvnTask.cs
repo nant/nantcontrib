@@ -136,7 +136,7 @@ namespace NAnt.SourceControl.Tasks {
         ///     protocol:       http/ web_dav
         ///     username:       anonymous
         ///     servername:     svn.collab.net
-        ///     repository:		/repos/svn
+        ///     repository:     /repos/svn
         ///     server path:    /trunk/doc/book/tools
         ///     
         ///     In addition the revision path or branch can also be determined as
@@ -212,8 +212,7 @@ namespace NAnt.SourceControl.Tasks {
         /// </summary>
         /// <param name="process">The process to prepare.</param>
         protected override void PrepareProcess (Process process) {
-            Log(Level.Info, String.Format("{0} command name: {1}", 
-                LogPrefix, this.CommandName));
+            Log(Level.Verbose, "Command name: {0}", this.CommandName);
             if (null == this.Arguments || 0 == this.Arguments.Count) {
                 this.AppendGlobalOptions();
                 this.Arguments.Add(new Argument(this.CommandName));
@@ -221,8 +220,8 @@ namespace NAnt.SourceControl.Tasks {
                     this.Arguments.Add(new Argument(this.Root));
                 }
 
-                Log(Level.Debug, String.Format("{0} commandline args null: {0}",
-                    LogPrefix, ((null == this.CommandLineArguments) ? "yes" : "no")));
+                Log(Level.Debug, "Commandline args null: {0}",
+                    ((null == this.CommandLineArguments) ? "yes" : "no"));
                 if (null == this.CommandLineArguments) {
                     this.AppendCommandOptions();
                 }
@@ -238,13 +237,9 @@ namespace NAnt.SourceControl.Tasks {
             process.StartInfo.WorkingDirectory = 
                 this.DestinationDirectory.FullName;
 
-            Log(Level.Info, String.Format("{0} working directory: {1}", 
-                LogPrefix, process.StartInfo.WorkingDirectory));
-            Log(Level.Info, String.Format("{0} executable: {1}", 
-                LogPrefix, process.StartInfo.FileName));
-            Log(Level.Info, String.Format("{0} arguments: {1}", 
-                LogPrefix, process.StartInfo.Arguments));
-
+            Log(Level.Verbose, "Working directory: {0}", process.StartInfo.WorkingDirectory);
+            Log(Level.Verbose, "Executable: {0}", process.StartInfo.FileName);
+            Log(Level.Verbose, "Arguments: {0}", process.StartInfo.Arguments);
         }
 
         #endregion Override implementation of ExternalProgramBase
@@ -278,8 +273,8 @@ namespace NAnt.SourceControl.Tasks {
 
         /// <summary>
         /// Append the command line options or commen names for the options
-        ///		to the generic options collection.  This is then piped to the
-        ///		command line as a switch.
+        /// to the generic options collection.  This is then piped to the
+        /// command line as a switch.
         /// </summary>
         private void AppendCommandOptions () {
             foreach (Option option in this.CommandOptions.Values) {
@@ -292,7 +287,7 @@ namespace NAnt.SourceControl.Tasks {
         }
 
         private void AddArg (String arg) {
-            Arguments.Add(new Argument(String.Format("{0}{1}",
+            Arguments.Add(new Argument(string.Format("{0}{1}",
                 ARG_PREFIX, arg)));
         }
 
