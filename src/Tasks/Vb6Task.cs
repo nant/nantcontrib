@@ -246,17 +246,12 @@ namespace NAnt.Contrib.Tasks {
         /// </returns>
         protected bool ProjectNeedsCompiling(string projectFile) {
             // return true as soon as we know we need to compile
-        
             FileSet sources = new FileSet();
-            // shouldn't the base directory actually be the directory where
-            // the project file is stored ?
-            sources.BaseDirectory = new DirectoryInfo(Project.BaseDirectory);
-            
             FileSet references = new FileSet();
-            // shouldn't the base directory actually be the directory where
-            // the project file is stored ?
-            references.BaseDirectory = new DirectoryInfo(Project.BaseDirectory);
-
+            
+            sources.BaseDirectory = new DirectoryInfo(Path.GetDirectoryName( projectFile ) );
+            references.BaseDirectory = sources.BaseDirectory;
+            
             string outputFile = ParseProjectFile(projectFile, sources, references);
 
             FileInfo outputFileInfo = new FileInfo(OutDir != null ? Path.Combine(OutDir.FullName, outputFile) : outputFile);
