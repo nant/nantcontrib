@@ -115,7 +115,7 @@ namespace NAnt.Contrib.Tasks {
         /// <summary>
         /// Mappings from URI to directories.  These are required for web projects.
         /// </summary>
-        [BuildElementCollection("maps", "option", typeof(Option))]
+        [BuildElementCollection("maps", "option")]
         public OptionCollection Maps {
             get { return _maps; }
         }
@@ -123,7 +123,7 @@ namespace NAnt.Contrib.Tasks {
         /// <summary>
         /// Parameters to pass to SLiNgshoT.  The parameter <c>build.basedir</c> is required.
         /// </summary>
-        [BuildElementCollection("parameters", "option", typeof(Option))]
+        [BuildElementCollection("parameters", "option")]
         public OptionCollection Parameters {
             get { return _parameters; }
         }

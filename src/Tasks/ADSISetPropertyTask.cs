@@ -84,7 +84,8 @@ namespace NAnt.Contrib.Tasks {
     /// A group of properties to set with this task.
     /// </summary>
     private OptionCollection _propertyList = new OptionCollection();
-    [BuildElementCollection("properties", "option", typeof(Option),Required=false)]
+
+    [BuildElementCollection("properties", "option", Required=false)]
     public OptionCollection PropertyList
     {
       get { return _propertyList; }
