@@ -45,22 +45,23 @@ namespace NAnt.SourceControl.Tasks {
     /// </example>
     [TaskName("svn")]
     public class SvnTask : AbstractSvnTask {
+        #region Private Instance Fields
 
-		#region Private Instance Fields
         private string _commandName;
-		#endregion
 
-		#region Public Instance Properties
+        #endregion Private Instance Fields
+
+        #region Public Instance Properties
+
         /// <summary>
         /// The svn command to execute.
         /// </summary>
         [TaskAttribute("command", Required=true)]
         public override string CommandName {
-            get {return this._commandName;}
-            set {this._commandName = value;}
+            get { return this._commandName; }
+            set { this._commandName = value; }
         }
 
-		#endregion
-
-	}
+        #endregion Public Instance Properties
+    }
 }

@@ -24,6 +24,7 @@
 using System;
 using System.Collections;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 
 using NAnt.Core;
@@ -58,23 +59,20 @@ namespace NAnt.Contrib.Tasks {
     /// </example>
     [TaskName("astyle")]
     public class Astyle : ExternalProgramBase {
-
         #region Private Instance Fields
 
-        /// <summary>The default style seems to be the closest 
-        ///     to c# standards.</summary>
+        /// <summary>
+        /// The default style seems to be the closest to C# standards.
+        /// </summary>
         private const String DEFAULT_STYLE = "kr";
         private const String DEFAULT_EXECUTABLE_NAME = "astyle.exe";
         private const String ASTYLE_OPTION_ENV_VAR = "ARTISTIC_STYLE_OPTIONS";
-
         private FileSet _sources = new FileSet();
         private Hashtable _fileCopyMap = new Hashtable();
         private bool _cleanUp = false;
-
         private OptionCollection _styleOptions = new OptionCollection();
-
         private Hashtable _commandOptions = new Hashtable();
-		private string _commandLineArguments;
+        private string _commandLineArguments;
 
         #endregion Private Instance Fields
 
@@ -112,8 +110,8 @@ namespace NAnt.Contrib.Tasks {
         /// </summary>
         [TaskAttribute("commandline")]
         public string CommandLineArguments {
-            get {return this._commandLineArguments;}
-            set {this._commandLineArguments = StringUtils.ConvertEmptyToNull(value);}
+            get { return this._commandLineArguments; }
+            set { this._commandLineArguments = StringUtils.ConvertEmptyToNull(value); }
         }
 
         /// <summary>
@@ -215,7 +213,7 @@ namespace NAnt.Contrib.Tasks {
         /// </summary>
         [TaskAttribute("style", Required=false)]
         public string Style {
-            get {return ((Option)this.CommandOptions["style"]).Value;}
+            get { return ((Option) this.CommandOptions["style"]).Value; }
             set {
                 if (value == "ansi" ||
                     value == "kr" ||
@@ -230,7 +228,8 @@ namespace NAnt.Contrib.Tasks {
                     this.ConvertTabs = true;
                     this.IndentNamespaces = true;
                 } else {
-                    throw new BuildException(String.Format("Unknown style {0}.", value));
+                    throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                        "Unknown style '{0}'.", value), Location);
                 }
             }
         }
@@ -247,45 +246,52 @@ namespace NAnt.Contrib.Tasks {
         }
 
         /// <summary>
-        /// The suffix to append to original files, defaults to .orig if not
-        ///     specified.
+        /// The suffix to append to original files, defaults to <c>.orig</c> 
+        /// if not specified.
         /// </summary>
         [TaskAttribute("suffix", Required=false)]
         public string Suffix {
             get {
                 if (this.CommandOptions.Contains("suffix")) {
-                    return ((Option)this.CommandOptions["suffix"]).Value;
+                    return ((Option) this.CommandOptions["suffix"]).Value;
                 } else {
                     return ".orig";
                 }
             }
-            set {this.SetCommandOption("suffix", String.Format("suffix=.{0}",
-                     value), true);}
+            set { 
+                this.SetCommandOption("suffix", string.Format(CultureInfo.InvariantCulture,
+                    "suffix=.{0}", value), true);
+            }
         }
 
         /// <summary>
         /// Indicate the maximum number of spaces to indent relative to a 
-        ///     previous line.
+        /// previous line.
         /// </summary>
         [TaskAttribute("indent-num-spaces", Required=false)]
         public int IndentNumSpaces {
-            get {return Convert.ToInt32(((Option)this.CommandOptions["indent-num-spaces"]).Value);}
-            set {this.SetCommandOption("indent-num-spaces", 
-                     String.Format("indent=spaces={0}", value), true);}
+            get { 
+                return Convert.ToInt32(((Option) this.CommandOptions["indent-num-spaces"]).Value,
+                    CultureInfo.InvariantCulture);
+            }
+            set {
+                this.SetCommandOption("indent-num-spaces", string.Format(CultureInfo.InvariantCulture,
+                    "indent=spaces={0}", value), true);
+            }
         }
 
         /// <summary>
-        /// <code>true</code> to convert tabs to spaces.
+        /// <see langword="true" /> to convert tabs to spaces.
         /// </summary>
         [TaskAttribute("convert-tabs", Required=false)]
         [BooleanValidator()]
         public bool ConvertTabs {
-            get {return ((Option)this.CommandOptions["convert-tabs"]).IfDefined;}
-            set {this.SetCommandOption("convert-tabs", "convert-tabs", value);}
+            get { return ((Option) this.CommandOptions["convert-tabs"]).IfDefined; }
+            set { this.SetCommandOption("convert-tabs", "convert-tabs", value); }
         }
 
         /// <summary>
-        /// <code>true</code> if class statements should be indented.
+        /// <see langword="true" /> if class statements should be indented.
         /// <code>
         /// 
         ///    The default:
@@ -311,12 +317,12 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("indent-classes", Required=false)]
         [BooleanValidator()]
         public bool IndentClass {
-            get {return ((Option)this.CommandOptions["indent-classes"]).IfDefined;}
-            set {this.SetCommandOption("indent-classes", "indent-classes", value);}
+            get { return ((Option) this.CommandOptions["indent-classes"]).IfDefined; }
+            set { this.SetCommandOption("indent-classes", "indent-classes", value); }
         }
 
         /// <summary>
-        /// <code>true</code> if switch statements should be indented.
+        /// <see langword="true" /> if switch statements should be indented.
         /// <code>
         /// 
         ///        The default:
@@ -350,12 +356,12 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("indent-switches", Required=false)]
         [BooleanValidator()]
         public bool IndentSwitch {
-            get {return ((Option)this.CommandOptions["indent-switches"]).IfDefined;}
-            set {this.SetCommandOption("indent-switches", "indent-switches", value);}
+            get { return ((Option) this.CommandOptions["indent-switches"]).IfDefined; }
+            set { this.SetCommandOption("indent-switches", "indent-switches", value); }
         }
 
         /// <summary>
-        /// <code>true</code> if case statements should be indented.
+        /// <see langword="true" /> if case statements should be indented.
         /// <code>
         /// 
         ///    The default:
@@ -397,8 +403,8 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("indent-cases", Required=false)]
         [BooleanValidator()]
         public bool IndentCase {
-            get {return ((Option)this.CommandOptions["indent-cases"]).IfDefined;}
-            set {this.SetCommandOption("indent-cases", "indent-cases", value);}
+            get { return ((Option) this.CommandOptions["indent-cases"]).IfDefined; }
+            set { this.SetCommandOption("indent-cases", "indent-cases", value); }
         }
 
         /// <summary>
@@ -432,12 +438,12 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("indent-brackets", Required=false)]
         [BooleanValidator()]
         public bool IndentBracket {
-            get {return ((Option)this.CommandOptions["indent-brackets"]).IfDefined;}
-            set {this.SetCommandOption("indent-brackets", "indent-brackets", value);}
+            get { return ((Option) this.CommandOptions["indent-brackets"]).IfDefined; }
+            set { this.SetCommandOption("indent-brackets", "indent-brackets", value); }
         }
 
         /// <summary>
-        /// <code>true</code> if block statements should be indented.
+        /// <see langword="true" /> if block statements should be indented.
         ///    The default:
         ///
         ///    if (isFoo)
@@ -459,12 +465,12 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("indent-blocks", Required=false)]
         [BooleanValidator()]
         public bool IndentBlock {
-            get {return ((Option)this.CommandOptions["indent-blocks"]).IfDefined;}
-            set {this.SetCommandOption("indent-blocks", "indent-blocks", value);}
+            get { return ((Option) this.CommandOptions["indent-blocks"]).IfDefined; }
+            set { this.SetCommandOption("indent-blocks", "indent-blocks", value); }
         }
 
         /// <summary>
-        /// <code>true</code> if namespace statements should be indented.
+        /// <see langword="true" /> if namespace statements should be indented.
         /// <code>
         ///
         ///    The default:
@@ -496,12 +502,12 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("indent-namespaces", Required=false)]
         [BooleanValidator()]
         public bool IndentNamespaces {
-            get {return ((Option)this.CommandOptions["indent-namespaces"]).IfDefined;}
-            set {this.SetCommandOption("indent-namespaces", "indent-namespaces", value);}
+            get { return ((Option) this.CommandOptions["indent-namespaces"]).IfDefined; }
+            set { this.SetCommandOption("indent-namespaces", "indent-namespaces", value); }
         }
 
         /// <summary>
-        /// <code>true</code> if label statements should be indented.
+        /// <see langword="true" /> if label statements should be indented.
         /// <code>
         /// 
         ///    The default:
@@ -537,45 +543,55 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("indent-labels", Required=false)]
         [BooleanValidator()]
         public bool IndentLabels {
-            get {return ((Option)this.CommandOptions["indent-labels"]).IfDefined;}
-            set {this.SetCommandOption("indent-labels", "indent-labels", value);}
+            get { return ((Option) this.CommandOptions["indent-labels"]).IfDefined; }
+            set { this.SetCommandOption("indent-labels", "indent-labels", value); }
         }
 
         /// <summary>
         /// Indicate the maximum number of spaces to indent relative to a 
-        ///     previous line.
+        /// previous line.
         /// </summary>
         [TaskAttribute("indent-max", Required=false)]
         public int IndentMax {
-            get {return Convert.ToInt32(((Option)this.CommandOptions["indent-max"]).Value);}
-            set {this.SetCommandOption("indent-max", 
-                     String.Format("max-instatement-indent={0}", value), true);}
+            get { 
+                return Convert.ToInt32(((Option) this.CommandOptions["indent-max"]).Value,
+                    CultureInfo.InvariantCulture);
+            }
+            set {
+                this.SetCommandOption("indent-max", string.Format(CultureInfo.InvariantCulture,
+                    "max-instatement-indent={0}", value), true);
+            }
         }
 
         /// <summary>
         /// Indicate the maximum number of spaces to indent relative to a 
-        ///     previous line.
+        /// previous line.
         /// </summary>
         [TaskAttribute("indent-min", Required=false)]
         public int IndentMin {
-            get {return Convert.ToInt32(((Option)this.CommandOptions["indent-min"]).Value);}
-            set {this.SetCommandOption("indent-min", 
-                     String.Format("min-conditional-indent={0}", value), true);}
+            get {
+                return Convert.ToInt32(((Option) this.CommandOptions["indent-min"]).Value,
+                    CultureInfo.InvariantCulture);
+            }
+            set {
+                this.SetCommandOption("indent-min", string.Format(CultureInfo.InvariantCulture,
+                    "min-conditional-indent={0}", value), true);
+            }
         }
 
         /// <summary>
-        /// <code>true</code> if empty lines should be filled with the whitespace
-        ///     of the previous line.
+        /// <see langword="true" /> if empty lines should be filled with the 
+        /// whitespace of the previous line.
         /// </summary>
         [TaskAttribute("fill-empty-lines", Required=false)]
         [BooleanValidator()]
         public bool FillEmptyLines {
-            get {return ((Option)this.CommandOptions["fill-empty-lines"]).IfDefined;}
-            set {this.SetCommandOption("fill-empty-lines", "fill-empty-lines", value);}
+            get { return ((Option) this.CommandOptions["fill-empty-lines"]).IfDefined; }
+            set { this.SetCommandOption("fill-empty-lines", "fill-empty-lines", value); }
         }
 
         /// <summary>
-        /// <code>true</code> if brackets should be put on a new line.
+        /// <see langword="true" /> if brackets should be put on a new line.
         /// <code>
         ///
         ///    if (isFoo)
@@ -592,12 +608,12 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("brackets-newline", Required=false)]
         [BooleanValidator()]
         public bool BracketsNewLine {
-            get {return ((Option)this.CommandOptions["bracket-newline"]).IfDefined;}
-            set {this.SetCommandOption("bracket-newline", "brackets=break", value);}
+            get { return ((Option) this.CommandOptions["bracket-newline"]).IfDefined; }
+            set { this.SetCommandOption("bracket-newline", "brackets=break", value); }
         }
 
         /// <summary>
-        /// <code>true</code> if brackets should be attached.
+        /// <see langword="true" /> if brackets should be attached.
         /// <code>
         /// 
         ///    if (isFoo){
@@ -611,12 +627,13 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("brackets-attach", Required=false)]
         [BooleanValidator()]
         public bool BracketsAttach {
-            get {return ((Option)this.CommandOptions["brackets-attach"]).IfDefined;}
-            set {this.SetCommandOption("brackets-attach", "brackets=attach", value);}
+            get { return ((Option) this.CommandOptions["brackets-attach"]).IfDefined; }
+            set { this.SetCommandOption("brackets-attach", "brackets=attach", value); }
         }
 
         /// <summary>
-        /// <code>true</code> if brackets should be put on a new line and indented.
+        /// <see langword="true" /> if brackets should be put on a new line and 
+        /// indented.
         /// <code>
         ///
         ///    namespace foospace
@@ -636,13 +653,13 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("brackets-linux", Required=false)]
         [BooleanValidator()]
         public bool BracketsLinux {
-            get {return ((Option)this.CommandOptions["brackets-linux"]).IfDefined;}
-            set {this.SetCommandOption("brackets-linux", "brackets=linux", value);}
+            get { return ((Option) this.CommandOptions["brackets-linux"]).IfDefined; }
+            set { this.SetCommandOption("brackets-linux", "brackets=linux", value); }
         }
 
         /// <summary>
-        /// <code>true</code> if the line after a bracket (i.e. an else statement
-        ///     after the closing if) should be placed on the next line.
+        /// <see langword="true" /> if the line after a bracket (i.e. an else 
+        /// statement after the closing if) should be placed on the next line.
         /// <code>
         /// 
         ///    if (isFoo){
@@ -665,12 +682,12 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("break-closing", Required=false)]
         [BooleanValidator()]
         public bool BreakClosing {
-            get {return ((Option)this.CommandOptions["break-closing"]).IfDefined;}
-            set {this.SetCommandOption("break-closing", "brackets=break-closing-headers", value);}
+            get { return ((Option) this.CommandOptions["break-closing"]).IfDefined; }
+            set { this.SetCommandOption("break-closing", "brackets=break-closing-headers", value); }
         }
 
         /// <summary>
-        /// <code>true</code> to break block statements with an empty line.
+        /// <see langword="true" /> to break block statements with an empty line.
         /// <code>
         ///
         ///    isFoo = true;
@@ -698,13 +715,13 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("break-blocks", Required=false)]
         [BooleanValidator()]
         public bool BreakBlocks {
-            get {return ((Option)this.CommandOptions["break-blocks"]).IfDefined;}
-            set {this.SetCommandOption("break-blocks", "break-blocks", value);}
+            get { return ((Option) this.CommandOptions["break-blocks"]).IfDefined; }
+            set { this.SetCommandOption("break-blocks", "break-blocks", value); }
         }
 
         /// <summary>
-        /// <code>true</code> to break all block statements, even on nested ifs
-        ///     with an empty line.
+        /// <see langword="true" /> to break all block statements, even on 
+        /// nested ifs with an empty line.
         /// <code>
         ///
         ///    isFoo = true;
@@ -733,12 +750,13 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("break-blocks-all", Required=false)]
         [BooleanValidator()]
         public bool BreakBlocksAll {
-            get {return ((Option)this.CommandOptions["break-blocks-all"]).IfDefined;}
-            set {this.SetCommandOption("break-blocks-all", "break-blocks=all", value);}
+            get { return ((Option) this.CommandOptions["break-blocks-all"]).IfDefined; }
+            set { this.SetCommandOption("break-blocks-all", "break-blocks=all", value); }
         }
 
         /// <summary>
-        /// <code>true</code> to put the if component of an else if on a new line.
+        /// <see langword="true" /> to put the if component of an else if on a 
+        /// new line.
         /// <code>
         ///
         ///    if (isFoo) {
@@ -762,12 +780,12 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("break-elseif", Required=false)]
         [BooleanValidator()]
         public bool BreakElseif {
-            get {return ((Option)this.CommandOptions["break-elseif"]).IfDefined;}
-            set {this.SetCommandOption("break-elseif", "break-elseifs", value);}
+            get { return ((Option) this.CommandOptions["break-elseif"]).IfDefined; }
+            set { this.SetCommandOption("break-elseif", "break-elseifs", value); }
         }
 
         /// <summary>
-        /// <code>true</code> to pad operators with a space.
+        /// <see langword="true" /> to pad operators with a space.
         /// <code>
         /// 
         ///    if (isFoo)
@@ -783,12 +801,12 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("pad-operators", Required=false)]
         [BooleanValidator()]
         public bool PadOperators {
-            get {return ((Option)this.CommandOptions["pad-operators"]).IfDefined;}
-            set {this.SetCommandOption("pad-operators", "pad=oper", value);}
+            get { return ((Option) this.CommandOptions["pad-operators"]).IfDefined; }
+            set { this.SetCommandOption("pad-operators", "pad=oper", value); }
         }
 
         /// <summary>
-        /// <code>true</code> to pad parenthesis with a space.
+        /// <see langword="true" /> to pad parenthesis with a space.
         /// <code>
         ///
         ///    if (isFoo)
@@ -804,12 +822,12 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("pad-parenthesis", Required=false)]
         [BooleanValidator()]
         public bool PadParenthesis {
-            get {return ((Option)this.CommandOptions["pad-parenthesis"]).IfDefined;}
-            set {this.SetCommandOption("pad-parenthesis", "pad=paren", value);}
+            get { return ((Option) this.CommandOptions["pad-parenthesis"]).IfDefined; }
+            set { this.SetCommandOption("pad-parenthesis", "pad=paren", value); }
         }
 
         /// <summary>
-        /// <code>true</code> to pad operators and parenthesis.
+        /// <see langword="true" /> to pad operators and parenthesis.
         /// <code>
         /// 
         ///    if (isFoo)
@@ -825,12 +843,12 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("pad-all", Required=false)]
         [BooleanValidator()]
         public bool PadAll {
-            get {return ((Option)this.CommandOptions["pad-all"]).IfDefined;}
-            set {this.SetCommandOption("pad-all", "pad=all", value);}
+            get { return ((Option) this.CommandOptions["pad-all"]).IfDefined; }
+            set { this.SetCommandOption("pad-all", "pad=all", value); }
         }
 
         /// <summary>
-        /// <code>true</code> to keep complex statements on the same line.
+        /// <see langword="true" /> to keep complex statements on the same line.
         /// <code>
         /// 
         ///    if (isFoo)
@@ -849,12 +867,12 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("nobreak-complex", Required=false)]
         [BooleanValidator()]
         public bool NoBreakComplex {
-            get {return ((Option)this.CommandOptions["nobreak-complex"]).IfDefined;}
-            set {this.SetCommandOption("nobreak-complex", "one-line=keep-statements", value);}
+            get { return ((Option) this.CommandOptions["nobreak-complex"]).IfDefined; }
+            set { this.SetCommandOption("nobreak-complex", "one-line=keep-statements", value); }
         }
 
         /// <summary>
-        /// <code>true</code> to keep single line statements on the same line.
+        /// <see langword="true" /> to keep single line statements on the same line.
         /// <code>
         ///
         ///    if (isFoo)
@@ -867,8 +885,8 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("nobreak-singlelineblocks", Required=false)]
         [BooleanValidator()]
         public bool NoBreakSingleLineBlocks {
-            get {return ((Option)this.CommandOptions["nobreak-singlelineblocks"]).IfDefined;}
-            set {this.SetCommandOption("nobreak-singlelineblocks", "one-line=keep-blocks", value);}
+            get { return ((Option) this.CommandOptions["nobreak-singlelineblocks"]).IfDefined; }
+            set { this.SetCommandOption("nobreak-singlelineblocks", "one-line=keep-blocks", value); }
         }
 
         #endregion Public Instance Properties
@@ -876,14 +894,12 @@ namespace NAnt.Contrib.Tasks {
 
         /// <summary>
         /// Adds a new command option if none exists.  If one does exist then
-        ///		the use switch is toggled on or of.
+        /// the use switch is toggled on or of.
         /// </summary>
         /// <param name="name">The common name of the option.</param>
-        /// <param name="value">The option value or command line switch
-        ///		of the option.</param>
-        /// <param name="on"><code>true</code> if the option should be
-        ///		appended to the commandline, otherwise <code>false</code>.</param>
-        protected void SetCommandOption (String name, String value, bool on) {
+        /// <param name="value">The option value or command line switch of the option.</param>
+        /// <param name="on"><see langword="true" /> if the option should be appended to the commandline, otherwise <see langword="false" />.</param>
+        protected void SetCommandOption(string name, String value, bool on) {
             Option option;
             if (this.CommandOptions.Contains(name)) {
                 option = (Option)this.CommandOptions[name];
@@ -896,17 +912,17 @@ namespace NAnt.Contrib.Tasks {
             option.IfDefined = on;
         }
 
-        #region Override implementation of Task
+        #region Override implementation of ExternalProgramBase
 
         /// <summary>
-        /// Build up the command line arguments, determine which executable is being
-        ///		used and find the path to that executable and set the working 
-        ///		directory.
+        /// Build up the command line arguments, determine which executable is 
+        /// being used and find the path to that executable and set the working 
+        /// directory.
         /// </summary>
         /// <param name="process">The process to prepare.</param>
         protected override void PrepareProcess (Process process) {
             // Although a global property can be set, take the property closest
-            //	to the task execution, which is the attribute on the task itself.
+            // to the task execution, which is the attribute on the task itself.
             this.AppendCommandOptions();
             this.AppendFiles();
 
@@ -919,7 +935,6 @@ namespace NAnt.Contrib.Tasks {
                 LogPrefix, process.StartInfo.FileName));
             Log(Level.Info, String.Format("{0} arguments: {1}", 
                 LogPrefix, process.StartInfo.Arguments));
-
         }
 
         protected override void ExecuteTask() {
@@ -935,14 +950,14 @@ namespace NAnt.Contrib.Tasks {
             }
         }
 
-        #endregion
+        #endregion Override implementation of ExternalProgramBase
 
         #region Private Instance Methods
 
         /// <summary>
         /// Append the command line options or commen names for the options
-        ///		to the generic options collection.  This is then piped to the
-        ///		command line as a switch.
+        /// to the generic options collection.  This is then piped to the
+        /// command line as a switch.
         /// </summary>
         private void AppendCommandOptions () {
             foreach (Option option in this.CommandOptions.Values) {
@@ -967,12 +982,12 @@ namespace NAnt.Contrib.Tasks {
         /// <summary>
         /// Append the files specified in the fileset to the command line argument.
         /// </summary>
-        protected void AppendFiles () {
+        private void AppendFiles () {
             foreach (string pathname in this.Sources.FileNames) {
                 Arguments.Add(new Argument(pathname));
             }
         }
 
-        #endregion
+        #endregion Private Instance Methods
     }
 }
