@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
 <project name="nant" default="build-release-self">
-    <!-- set project.version to current date/time in yyyyMMdd format -->
-    <tstamp property="project.version" pattern="yyyyMMdd" />
     <property name="sf.net.ssh.server" value="shell1.sf.net" />
     <property name="sf.net.web.path" value="/home/groups/n/na/nantcontrib/htdocs" />
     <!-- include master build file -->
