@@ -23,6 +23,7 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Text;
+using System.Resources;
 using System.Collections.Specialized;
 
 using SourceForge.NAnt;
@@ -70,7 +71,7 @@ namespace NAnt.Contrib.Tasks
         public string Schema {
             get { return _schema; }
             set { _schema = value; } 
-        }      
+        }
 
         /// <summary>Target of XML Schema compilation. Can be "classes" or "dataset".</summary>
         [TaskAttribute("target")]
@@ -287,6 +288,14 @@ namespace NAnt.Contrib.Tasks
             {
                 throw new BuildException(LogPrefix + "ERROR: " + e);
             }
+
+            XmlDocument schemaDoc = new XmlDocument();
+            schemaDoc.Load(Schema);
+
+            ResourceWriter schemaWriter = new ResourceWriter(
+                Path.Combine(OutputDir, Namespace + ".resources"));
+            schemaWriter.AddResource("schema", schemaDoc.DocumentElement.OuterXml);
+            schemaWriter.Close();
         }
     }
 }
