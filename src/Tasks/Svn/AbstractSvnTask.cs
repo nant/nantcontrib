@@ -34,6 +34,8 @@ namespace NAnt.SourceControl.Tasks {
     /// CVS repository.
     /// </summary>
     public abstract class AbstractSvnTask : AbstractSourceControlTask {
+        #region Private Instance Fields
+        #endregion
         #region Protected Static Fields
 
         /// <summary>
@@ -41,6 +43,11 @@ namespace NAnt.SourceControl.Tasks {
         /// svn is located.
         /// </summary>
         protected const string SVN_HOME = "SVN_HOME";
+
+        /// <summary>
+        /// The prefix used for command arguments.
+        /// </summary>
+        protected const string ARG_PREFIX = "--";
 
         /// <summary>
         /// Name of the password file that is used to cash password settings.
@@ -68,6 +75,7 @@ namespace NAnt.SourceControl.Tasks {
         /// class.
         /// </summary>
         protected AbstractSvnTask () : base() {
+            this.Interactive = false;
         }
 
         #endregion Protected Instance Constructors
@@ -138,12 +146,42 @@ namespace NAnt.SourceControl.Tasks {
         ///     revision: trunk
         /// </para>
         /// </summary>
-        [TaskAttribute("svnroot", Required=true)]
+        [TaskAttribute("uri", Required=true)]
         [StringValidator(AllowEmpty=false)]
         public override string Root {
             get { return base.Root; }
             set { base.Root = StringUtils.ConvertEmptyToNull(value); }
         }
+
+        /// <summary>
+        /// The user performing the checkout.  
+        /// </summary>
+        [TaskAttribute("username", Required=false)]
+        public string UserName {
+            get {return ((Option)this.CommandOptions["username"]).Value;}
+            set {this.SetCommandOption("username", 
+                     String.Format("username={0}", value), true);}
+        }
+
+        /// <summary>
+        /// The user performing the checkout.  
+        /// </summary>
+        [TaskAttribute("password", Required=false)]
+        public override string Password {
+            get {return ((Option)this.CommandOptions["password"]).Value;}
+            set {this.SetCommandOption("password", String.Format("password={0}", value), true);}
+        }
+
+        /// <summary>
+        /// Indicatae whether the task should be interactive or not.  This is
+        ///     set to <code>false</code> by default, and I don't see a reason
+        ///     to expose this to the nant task.
+        /// </summary>
+        public bool Interactive {
+            get {return ((Option)this.CommandOptions["interactive"]).IfDefined;}
+            set {this.SetCommandOption("interactive", "non-interactive", !value);}
+        }
+
 
         /// <summary>
         /// The executable to use for ssh communication.
@@ -229,67 +267,33 @@ namespace NAnt.SourceControl.Tasks {
         }
 
         private void AppendGlobalOptions () {
-            foreach (Option option in this.GlobalOptions) {
-                if (!IfDefined || UnlessDefined) {
+            foreach (Option option in this.GlobalOptions.Values) {
+                if (!option.IfDefined || option.UnlessDefined) {
                     // skip option
                     continue;
                 }
-
-                switch (option.OptionName) {
-                    case "cvsroot-prefix":
-                    case "-D":
-                    case "temp-dir":
-                    case "-T":
-                    case "editor":
-                    case "-e":
-                    case "compression":
-                    case "-z":
-                    case "variable":
-                    case "-s": 
-                        Arguments.Add(new Argument(option.OptionName));
-                        Arguments.Add(new Argument(option.Value));
-                        break;
-                    default:
-                        Arguments.Add(new Argument(option.OptionName));
-                        break;
-                }
-                Log(Level.Debug, 
-                    String.Format("{0} setting option name=[{1}] ; value=[{2}]"),
-                    LogPrefix, option.OptionName, option.Value);
+                this.AddArg(option.Value);
             }
         }
 
+        /// <summary>
+        /// Append the command line options or commen names for the options
+        ///		to the generic options collection.  This is then piped to the
+        ///		command line as a switch.
+        /// </summary>
         private void AppendCommandOptions () {
-            foreach (Option option in this.CommandOptions) {
-                if (!IfDefined || UnlessDefined) {
+            foreach (Option option in this.CommandOptions.Values) {
+                if (!option.IfDefined || option.UnlessDefined) {
                     // skip option
                     continue;
                 }
-
-                switch (option.OptionName) {
-                    case "sticky-tag":
-                    case "-r":
-                    case "override-directory":
-                    case "-d":
-                    case "join":
-                    case "-j":
-                    case "revision-date":
-                    case "-D":
-                    case "rcs-kopt":
-                    case "-k":
-                    case "message":
-                    case "-m":
-                        Arguments.Add(new Argument(option.OptionName));
-                        Arguments.Add(new Argument(option.Value));
-                        break;
-                    default:
-                        Arguments.Add(new Argument(option.OptionName));
-                        break;
-                }
-                Log(Level.Debug, 
-                    String.Format("{0} setting option name=[{1}] ; value=[{2}]"),
-                    LogPrefix, option.OptionName, option.Value);
+                this.AddArg(option.Value);
             }
+        }
+
+        private void AddArg (String arg) {
+            Arguments.Add(new Argument(String.Format("{0}{1}",
+                ARG_PREFIX, arg)));
         }
 
         #endregion Private Instance Methods
