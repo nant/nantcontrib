@@ -122,14 +122,14 @@ namespace NAnt.Contrib.Tasks.Perforce {
             StringBuilder arguments = new StringBuilder();
             arguments.Append("sync ");
 
+            if (Force) {
+                arguments.Append( " -f");
+            }
             if (View != null) {
                 arguments.Append(View);
             }
             if (Label != null) {
                 arguments.Append(string.Format("@{0}", Label));
-            }
-            if (Force) {
-                arguments.Append( " -f");
             }
 
            return arguments.ToString();
