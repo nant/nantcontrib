@@ -1756,6 +1756,7 @@ namespace NAnt.Contrib.Tasks
 		/// their own component.
 		/// </summary>
 		/// <param name="Database">The MSI database.</param>
+		/// <param name="LastSequence">The last file's sequence number.</param>
 		/// <returns>True if successful</returns>
 		private bool ReorderFiles(Database Database, ref int LastSequence)
 		{
@@ -1763,7 +1764,7 @@ namespace NAnt.Contrib.Tasks
 			string curTempPath = Path.Combine(curPath, "Temp");
 
 			string[] curDirFileNames = Directory.GetFiles(curTempPath, "_*.*");
-            string[] curFileNames = Directory.GetFiles(curTempPath, "*.*");
+			string[] curFileNames = Directory.GetFiles(curTempPath, "*.*");
 
 			LastSequence = 1;
 			foreach (string curDirFileName in curDirFileNames)
@@ -2323,6 +2324,7 @@ namespace NAnt.Contrib.Tasks
         /// Merges Merge Modules into the MSI Database.
         /// </summary>
         /// <param name="Database">The MSI Database.</param>
+        /// <param name="TempPath">The path to temporary files.</param>
         /// <returns>True if successful.</returns>
         private bool LoadMergeModules(string Database, string TempPath)
         {
