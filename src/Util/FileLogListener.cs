@@ -114,6 +114,7 @@ namespace NAnt.Contrib.Util {
 
     #endregion RecorderCollection class
 
+    [Serializable()]
     internal class FileLogListener : IBuildLogger, IRecorder {
         #region Public Instance Constructors
 
