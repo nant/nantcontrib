@@ -29,19 +29,6 @@ using SourceForge.NAnt;
 
 namespace NAnt.Contrib.Util
 { 
-
-   /// <summary>
-   /// Determines how the delimiter is 
-   /// interpreted in a sql string
-   /// </summary>
-   public enum DelimiterStyle 
-   {
-      /// <summary>Delimiter can appear anywhere on a line</summary>
-      Normal = 0,
-      /// <summary>Delimiter always appears by itself on a line</summary>
-      Line = 1
-   } // enum DelimiterStyle
-
    /// <summary>
    /// Helper class to adapt SQL statements from some
    /// input into something OLEDB can consume directly
@@ -49,7 +36,7 @@ namespace NAnt.Contrib.Util
    public class SqlStatementAdapter
    {
       public static readonly string SEPARATOR = Environment.NewLine;
-      private string _delimiter;
+      private SqlStatementList _list;
 
 
       /// <summary>
@@ -59,11 +46,7 @@ namespace NAnt.Contrib.Util
       /// <param name="style">Style of the delimiter</param>
       public SqlStatementAdapter(string delimiter, DelimiterStyle style)
       {
-         if ( style == DelimiterStyle.Line ) {
-            _delimiter = "^" + delimiter + "$";
-         } else {
-            _delimiter = delimiter;
-         }
+         _list = new SqlStatementList(delimiter, style);
       }
 
       /// <summary>
@@ -72,26 +55,14 @@ namespace NAnt.Contrib.Util
       /// <param name="sql">A string containing the original sql statements</param>
       public string AdaptSql(string sql)
       {
-         StringBuilder newsql = new StringBuilder("");
+         StringBuilder newSql = new StringBuilder("");
 
-         StringReader reader = new StringReader(sql);
-         string line = null;
-         while ( (line = reader.ReadLine()) != null ) {
-            line = line.Trim();
-            if ( line == string.Empty ) {
-               continue;
-            }
-            if ( line.StartsWith("//") || line.StartsWith("--") ) {
-               continue;
-            }
-            string[] tokens = Regex.Split(line, _delimiter);
-            foreach ( string t in tokens ) {
-               if ( t != string.Empty ) {
-                  newsql.Append(t + SEPARATOR);
-               }
-            }
+         _list.ParseSql(sql);
+         foreach ( string s in _list ) {
+            newSql.Append(s + SEPARATOR);
          }
-         return newsql.ToString();
+         return newSql.ToString();
+
       }
 
       /// <summary>
@@ -101,16 +72,13 @@ namespace NAnt.Contrib.Util
       /// <returns>The new instance</returns>
       public string AdaptSqlFile(string file)
       {
-         string statements;
-         StreamReader reader = null;
-         try {
-            reader = new StreamReader(File.OpenRead(file));
-            statements = reader.ReadToEnd();
-            return AdaptSql(statements);
-         } finally {
-            if ( reader != null )
-               reader.Close();
+         StringBuilder newSql = new StringBuilder("");
+
+         _list.ParseSqlFromFile(file);
+         foreach ( string sql in _list ) {
+            newSql.Append(sql + SEPARATOR);
          }
+         return newSql.ToString();
       }
 
    } // class SqlStatementAdapter

@@ -52,7 +52,8 @@ namespace NAnt.Contrib.Tests.Util
          string statements = STATEMENT_1 + "\n  " + DELIMITER + STATEMENT_2
                            + DELIMITER + "   \n " + STATEMENT_3;
 
-         SqlStatementList list = SqlStatementList.FromString(statements, DELIMITER);
+         SqlStatementList list = new SqlStatementList(DELIMITER, DelimiterStyle.Normal);
+         list.ParseSql(statements);
 
          Assertion.AssertEquals(3, list.Count);
          Assertion.AssertEquals(STATEMENT_1, list[0]);
@@ -65,9 +66,10 @@ namespace NAnt.Contrib.Tests.Util
       {
          string statements = STATEMENT_1 + DELIMITER + "\n //" + STATEMENT_2
                            + DELIMITER + "   \n --" + STATEMENT_3 
-                           + DELIMITER + STATEMENT_1;
+                           + DELIMITER + "\n" + STATEMENT_1;
 
-         SqlStatementList list = SqlStatementList.FromString(statements, DELIMITER);
+         SqlStatementList list = new SqlStatementList(DELIMITER, DelimiterStyle.Normal);
+         list.ParseSql(statements);
 
          Assertion.AssertEquals(2, list.Count);
          Assertion.AssertEquals(STATEMENT_1, list[0]);
@@ -78,7 +80,8 @@ namespace NAnt.Contrib.Tests.Util
       {
          string statements = STATEMENT_1 + DELIMITER + "\n \n";
 
-         SqlStatementList list = SqlStatementList.FromString(statements, DELIMITER);
+         SqlStatementList list = new SqlStatementList(DELIMITER, DelimiterStyle.Normal);
+         list.ParseSql(statements);
 
          Assertion.AssertEquals(1, list.Count);
          Assertion.AssertEquals(STATEMENT_1, list[0]);

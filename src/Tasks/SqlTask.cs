@@ -36,7 +36,9 @@ namespace NAnt.Contrib.Tasks
    /// </summary>
    /// <remarks>
    /// You can specify a set of sql statements inside the
-   /// sql element, or execute them from a text file that contains them.
+   /// sql element, or execute them from a text file that contains them. You can also
+   /// choose to execute the statements in a single batch, or execute them one by one 
+   /// (even inside a transaction, if you want to).
    /// </remarks>
    /// <example>
    ///   <para>Execute a set of statements inside a transaction</para>
@@ -77,6 +79,7 @@ namespace NAnt.Contrib.Tasks
       private bool _useTransaction = true;
       private string _output;
       private string _statements;
+      private bool _batch = true;
 
       /// <summary>
       /// Connection string used to access database. 
@@ -103,6 +106,12 @@ namespace NAnt.Contrib.Tasks
       public string Delimiter {
          get { return _delimiter; }
          set { _delimiter = value; }
+      }
+
+      [ TaskAttribute("batch"), BooleanValidator ]
+      public bool Batch {
+         get { return _batch; }
+         set { _batch = value; }
       }
 
       /// <summary>
@@ -170,16 +179,6 @@ namespace NAnt.Contrib.Tasks
       /// </summary>
       protected override void ExecuteTask() 
       {
-         SqlStatementAdapter adapter 
-            = new SqlStatementAdapter(Delimiter, DelimiterStyle);
-
-         string sql = null;
-         if ( Source == null ) {
-            sql = adapter.AdaptSql(_statements);
-         } else {
-            sql = adapter.AdaptSqlFile(Source);
-         }
-
          bool closeWriter = false;
          TextWriter writer = null;
          if ( Output != null ) {
@@ -193,12 +192,14 @@ namespace NAnt.Contrib.Tasks
             writer = Console.Out;
          }
 
+
          SqlHelper sqlHelper 
             = new SqlHelper(ConnectionString, UseTransaction);
-
          try {
-            IDataReader results = sqlHelper.Execute(sql);
-            ProcessResults(results, writer);
+            if ( Batch ) 
+               ExecuteStatementsInBatch(sqlHelper, writer);
+            else 
+               ExecuteStatements(sqlHelper, writer);
          } catch ( Exception e ) {
             sqlHelper.Close(false);
             throw new BuildException("SQL Resulted in Exception: " + e.Message);
@@ -210,6 +211,47 @@ namespace NAnt.Contrib.Tasks
          }
       }
 
+
+      /// <summary>
+      /// Executes the SQL Statements one by one
+      /// </summary>
+      /// <param name="sqlHelper"></param>
+      /// <param name="writer"></param>
+      private void ExecuteStatements(SqlHelper sqlHelper, TextWriter writer)
+      {
+         SqlStatementList list = 
+            new SqlStatementList(Delimiter, DelimiterStyle);
+         if ( Source == null ) {
+            list.ParseSql(_statements);
+         } else {
+            list.ParseSqlFromFile(Source);
+         }
+
+         foreach ( string statement in list ) {
+            IDataReader results = sqlHelper.Execute(statement);
+            ProcessResults(results, writer);
+         }
+      }
+
+      /// <summary>
+      /// Executes the SQL statements in a single batch
+      /// </summary>
+      /// <param name="sqlHelper"></param>
+      /// <param name="writer"></param>
+      private void ExecuteStatementsInBatch(SqlHelper sqlHelper, TextWriter writer)
+      {
+         SqlStatementAdapter adapter 
+            = new SqlStatementAdapter(Delimiter, DelimiterStyle);
+         string sql = null;
+         if ( Source == null ) {
+            sql = adapter.AdaptSql(_statements);
+         } else {
+            sql = adapter.AdaptSqlFile(Source);
+         }
+
+         IDataReader results = sqlHelper.Execute(sql);
+         ProcessResults(results, writer);
+      }
 
       /// <summary>
       /// Process a result set

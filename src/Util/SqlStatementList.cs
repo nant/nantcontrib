@@ -30,12 +30,28 @@ using SourceForge.NAnt;
 namespace NAnt.Contrib.Util
 { 
 
+
+   /// <summary>
+   /// Determines how the delimiter is 
+   /// interpreted in a sql string
+   /// </summary>
+   public enum DelimiterStyle 
+   {
+      /// <summary>Delimiter can appear anywhere on a line</summary>
+      Normal = 0,
+      /// <summary>Delimiter always appears by itself on a line</summary>
+      Line = 1
+   } // enum DelimiterStyle
+
+
+
    /// <summary>
    /// Helper class to maintain a list of Sql Statements.
    /// </summary>
    public class SqlStatementList : IEnumerable
    {
       private StringCollection _statements;
+      private string _delimiter;
 
       /// <summary>
       /// Number of statements in the list
@@ -53,30 +69,59 @@ namespace NAnt.Contrib.Util
       /// <summary>
       /// Initializes a new instance.
       /// </summary>
-      /// <param name="statements">A string containing all sql statements</param>
       /// <param name="delimiter">String that separates statements from each other</param>
-      protected SqlStatementList(string statements, string delimiter)
+      /// <param name="style">Style of the delimiter</param>
+      public SqlStatementList(string delimiter, DelimiterStyle style)
       {
          _statements = new StringCollection();
-         string[] list = Regex.Split(statements, delimiter);
-         // 
-         // strip single line comments
-         // TODO: Deal with multiline ("/* */") comments
-         //
-         string st = null;
-         for ( int i=0; i < list.Length; i++ ) {
-            st = list[i].Trim();
-            if ( st == string.Empty ) {
-               continue;
-            }
-            if ( st.StartsWith("//") || st.StartsWith("--") ) {
-               continue;
-            }
 
-            _statements.Add(st);
+         if ( style == DelimiterStyle.Line ) {
+            _delimiter = "^" + delimiter + "$";
+         } else {
+            _delimiter = delimiter;
          }
       }
 
+      /// <summary>
+      /// Parses the Sql into the internal list using the specified delimiter
+      /// and delimiter style
+      /// </summary>
+      /// <param name="sql"></param>
+      public void ParseSql(string sql)
+      {
+         StringReader reader = new StringReader(sql);
+         string line = null;
+         while ( (line = reader.ReadLine()) != null ) {
+            line = line.Trim();
+            if ( line == string.Empty ) {
+               continue;
+            }
+            if ( line.StartsWith("//") || line.StartsWith("--") ) {
+               continue;
+            }
+            string[] tokens = Regex.Split(line, _delimiter);
+            foreach ( string t in tokens ) {
+               if ( t != string.Empty ) {
+                  _statements.Add(t);
+               }
+            }
+         }
+      }
+  
+      public void ParseSqlFromFile(string file)
+      {
+         string statements;
+         StreamReader reader = null;
+         try {
+            reader = new StreamReader(File.OpenRead(file));
+            statements = reader.ReadToEnd();
+            ParseSql(statements);
+         } finally {
+            if ( reader != null )
+               reader.Close();
+         }
+      }
+/*
       /// <summary>
       /// Creates a new SqlStatementList initialized from
       /// the contents of a string
@@ -109,7 +154,7 @@ namespace NAnt.Contrib.Util
                reader.Close();
          }
       }
-
+*/
       /// <summary>
       /// Allows foreach().
       /// </summary>
