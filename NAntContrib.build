@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <project name="NAntContrib" default="buildandtest">
     <tstamp/>
     <property name="debug" value="true"/>
@@ -53,7 +54,12 @@
     <target name="prepare">
       <mkdir dir="${build.dir}"/>
       <mkdir dir="${dist.dir}"/>
-      <!-- <copy file="${nant-bin.dir}/NUnitCore.dll" todir="${build.dir}"/> -->
+      <!--<copy file="${nant-bin.dir}/NUnitCore.dll" todir="${build.dir}"/> -->
+      <copy todir="${build.dir}">
+            <fileset basedir="bin">
+                <includes name="CollectionGen.dll"/>
+            </fileset>
+      </copy>
     </target>
 
 
@@ -128,9 +134,9 @@
     
     <!-- skot -->
     <target name="taskdef.build" description="build taskdef assembly">
-		<property name="taskDefAssembly" value="${build.dir}\taskdef.Tasks.dll" />
-		
-		<!-- compile NAnt.Contrib.Tasks.dll -->
+        <property name="taskDefAssembly" value="${build.dir}\taskdef.Tasks.dll" />
+        
+        <!-- compile NAnt.Contrib.Tasks.dll -->
         <csc target="library" output="${taskDefAssembly}" debug="${debug}">
             <sources basedir="${src.dir}">
                 <includes name="Tasks/TaskDefTask.cs"/>
@@ -143,8 +149,8 @@
     </target>
     
     <target name="use" depends="taskdef.build" description="Copies taskdef assemblies to nant-bin/tasks folder.">
-		<mkdir dir="${nant.extra-tasks.dir}"/>
-		<copy file="${taskDefAssembly}" todir="${nant.extra-tasks.dir}" />
+        <mkdir dir="${nant.extra-tasks.dir}"/>
+        <copy file="${taskDefAssembly}" todir="${nant.extra-tasks.dir}" />
     </target>
     
     <target name="doc" depends="build" description="build documentation">
