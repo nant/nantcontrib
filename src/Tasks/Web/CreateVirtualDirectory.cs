@@ -17,12 +17,15 @@
 //
 // Brian Nantz (bcnantz@juno.com)
 // Gert Driesen (gert.driesen@ardatis.com)
+// Rutger Dijkstra (R.M.Dijkstra@eyetoeye.nl)
 
 using System;
 using System.Collections;
 using System.DirectoryServices;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
+using System.Xml;
 
 using NAnt.Core;
 using NAnt.Core.Attributes;
@@ -35,7 +38,9 @@ namespace NAnt.Contrib.Tasks.Web {
     /// <remarks>
     /// <para>
     /// If the virtual directory does not exist it is created, and if it already
-    /// exists it is modified.
+    /// exists it is modified. Only the IIS-properties specified will be set. If set
+    /// by other means (e.g. the Management Console), the unspecified properties retain their current value, 
+    /// otherwise they are inherited from the parent. 
     /// </para>
     /// <para>
     /// For a list of optional parameters see <see href="ms-help://MS.VSCC/MS.MSDNVS/iisref/html/psdk/asp/aore8v5e.htm">IIsWebVirtualDir</see>.
@@ -65,18 +70,43 @@ namespace NAnt.Contrib.Tasks.Web {
     /// </example>
     /// <example>
     ///   <para>
-    ///   Create a virtual directory named <c>WebServices</c> pointing to 
+    ///   Configure the home directory of for http://svc.here.dev/ to point to
+    ///   D:\Develop\Here and require authentication
+    ///   </para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <mkiisdir iisserver="svc.here.dev" dirpath="D:\Develop\Here" vdirname="/" authanonymous="false"/>
+    ///     ]]>
+    ///   </code>
+    /// </example>
+    /// <example>
+    ///   <para>
+    ///   Create a virtual directory named <c>WebServices/Dev</c> pointing to 
     ///   <c>c:\MyProject\dev</c> on the web site running on port <c>81</c> of
     ///   machine <c>MyHost</c>.
     ///   </para>
     ///   <code>
     ///     <![CDATA[
-    /// <mkiisdir iisserver="MyHost:81" dirpath="c:\MyProject\dev" vdirname="WebServices" />
+    /// <mkiisdir iisserver="MyHost:81" dirpath="c:\MyProject\dev" vdirname="WebServices/Dev" />
     ///     ]]>
     ///   </code>
+    ///   Note that if <c>WebServices</c> is neither an existing virtual directory nor an
+    ///   existing physical subdirectory of the web root, your IIS Management Console
+    ///   will get confused. Even though <c>http://MyHost:81/WebServices/Dev/theService.asmx</c>
+    ///   may be a perfectly working webservice, the Management Console will not show it.
     /// </example>
     [TaskName("mkiisdir")]
     public class CreateVirtualDirectory : WebBase {
+        public enum AppType {
+            None = -1,
+            InProcess = 0,
+            Pooled = 2,
+            OutOfProcess = 1
+        }
+
+        private class IisPropertyAttribute: Attribute {
+        }
+
         #region Private Instance Fields
 
         private DirectoryInfo _dirPath;
@@ -97,6 +127,7 @@ namespace NAnt.Contrib.Tasks.Web {
         private bool _anonymousPasswordSync = true;
         private bool _appAllowClientDebug = false;
         private bool _appAllowDebugging = false;
+        private AppType _apptype = AppType.Pooled;
         private bool _aspAllowSessionState = true;
         private bool _aspBufferingOn = true;
         private bool _aspEnableApplicationRestart = true;
@@ -151,175 +182,184 @@ namespace NAnt.Contrib.Tasks.Web {
             set { _dirPath = value; }
         }
 
-        [TaskAttribute("accessexecute")]
+        [TaskAttribute("accessexecute"),IisProperty]
         public bool AccessExecute {
             get { return _accessExecute; }
             set { _accessExecute = value; }
         }
 
-        [TaskAttribute("accessnoremoteexecute")]
+        [TaskAttribute("accessnoremoteexecute"),IisProperty]
         public bool AccessNoRemoteExecute {
             get { return _accessNoRemoteExecute; }
             set { _accessNoRemoteExecute = value; }
         }
 
-        [TaskAttribute("accessnoremoteread")]
+        [TaskAttribute("accessnoremoteread"),IisProperty]
         public bool AccessNoRemoteRead {
             get { return _accessNoRemoteRead; }
             set { _accessNoRemoteRead = value; }
         }
 
-        [TaskAttribute("accessnoremotescript")]
+        [TaskAttribute("accessnoremotescript"),IisProperty]
         public bool AccessNoRemoteScript {
             get { return _accessNoRemoteScript; }
             set { _accessNoRemoteScript = value; }
         }
 
-        [TaskAttribute("accessnoremotewrite")]
+        [TaskAttribute("accessnoremotewrite"),IisProperty]
         public bool AccessNoRemoteWrite {
             get { return _accessNoRemoteWrite; }
             set { _accessNoRemoteWrite = value; }
         }
 
-        [TaskAttribute("accessread")]
+        [TaskAttribute("accessread"),IisProperty]
         public bool AccessRead {
             get { return _accessRead; }
             set { _accessRead = value; }
         }
 
-        [TaskAttribute("accesssource")]
+        [TaskAttribute("accesssource"),IisProperty]
         public bool AccessSource {
             get { return _accessSource; }
             set { _accessSource = value; }
         }
 
-        [TaskAttribute("accessscript")]
+        [TaskAttribute("accessscript"),IisProperty]
         public bool AccessScript {
             get { return _accessScript; }
             set { _accessScript = value; }
         }
 
-        [TaskAttribute("accessssl")]
+        [TaskAttribute("accessssl"),IisProperty]
         public bool AccessSsl {
             get { return _accessSsl; }
             set { _accessSsl = value; }
         }
 
-        [TaskAttribute("accessssl128")]
+        [TaskAttribute("accessssl128"),IisProperty]
         public bool AccesssSl128 {
             get { return _accessSsl128; }
             set { _accessSsl128 = value; }
         }
 
-        [TaskAttribute("accesssslmapcert")]
+        [TaskAttribute("accesssslmapcert"),IisProperty]
         public bool AccessSslMapCert {
             get { return _accessSslMapCert; }
             set { _accessSslMapCert = value; }
         }
 
-        [TaskAttribute("accesssslnegotiatecert")]
+        [TaskAttribute("accesssslnegotiatecert"),IisProperty]
         public bool AccessSslNegotiateCert {
             get { return _accessSslNegotiateCert; }
             set { _accessSslNegotiateCert = value; }
         }
 
-        [TaskAttribute("accesssslrequirecert")]
+        [TaskAttribute("accesssslrequirecert"),IisProperty]
         public bool AccessSslRequireCert {
             get { return _accessSslRequireCert; }
             set { _accessSslRequireCert = value; }
         }
 
-        [TaskAttribute("accesswrite")]
+        [TaskAttribute("accesswrite"),IisProperty]
         public bool AccessWrite {
             get { return _accessWrite; }
             set { _accessWrite = value; }
         }
 
-        [TaskAttribute("anonymouspasswordsync")]
+        [TaskAttribute("anonymouspasswordsync"),IisProperty]
         public bool AnonymousPasswordSync {
             get { return _anonymousPasswordSync; }
             set { _anonymousPasswordSync = value; }
         }
+        /// <summary>
+        /// Specifies what type of application to create for this virtual directory. 
+        /// The default is <see cref="AppType.Pooled" />.
+        /// </summary>
+        [TaskAttribute("appcreate")]
+        public AppType AppCreate {
+            get { return _apptype; }
+            set { _apptype = value; }
+        }
 
-        [TaskAttribute("appallowclientdebug")]
+        [TaskAttribute("appallowclientdebug"),IisProperty]
         public bool AppAllowClientDebug {
             get { return _appAllowClientDebug; }
             set { _appAllowClientDebug = value; }
         }
 
-        [TaskAttribute("appallowdebugging")]
+        [TaskAttribute("appallowdebugging"),IisProperty]
         public bool AppAllowDebugging {
             get { return _appAllowDebugging; }
             set { _appAllowDebugging = value; }
         }
 
-        [TaskAttribute("aspallowsessionstate")]
+        [TaskAttribute("aspallowsessionstate"),IisProperty]
         public bool AspAllowSessionState {
             get { return _aspAllowSessionState; }
             set { _aspAllowSessionState = value; }
         }
 
-        [TaskAttribute("aspbufferingon")]
+        [TaskAttribute("aspbufferingon"),IisProperty]
         public bool AspBufferingOn {
             get { return _aspBufferingOn; }
             set { _aspBufferingOn = value; }
         }
 
-        [TaskAttribute("aspenableapplicationrestart")]
+        [TaskAttribute("aspenableapplicationrestart"),IisProperty]
         public bool AspEnableApplicationRestart {
             get { return _aspEnableApplicationRestart; }
             set { _aspEnableApplicationRestart = value; }
         }
 
-        [TaskAttribute("aspenableasphtmlfallback")]
+        [TaskAttribute("aspenableasphtmlfallback"),IisProperty]
         public bool AspEnableAspHtmlFallback {
             get { return _aspEnableAspHtmlFallback; }
             set { _aspEnableAspHtmlFallback = value; }
         }
 
-        [TaskAttribute("aspenablechunkedencoding")]
+        [TaskAttribute("aspenablechunkedencoding"),IisProperty]
         public bool AspEnableChunkedEncoding {
             get { return _aspEnableChunkedEncoding; }
             set { _aspEnableChunkedEncoding = value; }
         }
 
-        [TaskAttribute("asperrorstontlog")]
+        [TaskAttribute("asperrorstontlog"),IisProperty]
         public bool AspErrorsToNTLog {
             get { return _aspErrorsToNTLog; }
             set { _aspErrorsToNTLog = value; }
         }
 
-        [TaskAttribute("aspenableparentpaths")]
+        [TaskAttribute("aspenableparentpaths"),IisProperty]
         public bool AspEnableParentPaths {
             get { return _aspEnableParentPaths; }
             set { _aspEnableParentPaths = value; }
         }
 
-        [TaskAttribute("aspenabletypelibcache")]
+        [TaskAttribute("aspenabletypelibcache"),IisProperty]
         public bool AspEnableTypelibCache {
             get { return _aspEnableTypelibCache; }
             set { _aspEnableTypelibCache = value; }
         }
 
-        [TaskAttribute("aspexceptioncatchenable")]
+        [TaskAttribute("aspexceptioncatchenable"),IisProperty]
         public bool AspExceptionCatchEnable {
             get { return _aspExceptionCatchEnable; }
             set { _aspExceptionCatchEnable = value; }
         }
 
-        [TaskAttribute("asplogerrorrequests")]
+        [TaskAttribute("asplogerrorrequests"),IisProperty]
         public bool AspLogErrorRequests {
             get { return _aspLogErrorRequests; }
             set { _aspLogErrorRequests = value; }
         }
 
-        [TaskAttribute("aspscripterrorsenttobrowser")]
+        [TaskAttribute("aspscripterrorsenttobrowser"),IisProperty]
         public bool AspScriptErrorSentToBrowser {
             get { return _aspScriptErrorSentToBrowser; }
             set { _aspScriptErrorSentToBrowser = value; }
         }
 
-        [TaskAttribute("aspthreadgateenabled")]
+        [TaskAttribute("aspthreadgateenabled"),IisProperty]
         public bool AspThreadGateEnabled {
             get { 
                 if (this.Version != IISVersion.Five) {
@@ -335,7 +375,7 @@ namespace NAnt.Contrib.Tasks.Web {
             }
         }
 
-        [TaskAttribute("asptrackthreadingmodel")]
+        [TaskAttribute("asptrackthreadingmodel"),IisProperty]
         public bool AspTrackThreadingModel {
             get { 
                 if (this.Version != IISVersion.Five) {
@@ -351,31 +391,31 @@ namespace NAnt.Contrib.Tasks.Web {
             }
         }
 
-        [TaskAttribute("authanonymous")]
+        [TaskAttribute("authanonymous"),IisProperty]
         public bool AuthAnonymous {
             get { return _authAnonymous; }
             set { _authAnonymous = value; }
         }
 
-        [TaskAttribute("authbasic")]
+        [TaskAttribute("authbasic"),IisProperty]
         public bool AuthBasic {
             get { return _authBasic; }
             set { _authBasic = value; }
         }
 
-        [TaskAttribute("authntlm")]
+        [TaskAttribute("authntlm"),IisProperty]
         public bool AuthNtlm {
             get { return _authNtlm; }
             set { _authNtlm = value; }
         }
 
-        [TaskAttribute("authpersistsinglerequest")]
+        [TaskAttribute("authpersistsinglerequest"),IisProperty]
         public bool AuthPersistSingleRequest{
             get { return _authPersistSingleRequest; }
             set { _authPersistSingleRequest = value; }
         }
 
-        [TaskAttribute("authpersistsinglerequestifproxy")]
+        [TaskAttribute("authpersistsinglerequestifproxy"),IisProperty]
         public bool AuthPersistSingleRequestIfProxy{
             get { 
                 if (this.Version != IISVersion.Five) {
@@ -390,7 +430,7 @@ namespace NAnt.Contrib.Tasks.Web {
             }
         }
 
-        [TaskAttribute("authpersistsinglerequestalwaysifproxy")]
+        [TaskAttribute("authpersistsinglerequestalwaysifproxy"),IisProperty]
         public bool AuthPersistSingleRequestAlwaysIfProxy{
             get { 
                 if (this.Version != IISVersion.Five) {
@@ -406,25 +446,25 @@ namespace NAnt.Contrib.Tasks.Web {
             }
         }
 
-        [TaskAttribute("cachecontrolnocache")]
+        [TaskAttribute("cachecontrolnocache"),IisProperty]
         public bool CacheControlNoCache {
             get { return _cacheControlNoCache; }
             set { _cacheControlNoCache = value; }
         }
 
-        [TaskAttribute("cacheisapi")]
+        [TaskAttribute("cacheisapi"),IisProperty]
         public bool CacheIsapi {
             get { return _cacheIsapi; }
             set { _cacheIsapi = value; }
         }
 
-        [TaskAttribute("contentindexed")]
+        [TaskAttribute("contentindexed"),IisProperty]
         public bool ContentIndexed {
             get { return _contentIndexed; }
             set { _contentIndexed = value; }
         }
 
-        [TaskAttribute("cpuappenabled")]
+        [TaskAttribute("cpuappenabled"),IisProperty]
         public bool CpuAppEnabled {
             get { 
                 if (this.Version != IISVersion.Five) {
@@ -440,7 +480,7 @@ namespace NAnt.Contrib.Tasks.Web {
             }
         }
 
-        [TaskAttribute("cpucgienabled")]
+        [TaskAttribute("cpucgienabled"),IisProperty]
         public bool CpuCgiEnabled{
             get { 
                 if (this.Version != IISVersion.Five) {
@@ -456,97 +496,97 @@ namespace NAnt.Contrib.Tasks.Web {
             }
         }
 
-        [TaskAttribute("createcgiwithnewconsole")]
+        [TaskAttribute("createcgiwithnewconsole"),IisProperty]
         public bool CreateCgiWithNewConsole {
             get { return _createCgiWithNewConsole; }
             set { _createCgiWithNewConsole = value; }
         }
 
-        [TaskAttribute("createprocessasuser")]
+        [TaskAttribute("createprocessasuser"),IisProperty]
         public bool CreateProcessAsUser {
             get { return _createProcessAsUser; }
             set { _createProcessAsUser = value; }
         }
 
-        [TaskAttribute("dirbrowseshowdate")]
+        [TaskAttribute("dirbrowseshowdate"),IisProperty]
         public bool DirBrowseShowDate {
             get { return _dirBrowseShowDate; }
             set { _dirBrowseShowDate = value; }
         }
 
-        [TaskAttribute("dirbrowseshowextension")]
+        [TaskAttribute("dirbrowseshowextension"),IisProperty]
         public bool DirBrowseShowExtension {
             get { return _dirBrowseShowExtension; }
             set { _dirBrowseShowExtension = value; }
         }
 
-        [TaskAttribute("dirbrowseshowlongdate")]
+        [TaskAttribute("dirbrowseshowlongdate"),IisProperty]
         public bool DirBrowseShowLongDate {
             get { return _dirBrowseShowLongDate; }
             set { _dirBrowseShowLongDate = value; }
         }
 
-        [TaskAttribute("dirbrowseshowsize")]
+        [TaskAttribute("dirbrowseshowsize"),IisProperty]
         public bool DirBrowseShowSize {
             get { return _dirBrowseShowSize; }
             set { _dirBrowseShowSize = value; }
         }
 
-        [TaskAttribute("dirbrowseshowtime")]
+        [TaskAttribute("dirbrowseshowtime"),IisProperty]
         public bool DirBrowseShowTime {
             get { return _dirBrowseShowTime; }
             set { _dirBrowseShowTime = value; }
         }
 
-        [TaskAttribute("dontlog")]
+        [TaskAttribute("dontlog"),IisProperty]
         public bool DontLog {
             get { return _dontLog; }
             set { _dontLog = value; }
         }
 
-        [TaskAttribute("enabledefaultdoc")]
+        [TaskAttribute("enabledefaultdoc"),IisProperty]
         public bool EnableDefaultDoc {
             get { return _enableDefaultDoc; }
             set { _enableDefaultDoc = value; }
         }
 
-        [TaskAttribute("enabledirbrowsing")]
+        [TaskAttribute("enabledirbrowsing"),IisProperty]
         public bool EnableDirBrowsing {
             get { return _enableDirBrowsing; }
             set { _enableDirBrowsing = value; }
         }
 
-        [TaskAttribute("enabledocfooter")]
+        [TaskAttribute("enabledocfooter"),IisProperty]
         public bool EnableDocFooter {
             get { return _enableDocFooter; }
             set { _enableDocFooter = value; }
         }
 
-        [TaskAttribute("enablereversedns")]
+        [TaskAttribute("enablereversedns"),IisProperty]
         public bool EnableReverseDns {
             get { return _enableReverseDns; }
             set { _enableReverseDns = value; }
         }
 
-        [TaskAttribute("ssiexecdisable")]
+        [TaskAttribute("ssiexecdisable"),IisProperty]
         public bool SsiExecDisable {
             get { return _ssiExecDisable; }
             set { _ssiExecDisable = value; }
         }
 
-        [TaskAttribute("uncauthenticationpassthrough")]
+        [TaskAttribute("uncauthenticationpassthrough"),IisProperty]
         public bool UncAuthenticationPassthrough {
             get { return _uncAuthenticationPassthrough; }
             set { _uncAuthenticationPassthrough = value; }
         }
 
-        [TaskAttribute("aspscripterrormessage")]
+        [TaskAttribute("aspscripterrormessage"),IisProperty]
         public string AspScriptErrorMessage {
             get { return _aspScriptErrorMessage; }
             set { _aspScriptErrorMessage = value; }
         }
 
-        [TaskAttribute("defaultdoc")]
+        [TaskAttribute("defaultdoc"),IisProperty]
         public string DefaultDoc {
             get { return _defaultDoc; }
             set { _defaultDoc = value; }
@@ -557,111 +597,23 @@ namespace NAnt.Contrib.Tasks.Web {
         #region Override implementation of Task
 
         protected override void ExecuteTask() {
+            Log(Level.Info, "Creating/modifying virtual directory '{0}' on"
+                + " '{1}'.", this.VirtualDirectory, this.Server);
+
+            // ensure IIS is available on specified host and port
+            this.CheckIISSettings();
+
             try {
-                Log(Level.Info, "Creating/modifying virtual directory '{0}' on"
-                    + " '{1}'.", this.VirtualDirectory, this.Server);
+                DirectoryEntry vdir = 
+                    GetOrMakeNode(this.ServerPath,this.VdirPath,"IIsWebVirtualDir");
+                vdir.RefreshCache();
 
-                // ensure IIS is available on specified host and port
-                this.DetermineIISSettings();
-
-                DirectoryEntry folderRoot = new DirectoryEntry(this.ServerPath);
-                folderRoot.RefreshCache();
-                DirectoryEntry newVirDir;
-
-                try {
-                    // Try to find the directory
-                    DirectoryEntry tempVirDir = folderRoot.Children.Find(this.VirtualDirectory, folderRoot.SchemaClassName);
-                    newVirDir = tempVirDir;
-                } catch {
-                    // If the directory doesn't exist create it.
-                    newVirDir = folderRoot.Children.Add(this.VirtualDirectory, folderRoot.SchemaClassName);
-                    newVirDir.CommitChanges();
-                }
-
-                // Set Required Properties
-                newVirDir.Properties["Path"].Value = DirPath.FullName;
-                newVirDir.Properties["AppFriendlyName"].Value = this.VirtualDirectory;
-                newVirDir.Properties["AppRoot"].Value = string.Format(CultureInfo.InvariantCulture, "{0}/{1}", this.ApplicationPath, this.VirtualDirectory);
-
-                // Set Optional Properties
-                newVirDir.Properties["AccessExecute"][0] = AccessExecute;
-                newVirDir.Properties["AccessNoRemoteExecute"][0] = AccessNoRemoteExecute;
-                newVirDir.Properties["AccessNoRemoteRead"][0] = AccessNoRemoteRead;
-                newVirDir.Properties["AccessNoRemoteScript"][0] = AccessNoRemoteScript;
-                newVirDir.Properties["AccessNoRemoteWrite"][0] = AccessNoRemoteWrite;
-                newVirDir.Properties["AccessRead"][0] = AccessRead;
-                newVirDir.Properties["AccessSource"][0] = AccessSource;
-                newVirDir.Properties["AccessScript"][0] = AccessScript;
-                newVirDir.Properties["AccessSSL"][0] = AccessSsl;
-                newVirDir.Properties["AccessSSL128"][0] = AccesssSl128;
-                newVirDir.Properties["AccessSSLMapCert"][0] = AccessSslMapCert;
-                newVirDir.Properties["AccessSSLNegotiateCert"][0] = AccessSslNegotiateCert;
-                newVirDir.Properties["AccessSSLRequireCert"][0] = AccessSslRequireCert;
-                newVirDir.Properties["AccessWrite"][0] = AccessWrite;
-                newVirDir.Properties["AnonymousPasswordSync"][0] = AnonymousPasswordSync;
-                newVirDir.Properties["AppAllowClientDebug"][0] = AppAllowClientDebug;
-                newVirDir.Properties["AppAllowDebugging"][0] = AppAllowDebugging;
-                newVirDir.Properties["AspBufferingOn"][0] = AspBufferingOn;
-                newVirDir.Properties["AspEnableApplicationRestart"][0] = AspEnableApplicationRestart;
-                newVirDir.Properties["AspEnableAspHtmlFallback"][0] = AspEnableAspHtmlFallback;
-                newVirDir.Properties["AspEnableChunkedEncoding"][0] = AspEnableChunkedEncoding;
-                newVirDir.Properties["AspErrorsToNTLog"][0] = AspErrorsToNTLog;
-                newVirDir.Properties["AspEnableParentPaths"][0] = AspEnableParentPaths;
-                newVirDir.Properties["AspEnableTypelibCache"][0] = AspEnableTypelibCache;
-                newVirDir.Properties["AspExceptionCatchEnable"][0] = AspExceptionCatchEnable;
-                newVirDir.Properties["AspLogErrorRequests"][0] = AspLogErrorRequests;
-                newVirDir.Properties["AspScriptErrorSentToBrowser"][0] = AspScriptErrorSentToBrowser;
-
-                if (this.Version == IISVersion.Five) {
-                    newVirDir.Properties["AspThreadGateEnabled"][0] = AspThreadGateEnabled;
-                    newVirDir.Properties["AspTrackThreadingModel"][0] = AspTrackThreadingModel;
-                }
-
-                newVirDir.Properties["AuthAnonymous"][0] = AuthAnonymous;
-                newVirDir.Properties["AuthBasic"][0] = AuthBasic;
-                newVirDir.Properties["AuthNTLM"][0] = AuthNtlm;
-                newVirDir.Properties["AuthPersistSingleRequest"][0] = AuthPersistSingleRequest;
-
-                if (this.Version == IISVersion.Five) {
-                    newVirDir.Properties["AuthPersistSingleRequestIfProxy"][0] = AuthPersistSingleRequestIfProxy;
-                    newVirDir.Properties["AuthPersistSingleRequestAlwaysIfProxy"][0] = AuthPersistSingleRequestAlwaysIfProxy;
-                }
-
-                newVirDir.Properties["CacheControlNoCache"][0] = CacheControlNoCache;
-                newVirDir.Properties["CacheISAPI"][0] = CacheIsapi;
-                newVirDir.Properties["ContentIndexed"][0] = ContentIndexed;
-
-                if (this.Version == IISVersion.Five) {
-                    newVirDir.Properties["CpuAppEnabled"][0] = CpuAppEnabled;
-                    newVirDir.Properties["CpuCgiEnabled"][0] = CpuCgiEnabled;
-                }
-
-                newVirDir.Properties["CreateCGIWithNewConsole"][0] = CreateCgiWithNewConsole;
-                newVirDir.Properties["CreateProcessAsUser"][0] = CreateProcessAsUser;
-                newVirDir.Properties["DirBrowseShowDate"][0] = DirBrowseShowDate;
-                newVirDir.Properties["DirBrowseShowExtension"][0] = DirBrowseShowExtension;
-                newVirDir.Properties["DirBrowseShowLongDate"][0] = DirBrowseShowLongDate;
-                newVirDir.Properties["DirBrowseShowSize"][0] = DirBrowseShowSize;
-                newVirDir.Properties["DirBrowseShowTime"][0] = DirBrowseShowTime;
-                newVirDir.Properties["DontLog"][0] = DontLog;
-                newVirDir.Properties["EnableDefaultDoc"][0] = EnableDefaultDoc;
-                newVirDir.Properties["EnableDirBrowsing"][0] = EnableDirBrowsing;
-                newVirDir.Properties["EnableDocFooter"][0] = EnableDocFooter;
-                newVirDir.Properties["EnableReverseDns"][0] = EnableReverseDns;
-                newVirDir.Properties["SSIExecDisable"][0] = SsiExecDisable;
-
-                if (this.Version == IISVersion.Five) {
-                    newVirDir.Properties["UNCAuthenticationPassthrough"][0] = UncAuthenticationPassthrough;
-                }
-
-                newVirDir.Properties["AspScriptErrorMessage"][0] = AspScriptErrorMessage;
-                newVirDir.Properties["DefaultDoc"][0] = DefaultDoc;
-
-                // Save Changes
-                newVirDir.CommitChanges();
-                folderRoot.CommitChanges();
-                newVirDir.Close();
-                folderRoot.Close();
+                vdir.Properties["Path"].Value = DirPath.FullName;
+                this.CreateApplication(vdir);
+                this.SetIisProperties(vdir);
+  
+                vdir.CommitChanges();
+                vdir.Close();
             } catch (Exception ex) {
                 throw new BuildException(string.Format(CultureInfo.InvariantCulture, 
                     "Error creating virtual directory '{0}' on '{1}'.", 
@@ -670,5 +622,54 @@ namespace NAnt.Contrib.Tasks.Web {
         }
 
         #endregion Override implementation of Task
+
+        #region Private Instance Methods
+
+        private DirectoryEntry GetOrMakeNode(string basePath, string relPath, string schemaClassName) {
+            if(DirectoryEntryExists(basePath + relPath)) {
+                return new DirectoryEntry(basePath+relPath);
+            }
+            DirectoryEntry parent = new DirectoryEntry(basePath);
+            parent.RefreshCache();
+            DirectoryEntry child = parent.Children.Add(relPath.Trim('/'), schemaClassName);
+            child.CommitChanges();
+            parent.CommitChanges();
+            parent.Close();
+            return child;
+        }
+
+        private bool IsIisProperty(PropertyInfo prop) {
+            return prop.GetCustomAttributes(typeof(IisPropertyAttribute),true).Length > 0;
+        }
+
+        private string AttributeName(PropertyInfo prop) {
+            return ((TaskAttributeAttribute)prop.GetCustomAttributes(typeof(TaskAttributeAttribute),true)[0]).Name;
+        }
+
+        // Set the IIS properties that have been specified
+        private void SetIisProperties(DirectoryEntry vdir) {
+            XmlElement taskElement = (XmlElement)this.XmlNode;
+            foreach(PropertyInfo prop in this.GetType().GetProperties()) {
+                if(!IsIisProperty(prop)) continue;
+                string propertyName = AttributeName(prop);
+                if( taskElement.HasAttribute(propertyName)) {
+                    Log(Level.Debug, "setting {0} = {1}",propertyName,prop.GetValue(this, null));
+                    vdir.Properties[propertyName][0] = prop.GetValue(this, null);
+                } 
+            }
+        }
+
+        private void CreateApplication(DirectoryEntry vdir) {
+            Log(Level.Debug,"setting application type {0}",AppCreate);
+            if(AppCreate == AppType.None) {
+                vdir.Invoke("AppDelete");
+            } else if(this.Version == IISVersion.Four) {
+                vdir.Invoke("AppCreate", AppCreate == AppType.InProcess);
+            } else {
+                vdir.Invoke("AppCreate2", (int) AppCreate);
+            }
+        }
+
+        #endregion Private Instance Methods
     }
 }

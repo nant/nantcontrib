@@ -17,6 +17,7 @@
 //
 // Brian Nantz (bcnantz@juno.com)
 // Gert Driesen (gert.driesen@ardatis.com)
+// Rutger Dijkstra (R.M.Dijkstra@eyetoeye.nl)
 
 using System;
 using System.Collections;
@@ -71,7 +72,7 @@ namespace NAnt.Contrib.Tasks.Web {
         [TaskAttribute("vdirname", Required=true)]
         public string VirtualDirectory {
             get { return _virtualDirectory; }
-            set { _virtualDirectory = value; }
+            set { _virtualDirectory = value.Trim('/'); }
         }
 
         /// <summary>
@@ -86,8 +87,8 @@ namespace NAnt.Contrib.Tasks.Web {
         [TaskAttribute("iisserver")]
         public string Server {
             get {
-                return string.Format(CultureInfo.InvariantCulture, 
-                    "{0}:{1}", _serverName, _serverPort);
+                return string.Format(CultureInfo.InvariantCulture, "{0}:{1}",
+                    _serverName, _serverPort);
             }
             set {
                 if (value.IndexOf(":") < 0) {
@@ -96,9 +97,6 @@ namespace NAnt.Contrib.Tasks.Web {
                     string[] parts = value.Split(':');
                     _serverName = parts[0];
                     _serverPort = Convert.ToInt32(parts[1], CultureInfo.InvariantCulture);
-
-                    // ensure IIS is available on specified host and port
-                    this.DetermineIISSettings();
                 }
             }
         }
@@ -144,16 +142,25 @@ namespace NAnt.Contrib.Tasks.Web {
 
         protected string ServerPath {
             get { 
-                return string.Format(CultureInfo.InvariantCulture, 
-                    "IIS://{0}/W3SVC/{1}/Root", _serverName, 
-                    _serverInstance); 
+                return string.Format(CultureInfo.InvariantCulture, "IIS://{0}/W3SVC/{1}/Root",
+                    _serverName, _serverInstance); 
             }
         }
 
         protected string ApplicationPath {
             get { 
-                return string.Format(CultureInfo.InvariantCulture, 
-                    "/LM/W3SVC/{0}/Root", _serverInstance); 
+                return string.Format(CultureInfo.InvariantCulture, "/LM/W3SVC/{0}/Root",
+                    _serverInstance); 
+            }
+        }
+
+        protected string VdirPath {
+            get {
+                if (this.VirtualDirectory.Length == 0) {
+                    return string.Empty;
+                } else {
+                    return "/" + VirtualDirectory;
+                }
             }
         }
 
@@ -161,33 +168,31 @@ namespace NAnt.Contrib.Tasks.Web {
 
         #region Protected Instance Methods
 
-        protected void DetermineIISSettings() {
-            bool websiteFound = false;
-
-            DirectoryEntry webServer = new DirectoryEntry(string.Format(
-                CultureInfo.InvariantCulture, "IIS://{0}/W3SVC", _serverName));
-
-            // refresh and cache property values for this directory entry
-            webServer.RefreshCache();
-
-            // enumerate all websites on webserver
-            foreach (DirectoryEntry website in webServer.Children) {
-                if (website.SchemaClassName == "IIsWebServer") {
-                    if (this.MatchingPortFound(website)) {
-                        websiteFound = true;
-                    }
-                }
-
-                // close DirectoryEntry and release system resources
-                website.Close();
+        //bug-fix for DirectoryEntry.Exists which checks for the wrong COMException
+        protected bool DirectoryEntryExists(string path) {
+            DirectoryEntry entry = new DirectoryEntry(path);
+            try {
+                //trigger the *private* entry.Bind() method
+                object adsobject = entry.NativeObject;
+                return true;
+            } catch {
+                return false;
+            } finally {
+                entry.Dispose();
             }
+        }
 
-            // close DirectoryEntry and release system resources
-            webServer.Close();
-
-            if (!websiteFound) {
-                throw new BuildException(string.Format(CultureInfo.InvariantCulture, 
-                    "Server '{0}' does not exist or is not reachable.", Server));
+        protected void CheckIISSettings() {
+            if (!DirectoryEntryExists(string.Format(CultureInfo.InvariantCulture, "IIS://{0}/W3SVC", _serverName))) {
+                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                    "The webservice at '{0}' does not exist or is not reachable.", 
+                    _serverName));
+            }
+            _serverInstance = FindServerInstance();
+ 
+            if (_serverInstance == null) {
+                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                    "No website is bound to '{0}'.", Server));
             }
         }
 
@@ -195,15 +200,55 @@ namespace NAnt.Contrib.Tasks.Web {
 
         #region Private Instance Methods
 
-        private bool MatchingPortFound(DirectoryEntry website) {
-            string bindings = website.Properties["ServerBindings"].Value.ToString();
-            string[] bindingParts = bindings.Split(':');
-
-            if (_serverPort == Convert.ToInt32(bindingParts[1], CultureInfo.InvariantCulture)) {
-                _serverInstance = website.Name;
-                return true;
+        private int BindingPriority(string binding) {
+            string[] bindingParts = binding.Split(':');
+            int port = Convert.ToInt32(bindingParts[1], CultureInfo.InvariantCulture);
+            string host = bindingParts[2];
+            if (port != _serverPort) {
+                return 0;
             }
-            return false;
+            if (host.Length == 0) {
+                return 1;
+            }
+            if (host == _serverName) {
+                return 2;
+            }
+            return 0;
+        }
+
+        private int BindingPriority(string binding, bool siteRunning) {
+            int basePriority = BindingPriority(binding);
+            return siteRunning ? basePriority << 4 : basePriority; 
+        }
+
+        private bool IsRunning(DirectoryEntry website) {
+            return 2 == (int)website.Properties["ServerState"].Value;
+        }
+
+        private string FindServerInstance() {
+            int maxBindingPriority = 0;
+            string instance = null;
+            DirectoryEntry webServer = new DirectoryEntry(string.Format(CultureInfo.InvariantCulture, 
+                "IIS://{0}/W3SVC", _serverName));
+            webServer.RefreshCache();
+ 
+            foreach (DirectoryEntry website in webServer.Children) {
+                if (website.SchemaClassName != "IIsWebServer") { 
+                    website.Close();
+                    continue; 
+                }
+                foreach (string binding in website.Properties["ServerBindings"]) {
+                    int bindingPriority = BindingPriority(binding, IsRunning(website));
+                    if (bindingPriority <= maxBindingPriority) {
+                        continue;
+                    }
+                    instance = website.Name;
+                    maxBindingPriority = bindingPriority;
+                }
+                website.Close();
+            }
+            webServer.Close();
+            return instance;
         }
 
         #endregion Private Instance Methods

@@ -35,7 +35,9 @@ namespace NAnt.Contrib.Tasks.Web {
     /// <example>
     ///   <para>
     ///   Delete a virtual directory named <c>Temp</c> from the web site running
-    ///   on port <c>80</c> of the local machine.
+    ///   on port <c>80</c> of the local machine. If more than one web site is
+    ///   running on port <c>80</c>, take the web site bound to the hostname 
+    ///   <c>localhost</c> if existent or bound to no hostname otherwise.
     ///   </para>
     ///   <code>
     ///     <![CDATA[
@@ -57,21 +59,19 @@ namespace NAnt.Contrib.Tasks.Web {
     [TaskName("deliisdir")]
     public class DeleteVirtualDirectory : WebBase {
         protected override void ExecuteTask() {
+            Log(Level.Info, "Deleting virtual directory '{0}' on '{1}'.", 
+                this.VirtualDirectory, this.Server);
+
+            // ensure IIS is available on specified host and port
+            this.CheckIISSettings();
+
+            //make sure we dont delete the serverinstance ROOT
+            if(this.VirtualDirectory.Length == 0) {
+                throw new BuildException("The root of a web site can not be deleted",Location);
+            }
             try {
-                Log(Level.Info, "Deleting virtual directory '{0}' on '{1}'.", 
-                    this.VirtualDirectory, this.Server);
-
-                // ensure IIS is available on specified host and port
-                this.DetermineIISSettings();
-
-                DirectoryEntry folderRoot = new DirectoryEntry(this.ServerPath);
-                DirectoryEntries rootEntries = folderRoot.Children;
-                folderRoot.RefreshCache();
-                DirectoryEntry childVirDir = folderRoot.Children.Find(this.VirtualDirectory, folderRoot.SchemaClassName);
-                rootEntries.Remove(childVirDir);
-
-                childVirDir.Close();
-                folderRoot.Close();
+                DirectoryEntry vdir = new DirectoryEntry(this.ServerPath+this.VdirPath);
+                vdir.Parent.Children.Remove(vdir);
             } catch (Exception ex) {
                 throw new BuildException(string.Format(CultureInfo.InvariantCulture,
                     "Error deleting virtual directory '{0}' on '{1}'.", 

@@ -45,13 +45,13 @@ namespace NAnt.Contrib.Tasks.Web {
     [TaskName("iisdirinfo")]
     public class VirtualDirectoryInfo : WebBase {
         protected override void ExecuteTask() {
+            Log(Level.Info, "Retrieving settings of virtual directory '{0}'"
+                + " on '{1}'.", this.VirtualDirectory, this.Server);
+
+            // ensure IIS is available on specified host and port
+            this.CheckIISSettings();
+
             try {
-                Log(Level.Info, "Retrieving settings of virtual directory '{0}'"
-                    + " on '{1}'.", this.VirtualDirectory, this.Server);
-
-                // ensure IIS is available on specified host and port
-                this.DetermineIISSettings();
-
                 // retrieve DirectoryEntry representing root of web site
                 DirectoryEntry folderRoot = new DirectoryEntry(this.ServerPath);
                 folderRoot.RefreshCache();
