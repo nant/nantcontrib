@@ -615,9 +615,19 @@
                     BuildAction="Compile"
                 />
                 <File
+                    RelPath="Tasks\SourceSafe\DiffTask.cs"
+                    SubType="Code"
+                    BuildAction="Compile"
+                />
+                <File
                     RelPath="Tasks\SourceSafe\GetTask.cs"
                     SubType="Code"
                     BuildAction="Compile"
+                />
+                <File
+                    RelPath = "Tasks\SourceSafe\History.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath="Tasks\SourceSafe\LabelTask.cs"
