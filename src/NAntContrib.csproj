@@ -181,6 +181,11 @@
                     SubType="Code"
                     BuildAction="Compile"
                 />
+		<File
+                    RelPath = "FxCopTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
                 <File
                     RelPath="Tasks\GacTaskBase.cs"
                     SubType="Code"
