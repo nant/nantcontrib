@@ -921,6 +921,9 @@ namespace NAnt.Contrib.Tasks.Msi {
                     foreach (MSIRegistryKey key in msi.registry) {
                         int rootKey = -1;
                         switch (key.root.ToString()) {
+							case "dependent":
+								rootKey = -1;
+								break;
                             case "classes":
                                 rootKey = 0;
                                 break;
@@ -936,23 +939,25 @@ namespace NAnt.Contrib.Tasks.Msi {
                         }
 
                         foreach (MSIRegistryKeyValue value in key.value) {
-                            if ((value.name == null || value.name == String.Empty) && (value.value == null || value.value == String.Empty))
+                            if ((value.name == null || value.name == String.Empty) && (value.value == null || value.value == String.Empty) && (value.Value == null))
                                 throw new BuildException("Registry value must have a name and/or value specified.");
 
                             // Insert the Value
-                            Log(Level.Verbose, "\t" + GetDisplayablePath(key.path) + @"#" + value.name);
+                            Log(Level.Verbose, "\t" + GetDisplayablePath(key.path) + @"#" + ((value.name == null || value.name == String.Empty) ? "(Default)":value.name));
 
-                            string keyValue;
+                            string keyValue = null;
                             if (value.value != null && value.value != "") {
                                 keyValue = value.value;
                             } else if (value.dword != null && value.dword != "") {
                                 keyValue = "#" + Int32.Parse(value.dword);
                             } else {
-                                string val1 = value.Value.Replace(",", null);
-                                string val2 = val1.Replace(" ", null);
-                                string val3 = val2.Replace("\n", null);
-                                string val4 = val3.Replace("\r", null);
-                                keyValue = "#x" + val4;
+								if (value.Value != null) {
+									string val1 = value.Value.Replace(",", null);
+									string val2 = val1.Replace(" ", null);
+									string val3 = val2.Replace("\n", null);
+									string val4 = val3.Replace("\r", null);
+									keyValue = "#x" + val4;
+								}
                             }
 
                             registryTable.InsertRecord((value.id != null ? value.id : CreateIdentityGuid()), 
