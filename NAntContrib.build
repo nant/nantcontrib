@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <project name="NAntContrib" default="test">
-    <include buildfile="../properties.xml" failonerror="false" />
+    <include buildfile="../properties.xml" if="${file::exists('../properties.xml')}" />
     <!-- global project settings -->
     <property name="project.name" value="nantcontrib" />
     <property name="project.FormalName" value="NAnt.Contrib" />
