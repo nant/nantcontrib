@@ -20,6 +20,7 @@
 using System;
 using System.DirectoryServices; 
 using System.Globalization;
+using System.Xml;
 
 using NAnt.Core;
 using NAnt.Core.Attributes;
@@ -98,14 +99,20 @@ namespace NAnt.Contrib.Tasks {
 
         #endregion Public Instance Properties
 
+        #region Override implementation of Task
+
+        protected override void InitializeTask(XmlNode taskNode) {
+            base.InitializeTask (taskNode);
+
+            if (this.PropertyName == null && this.PropertyList.Count == 0) {
+                throw new BuildException("\"propname\" attribute or at least one <option> element is required.");
+            }
+        }
+
         /// <summary>
         /// Sets the specified property
         /// </summary>
         protected override void ExecuteTask() {
-            if (this.PropertyName == null && this.PropertyList.Count == 0) {
-                throw new BuildException("propname attribute or <properties> set is required");
-            }
-
             string propertyName = null;
             string propertyValue = null;
 
@@ -127,12 +134,14 @@ namespace NAnt.Contrib.Tasks {
 
                     // set the properties named in the child property list.
                     foreach (Option property in PropertyList) {
-                        // store property name and value in local field, to allow
-                        // an accurate error message
-                        propertyName = property.OptionName;
-                        propertyValue = property.Value;
+                        if (property.IfDefined && !property.UnlessDefined) {
+                            // store property name and value in local field, to allow
+                            // an accurate error message
+                            propertyName = property.OptionName;
+                            propertyValue = property.Value;
 
-                        SetProperty(pathRoot, propertyName, propertyValue);
+                            SetProperty(pathRoot, propertyName, propertyValue);
+                        }
                     }
 
                     pathRoot.CommitChanges();
@@ -146,6 +155,10 @@ namespace NAnt.Contrib.Tasks {
                     propertyValue, Path), Location, ex);
             }
         }
+
+        #endregion Override implementation of Task
+
+        #region Private Instance Methods
 
         /// <summary>
         /// Sets the named property on the specified <see cref="DirectoryEntry" /> 
@@ -186,17 +199,16 @@ namespace NAnt.Contrib.Tasks {
                     entry.Properties[propertyName].Add(objToSet);
                 }
             } else {
-                //entry.Properties[propertyName].Clear();
                 object originalValue = entry.Properties[propertyName].Value;
                 object newValue = Convert(originalValue, propertyValue);
                 entry.Properties[propertyName][0] = newValue;
             }
 
-            Log(Level.Info, LogPrefix + "Property '{0}' set to '{1}' on '{2}.", 
+            Log(Level.Info, "Property '{0}' set to '{1}' on '{2}.", 
                 propertyName, propertyValue, Path);
         }
     
-        private object Convert(object existingValue, String newValue) {
+        private object Convert(object existingValue, string newValue) {
             if (existingValue is string) {
                 return newValue.ToString();
             } else if (existingValue is bool) {
@@ -209,5 +221,7 @@ namespace NAnt.Contrib.Tasks {
                     existingValue.GetType().FullName), Location);
             }
         }
+
+        #endregion Private Instance Methods
     }
 }

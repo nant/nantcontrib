@@ -22,6 +22,7 @@
 using System;
 using System.Globalization;
 using System.IO;
+using System.Xml;
 
 using NAnt.Core;
 using NAnt.Core.Attributes;
@@ -132,9 +133,7 @@ namespace NAnt.Contrib.Tasks {
         }
 
         /// <summary>
-        /// Defines the action to take with the assembly - either 
-        /// <see cref="ActionTypes.install" />, <see cref="ActionTypes.overwrite" /> 
-        /// or <see cref="ActionTypes.uninstall" />. The default is 
+        /// Defines the action to take with the assembly. The default is 
         /// <see cref="ActionTypes.install" />.
         /// </summary>
         [TaskAttribute("action")]
@@ -190,11 +189,6 @@ namespace NAnt.Contrib.Tasks {
         }
 
         protected override void ExecuteTask() {
-            if (AssemblyName != null && AssemblyFileSet.FileNames.Count != 0) {
-                throw new BuildException("Cannot use both the \"assembly\" attribute and a \"assemblies\" fileset.", Location);
-            } else if (AssemblyName == null && AssemblyFileSet.FileNames.Count == 0) {
-                throw new BuildException("Specify either an \"assembly\" attribute or a \"assemblies\" fileset.", Location);
-            }
             string msg = "";
             switch (ActionType) {
                 case ActionTypes.install:
@@ -208,17 +202,33 @@ namespace NAnt.Contrib.Tasks {
                     break;
             }
             if (AssemblyFileSet.FileNames.Count != 0) {
-                Log(Level.Info, LogPrefix + "{0} {1} assemblies.", msg, AssemblyFileSet.FileNames.Count);
+                Log(Level.Info, "{0} {1} assemblies.", msg, AssemblyFileSet.FileNames.Count);
                 foreach (string assemblyName in AssemblyFileSet.FileNames) {
                     AssemblyName = assemblyName;
                     base.ExecuteTask();
                 }
             } else {
-                Log(Level.Info, LogPrefix + "{0} assembly '{1}'.", msg, AssemblyName);
+                Log(Level.Info, "{0} assembly '{1}'.", msg, AssemblyName);
                 base.ExecuteTask();
             }
         }
 
         #endregion Override implementation of ExternalProgramBase
+
+        #region Override implementation of Task
+
+        protected override void InitializeTask(System.Xml.XmlNode taskNode) {
+            base.InitializeTask (taskNode);
+
+            if (AssemblyName != null && AssemblyFileSet.FileNames.Count != 0) {
+                throw new BuildException("Cannot use both the \"assembly\"" +
+                    " attribute and a \"assemblies\" fileset.", Location);
+            } else if (AssemblyName == null && AssemblyFileSet.FileNames.Count == 0) {
+                throw new BuildException("Specify either an \"assembly\" attribute"
+                    + " or a \"assemblies\" fileset.", Location);
+            }
+        }
+
+        #endregion Override implementation of Task
     }
 }

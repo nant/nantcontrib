@@ -92,10 +92,11 @@ namespace NAnt.Contrib.Tasks {
             }
 
             // gather the information needed to perform the operation
-            StringCollection fileNames = TypedCollFileSet.FileNames;          
+            StringCollection fileNames = TypedCollFileSet.FileNames;
 
             // display build log message
-            Log(Level.Info, LogPrefix + "Building typesafe collection classes for {0} files in the {1} language", fileNames.Count, Language );
+            Log(Level.Info, "Building typesafe collection classes for {0} files"
+                + " in the {1} language", fileNames.Count, Language);
 
             // perform operation
             foreach (string path in fileNames) {
@@ -111,7 +112,7 @@ namespace NAnt.Contrib.Tasks {
             string langExt = "";
             try {
                 if (File.Exists(path)) {
-                    Log(Level.Info, LogPrefix + path);
+                    Log(Level.Info, path);
                     CollectionGenerator.CollectionGenerator generator = null;
                     // load the file
                     switch ( language ) {

@@ -152,7 +152,7 @@ namespace NAnt.Contrib.Tasks {
                             // If this is the last validation error, throw it
                             throw ve;
                         }
-                        Log(Level.Info, LogPrefix + ve.Message);
+                        Log(Level.Info, ve.Message);
                     }
                 }
             

@@ -134,7 +134,8 @@ namespace NAnt.Contrib.Tasks {
 
         protected override void ExecuteTask() {
             // display build log message
-            Log(Level.Info, LogPrefix + "Converting '{0}' to '{1}' using {2} format", Solution, Output, Format);
+            Log(Level.Info, "Converting '{0}' to '{1}' using {2} format", 
+                Solution, Output, Format);
 
             // get a SLiNgshoT SolutionWriter for the specified format.
             SolutionWriter solutionWriter = CreateSolutionWriter(Format);
@@ -212,7 +213,7 @@ namespace NAnt.Contrib.Tasks {
                     name  = ov.OptionName;
                     value = ov.Value;
 
-                    Log(Level.Verbose, LogPrefix + " -- {0} = {1}", name, value);
+                    Log(Level.Verbose, " -- {0} = {1}", name, value);
 
                     if (name == null) {
                         throw new BuildException(string.Format(CultureInfo.InvariantCulture,

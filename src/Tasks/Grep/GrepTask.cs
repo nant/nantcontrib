@@ -128,9 +128,8 @@ namespace NAnt.Contrib.Tasks.Grep {
             MatchCollection matches = new MatchCollection();
             Pattern pattern = new Pattern(Pattern);
 
-            Log(Level.Info, LogPrefix + "Writing matches to '{0}'.", 
-                OutputFile.FullName);
-                
+            Log(Level.Info, "Writing matches to '{0}'.", OutputFile.FullName);
+
             foreach (string filename in InputFiles.FileNames ) {
                 using (StreamReader reader = new StreamReader(filename)) {
                     string fileContent = reader.ReadToEnd();

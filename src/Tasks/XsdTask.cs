@@ -292,9 +292,10 @@ namespace NAnt.Contrib.Tasks {
 
         protected override void ExecuteTask() {
             if (Xdr != null) {
-                Log(Level.Info, LogPrefix + "Generation XML Schema from XDR Schema '{0}'.", Xdr.FullName);
+                Log(Level.Info, "Generating XML Schema from XDR Schema '{0}'.", 
+                    Xdr.FullName);
 
-                Arguments.Add(new Argument(Xdr.FullName));
+                Arguments.Add(new Argument(Xdr));
 
                 if (OutputDir != null) {
                     Arguments.Add(new Argument(string.Format(
@@ -302,9 +303,10 @@ namespace NAnt.Contrib.Tasks {
                         OutputDir.FullName)));
                 }
             } else if (XmlDoc != null) {
-                Log(Level.Info, LogPrefix + "Generating XML Schema for XML document '{0}'.", XmlDoc.FullName);
+                Log(Level.Info, "Generating XML Schema for XML document '{0}'.", 
+                    XmlDoc.FullName);
 
-                Arguments.Add(new Argument(XmlDoc.FullName));
+                Arguments.Add(new Argument(XmlDoc));
 
                 if (OutputDir != null) {
                     Arguments.Add(new Argument(string.Format(
@@ -312,9 +314,10 @@ namespace NAnt.Contrib.Tasks {
                         OutputDir.FullName)));
                 }
             } else if (Assembly != null) {
-                Log(Level.Info, LogPrefix + "Generating XML Schema for assembly '{0}'.", Assembly.FullName);
+                Log(Level.Info, "Generating XML Schema for assembly '{0}'.", 
+                    Assembly.FullName);
 
-                Arguments.Add(new Argument(Assembly.FullName));
+                Arguments.Add(new Argument(Assembly));
 
                 if (OutputDir != null) {
                     Arguments.Add(new Argument(string.Format(
@@ -328,9 +331,10 @@ namespace NAnt.Contrib.Tasks {
                         Types)));
                 }
             } else if (Schema != null) {
-                Log(Level.Info, LogPrefix + "Compiling XML Schema '{0}' into Microsoft.NET {1}.", Schema.FullName, Target);
+                Log(Level.Info, "Compiling XML Schema '{0}' into Microsoft.NET {1}.", 
+                    Schema.FullName, Target);
 
-                Arguments.Add(new Argument(Schema.FullName));
+                Arguments.Add(new Argument(Schema));
 
                 // set target (classes or dataset)
                 Arguments.Add(new Argument("/" + Target));

@@ -168,7 +168,7 @@ namespace NAnt.Contrib.Tasks {
             Project.Properties[Prefix + "version"] = buildNumber;
 
             // output new version number in build log
-            Log(Level.Info, LogPrefix + "Build number '{0}'.", buildNumber);
+            Log(Level.Info, "Build number '{0}'.", buildNumber);
         }
 
         #endregion Override implementation of Task

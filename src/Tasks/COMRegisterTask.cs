@@ -15,42 +15,55 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-
 // Ian MacLean (ian@maclean.ms)
 
 using System;
 using System.Collections.Specialized;
-using System.IO;
 using System.Diagnostics;
+using System.Globalization;
+using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
-using NAnt.Core.Attributes;
+
 using NAnt.Core;
+using NAnt.Core.Attributes;
 using NAnt.Core.Types;
 
 namespace NAnt.Contrib.Tasks {
-    /// <summary>Register COM servers or typelibraries.</summary>
+    /// <summary>Register COM servers or type libraries.</summary>
     /// <remarks>
     ///     <para>COM register task will try and register any type of COM related file that needs registering. .exe files will be registered as exe servers, .tlb files registered with RegisterTypeLib and for all other filetypes it will attempt to register them as dll servers.</para>
     /// </remarks>
     /// <example>
     ///   <para>Register a single dll server.</para>
-    ///   <code><![CDATA[<comregister file="myComServer.dll"/>]]></code>
+    ///   <code>
+    ///     <![CDATA[
+    /// <comregister file="myComServer.dll" />
+    ///     ]]>
+    ///   </code>
+    /// </example>
+    /// <example>
     ///   <para>Register a single exe server </para>
-    ///   <code><![CDATA[<comregister file="myComServer.exe"/>]]></code>
+    ///   <code>
+    ///     <![CDATA[
+    /// <comregister file="myComServer.exe" />
+    ///     ]]>
+    ///   </code>
+    /// </example>
+    /// <example>
     ///   <para>Register a set of COM files at once.</para>
     ///   <code>
-    /// <![CDATA[
+    ///     <![CDATA[
     /// <comregister unregister="false">
-    ///     <fileset>         
-    ///         <includes name="an_ExeServer.exe"/>
-    ///         <includes name="a_TypeLibrary.tlb"/>
-    ///         <includes name="a_DllServer.dll"/>
-    ///         <includes name="an_OcxServer.ocx"/>
+    ///     <fileset>
+    ///         <include name="an_ExeServer.exe" />
+    ///         <include name="a_TypeLibrary.tlb" />
+    ///         <include name="a_DllServer.dll" />
+    ///         <include name="an_OcxServer.ocx" />
     ///     </fileset>
     /// </comregister>
-    /// ]]>
+    ///     ]]>
     ///   </code>
     /// </example>
     [TaskName("comregister")]
@@ -58,40 +71,41 @@ namespace NAnt.Contrib.Tasks {
         //-----------------------------------------------------------------------------
         // Typelib Imports
         //-----------------------------------------------------------------------------
-        [ DllImport("oleaut32.dll", EntryPoint = "LoadTypeLib",     
-        CharSet=System.Runtime.InteropServices.CharSet.Auto, SetLastError=true) ]
-        public static extern int LoadTypeLib ( string filename, [MarshalAs(UnmanagedType.IUnknown)]ref object pTypeLib );
+        [DllImport("oleaut32.dll", EntryPoint="LoadTypeLib", CharSet=System.Runtime.InteropServices.CharSet.Auto, SetLastError=true)]
+        private static extern int LoadTypeLib(string filename, [MarshalAs(UnmanagedType.IUnknown)] ref object pTypeLib);
 
-        [ DllImport("oleaut32.dll", EntryPoint = "RegisterTypeLib",
-        CharSet=System.Runtime.InteropServices.CharSet.Auto, SetLastError=true) ]
-        public static extern int RegisterTypeLib ( [MarshalAs(UnmanagedType.IUnknown)] object pTypeLib, string fullpath,  string helpdir );
+        [DllImport("oleaut32.dll", EntryPoint="RegisterTypeLib", CharSet=System.Runtime.InteropServices.CharSet.Auto, SetLastError=true)]
+        private static extern int RegisterTypeLib([MarshalAs(UnmanagedType.IUnknown)] object pTypeLib, string fullpath, string helpdir);
         
         //-----------------------------------------------------------------------------
         // Kernel 32 imports
         //-----------------------------------------------------------------------------
-        [ DllImport("Kernel32.dll", EntryPoint = "LoadLibrary",
-        CharSet=System.Runtime.InteropServices.CharSet.Unicode, SetLastError=true) ]
-        public static extern IntPtr LoadLibrary ( string fullpath );
+        [DllImport("Kernel32.dll", EntryPoint = "LoadLibrary", CharSet=System.Runtime.InteropServices.CharSet.Unicode, SetLastError=true)]
+        private static extern IntPtr LoadLibrary(string fullpath);
        
-        [ DllImport("Kernel32.dll",  SetLastError=true) ]
-        public static extern int FreeLibrary ( IntPtr hModule );            
+        [DllImport("Kernel32.dll",  SetLastError=true)]
+        private static extern int FreeLibrary(IntPtr hModule);
         
-        [ DllImport("Kernel32.dll", SetLastError=true) ]
-        public static extern IntPtr GetProcAddress ( IntPtr handle, string lpprocname  );
+        [DllImport("Kernel32.dll", SetLastError=true)]
+        private static extern IntPtr GetProcAddress(IntPtr handle, string lpprocname);
         
-        const int WIN32ERROR_ProcNotFound = 127;
-        const int WIN32ERROR_FileNotFound = 2;
+        private const int WIN32ERROR_ProcNotFound = 127;
+        private const int WIN32ERROR_FileNotFound = 2;
 
-        string _fileName = null; 
-        bool _unregister = false;
-        FileSet _fileset = new FileSet( );
+        private string _fileName = null; 
+        private bool _unregister = false;
+        private FileSet _fileset = new FileSet( );
         
-        /// <summary>The name of the file to register.  This is provided as an alternate to using the task's fileset.</summary>
+        /// <summary>
+        /// The name of the file to register. This is provided as an alternate 
+        /// to using the task's fileset.
+        /// </summary>
         [TaskAttribute("file")]
         public string FileName {
             get { return _fileName; }
             set { _fileName = value; }
-        }      
+        }
+
         /// <summary>Unregistering this time. ( /u paramater )Default is "false".</summary>
         [TaskAttribute("unregister")]
         [BooleanValidator()]
@@ -99,18 +113,22 @@ namespace NAnt.Contrib.Tasks {
             get { return _unregister; }
             set { _unregister = value; }
         }
-        
-        /// <summary>the set of files to register..</summary>
+
+        /// <summary>
+        /// The set of files to register.
+        /// </summary>
         [BuildElement("fileset")]
-        public FileSet COMRegisterFileSet { 
+        public FileSet COMRegisterFileSet {
             get { return _fileset; } 
             set { _fileset = value; }
         }
-        
+
+        #region Override implementation of Task
+
         protected override void ExecuteTask() {
             // add the filename to the file set
             if (FileName != null) {
-                try {                
+                try {
                     string path = Project.GetFullPath(FileName);
                     COMRegisterFileSet.Includes.Add(path);
                 }catch (Exception e) {
@@ -122,176 +140,187 @@ namespace NAnt.Contrib.Tasks {
             StringCollection fileNames = COMRegisterFileSet.FileNames;
           
             // display build log message
-            Log(Level.Info,  LogPrefix + "Registering {0} files", fileNames.Count);
+            Log(Level.Info, "Registering {0} files", fileNames.Count);
 
             // perform operation
             foreach (string path in fileNames) {
-                if ( ! File.Exists(path) ){
-                    throw new BuildException("File : " + path + " does not exist", Location );
+                if (!File.Exists(path)) {
+                    throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                        "File '{0}' does not exist", path), Location);
                 }
-                Log(Level.Info, LogPrefix + "Registering " + Path.GetFileName(path));
-                switch(Path.GetExtension(path))
-                {
-                    case ".tlb" :
+
+                Log(Level.Verbose, "Registering '{0}'.", path);
+
+                switch(Path.GetExtension(path).ToLower(CultureInfo.InvariantCulture)) {
+                    case ".tlb":
                         RegisterTypelib(path);
                         break;
-                    case ".exe" :
+                    case ".exe":
                         RegisterExeServer(path);
                         break;
-                    case ".dll" :
+                    case ".dll":
                     case ".ocx" :
                         RegisterDllServer(path);
                         break;
                     default:
                         RegisterDllServer(path);
                         break;
-                }               
+                }
             }
         }
-        
+
+        #endregion Override implementation of Task
+
+        #region Private Instance Methods
+
         /// <summary>
         /// Register an inproc COM server, usually a .dll or .ocx
         /// </summary>
         /// <param name="path"></param>
-        void RegisterDllServer(string path){
-           
+        private void RegisterDllServer(string path){
             IntPtr handle = new IntPtr();
-                  
-            handle = LoadLibrary( path );
+
+            handle = LoadLibrary(path);
             int error = Marshal.GetLastWin32Error();
-            if ( handle.ToInt32() == 0 && error != 0 ){
-                throw new BuildException("Error loading dll : " + path, Location );
+            if (handle.ToInt32() == 0 && error != 0){
+                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                    "Error loading dll '{0}'.", path), Location);
             }
             string entryPoint = "DllRegisterServer";
-            string action = "register";                                
-            if ( Unregister ) {
+            string action = "register";
+            if (Unregister) {
                 entryPoint = "DllUnregisterServer";
                 action = "unregister";
             }
-            IntPtr address = GetProcAddress( handle, entryPoint );   
+            IntPtr address = GetProcAddress(handle, entryPoint);
             error = Marshal.GetLastWin32Error();
             
-            if ( address.ToInt32() == 0 && error != 0 ){
-                string message = string.Format("Error {0}ing dll. {1} has no {2} function.", action, path, entryPoint ); 
+            if (address.ToInt32() == 0 && error != 0){
+                string message = string.Format(CultureInfo.InvariantCulture, 
+                    "Error {0}ing dll. '{1}' has no {2} function.", action, 
+                    path, entryPoint); 
                 FreeLibrary(handle);
-                throw new BuildException( message, Location );
+                throw new BuildException(message, Location);
             }
             // unload the library
             FreeLibrary(handle);
             error = Marshal.GetLastWin32Error();
-            try {     
+
+            try {
                 // Do the actual registration here
-                DynamicPInvoke.DynamicDllFuncInvoke(path, entryPoint );
-            }
-            catch(Exception e){
-                string message = "Error during registration " + e.Message;
-                throw new BuildException(message, Location);
-            }  
-            finally{
-                if( handle.ToInt32() != 0){
+                DynamicPInvoke.DynamicDllFuncInvoke(path, entryPoint);
+            } catch(Exception ex) {
+                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                    "Error while registering '{0}'", path), Location, ex);
+            } finally {
+                if (handle.ToInt32() != 0) {
                     // need to call FreeLibrary a second time as the DynPInvoke added an extra ref
-                    FreeLibrary(handle);                   
+                    FreeLibrary(handle);
                 }
-            }                                                
-        }                                                      
-        
+            }
+        }
+
         /// <summary>
         /// Register a COM type library
         /// </summary>
         /// <param name="path"></param>
-        void RegisterTypelib(string path){
-            object Typelib = new object();    
+        private void RegisterTypelib(string path) {
+            object Typelib = new object();
             int error = 0;
 
             // Load typelib
-            LoadTypeLib(path, ref Typelib );
+            LoadTypeLib(path, ref Typelib);
             error = Marshal.GetLastWin32Error();
 
-            if (error != 0 || (Typelib == null) ){
-                throw new BuildException("Error loading typelib " + path, Location );
+            if (error != 0 || Typelib == null) {
+                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                    "Error loading typelib '{0}'.", path), Location);
             }
+
             if (Unregister) {
                 // TODO need to get access to ITypeLib interface from c#
-            }
-            else {
-            
+                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                    "Error unregistering '{0}'. Unregistration of type libraries"
+                    + " is not supported at this time.", path), Location);
+            } else {
                 //Perform registration
-                RegisterTypeLib( Typelib, path, null);
+                RegisterTypeLib(Typelib, path, null);
                 error = Marshal.GetLastWin32Error();
 
-                if (error != 0){
-                    throw new BuildException("Error registering typelib " + path, Location );
+                if (error != 0) {
+                    throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                        "Error registering typelib '{0}'.", path), Location);
                 }
             }
         } 
 
         /// <summary>
-        /// Register exe servers
+        /// Register exe servers.
         /// </summary>
         /// <param name="path"></param>
-        void RegisterExeServer(string path){
-            
+        private void RegisterExeServer(string path){
             // Create process with the /regserver flag
             Process process = new Process();
-                        
+
             process.StartInfo.FileName = path;
-            if ( this.Unregister ){
+            if (this.Unregister) {
                 process.StartInfo.Arguments = path + " /unregserver";
-            }
-            else {
+            } else {
                 process.StartInfo.Arguments = path + " /regserver";
             }
             
             process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.RedirectStandardError = true;           
+            process.StartInfo.RedirectStandardError = true;
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.WorkingDirectory = Path.GetDirectoryName(path);
             
-            try{            
+            try {
                 process.Start();
-            }
-            catch (Exception e){
-                throw new BuildException(" Error Registering "  + path + e.Message, Location );
+            } catch (Exception ex) {
+                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                    "Error registering '{0}'.", path), Location, ex);
             }
             
             bool exited = process.WaitForExit(5000);
             
             // kill if it doesn't terminate after 5s
-            if (!exited || ! process.HasExited){
+            if (!exited || !process.HasExited){
                 process.Kill();
-                throw new BuildException(" Error "  + path + " is not a COM server", Location );
+                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                    "'{0}' is not a COM server.", path), Location);
             }
             
             // check for error output. COM exe servers should not ouput to stdio on register
             StreamReader stdErr = process.StandardError;
             string errors = stdErr.ReadToEnd();
             if (errors.Length > 0) {
-                throw new BuildException(" Error "  + path + " doesn't support the /regserver option", Location );
+                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                    "'{0}' doesn't support the /regserver option.", path), Location);
             }
 
             StreamReader stdOut = process.StandardOutput;
             string output = stdOut.ReadToEnd();
             if (output.Length > 0) {
-                throw new BuildException(" Error "  + path + " doesn't support the /regserver option", Location );
+                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                    "'{0}' doesn't support the /regserver option.", path), Location);
             }
         }
-              
-        
+
+        #endregion Private Instance Methods
+
         /// <summary>
-        /// Helper class to synamically build an assembly with the correct P
-        /// Invoke signature
+        /// Helper class to synamically build an assembly with the correct 
+        /// P/Invoke signature
         /// </summary>
         private class DynamicPInvoke {
-    
             /// <summary>
-            /// register a given dll path
+            /// Register a given dll.
             /// </summary>
             /// <param name="dll"></param>
             /// <param name="entrypoint"></param>
             /// <returns></returns>
-            public static object DynamicDllFuncInvoke( string dll, string entrypoint ) {
-                
-                Type returnType = typeof(int);           
+            public static object DynamicDllFuncInvoke(string dll, string entrypoint) {
+                Type returnType = typeof(int);
                 Type [] parameterTypes = null;
                 object[] parameterValues = null;
                 string entryPoint = entrypoint;
@@ -300,18 +329,18 @@ namespace NAnt.Contrib.Tasks {
                 AssemblyName asmName = new AssemblyName();
                 asmName.Name = "dllRegAssembly";
                 AssemblyBuilder dynamicAsm = 
-                AppDomain.CurrentDomain.DefineDynamicAssembly(asmName, 
-                AssemblyBuilderAccess.Run);
-                ModuleBuilder dynamicMod = 
-                dynamicAsm.DefineDynamicModule("tempModule");
+                AppDomain.CurrentDomain.DefineDynamicAssembly(asmName,
+                    AssemblyBuilderAccess.Run);
+                ModuleBuilder dynamicMod = dynamicAsm.DefineDynamicModule(
+                    "tempModule");
 
                 // Dynamically construct a global PInvoke signature 
                 // using the input information
                 MethodBuilder dynamicMethod = dynamicMod.DefinePInvokeMethod(
-                entryPoint, dll, MethodAttributes.Static | MethodAttributes.Public
-                | MethodAttributes.PinvokeImpl, CallingConventions.Standard,
-                returnType, parameterTypes, CallingConvention.Winapi, 
-                CharSet.Ansi);
+                    entryPoint, dll, MethodAttributes.Static | MethodAttributes.Public
+                    | MethodAttributes.PinvokeImpl, CallingConventions.Standard,
+                    returnType, parameterTypes, CallingConvention.Winapi, 
+                    CharSet.Ansi);
 
                 // This global method is now complete
                 dynamicMod.CreateGlobalFunctions();
@@ -323,5 +352,5 @@ namespace NAnt.Contrib.Tasks {
                 return mi.Invoke(null, parameterValues);
             }
         }
-    }        
+    }
 }

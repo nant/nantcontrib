@@ -48,8 +48,8 @@ namespace NAnt.Contrib.Tasks {
 
         #region Private Instance Fields
 
-        private string 	_virtualDirectory;
-        private int	_serverPort = 80;
+        private string _virtualDirectory;
+        private int _serverPort = 80;
         private string _serverName = "localhost";
         private string _serverInstance = "1";
         private IISVersion _iisVersion = IISVersion.None;
@@ -116,7 +116,7 @@ namespace NAnt.Contrib.Tasks {
         protected IISVersion Version {
             get {
                 if (_iisVersion == IISVersion.None) {
-                    Version	osVersion = Environment.OSVersion.Version;
+                    Version osVersion = Environment.OSVersion.Version;
 
                     if (osVersion.Major < 5) {
                         // Win NT 4 kernel -> IIS4
@@ -739,8 +739,8 @@ namespace NAnt.Contrib.Tasks {
 
         protected override void ExecuteTask() {
             try {
-                Log(Level.Info, LogPrefix + "Creating/modifying virtual directory '{0}' on '{1}'.", 
-                    this.VirtualDirectory, this.Server);
+                Log(Level.Info, "Creating/modifying virtual directory '{0}' on"
+                    + " '{1}'.", this.VirtualDirectory, this.Server);
 
                 // ensure IIS is available on specified host and port
                 this.DetermineIISSettings();
@@ -883,7 +883,7 @@ namespace NAnt.Contrib.Tasks {
     public class DeleteIISDirTask : IISTaskBase {
         protected override void ExecuteTask() {
             try {
-                Log(Level.Info, LogPrefix + "Deleting virtual directory '{0}' on '{1}'.", 
+                Log(Level.Info, "Deleting virtual directory '{0}' on '{1}'.", 
                     this.VirtualDirectory, this.Server);
 
                 // ensure IIS is available on specified host and port
@@ -923,8 +923,8 @@ namespace NAnt.Contrib.Tasks {
     public class IISDirInfoTask : IISTaskBase {
         protected override void ExecuteTask() {
             try {
-                Log(Level.Info, LogPrefix + "Retrieving settings of virtual directory '{0}' on '{1}'.", 
-                    this.VirtualDirectory, this.Server);
+                Log(Level.Info, "Retrieving settings of virtual directory '{0}'"
+                    + " on '{1}'.", this.VirtualDirectory, this.Server);
 
                 // ensure IIS is available on specified host and port
                 this.DetermineIISSettings();
@@ -941,13 +941,13 @@ namespace NAnt.Contrib.Tasks {
                     object propertyValue = newVirDir.Properties[propertyName].Value;
 
                     if (propertyValue.GetType().IsArray) {
-                        Log(Level.Info, LogPrefix + '\t' + propertyName + ":");
+                        Log(Level.Info, '\t' + propertyName + ":");
                         Array propertyValues = (Array) propertyValue;
                         foreach (object value in propertyValues) {
-                            Log(Level.Info, LogPrefix + "\t\t" + value.ToString());
+                            Log(Level.Info, "\t\t" + value.ToString());
                         }
                     } else {
-                        Log(Level.Info, LogPrefix + '\t' + propertyName + ": " 
+                        Log(Level.Info, '\t' + propertyName + ": " 
                             + newVirDir.Properties[propertyName].Value.ToString());
                     }
                 }

@@ -79,14 +79,13 @@ namespace NAnt.Contrib.Tasks {
     public class RegasmTask : ExternalProgramBase {
         #region Private Instance Fields
 
-        private string _assemblyName = null;
-        private string _regfile = null;
-        private string _typelib = null;
-        private bool _codebase = false;
-        private bool _silent = false;
-        private bool _exporttypelib = false;
-        private bool _unregister = false;
-        private bool _registered = false;
+        private FileInfo _assemblyFile;
+        private FileInfo _regfile;
+        private FileInfo _typelib;
+        private bool _codebase;
+        private bool _exporttypelib;
+        private bool _unregister;
+        private bool _registered;
         private FileSet _fileset = new FileSet();
 
         #endregion Private Instance Fields
@@ -98,9 +97,9 @@ namespace NAnt.Contrib.Tasks {
        /// to using the task's fileset.
        /// </summary>
         [TaskAttribute("assembly")]
-        public string AssemblyName {
-            get { return _assemblyName; }
-            set { _assemblyName = value; }
+        public FileInfo AssemblyFile {
+            get { return _assemblyFile; }
+            set { _assemblyFile = value; }
         }
 
         /// <summary>
@@ -109,7 +108,7 @@ namespace NAnt.Contrib.Tasks {
         /// collated into this file.
         /// </summary>
         [TaskAttribute("regfile")]
-        public string RegistryFile {
+        public FileInfo RegistryFile {
             get { return _regfile; }
             set { _regfile = value; }
         }
@@ -122,16 +121,6 @@ namespace NAnt.Contrib.Tasks {
         public bool CodeBase {
             get { return _codebase; }
             set { _codebase = value; }
-        }
-
-        /// <summary>
-        /// Silent mode. Prevents displaying of success messages. The default 
-        /// is <see langword="false" />.
-        /// </summary>
-        [TaskAttribute("silent")]
-        public bool Silent {
-            get { return _silent; }
-            set { _silent = value; }
         }
 
         /// <summary>
@@ -161,7 +150,7 @@ namespace NAnt.Contrib.Tasks {
         /// This attribute is ignored when a fileset is specified.
         /// </summary>
         [TaskAttribute("typelib")]
-        public string TypeLib {
+        public FileInfo TypeLib {
             get { return _typelib; }
             set { _typelib = value; }
         }
@@ -190,44 +179,45 @@ namespace NAnt.Contrib.Tasks {
         public override string ProgramArguments {
             get {
                 string args = "";
-                string assemblyName = AssemblyName;
+
                 if (Unregister) {
                     args += " /unregister ";
-                }                
+                }
                 if (ExportTypelib && TypeLib != null) {
                     args += string.Format(CultureInfo.InvariantCulture,
-                        " /tlb:\"{0}\"", TypeLib);
+                        " /tlb:\"{0}\"", TypeLib.FullName);
                 }
                 if (CodeBase) {
                     args += " /codebase";
                 }
                 if (RegistryFile != null) {
                     args += string.Format(CultureInfo.InvariantCulture,
-                        " /regfile:\"{0}\"", RegistryFile);
+                        " /regfile:\"{0}\"", RegistryFile.FullName);
                 }
                 if (Registered) {
                      args += " /registered";
                 }
                 if (Verbose) {
                      args += " /verbose";
-                }
-                if (Silent) {
+                } else {
                      args += " /silent";
                 }
                 args += " /nologo";
 
-                args += " \"" + assemblyName +"\"";
+                args += " \"" + AssemblyFile.FullName + "\"";
                 return args;
             }
         }
 
         protected override void ExecuteTask() {
-            // If the user wants to see the actual command the -verbose flag
-            // will cause ExternalProgramBase to display the actual call.
-            if (AssemblyName != null) {
-                Log(Level.Info, LogPrefix + "{0} {1} for COM Interop", Unregister ? "UnRegistering" : "Registering", AssemblyName);
+            if (AssemblyFile != null) {
+                Log(Level.Info, "{0} '{1}' for COM Interop", 
+                    Unregister ? "UnRegistering" : "Registering", 
+                    AssemblyFile.FullName);
+
                 if (ExportTypelib && TypeLib == null) {
-                    TypeLib = AssemblyName.Replace(Path.GetExtension(AssemblyName), ".tlb");
+                    TypeLib = new FileInfo(AssemblyFile.FullName.Replace(
+                        Path.GetExtension(AssemblyFile.FullName), ".tlb"));
                 }
                 base.ExecuteTask();
             } else { // Loop thru fileset 
@@ -235,49 +225,47 @@ namespace NAnt.Contrib.Tasks {
                 StringCollection fileNames = RegasmFileSet.FileNames;
 
                 // display build log message
-                Log(Level.Info, LogPrefix + "{0} {1} files for COM interop", Unregister ? "UnRegistering" : "Registering", fileNames.Count);
+                Log(Level.Info, "{0} {1} files for COM interop", 
+                    Unregister ? "UnRegistering" : "Registering", 
+                    fileNames.Count);
                 
-                string registryFile = RegistryFile;
+                FileInfo registryFile = RegistryFile;
 
                 // perform operation
                 foreach (string path in fileNames) {
-                    AssemblyName = path;
+                    AssemblyFile = new FileInfo(path);
                     if (RegistryFile != null) {
-                        string regFile = path.Replace( Path.GetExtension(path), ".reg");
-                        RegistryFile = regFile;
+                        RegistryFile = new FileInfo(path.Replace(
+                            Path.GetExtension(path), ".reg"));
                     }
                     if (ExportTypelib) {
-                        string typelibFile = path.Replace(Path.GetExtension(path), ".tlb");
-                        TypeLib = typelibFile;
+                        TypeLib = new FileInfo(path.Replace(
+                            Path.GetExtension(path), ".tlb"));
                     }
-                    // Ignore certain flags if in multifile mode
-                    Log(Level.Verbose, LogPrefix + "{0} {1} for COM Interop", Unregister ? "UnRegistering" : "Registering", Path.GetFileName(path));
+                    Log(Level.Verbose, "{0} '{1}' for COM Interop", 
+                        Unregister ? "UnRegistering" : "Registering", 
+                        path);
                     base.ExecuteTask();
                 }
 
                 // Collate registry files
                 if (registryFile != null) {
-                    // get full path relative to
-                    string fullRegfilePath = Project.GetFullPath(registryFile);
-                    System.IO.StreamWriter writer = new StreamWriter(registryFile);
                     try {
-                        foreach (string path in fileNames) {
-                            string regFile = path.Replace(Path.GetExtension(path), ".reg");
-                            StreamReader reader = new StreamReader(regFile);
-                            string data = reader.ReadToEnd();
-                            writer.Write(data);
-                            // close reader
-                            reader.Close();
-                            // clean up the registry file once its read
-                            File.Delete(regFile); 
+                        using (StreamWriter writer = new StreamWriter(registryFile.FullName)) {
+                            foreach (string path in fileNames) {
+                                string regFile = path.Replace(Path.GetExtension(path), ".reg");
+                                StreamReader reader = new StreamReader(regFile);
+                                string data = reader.ReadToEnd();
+                                writer.Write(data);
+                                // close reader
+                                reader.Close();
+                                // clean up the registry file once its read
+                                File.Delete(regFile); 
+                            }
                         }
                     } catch (Exception ex) {
                         throw new BuildException("Error collating .reg files.", 
                             Location, ex);
-                    } finally {
-                        if (writer != null) {
-                            writer.Close();
-                        }
                     }
                 }
             }

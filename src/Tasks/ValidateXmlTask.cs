@@ -99,7 +99,7 @@ namespace NAnt.Contrib.Tasks {
                 _numErrors = 0;
 
                 // output name of xml file that will be validated
-                Log(Level.Info, LogPrefix + "Validating '{0}'.", file);
+                Log(Level.Info, "Validating '{0}'.", file);
 
                 try {
                     ValidateFile(file, schemaCollection);
@@ -109,10 +109,10 @@ namespace NAnt.Contrib.Tasks {
                 }
 
                 if (_numErrors == 0) {
-                    Log(Level.Info, LogPrefix + "Document is valid.");
+                    Log(Level.Info, "Document is valid.");
                 } else {
                     if (!FailOnError) {
-                        Log(Level.Info, LogPrefix + "{0} validation errors in document.", _numErrors);
+                        Log(Level.Info, "{0} validation errors in document.", _numErrors);
                     } else  {
                         throw new BuildException(string.Format(CultureInfo.InvariantCulture,
                             "XML validation failed for document '{0}'.", file), Location);
@@ -152,11 +152,11 @@ namespace NAnt.Contrib.Tasks {
                     // increment error count
                     _numErrors++;
                     // output error message
-                    Log(Level.Info, LogPrefix + "Validation error: {0}", args.Message);
+                    Log(Level.Info, "Validation error: {0}", args.Message);
                     break;
                 case XmlSeverityType.Warning:
                     // output error message
-                    Log(Level.Info, LogPrefix + "Validation warning: {0}", args.Message);
+                    Log(Level.Info, "Validation warning: {0}", args.Message);
                     break;
             }
         }

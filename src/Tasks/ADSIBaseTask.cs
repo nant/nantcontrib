@@ -17,36 +17,41 @@
 //
 // Gordon Weakliem (gordon.weakliem@galileo.com)
 // 
+
 using System;
 using System.DirectoryServices; 
+
 using NAnt.Core;
 using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks {
-  /// <summary>
-  /// Base NAnt task for working with ADSI.  This task contains only the path of the ADSI
-  /// object that you want to work with.
-  /// </summary>
-  public abstract class ADSIBaseTask : Task
-  {
-    public ADSIBaseTask()
-    {
-      _path = null;
-    }
-
-    private string _path;
     /// <summary>
-    /// The ADSI path of the location where we want to work with.
+    /// Base NAnt task for working with ADSI.  This task contains only the path of the ADSI
+    /// object that you want to work with.
     /// </summary>
-    [TaskAttribute("path", Required=true)]
-    public String Path
-    {
-      get { return _path; }
-      set { _path = value; }
-    }
+    public abstract class ADSIBaseTask : Task {
+        #region Private Instance Fields
 
-    // TODO: not at all tested at this point!
+        private string _path;
+
+        #endregion Private Instance Fields
+
+        #region Public Instance Properties
+
+        /// <summary>
+        /// The ADSI path of the location where we want to work with.
+        /// </summary>
+        [TaskAttribute("path", Required=true)]
+        [StringValidator(AllowEmpty=false)]
+        public String Path {
+            get { return _path; }
+            set { _path = value; }
+        }
+
+        #endregion Public Instance Properties
+
+        // TODO: not at all tested at this point!
 #if false
     private string _host = "LocalHost";
     /// <summary>
@@ -93,6 +98,5 @@ namespace NAnt.Contrib.Tasks {
       set { _password = value; }
     }
 #endif
-
-  }
+    }
 }

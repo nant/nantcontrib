@@ -30,46 +30,50 @@ using NAnt.Core;
 using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
 
-namespace NAnt.Contrib.Tasks
-{
+namespace NAnt.Contrib.Tasks {
     /// <summary>Registers a Microsoft HTML Help 2.0 Collection.</summary>
     /// <example>
     ///   <para>Register a help namespace.</para>
     ///   <code><![CDATA[<hxreg namespace="MyProduct.MyHelp" title="MyProductHelp" collection="MyHelp.HxC" helpfile="MyHelp.HxS"/>]]></code>
     /// </example>
     [TaskName("hxreg")]
-    public class HxRegTask : ExternalProgramBase
-    {
+    public class HxRegTask : ExternalProgramBase {
+        #region Private Instance Fields
+
         private string _args;
-        string _namespace = null;
-        string _title = null;
-        string _collection = null;
-        string _description = null;
-        string _helpfile = null;
-        string _index = null;
-        string _searchfile = null;
-        string _attrindex = null;
-        string _language = null;
-        string _alias = null;
-        string _commandfile = null;
-        bool _unregister = false;
+        private string _namespace;
+        private string _title;
+        private string _collection;
+        private string _description;
+        private FileInfo _helpfile;
+        private string _index;
+        private string _searchfile;
+        private string _attrindex;
+        private string _language;
+        private string _alias;
+        private string _commandfile;
+        private bool _unregister;
+
+        #endregion Private Instance Fields
+
+        #region Public Instance Properties
 
         /// <summary>Help collection namespace.</summary>
         [TaskAttribute("namespace")]
         public string Namespace {
             get { return _namespace; }
-            set { _namespace = value; } 
-        }      
+            set { _namespace = value; }
+        }
 
         /// <summary>Title identifier.</summary>
-        [TaskAttribute("title")]        
+        [TaskAttribute("title")]
         public string Title {
             get { return _title; }
             set { _title = value; }
         }
 
         /// <summary>Collection (.HxC) filename. </summary>
-        [TaskAttribute("collection")]       
+        [TaskAttribute("collection")]
         public string Collection {
             get { return _collection; }
             set { _collection = value; }
@@ -83,28 +87,28 @@ namespace NAnt.Contrib.Tasks
         }
 
         /// <summary>Help (.HxS) filename.</summary>
-        [TaskAttribute("helpfile")] 
-        public string HelpFile {
+        [TaskAttribute("helpfile", Required=true)] 
+        public FileInfo HelpFile {
             get { return _helpfile; }
             set { _helpfile = value; }
         }
 
         /// <summary>Index (.HxI) filename.</summary>
-        [TaskAttribute("index")]       
+        [TaskAttribute("index")]
         public string Index {
             get { return _index; }
             set { _index = value; }
         }
 
         /// <summary>Combined full-text search (.HxQ) filename.</summary>
-        [TaskAttribute("searchfile")]       
+        [TaskAttribute("searchfile")]
         public string SearchFile {
             get { return _searchfile; }
             set { _searchfile = value; }
         }
 
         /// <summary>Combined attribute index (.HxR) filename.</summary>
-        [TaskAttribute("attrindex")]       
+        [TaskAttribute("attrindex")]
         public string AttrIndex {
             get { return _attrindex; }
             set { _attrindex = value; }
@@ -134,37 +138,32 @@ namespace NAnt.Contrib.Tasks
         /// <summary>Unregister a namespace, title, or alias.</summary>
         [TaskAttribute("unregister")] 
         [BooleanValidator()]
-        public bool UnRegister 
-        {
+        public bool UnRegister {
             get { return _unregister; }
             set { _unregister = value; }
         }
-        
 
-        public override string ProgramFileName
-        {
-            get
-            {
+        #endregion Public Instance Properties
+
+        #region Override implementation of ExternalProgramBase
+
+        public override string ProgramFileName {
+            get {
                 RegistryKey helpPackageKey = Registry.LocalMachine.OpenSubKey(
                     @"Software\Microsoft\VisualStudio\7.0\" + 
                     @"Packages\{7D57F111-B9F3-11d2-8EE0-00C04F5E0C38}",
                     false);
 
-                if (helpPackageKey != null)
-                {
+                if (helpPackageKey != null) {
                     string helpPackageVal = (string)helpPackageKey.GetValue("InprocServer32", null);
-                    if (helpPackageVal != null)
-                    {
+                    if (helpPackageVal != null) {
                         string helpPackageDir = Path.GetDirectoryName(helpPackageVal);
-                        if (helpPackageDir != null)
-                        {
-                            if (Directory.Exists(helpPackageDir))
-                            {
+                        if (helpPackageDir != null) {
+                            if (Directory.Exists(helpPackageDir)) {
                                 DirectoryInfo parentDir = Directory.GetParent(helpPackageDir);
-                                if (parentDir != null)
-                                {
+                                if (parentDir != null) {
                                     helpPackageKey.Close();
-                                    return "\"" + parentDir.FullName + "\\hxreg.exe\"";
+                                    return Path.Combine(parentDir.FullName, "hxreg.exe");
                                 }
                             }
                         }
@@ -172,125 +171,96 @@ namespace NAnt.Contrib.Tasks
                     helpPackageKey.Close();
                 }
 
-                throw new Exception(
+                throw new BuildException(
                     "Unable to locate installation directory of " + 
-                    "Microsoft Help 2.0 SDK in the registry.");
+                    "Microsoft Help 2.0 SDK in the registry.", Location);
             }
         }
 
         /// <summary>
         /// Arguments of program to execute
         /// </summary>
-        public override string ProgramArguments 
-        {
-            get
-            {
+        public override string ProgramArguments {
+            get {
                 return _args;
             }
         }
 
-        protected override void ExecuteTask()
-        {
-            // If the user wants to see the actual command the -verbose flag
-            // will cause ExternalProgramBase to display the actual call.
-            if ( HelpFile != null ) 
-            {
-                Log(Level.Info, LogPrefix + "{0} HTML Help 2.0 File {1}", 
-                    UnRegister ? "UnRegistering" : "Registering", HelpFile);
-            }
-            else 
-            {
-                Log(Level.Error, "ERROR: Must specify file to be registered or unregistered.");
-                return;
-            }
+        protected override void ExecuteTask() {
+            Log(Level.Info, "{0} HTML Help 2.0 File '{1}'.", 
+                UnRegister ? "UnRegistering" : "Registering", HelpFile.FullName);
 
-            try
-            {
-                bool firstArg = true;
-
+            try {
                 StringBuilder arguments = new StringBuilder();
 
-                if (UnRegister)
-                {
-                    if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
+                if (UnRegister) {
                     arguments.Append("-r ");
                 }
-
-                if (Namespace != null)
-                {
-                    if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
+                if (Namespace != null) {
                     arguments.Append("-n ");
-                    arguments.Append(Namespace);
+                    arguments.Append('\"' + Namespace + '\"');
+                    arguments.Append(" ");
                 }
-                if (Title != null)
-                {
-                    if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
+                if (Title != null) {
                     arguments.Append("-i ");
-                    arguments.Append(Title);
+                    arguments.Append('\"' + Title + '\"');
+                    arguments.Append(" ");
                 }
-                if (Collection != null)
-                {
-                    if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
+                if (Collection != null) {
                     arguments.Append("-c ");
-                    arguments.Append(Collection);
+                    arguments.Append('\"' + Collection + '\"');
+                    arguments.Append(" ");
                 }
-                if (Description != null)
-                {
-                    if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
+                if (Description != null) {
                     arguments.Append("-d ");
-                    arguments.Append(Description);
+                    arguments.Append('\"' + Description + '\"');
+                    arguments.Append(" ");
                 }
-                if (HelpFile != null)
-                {
-                    if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
+                if (HelpFile != null) {
                     arguments.Append("-s ");
-                    arguments.Append(HelpFile);
+                    arguments.Append('\"' + HelpFile.FullName + '\"');
+                    arguments.Append(" ");
                 }
-                if (Index != null)
-                {
-                    if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
+                if (Index != null) {
                     arguments.Append("-x ");
-                    arguments.Append(Index);
+                    arguments.Append('\"' + Index + '\"');
+                    arguments.Append(" ");
                 }
-                if (SearchFile != null)
-                {
-                    if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
+                if (SearchFile != null) {
                     arguments.Append("-q ");
-                    arguments.Append(SearchFile);
+                    arguments.Append('\"' + SearchFile + '\"');
+                    arguments.Append(" ");
                 }
-                if (AttrIndex != null)
-                {
-                    if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
+                if (AttrIndex != null) {
                     arguments.Append("-t ");
-                    arguments.Append(AttrIndex);
+                    arguments.Append('\"' + AttrIndex + '\"');
+                    arguments.Append(" ");
                 }
-                if (Language != null)
-                {
-                    if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
+                if (Language != null) {
                     arguments.Append("-l ");
-                    arguments.Append(Language);
+                    arguments.Append('\"' + Language + '\"');
+                    arguments.Append(" ");
                 }
-                if (Alias != null)
-                {
-                    if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
+                if (Alias != null) {
                     arguments.Append("-a ");
-                    arguments.Append(Alias);
+                    arguments.Append('\"' + Alias + '\"');
+                    arguments.Append(" ");
                 }
-                if (CommandFile != null)
-                {
-                    if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
+                if (CommandFile != null) {
                     arguments.Append("-f ");
-                    arguments.Append(CommandFile);
+                    arguments.Append('\"' + CommandFile + '\"');
                 }
 
                 _args = arguments.ToString();
 
                 base.ExecuteTask();
-            }
-            catch (Exception e)
-            {
-                throw new BuildException(LogPrefix + "ERROR: " + e);
+            } catch (Exception ex) {
+                throw new BuildException(
+                    "Microsoft HTML Help 2.0 Collection could not be registered.", 
+                    Location, ex);
             }
         }
+
+        #endregion Override implementation of ExternalProgramBase
     }
 }

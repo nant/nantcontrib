@@ -137,7 +137,7 @@ namespace NAnt.Contrib.Tasks {
         /// Compiles the Visual Basic project or project group.
         /// </summary>
         protected override void ExecuteTask() { 
-            Log(Level.Info, LogPrefix + "Building project '{0}'.", ProjectFile.FullName);
+            Log(Level.Info, "Building project '{0}'.", ProjectFile.FullName);
             if (NeedsCompiling()) {
                 //Using a stringbuilder vs. StreamWriter since this program will 
                 // not accept response files.
@@ -259,26 +259,27 @@ namespace NAnt.Contrib.Tasks {
 
             FileInfo outputFileInfo = new FileInfo(OutDir != null ? Path.Combine(OutDir.FullName, outputFile) : outputFile);
             if (!outputFileInfo.Exists) {
-                Log(Level.Info, LogPrefix + "Output file '{0}' does not exist, recompiling.", outputFileInfo.FullName);
+                Log(Level.Info, "Output file '{0}' does not exist, recompiling.", 
+                    outputFileInfo.FullName);
                 return true;
             }
             // look for a changed project file.
             string fileName = FileSet.FindMoreRecentLastWriteTime( projectFile, outputFileInfo.LastWriteTime);
             if (fileName != null) {
-                Log(Level.Info, LogPrefix + "{0} is out of date, recompiling.", fileName);
+                Log(Level.Info, "{0} is out of date, recompiling.", fileName);
                 return true;
             }
             // check for a changed source file
             fileName = FileSet.FindMoreRecentLastWriteTime(sources.FileNames, outputFileInfo.LastWriteTime);
             if (fileName != null) {
-                Log(Level.Info, LogPrefix + "{0} is out of date, recompiling.", fileName);
+                Log(Level.Info, "{0} is out of date, recompiling.", fileName);
                 return true;
             }
             // check for a changed reference 
             if (CheckReferences) {
                 fileName = FileSet.FindMoreRecentLastWriteTime(references.FileNames, outputFileInfo.LastWriteTime);
                 if (fileName != null) {
-                    Log(Level.Info, LogPrefix + "{0} is out of date, recompiling.", fileName);
+                    Log(Level.Info, "{0} is out of date, recompiling.", fileName);
                     return true;
                 }
             }

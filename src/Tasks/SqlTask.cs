@@ -313,7 +313,7 @@ namespace NAnt.Contrib.Tasks {
                         "Cannot open output file '{0}'.", Output), Location, ex);
                 }
             } else {
-                _outputWriter = new LogWriter(this, Level.Info, this.LogPrefix, CultureInfo.InvariantCulture);
+                _outputWriter = new LogWriter(this, Level.Info, CultureInfo.InvariantCulture);
             }
 
             if (Verbose) {
@@ -366,8 +366,8 @@ namespace NAnt.Contrib.Tasks {
                 // only write messages to the build log if the OutputWriter is not
                 // writing to the build log too
                 if (Output != null) {
-                    Log(Level.Verbose, LogPrefix + "SQL Statement:");
-                    Log(Level.Verbose, LogPrefix + statement);
+                    Log(Level.Verbose, "SQL Statement:");
+                    Log(Level.Verbose, statement);
                 }
 
                 if (this.Verbose) {
@@ -381,8 +381,8 @@ namespace NAnt.Contrib.Tasks {
                 try {
                     results = sqlHelper.Execute(statement, CommandTimeout);
                 } catch (Exception ex) {
-                    Log(Level.Error, LogPrefix + "SQL Error: " + ex.Message);
-                    Log(Level.Error, LogPrefix + "Statement: " + statement);
+                    Log(Level.Error, "SQL Error: " + ex.Message);
+                    Log(Level.Error, "Statement: " + statement);
                 } finally {
                     ProcessResults(results, OutputWriter);
                 }
@@ -474,7 +474,7 @@ namespace NAnt.Contrib.Tasks {
             }
 
             if (results.RecordsAffected >= 0) {
-                Log(Level.Info, LogPrefix + "{0} records affected", results.RecordsAffected);
+                Log(Level.Info, "{0} records affected", results.RecordsAffected);
             }
         }
 

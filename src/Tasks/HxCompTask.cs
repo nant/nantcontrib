@@ -44,18 +44,23 @@ namespace NAnt.Contrib.Tasks {
     /// </example>
     [TaskName("hxcomp")]
     public class HxCompTask : ExternalProgramBase {
+        #region Private Instance Fields
+
         private string _args;
-        private string _contents = null;
-        private string _logfile = null;
-        private string _unicodelogfile = null;
-        private string _projectroot = null;
-        private string _outputFile = null;
-        private bool _noinformation = false;
-        private bool _noerrors = false;
-        private bool _nowarnings = false;
-        private bool _quiet = false;
-        private string _uncompilefile = null;
-        private string _uncompileoutputdir = null;
+        private string _contents;
+        private string _logfile;
+        private string _unicodelogfile;
+        private string _projectroot;
+        private string _outputFile;
+        private bool _noinformation;
+        private bool _noerrors;
+        private bool _nowarnings;
+        private string _uncompilefile;
+        private string _uncompileoutputdir;
+
+        #endregion Private Instance Fields
+
+        #region Public Instance Properties
 
         /// <summary>
         /// The name of the contents (.HxC) file.
@@ -63,13 +68,13 @@ namespace NAnt.Contrib.Tasks {
         [TaskAttribute("contents")]
         public string Contents {
             get { return _contents; }
-            set { _contents = value; } 
-        }      
+            set { _contents = value; }
+        }
 
         /// <summary>
         /// ANSI/DBCS log filename.
         /// </summary>
-        [TaskAttribute("logfile")]        
+        [TaskAttribute("logfile")]
         public string LogFile {
             get { return _logfile; }
             set { _logfile = value; }
@@ -78,7 +83,7 @@ namespace NAnt.Contrib.Tasks {
         /// <summary>
         /// Unicode log filename.
         /// </summary>
-        [TaskAttribute("unicodelogfile")]       
+        [TaskAttribute("unicodelogfile")]
         public string UnicodeLogFile {
             get { return _unicodelogfile; }
             set { _unicodelogfile = value; }
@@ -105,7 +110,7 @@ namespace NAnt.Contrib.Tasks {
         /// <summary>
         /// Generate no informational messages.
         /// </summary>
-        [TaskAttribute("noinformation")]       
+        [TaskAttribute("noinformation")]
         [BooleanValidator()]
         public bool NoInformation {
             get { return _noinformation; }
@@ -115,7 +120,7 @@ namespace NAnt.Contrib.Tasks {
         /// <summary>
         /// Generate no error messages.
         /// </summary>
-        [TaskAttribute("noerrors")]       
+        [TaskAttribute("noerrors")]
         [BooleanValidator()]
         public bool NoErrors {
             get { return _noerrors; }
@@ -125,23 +130,13 @@ namespace NAnt.Contrib.Tasks {
         /// <summary>
         /// Generate no warning messages.
         /// </summary>
-        [TaskAttribute("nowarnings")]       
+        [TaskAttribute("nowarnings")]
         [BooleanValidator()]
         public bool NoWarnings {
             get { return _nowarnings; }
             set { _nowarnings = value; }
         }
         
-        /// <summary>
-        /// Quiet mode.
-        /// </summary>
-        [TaskAttribute("quiet")]
-        [BooleanValidator()]
-        public bool Quiet {
-            get { return _quiet; }
-            set { _quiet = value; }
-        }
-
         /// <summary>
         /// File to be decompiled.
         /// </summary>
@@ -159,7 +154,11 @@ namespace NAnt.Contrib.Tasks {
             get { return _uncompileoutputdir; }
             set { _uncompileoutputdir = value; }
         }
-       
+
+        #endregion Public Instance Properties
+
+        #region Override implementation of ExternalProgramBase
+
         public override string ProgramFileName {
             get {
                 RegistryKey helpPackageKey = Registry.LocalMachine.OpenSubKey(
@@ -176,7 +175,7 @@ namespace NAnt.Contrib.Tasks {
                                 DirectoryInfo parentDir = Directory.GetParent(helpPackageDir);
                                 if (parentDir != null) {
                                     helpPackageKey.Close();
-                                    return "\"" + parentDir.FullName + "\\hxcomp.exe\"";
+                                    return Path.Combine(parentDir.FullName, "hxcomp.exe");
                                 }
                             }
                         }
@@ -184,9 +183,9 @@ namespace NAnt.Contrib.Tasks {
                     helpPackageKey.Close();
                 }
 
-                throw new Exception(
+                throw new BuildException(
                     "Unable to locate installation directory of " + 
-                    "Microsoft Help 2.0 SDK in the registry.");
+                    "Microsoft Help 2.0 SDK in the registry.", Location);
             }
         }
 
@@ -199,82 +198,86 @@ namespace NAnt.Contrib.Tasks {
             }
         }
 
+        protected override void InitializeTask(XmlNode taskNode) {
+            base.InitializeTask (taskNode);
+
+            if (OutputFile == null && UncompileFile == null) {
+                throw new BuildException(
+                    "Either the \"uncompilefile\" or \"output\" attribute"
+                    + " should be specified.", Location);
+            }
+        }
+
         protected override void ExecuteTask() {
             // If the user wants to see the actual command the -verbose flag
             // will cause ExternalProgramBase to display the actual call.
             if (OutputFile != null ) {
-                Log(Level.Info, LogPrefix + "Compiling HTML Help 2.0 File '{0}'.", OutputFile);
-            } else if (UncompileFile != null) {    
-                Log(Level.Info, LogPrefix + "Decompiling HTML Help 2.0 File '{0}'.", UncompileFile);
-            } else {
-                Log(Level.Error, "ERROR: Must specify file to be compiled or decompiled.");
-                return;
+                Log(Level.Info, "Compiling HTML Help 2.0 File '{0}'.", OutputFile);
+            } else if (UncompileFile != null) {
+                Log(Level.Info, "Decompiling HTML Help 2.0 File '{0}'.", UncompileFile);
             }
 
             try {
-                bool firstArg = true;
-
                 StringBuilder arguments = new StringBuilder();
                    
                 if (NoInformation) {
-                    if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
-                    arguments.Append("-i");
+                    arguments.Append("-i ");
                 }
                 if (NoErrors) {
-                    if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
-                    arguments.Append("-e");
+                    arguments.Append("-e ");
                 }
                 if (NoWarnings) {
-                    if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
-                    arguments.Append("-w");
+                    arguments.Append("-w ");
                 }
-                if (Quiet) {
-                    if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
-                    arguments.Append("-q");
+                if (!Verbose) {
+                    arguments.Append("-q ");
                 }
                 if (Contents != null) {
-                    if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
                     arguments.Append("-p ");
-                    arguments.Append(Contents);
+                    arguments.Append('\"' + Contents + '\"');
+                    arguments.Append(" ");
                 }
                 if (LogFile != null) {
-                    if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
                     arguments.Append("-l ");
-                    arguments.Append(LogFile);
+                    arguments.Append('\"' + LogFile + '\"');
+                    arguments.Append(" ");
                 }
                 if (UnicodeLogFile != null) {
-                    if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
                     arguments.Append("-n ");
-                    arguments.Append(UnicodeLogFile);
+                    arguments.Append('\"' + UnicodeLogFile + '\"');
+                    arguments.Append(" ");
                 }
                 if (Output != null) {
-                    if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
                     arguments.Append("-o ");
-                    arguments.Append(Output);
+                    arguments.Append('\"' + OutputFile + '\"');
+                    arguments.Append(" ");
                 }
                 if (ProjectRoot != null) {
-                    if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
                     arguments.Append("-r ");
-                    arguments.Append(ProjectRoot);
+                    arguments.Append('\"' + ProjectRoot + '\"');
+                    arguments.Append(" ");
                 }
                 if (UncompileFile != null) {
-                    if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
                     arguments.Append("-u ");
-                    arguments.Append(UncompileFile);
+                    arguments.Append('\"' + UncompileFile + '\"');
+                    arguments.Append(" ");
                 }
                 if (UncompileOutputDir != null) {
-                    if (firstArg) { firstArg = false; } else { arguments.Append(" "); }
                     arguments.Append("-d ");
-                    arguments.Append(UncompileOutputDir);
+                    arguments.Append('\"' + UncompileOutputDir + '\"');
+                    arguments.Append(" ");
                 }
 
                 _args = arguments.ToString();
 
                 base.ExecuteTask();
-            }
-            catch (Exception e) {
-                throw new BuildException(LogPrefix + "ERROR: " + e);
+            } catch (Exception ex) {
+                throw new BuildException(
+                    "Microsoft HTML Help 2.0 Project could not be compiled.", 
+                    Location, ex);
             }
         }
+
+        #endregion Override implementation of ExternalProgramBase
     }
 }

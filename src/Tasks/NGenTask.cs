@@ -20,6 +20,7 @@
 
 using System;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -52,8 +53,6 @@ namespace NAnt.Contrib.Tasks {
         private bool _debug = false;
         private bool _debugoptimized = false;
         private bool _profiled = false;
-        private bool _nologo = false;
-        private bool _silent = false;
 
         #endregion Private Instance Fields
 
@@ -108,29 +107,11 @@ namespace NAnt.Contrib.Tasks {
             set { _profiled = value; }
         }
 
-        /// <summary>Suppresses the banner.</summary>
-        [TaskAttribute("nologo")]
-        [BooleanValidator()]
-        public bool NoLogo {
-            get { return _nologo; }
-            set { _nologo = value; }
-        }
-
-        /// <summary>Prevents NGen from displaying success message.</summary>
-        [TaskAttribute("silent")]
-        [BooleanValidator()]
-        public bool Silent {
-            get { return _silent; }
-            set { _silent = value; }
-        }
-
         /// <summary>
         /// Arguments of program to execute
         /// </summary>
         public override string ProgramArguments {
-            get {
-                return _args;
-            }
+            get { return _args; }
         }
 
         ///<summary>
@@ -143,11 +124,10 @@ namespace NAnt.Contrib.Tasks {
         protected override void ExecuteTask() {
             StringBuilder arguments = new StringBuilder();
 
-            if (NoLogo){
-                arguments.Append("/nologo ");
-            }
+            // suppress logo banner
+            arguments.Append("/nologo ");
 
-            if (Silent){
+            if (!Verbose) {
                 arguments.Append("/silent ");
             }
 
@@ -171,15 +151,16 @@ namespace NAnt.Contrib.Tasks {
                 arguments.Append("/prof ");
             }
 
-            arguments.Append(Assembly);
+            arguments.Append('\"' + Assembly + '\"');
+
+            _args = arguments.ToString();
 
             try  {
-                _args = arguments.ToString();
-
                 base.ExecuteTask();
-            }
-            catch (Exception e) {
-                throw new BuildException(LogPrefix + "ERROR: " + e);
+            } catch (Exception ex) {
+                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                    "Unable to generate native image for '{0}'.", Assembly),
+                    Location, ex);
             }
         }
     }

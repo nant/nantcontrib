@@ -96,16 +96,6 @@ namespace NAnt.Contrib.Tasks {
         }
 
         /// <summary>
-        /// Gets the command-line arguments for the external program.
-        /// </summary>
-        /// <value>
-        /// The command-line arguments for the external program.
-        /// </value>
-        public override string ProgramArguments {
-            get { return this.CommandLineArguments; }
-        }
-
-        /// <summary>
         /// The command-line arguments for the program.
         /// </summary>
         [TaskAttribute("commandline")]
@@ -925,28 +915,17 @@ namespace NAnt.Contrib.Tasks {
 
         #endregion Public Instance Properties
 
+        #region Override implementation of ExternalProgramBase
 
         /// <summary>
-        /// Adds a new command option if none exists.  If one does exist then
-        /// the use switch is toggled on or of.
+        /// Gets the command-line arguments for the external program.
         /// </summary>
-        /// <param name="name">The common name of the option.</param>
-        /// <param name="value">The option value or command line switch of the option.</param>
-        /// <param name="on"><see langword="true" /> if the option should be appended to the commandline, otherwise <see langword="false" />.</param>
-        protected void SetCommandOption(string name, String value, bool on) {
-            Option option;
-            if (this.CommandOptions.Contains(name)) {
-                option = (Option)this.CommandOptions[name];
-            } else {
-                option = new Option();
-                option.OptionName = name;
-                option.Value = value;
-                this.CommandOptions.Add(name, option);
-            } 
-            option.IfDefined = on;
+        /// <value>
+        /// The command-line arguments for the external program.
+        /// </value>
+        public override string ProgramArguments {
+            get { return this.CommandLineArguments; }
         }
-
-        #region Override implementation of ExternalProgramBase
 
         /// <summary>
         /// Build up the command line arguments, determine which executable is 
@@ -963,12 +942,10 @@ namespace NAnt.Contrib.Tasks {
             base.PrepareProcess(process);
             process.StartInfo.FileName = DEFAULT_EXECUTABLE_NAME;
 
-            Log(Level.Info, String.Format("{0} working directory: {1}", 
-                LogPrefix, process.StartInfo.WorkingDirectory));
-            Log(Level.Info, String.Format("{0} executable: {1}", 
-                LogPrefix, process.StartInfo.FileName));
-            Log(Level.Info, String.Format("{0} arguments: {1}", 
-                LogPrefix, process.StartInfo.Arguments));
+            Log(Level.Verbose, "Working directory: {0}", 
+                process.StartInfo.WorkingDirectory);
+            Log(Level.Verbose, "Executable: {0}", process.StartInfo.FileName);
+            Log(Level.Verbose, "Arguments: {0}", process.StartInfo.Arguments);
         }
 
         protected override void ExecuteTask() {
@@ -985,6 +962,30 @@ namespace NAnt.Contrib.Tasks {
         }
 
         #endregion Override implementation of ExternalProgramBase
+
+        #region Protected Instance Methods
+
+        /// <summary>
+        /// Adds a new command option if none exists.  If one does exist then
+        /// the use switch is toggled on or of.
+        /// </summary>
+        /// <param name="name">The common name of the option.</param>
+        /// <param name="value">The option value or command line switch of the option.</param>
+        /// <param name="on"><see langword="true" /> if the option should be appended to the commandline, otherwise <see langword="false" />.</param>
+        protected void SetCommandOption(string name, String value, bool on) {
+            Option option;
+            if (this.CommandOptions.Contains(name)) {
+                option = (Option) this.CommandOptions[name];
+            } else {
+                option = new Option();
+                option.OptionName = name;
+                option.Value = value;
+                this.CommandOptions.Add(name, option);
+            } 
+            option.IfDefined = on;
+        }
+
+        #endregion Protected Instance Methods
 
         #region Private Instance Methods
 
@@ -1005,10 +1006,10 @@ namespace NAnt.Contrib.Tasks {
 
         private void AddArg (String arg) {
             if (arg.IndexOf("-") != 0) {
-                Arguments.Add(new Argument(String.Format("--{0}",
+                Arguments.Add(new Argument(string.Format("--{0}",
                     arg)));
             } else {
-                Arguments.Add(new Argument(String.Format("{1}",
+                Arguments.Add(new Argument(string.Format("{0}",
                     arg)));
             }
         }
@@ -1018,7 +1019,7 @@ namespace NAnt.Contrib.Tasks {
         /// </summary>
         private void AppendFiles () {
             foreach (string pathname in this.Sources.FileNames) {
-                Arguments.Add(new Argument(pathname));
+                Arguments.Add(new Argument('\"' + pathname + '\"'));
             }
         }
 
