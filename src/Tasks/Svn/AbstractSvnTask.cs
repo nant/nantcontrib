@@ -235,10 +235,6 @@ namespace NAnt.Contrib.Tasks.Svn {
 
             process.StartInfo.WorkingDirectory = 
                 this.DestinationDirectory.FullName;
-
-            Log(Level.Verbose, "Working directory: {0}", process.StartInfo.WorkingDirectory);
-            Log(Level.Verbose, "Executable: {0}", process.StartInfo.FileName);
-            Log(Level.Verbose, "Arguments: {0}", process.StartInfo.Arguments);
         }
 
         #endregion Override implementation of ExternalProgramBase

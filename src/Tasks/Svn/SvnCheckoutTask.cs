@@ -161,5 +161,14 @@ namespace NAnt.Contrib.Tasks.Svn {
         }
 
         #endregion
+
+        #region Override implementation of ExternalProgramBase
+
+        protected override void PrepareProcess (Process process) {
+            base.PrepareProcess(process);
+            process.StartInfo.Arguments += " . ";
+        }
+
+        #endregion Override implementation of ExternalProgramBase
     }
 }
