@@ -258,7 +258,7 @@
                 <includes name="*" />
 
                 <!-- exclude tools build directory -->
-                <excludes name="${tools.dir}/build/**" />
+                <excludes name="${tools.dir}/**/build/**" />
                 <!-- exclude nighlty build file -->
                 <excludes name="nightly.xml" />
                 <!-- exclude release build file -->
