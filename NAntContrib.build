@@ -313,7 +313,7 @@
                     <property name="NamespaceFilter" value="NAnt.Contrib" />
                     <!-- set the name and version of the product for which docs are generated -->
                     <property name="ProductName" value="NAntContrib" />
-                    <property name="ProductVersion" value="${project.version}" />
+                    <property name="ProductVersion" value="${project.version.full}" />
                     <property name="Preliminary" value="${not(project.release.type=='release')}" />
                     <property name="DocumentAttributes" value="True" />
                     <property name="IncludeAssemblyVersion" value="True" />
@@ -328,7 +328,7 @@
                     <property name="SdkDocVersion" value="${link.sdkdoc.version}" />
                     <property name="SdkLinksOnWeb" value="${link.sdkdoc.web}" />
                     <property name="IncludeFavorites" value="False" />
-                    <property name="Title" value="NAntContrib SDK Documentation - v${project.version}" />
+                    <property name="Title" value="NAntContrib SDK Documentation - v${project.version.full}" />
                     <property name="SplitTOCs" value="False" />
                     <property name="DefaulTOC" value="" />
                     <property name="ShowVisualBasic" value="True" />
@@ -408,7 +408,7 @@
             </fileset>
             <filterchain>
                 <replacetokens>
-                    <token key="PRODUCT_VERSION" value="${project.version}" />
+                    <token key="PRODUCT_VERSION" value="${project.version.full}" />
                 </replacetokens>
                 <!-- when NOT building a release package, add prelimary notice -->
                 <replacestring
