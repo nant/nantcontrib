@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<HelpAttributes DTDVersion="1.0">
-   <AttName Name="DocSet" Display="Yes" UIString="DocSet" AttType="Enum">
-      <AttVal Name="NAntAddin" Display="Yes" UIString="NAnt Addin" />
-   </AttName>
-</HelpAttributes>
