@@ -1,4 +1,4 @@
-<project name="NAntContrib" default="build">
+<project name="NAntContrib" default="buildandtest">
     <tstamp/>
     <property name="debug" value="true"/>
     <property name="project.name" value="nantcontrib"/>
@@ -11,7 +11,7 @@
     
     <property name="nant-bin.dir" value="${nant.location}"/>
     <echo message="Using nant files from ${nant-bin.dir}"/>
-	<property name="nant.extra-tasks.dir" value="${nant-bin.dir}" />
+    <property name="nant.extra-tasks.dir" value="${nant-bin.dir}" />
 
     <property name="backup.name" value="..\${project.name}-backup-${tstamp.date}-${tstamp.time}.zip" />
     <property name="project.version" value="x.x"/>
@@ -27,15 +27,26 @@
     </target>
     
     <!--
-        Performan full and clean rebuild 
+        Rebuild the solution from scratch, test, and create
+        documentation
     -->
     <target name="all" description="make a full, clean rebuild">
-<!--       <call target="clean"/> -->
+      <call target="clean"/> 
+      <call target="build"/>
+      <call target="buildtests"/>
+      <call target="test"/>
+      <call target="doc"/>
+    </target>
+    
+    <!--
+        Build the solution, then test.
+    -->
+    <target name="buildandtest" description="make a full, clean rebuild">
       <call target="build"/>
       <call target="buildtests"/>
       <call target="test"/>
     </target>
-    
+
     <!--
         Prepare directories and build settings
     -->
@@ -53,7 +64,11 @@
     <target name="build" depends="prepare" description="compiles the source code">
 
         <!-- compile NAnt.Contrib.Tasks.dll -->
-        <csc target="library" output="${build.dir}\${project.FormalName}.Tasks.dll" debug="${debug}" doc="${build.dir}\${project.FormalName}.xml">
+        <csc target="library" 
+               output="${build.dir}\${project.FormalName}.Tasks.dll" 
+               debug="${debug}" 
+               doc="${build.dir}\${project.FormalName}.Tasks.xml"
+            >
             <sources basedir="${src.dir}">
                 <includes name="**/*.cs"/>
                 <excludes name="Tasks/TaskDefTask.cs"/>
@@ -131,4 +146,39 @@
 		<mkdir dir="${nant.extra-tasks.dir}"/>
 		<copy file="${taskDefAssembly}" todir="${nant.extra-tasks.dir}" />
     </target>
+    
+    <target name="doc" depends="build" description="build documentation">
+        <echo message="Requires HtmlHelp compiler (hhc.exe) to be in the system path"/>
+        <ndoc failonerror="false">
+            <assemblies basedir="${build.dir}">
+                <includes name="NAnt.Contrib.Tasks.dll"/>
+            </assemblies>
+            <documenters>
+                <documenter name="MSDN">
+                    <property name="OutputDirectory" value="${build.dir}\docs\MSDN" />
+                    <property name="HtmlHelpName" value="NAntContrib" />
+                    <property name="HtmlHelpCompilerFilename" value="hhc.exe" />
+                    <property name="IncludeFavorites" value="False" />
+                    <property name="Title" value="An NDoc Documented Class Library" />
+                    <property name="SplitTOCs" value="False" />
+                    <property name="DefaulTOC" value="" />
+                    <property name="ShowVisualBasic" value="True" />
+                    <property name="ShowMissingSummaries" value="True" />
+                    <property name="ShowMissingRemarks" value="True" />
+                    <property name="ShowMissingParams" value="True" />
+                    <property name="ShowMissingReturns" value="True" />
+                    <property name="ShowMissingValues" value="True" />
+                    <property name="DocumentInternals" value="False" />
+                    <property name="DocumentProtected" value="True" />
+                    <property name="DocumentPrivates" value="False" />
+                    <property name="DocumentEmptyNamespaces" value="False" />
+                    <property name="IncludeAssemblyVersion" value="False" />
+                    <property name="CopyrightText" value="" />
+                    <property name="CopyrightHref" value="" />
+                 </documenter>             
+            </documenters> 
+        </ndoc>
+        <copy file="${build.dir}/docs/MSDN/NAntContrib.chm" todir="${build.dir}"/>
+    </target>
+
 </project>
