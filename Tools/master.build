@@ -1,0 +1,140 @@
+<!-- 
+ NAntContrib
+ Copyright (C) 2004 Gordon Weakliem (gweakliem@oddpost.com)
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+
+  Sample master build file for automatically generating buildfiles from Visual Studio project files, 
+  based on the subdirectory of the current directory.  This build file attempts to determine the 
+  correct build order for the projects found in the subdirectories and builds them in that order.
+  Requirements:
+  1) All the projects under a directory tree are related
+  2) Any compile-time dependencies are set up in the .SLN files by using project references, 
+    not references to compiled binaries.
+  3) Builds only projects located immediately under the current directory.
+  4) Projects are named the same as the subdirectory they reside in, e.g. for output Foo.dll,
+    we expect to find .\Foo\Foo.csproj
+  5) Doesn't attempt to resolve circular dependencies, doesn't handle C++ files.
+  6) This relies on the vsconvert.xsl stylesheet, included in the NAntContrib Tools folder.  
+  Some possible enhancements:
+  1) Allow paths besides the current directory.
+  2) Allow for exclusion lists, maybe a file in the base directory named exclusions.txt
+    that has a list of projects to exclude.
+  3) Allow searching for project files deeper down the tree, instead of 1 directory deep.
+  -->
+<project name="master" default="build" description="example master build file">
+  <property name="debug" value="false"/>
+  <property name="references" value=""/>
+
+  <target name="build">
+    <foreach item="File" property="subproject" >
+      <in> 
+        <items>
+          <includes name="**\*.csproj"/>
+          <includes name="**\*.vbproj"/>
+        </items>
+      </in>
+      <do>
+  <script language="C#" verbose="true">
+  <!-- produce a list of references for the ${subproject} in the order they need to be built.
+     The rule is that a  project's references need to be built before the project itself.  
+     We don't attempt to detect or resolve circular dependencies.  
+     ${references} - existing list of references that we'll append to
+     ${subproject} - the project we'll parse to get a build order.
+  -->
+  <references>
+    <reference name="System.Xml.dll"/>
+  </references>
+  <imports>
+    <import name="System.Xml"/>
+  </imports>
+  <code><![CDATA[
+  public static void ScriptMain(Project project) {
+    StringCollection result = new StringCollection();
+    result.AddRange(project.Properties["references"].Split(new char[] {','}));
+    String projectFile = project.Properties["subproject"];
+    String projectName = Path.GetFileNameWithoutExtension(projectFile);
+
+    XmlDocument d = new XmlDocument();
+    d.Load(projectFile);
+    XmlNodeList nl =  d.SelectNodes("/VisualStudioProject/*/Build/References/Reference[@Project!='']");
+    // needs to be "/VisualStudioProject/References/Reference" for VC++
+
+    for (int i = 0; i < nl.Count; i++) {
+      String aref = nl[i].Attributes["Name"].Value;
+      // add this reference if it's not there already.
+      if (!result.Contains(aref)) {
+      	 result.Insert(0,aref);
+      }
+      // otherwise, we need to make sure that if this is already referenced, it comes 
+      // before the current project.
+      else {
+        int refIndex = result.IndexOf(aref);
+	int projectIndex = result.IndexOf(projectName);
+	if ((projectIndex != -1 ) && (projectIndex < refIndex )) {
+	   String temp = result[refIndex];
+	   result[refIndex] = result[projectIndex];
+	   result[projectIndex] = temp;
+	}
+      }
+    }
+
+    // finally, check to see if this assembly is on the depends list itself, add ourselves to the end if not
+    if (!result.Contains(projectName)) {
+      result.Add(projectName);
+    }
+    String[] newRefs = new String[result.Count];
+    result.CopyTo(newRefs,0);
+    project.Properties["references"] = String.Join(",",newRefs);
+  }
+  ]]></code>
+</script>
+	<if propertytrue="debug">
+	  <echo message="${subproject} refs: ${references}"/>
+	</if>
+      </do>
+    </foreach>
+
+    <foreach item="String" in="${references}" delim="," property="subproject" >
+      <do>
+        <if propertytrue="debug">      
+	  <echo message="Building ${subproject}"/>
+  	</if>
+	<foreach item="File" property="currentproject">
+	  <in>
+	    <items>
+	      <includes name="${subproject}\*.csproj"/>
+	      <includes name="${subproject}\*.vbproj"/>
+	    </items>
+	  </in>
+	  <do>
+	    <delete file="${nant.project.basedir}\${currentproject}\${currentproject}.build" failonerror="false"/>
+	    <!-- convert everything to nant format -->
+            <style in="${currentproject}" 
+	       basedir="${nant.project.basedir}\${subproject}" 
+	       out="${currentproject}.build" 
+	       destdir="${nant.project.basedir}\${subproject}" 
+	       extension="build" 
+	       style="${nant.project.basedir}\vsconvert.xsl" 
+	       verbose="true">
+	    </style>
+	    <nant buildfile="${currentproject}.build" target="build" inheritall="true"/>
+	  </do>
+	</foreach>
+      </do>
+    </foreach>
+  </target>
+
+</project>
