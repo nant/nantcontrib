@@ -42,6 +42,9 @@
   <property name="vstools.dir" value="${vsnet.dir}\Common7\Tools" />
   <property name="dotnetlibs.dir" value="${dotnet.dir}\Primary Interop Assemblies" />
   <property name="buildlibs.arg" value="&quot;/lib:${vslibs.dir};${dotnetlibs.dir}&quot;" />
+  
+  <include buildfile="VSNetAddinInstall.include" />
+  
   <target name="prepare" description="Prepares the Build Directory" depends="build.nantcontrib">
     <mkdir dir="${addinbuild.dir}" />
     <mkdir dir="${dest.dir}" />
@@ -183,7 +186,7 @@
     </delete>
   </target>
   <target name="build" description="Builds the NAnt Addin" depends="assemblies.deploy" />
-  <target name="build.nant" description="Compiles NAnt" depends="prepare" unless="${fromcontrib}">
+  <target name="build.nant" description="Compiles NAnt" depends="prepare" if="${fromcontrib}">
     <property name="nant.dir" value="..\..\..\NAnt" />
     <property name="nantbuild.dir" value="${nant.dir}\bin" />
     <nant buildfile="${nant.dir}\NAnt.build" target="build" basedir="${nant.dir}" />

@@ -1,0 +1,555 @@
+<?xml version="1.0"?>
+<!--*****************************************************************-->
+<!--* @(#)NAntContribInstall.include                                *-->
+<!--*                                                               *-->  
+<!--* Builds the MSI or MSM of the NAntContrib project              *-->
+<!--*****************************************************************-->
+<project name="NAntContribInstall" default="build">
+
+    <!--*****************************************************************-->
+    <!--* Create the .msi Windows Installer setup file                  *-->
+    <!--*****************************************************************-->
+    <target name="msi" description="Build MSI install containing NAnt, NAntContrib, VSNetAddin, and Slingshot">
+
+        <echo message="** NOTE: NAnt needs to be checked out to the same directory as NAntContrib **" />
+        <property name="installsource.dir" value="install" />
+
+        <nant buildfile="${nant.dir}\NAnt.build" target="cleanall release build test userdoc sdkdoc" />
+        <copy file="${nantbuild.dir}\NDoc.Documenter.NAnt.dll" tofile="${nant.dir}\bin\NDoc.Documenter.NAnt.dll" overwrite="true" failonerror="false" />
+        <call target="build" />
+        <call target="userdoc" />
+
+        <taskdef assembly="${build.dir}\NAnt.Contrib.Tasks.dll" />
+        
+        <delete dir="${installsource.dir}\NAnt" failonerror="false" />
+        <delete dir="${installsource.dir}\Temp" failonerror="false" />
+                
+        <property name="addin.dir" value="Tools\VSNetAddin" />
+        <property name="slingshot.dir" value="Tools\SLiNgshoT" />
+        <property name="fromcontrib" value="true" />
+
+        <call target="NAntContrib.msm" />
+<!--        
+        <nant buildfile="${addin.dir}\Default.build" target="VSNetAddin.msm" inheritall="true" />
+-->        
+        <call target="SLiNgshoT.msm" />
+
+        <mkdir dir="${installsource.dir}\NAnt\Tasks" failonerror="false" />
+        <mkdir dir="${installsource.dir}\NAnt\Docs\Help\NAnt_Tasks" failonerror="false" />
+        <mkdir dir="${installsource.dir}\NAnt\Docs\SDK" failonerror="false" />
+        
+        <copy todir="${installsource.dir}\NAnt" failonerror="false" overwrite="true">
+            <fileset basedir="${nantbuild.dir}">
+                <includes name="NAnt.exe" />
+                <includes name="NAnt.exe.config" />
+                <includes name="NAnt.Core.dll" />
+                <includes name="NDoc.Core.dll" />
+                <includes name="NDoc.Documenter.Msdn.dll" />
+                <includes name="NDoc.Documenter.NAnt.dll" />
+                <includes name="NAnt.NUnitFormatters.dll" />
+                <includes name="nunit.framework.dll" />
+                <includes name="NUnitCore.dll" />
+            </fileset>
+        </copy>
+        
+        <copy todir="${installsource.dir}\NAnt\Tasks" failonerror="false" overwrite="true">
+            <fileset basedir="${nantbuild.dir}">
+                <includes name="*Tasks.dll" />
+                <includes name="SharpZipLib.dll" />
+            </fileset>
+        </copy>
+        
+        <copy todir="${installsource.dir}\NAnt\Docs" failonerror="false" overwrite="true">
+            <fileset basedir="${nantbuild.dir}\..\doc">
+                <includes name="arrow.gif" />
+                <includes name="style.css" />
+            </fileset>
+        </copy>
+
+        <copy todir="${installsource.dir}\NAnt\Docs\Help\NAnt_Tasks" failonerror="false" overwrite="true">
+            <fileset basedir="${nantbuild.dir}\..\doc\help\tasks">
+                <includes name="*.html" />
+            </fileset>
+        </copy>
+        
+        <copy todir="${installsource.dir}\NAnt\Docs\SDK" failonerror="false" overwrite="true">
+            <fileset basedir="${nantbuild.dir}\..\doc\sdk">
+                <includes name="NAnt-SDK.chm" />
+            </fileset>
+        </copy>
+        
+        <copy todir="${installsource.dir}\NAnt" file="license.txt" failonerror="false" overwrite="true" />
+        
+        <!-- Get rid of read-only attributes, if present -->
+        <exec program="attrib" commandline=" -R /S /D ${installsource.dir}\*.*" failonerror="false" />
+        
+        <msi
+            output="NAntSetup.msi" 
+            sourcedir="${installsource.dir}" 
+            banner="${addin.dir}\installlogo.bmp" 
+            background="${addin.dir}\installbg.bmp" 
+            license="${addin.dir}\license.rtf" 
+            debug="true" 
+            verbose="true"
+        >
+            <properties>
+                <property name="ProductName" value="NAnt" />
+                <property name="ProductVersion" value="${nant.version}" />
+                <property name="Manufacturer" value="The NAnt SourceForge Project"/>
+                <property name="ProductCode" value="{2D2FB50C-DADF-4813-8932-8EF1E8CB8E80}" />
+                <property name="UpgradeCode" value="{B989702A-035F-44F1-B40D-192BA25DECB7}" />
+            </properties>
+            <directories>
+                <directory name="NANT_NANTFOLDER" foldername="NAnt" root="ProgramFilesFolder">
+                    <directory name="NANT_TASKSFOLDER" foldername="Tasks" />
+                    <directory name="NANT_DOCSFOLDER" foldername="Docs" >
+                        <directory name="NANT_HELPFOLDER" foldername="Help" >
+                            <directory name="NANT_NANTHELPTASKSFOLDER" foldername="NAnt_Tasks" />
+                        </directory>
+                        <directory name="NANT_SDKFOLDER" foldername="SDK" />
+                    </directory>
+                </directory>
+				<directory name="NANT_NANTMENUFOLDER" foldername="NAnt" root="ProgramMenuFolder" />                
+            </directories>
+            <environment>
+                <variable name="PATH" append="'[NANTFOLDER]'" component="NAntFiles" />
+            </environment>
+            <features>
+                <feature name="DefaultFeature" title="NAnt Platform" display="1" typical="true">
+                    <description>The NAnt build platform. Includes Core, .NET, and Zip Tasks.</description>
+                    <feature name="DotNetTasksFeature" display="0" typical="true" />
+                    <feature name="ZipTasksFeature" display="0" typical="true">
+                        <feature name="SharpZipLibFeature" display="0" typical="true" />
+                    </feature>
+                    <feature name="NUnit1TasksFeature" display="0" typical="true" />
+                    <feature name="NUnit2TasksFeature" display="0" typical="true" />
+                    <feature name="DocsFeature" display="0" typical="true" />
+                    <feature name="TaskDocsFeature" display="0" typical="true" />
+                    <feature name="SDKDocsFeature" display="1" typical="false" />
+                    <feature name="VisualCppTasksFeature" title="Microsoft C++ Tasks" display="1" typical="false">
+                        <description>Tasks for compiling Microsoft C++ projects.</description>
+                    </feature>
+                    <feature name="OptionalTasksFeature" title="Optional Tasks" display="1" typical="false" directory="NANT_TASKSFOLDER">
+                        <description>Optional Tasks for the NAnt build platform.</description>
+                    </feature>
+                    <feature name="AddinFeature" title="Visual Studio .NET Addin" display="1" typical="false" directory="NANT_NANTFOLDER">
+                        <description>Addin for using NAnt from Visual Studio .NET.</description>
+                        <feature name="VSNetAddinFeature" display="0" typical="false" directory="NANT_NANTFOLDER" />
+                        <feature name="HTMLHelpMSMFeature" display="0" typical="false" directory="NANT_NANTFOLDER" />
+                        <feature name="MSHelp2MSMFeature" display="0" typical="false" directory="NANT_NANTFOLDER" />
+                        <feature name="VS7AppSearchMSMFeature" display="0" typical="false" directory="NANT_NANTFOLDER" />
+                        <feature name="VS7_MSMFeature" display="0" typical="false" directory="NANT_NANTFOLDER" />
+                        <feature name="CombinedHelpCollecMSMFeature" display="0" typical="false" directory="NANT_NANTFOLDER" />
+                        <feature name="CombinedHelpCollecEnuMSMFeature" display="0" typical="false" directory="NANT_NANTFOLDER" />
+                    </feature>
+                    <feature name="SlingshotFeature" title="SLiNgshoT" display="1" typical="false" directory="NANT_NANTFOLDER">
+                        <description>Converts Visual Studio .NET projects to NAnt scripts.</description>
+                    </feature>
+                </feature>
+            </features>
+            <components>
+                <component name="NAntFiles" id="{ECDD456D-CC0B-4836-AD12-868DB2AB4C7B}" attr="2" directory="NANT_NANTFOLDER" feature="DefaultFeature">
+                    <key file="license.txt" />
+                    <fileset basedir="${installsource.dir}\NAnt">
+                        <includes name="license.txt" />
+                        <includes name="NAnt.Core.dll" />
+                        <includes name="NAnt.exe" />
+                        <includes name="NAnt.exe.config" />
+                        <includes name="NDoc.*.dll" />
+                        <includes name="NUnitCore.dll" />
+                        <includes name="NAnt.NUnitFormatters.dll" />
+                        <includes name="nunit.framework.dll" />
+                  </fileset>
+                </component>
+                <component name="DotNetTasksFiles" id="{781D4954-3BCE-4DA7-988C-9AC135B652E1}" attr="2" directory="NANT_TASKSFOLDER" feature="DotNetTasksFeature">
+                    <key file="NAnt.DotNetTasks.dll" />
+                    <fileset basedir="${installsource.dir}\NAnt\Tasks">
+                        <includes name="NAnt.DotNetTasks.dll" />
+                    </fileset>
+                </component>
+                <component name="NUnit1TasksFiles" id="{D2EDC476-D295-44c1-B7B8-AD9F6B37010C}" attr="2" directory="NANT_TASKSFOLDER" feature="NUnit1TasksFeature">
+                    <key file="NAnt.NUnit1Tasks.dll" />
+                    <fileset basedir="${installsource.dir}\NAnt\Tasks">
+                        <includes name="NAnt.NUnit1Tasks.dll" />
+                    </fileset>
+                </component>
+                <component name="NUnit2TasksFiles" id="{EAD39A40-93C2-4594-93DE-10961354B949}" attr="2" directory="NANT_TASKSFOLDER" feature="NUnit2TasksFeature">
+                    <key file="NAnt.NUnit2Tasks.dll" />
+                    <fileset basedir="${installsource.dir}\NAnt\Tasks">
+                        <includes name="NAnt.NUnit2Tasks.dll" />
+                    </fileset>
+                </component>
+                <component name="DocsFiles" id="{7499CA9D-BDAE-4a0c-B844-E64A9BBB77A0}" attr="2" directory="NANT_DOCSFOLDER" feature="DocsFeature">
+                    <key file="style.css" />
+                    <fileset basedir="${installsource.dir}\NAnt\Docs">
+                        <includes name="style.css" />
+                        <includes name="arrow.gif" />
+                    </fileset>
+                </component>
+                <component name="TasksDocsFiles" id="{3E954A01-7A11-4f1a-9A5E-A262AA70379E}" attr="2" directory="NANT_NANTHELPTASKSFOLDER" feature="TaskDocsFeature">
+                    <key file="index.html" />
+                    <fileset basedir="${installsource.dir}\NAnt\Docs\Help\NAnt_Tasks">
+                        <includes name="*.html" />
+                    </fileset>
+                </component>
+                <component name="SDKDocsFiles" id="{5716B141-3E97-413d-9403-68FCBE7BD843}" attr="2" directory="NANT_SDKFOLDER" feature="SDKDocsFeature">
+                    <key file="NAnt-SDK.chm" />
+                    <fileset basedir="${installsource.dir}\NAnt\Docs\SDK">
+                        <includes name="NAnt-SDK.chm" />
+                    </fileset>
+                </component>
+                <component name="VisualCppTasksFiles" id="{E6C33C45-9FC3-4309-9E4A-B2A6FEBAB146}" attr="2" directory="NANT_TASKSFOLDER" feature="VisualCppTasksFeature">
+                    <key file="NAnt.VisualCppTasks.dll" />
+                    <fileset basedir="${installsource.dir}\NAnt\Tasks">
+                        <includes name="NAnt.VisualCppTasks.dll" />
+                    </fileset>
+                </component>
+                <component name="ZipTasksFiles" id="{E0076CB1-3914-4F9A-8634-A9B77D5F94C7}" attr="2" directory="NANT_TASKSFOLDER" feature="ZipTasksFeature">
+                    <key file="NAnt.ZipTasks.dll" />
+                    <fileset basedir="${installsource.dir}\NAnt\Tasks">
+                        <includes name="NAnt.ZipTasks.dll" />
+                    </fileset>
+                </component>
+                <component name="SharpZipLibFiles" id="{1B2000AE-818A-4A1F-AC29-CA6A321D198E}" attr="2" directory="NANT_TASKSFOLDER" feature="SharpZipLibFeature">
+                    <key file="SharpZipLib.dll" />
+                    <fileset basedir="${installsource.dir}\NAnt\Tasks">
+                        <includes name="SharpZipLib.dll" />
+                    </fileset>
+                </component>
+            </components>
+            <mergemodules>
+                <merge feature="OptionalTasksFeature">
+                    <modules>
+                        <includes name="${installsource.dir}\NAntContrib.msm" />
+                    </modules>
+                </merge>              
+                <merge feature="SlingshotFeature">
+                    <modules>
+                        <includes name="${installsource.dir}\SLiNgshoT.msm" />    
+                    </modules>
+                </merge>
+                <merge feature="VSNetAddinFeature">
+                    <modules>
+                        <includes name="${installsource.dir}\VSNetAddin.msm" />    
+                    </modules>
+                </merge>
+                <merge feature="HTMLHelpMSMFeature">
+                    <modules>
+                        <includes name="${addin.dir}\NAntAddinSetup\HTML_Help_Registration__RTL_---_---.msm" />    
+                    </modules>
+                </merge>
+                <merge feature="MSHelp2MSMFeature">
+                    <modules>
+                        <includes name="${addin.dir}\NAntAddinSetup\MSHelp2_RegTables__RTL_---_---.msm" />    
+                    </modules>
+                </merge>
+                 <merge feature="VS7AppSearchMSMFeature">
+                    <modules>
+                        <includes name="${addin.dir}\NAntAddinSetup\VIntegration_VS7_AppSearch_RTL_---_---.msm" />    
+                    </modules>
+                </merge>
+                <merge feature="VS7_MSMFeature">
+                    <modules>
+                        <includes name="${addin.dir}\NAntAddinSetup\VIntegration_VS7_RTL_---_---.msm" />    
+                    </modules>
+                </merge>
+                <merge feature="CombinedHelpCollecMSMFeature">
+                    <modules>
+                        <includes name="${addin.dir}\NAntAddinSetup\VS_Combined_Help_Collec_RTL_---_---.msm" />    
+                    </modules>
+                </merge>
+                <merge feature="CombinedHelpCollecEnuMSMFeature">
+                    <modules>
+                        <includes name="${addin.dir}\NAntAddinSetup\VS_Combined_Help_Collec_RTL_---_enu.msm" />    
+                    </modules>
+                </merge>
+            </mergemodules>            
+            <shortcuts>
+			    <shortcut name="TasksReferenceDocs" directory="NANT_NANTMENUFOLDER" filename="NAnt Tasks Reference" 
+						    component="TasksDocsFiles" target="[$TasksDocsFiles]\index.html" showcmd="3" >
+					    <description>NAnt Tasks Reference</description>
+			    </shortcut>
+			    <shortcut name="SDKDocs" directory="NANT_NANTMENUFOLDER" filename="NAnt SDK Reference" 
+						    component="SDKDocsFiles" target="[$SDKDocsFiles]\NAnt-SDK.chm" showcmd="3" >
+					    <description>NAnt SDK Reference</description>
+			    </shortcut>
+            </shortcuts>
+        </msi>
+    </target>
+
+    <!--*****************************************************************-->
+    <!--* Create the .msm Windows Installer Merge Module of NAnt        *-->
+    <!--*****************************************************************-->
+    <target name="NAnt.msm" depends="build,userdoc" description="Build MSM Merge Module of NAnt">
+        <property name="NAnt.id" value="2D2FB50C_DADF_4813_8932_8EF1E8CB8E80" />
+          
+        <echo message="** NOTE: NAnt needs to be checked out to the same directory as NAntContrib **" />
+        <property name="installsource.dir" value="install" />
+
+        <nant buildfile="${nant.dir}\NAnt.build" target="cleanall release build test userdoc sdkdoc" />
+        <copy file="${nantbuild.dir}\NDoc.Documenter.NAnt.dll" tofile="${nant.dir}\bin\NDoc.Documenter.NAnt.dll" overwrite="true" failonerror="false" />
+        <call target="build" />
+        <call target="userdoc" />
+
+        <taskdef assembly="${build.dir}\NAnt.Contrib.Tasks.dll" />
+
+        <mkdir dir="${installsource.dir}\NAnt\Tasks" failonerror="false" />
+        <mkdir dir="${installsource.dir}\NAnt\Docs\Help\NAnt_Tasks" failonerror="false" />
+        <mkdir dir="${installsource.dir}\NAnt\Docs\SDK" failonerror="false" />
+        
+        <copy todir="${installsource.dir}\NAnt" failonerror="false" overwrite="true">
+            <fileset basedir="${nantbuild.dir}">
+                <includes name="NAnt.exe" />
+                <includes name="NAnt.exe.config" />
+                <includes name="NAnt.Core.dll" />
+                <includes name="NDoc.Core.dll" />
+                <includes name="NDoc.Documenter.Msdn.dll" />
+                <includes name="NDoc.Documenter.NAnt.dll" />
+                <includes name="NAnt.NUnitFormatters.dll" />
+                <includes name="nunit.framework.dll" />
+                <includes name="NUnitCore.dll" />
+            </fileset>
+        </copy>
+        
+        <copy todir="${installsource.dir}\NAnt\Tasks" failonerror="false" overwrite="true">
+            <fileset basedir="${nantbuild.dir}">
+                <includes name="*Tasks.dll" />
+                <includes name="SharpZipLib.dll" />
+            </fileset>
+        </copy>
+        
+        <copy todir="${installsource.dir}\NAnt\Docs" failonerror="false" overwrite="true">
+            <fileset basedir="${nantbuild.dir}\..\doc">
+                <includes name="arrow.gif" />
+                <includes name="style.css" />
+            </fileset>
+        </copy>
+
+        <copy todir="${installsource.dir}\NAnt\Docs\Help\NAnt_Tasks" failonerror="false" overwrite="true">
+            <fileset basedir="${nantbuild.dir}\..\doc\help\tasks">
+                <includes name="*.html" />
+            </fileset>
+        </copy>
+        
+        <copy todir="${installsource.dir}\NAnt\Docs\SDK" failonerror="false" overwrite="true">
+            <fileset basedir="${nantbuild.dir}\..\doc\sdk">
+                <includes name="NAnt-SDK.chm" />
+            </fileset>
+        </copy>
+        
+        <copy todir="${installsource.dir}\NAnt" file="license.txt" failonerror="false" overwrite="true" />
+
+        <!-- Get rid of read-only attributes, if present -->
+        <exec program="attrib" commandline=" -R /S /D ${installsource.dir}\*.*" failonerror="false" />
+
+        <msm 
+            output="NAnt.msm"
+            sourcedir="${installsource.dir}"
+            id="NAnt_MergeModule.${NAnt.id}"
+            version="${nant.version}"
+            debug="true"
+            verbose="true"
+        >
+            <properties>
+                <property name="ProductName" value="NAnt" />
+                <property name="ProductVersion" value="${nant.version}" />
+                <property name="Manufacturer" value="The NAnt SourceForge Project"/>
+                <property name="ProductCode" value="{2D2FB50C-DADF-4813-8932-8EF1E8CB8E80}" />
+                <property name="UpgradeCode" value="{B989702A-035F-44F1-B40D-192BA25DECB7}" />
+            </properties>
+            <directories>
+                <directory name="NANT_NANTFOLDER" foldername="NAnt" root="ProgramFilesFolder">
+                    <directory name="NANT_TASKSFOLDER" foldername="Tasks" />
+                    <directory name="NANT_DOCSFOLDER" foldername="Docs" >
+                        <directory name="NANT_HELPFOLDER" foldername="Help" >
+                            <directory name="NANT_NANTHELPTASKSFOLDER" foldername="NAnt_Tasks" />
+                        </directory>
+                        <directory name="NANT_SDKFOLDER" foldername="SDK" />
+                    </directory>
+                </directory>
+				<directory name="NANT_NANTMENUFOLDER" foldername="NAnt" root="ProgramMenuFolder" />                
+            </directories>
+            <environment>
+                <variable name="PATH" append="'[NANTFOLDER]'" component="NAntFiles_${NAnt.id}" />
+            </environment>
+            <components>
+                <component name="NAntFiles_${NAnt.id}" id="{ECDD456D-CC0B-4836-AD12-868DB2AB4C7B}" attr="2" directory="NANT_NANTFOLDER">
+                    <key file="license.txt" />
+                    <fileset basedir="${installsource.dir}\NAnt">
+                        <includes name="license.txt" />
+                        <includes name="NAnt.Core.dll" />
+                        <includes name="NAnt.exe" />
+                        <includes name="NAnt.exe.config" />
+                        <includes name="NDoc.*.dll" />
+                        <includes name="NUnitCore.dll" />
+                        <includes name="NAnt.NUnitFormatters.dll" />
+                        <includes name="nunit.framework.dll" />
+                  </fileset>
+                </component>
+                <component name="DotNetTasksFiles_${NAnt.id}" id="{781D4954-3BCE-4DA7-988C-9AC135B652E1}" attr="2" directory="NANT_TASKSFOLDER">
+                    <key file="NAnt.DotNetTasks.dll" />
+                    <fileset basedir="${installsource.dir}\NAnt\Tasks">
+                        <includes name="NAnt.DotNetTasks.dll" />
+                    </fileset>
+                </component>
+                 <component name="NUnit1TasksFiles_${NAnt.id}" id="{D2EDC476-D295-44c1-B7B8-AD9F6B37010C}" attr="2" directory="NANT_TASKSFOLDER">
+                    <key file="NAnt.NUnit1Tasks.dll" />
+                    <fileset basedir="${installsource.dir}\NAnt\Tasks">
+                        <includes name="NAnt.NUnit1Tasks.dll" />
+                    </fileset>
+                </component>
+                <component name="NUnit2TasksFiles_${NAnt.id}" id="{EAD39A40-93C2-4594-93DE-10961354B949}" attr="2" directory="NANT_TASKSFOLDER">
+                    <key file="NAnt.NUnit2Tasks.dll" />
+                    <fileset basedir="${installsource.dir}\NAnt\Tasks">
+                        <includes name="NAnt.NUnit2Tasks.dll" />
+                    </fileset>
+                </component>
+                <component name="DocsFiles_${NAnt.id}" id="{7499CA9D-BDAE-4a0c-B844-E64A9BBB77A0}" attr="2" directory="NANT_DOCSFOLDER">
+                    <key file="style.css" />
+                    <fileset basedir="${installsource.dir}\NAnt\Docs">
+                        <includes name="style.css" />
+                        <includes name="arrow.gif" />
+                    </fileset>
+                </component>
+                <component name="TasksDocsFiles_${NAnt.id}" id="{3E954A01-7A11-4f1a-9A5E-A262AA70379E}" attr="2" directory="NANT_NANTHELPTASKSFOLDER">
+                    <key file="index.html" />
+                    <fileset basedir="${installsource.dir}\NAnt\Docs\Help\NAnt_Tasks">
+                        <includes name="*.html" />
+                    </fileset>
+                </component>
+                <component name="SDKDocsFiles_${NAnt.id}" id="{5716B141-3E97-413d-9403-68FCBE7BD843}" attr="2" directory="NANT_SDKFOLDER">
+                    <key file="NAnt-SDK.chm" />
+                    <fileset basedir="${installsource.dir}\NAnt\Docs\SDK">
+                        <includes name="NAnt-SDK.chm" />
+                    </fileset>
+                </component>
+                <component name="VisualCppTasksFiles_${NAnt.id}" id="{E6C33C45-9FC3-4309-9E4A-B2A6FEBAB146}" attr="2" directory="NANT_TASKSFOLDER">
+                    <key file="NAnt.VisualCppTasks.dll" />
+                    <fileset basedir="${installsource.dir}\NAnt\Tasks">
+                        <includes name="NAnt.VisualCppTasks.dll" />
+                    </fileset>
+                </component>
+                <component name="ZipTasksFiles_${NAnt.id}" id="{E0076CB1-3914-4F9A-8634-A9B77D5F94C7}" attr="2" directory="NANT_TASKSFOLDER">
+                    <key file="NAnt.ZipTasks.dll" />
+                    <fileset basedir="${installsource.dir}\NAnt\Tasks">
+                        <includes name="NAnt.ZipTasks.dll" />
+                    </fileset>
+                </component>
+                <component name="SharpZipLibFiles_${NAnt.id}" id="{1B2000AE-818A-4A1F-AC29-CA6A321D198E}" attr="2" directory="NANT_TASKSFOLDER">
+                    <key file="SharpZipLib.dll" />
+                    <fileset basedir="${installsource.dir}\NAnt\Tasks">
+                        <includes name="SharpZipLib.dll" />
+                    </fileset>
+                </component>
+            </components>
+            <shortcuts>
+			    <shortcut name="TasksReferenceDocs_${NAnt.id}" directory="NANT_NANTMENUFOLDER" filename="NAnt Tasks Reference" 
+						    component="TasksDocsFiles_${NAnt.id}" target="[$TasksDocsFiles_${NAnt.id}]\index.html" showcmd="3" >
+					    <description>NAnt Tasks Reference</description>
+			    </shortcut>
+			    <shortcut name="SDKDocs_${NAnt.id}" directory="NANT_NANTMENUFOLDER" filename="NAnt SDK Reference" 
+						    component="SDKDocsFiles_${NAnt.id}" target="[$SDKDocsFiles_${NAnt.id}]\NAnt-SDK.chm" showcmd="3" >
+					    <description>NAnt SDK Reference</description>
+			    </shortcut>
+            </shortcuts>
+        </msm>
+    </target>    
+    
+    <!--*****************************************************************-->
+    <!--* Create the .msm Windows Installer Merge Module of NAntContrib *-->
+    <!--*****************************************************************-->
+    <target name="NAntContrib.msm" depends="build,userdoc" description="Build MSM Merge Module of NAntContrib">
+        <property name="NAntContrib.id" value="21E9BAFF_1E50_4382_BE80_E44EA59FD8B9" />
+          
+        <call target="getNAntContribVersion" />
+
+        <mkdir dir="${installsource.dir}\NAnt\Tasks" failonerror="false" />
+        <mkdir dir="${installsource.dir}\NAnt\Docs\Help\NAntContrib_Tasks" />
+        
+        <copy todir="${installsource.dir}\NAnt\Tasks">
+            <fileset basedir="${build.dir}">
+                <includes name="*.dll" />
+                <includes name="*.mst" />
+                <includes name="*.msi" />
+                <includes name="*.msm" />
+            </fileset>
+        </copy>
+
+        <copy todir="${installsource.dir}\NAnt\Docs\Help\NAntContrib_Tasks">
+            <fileset basedir="${build.dir}\doc\help\tasks">
+                <includes name="*.html" />
+            </fileset>
+        </copy>
+
+        <!-- Get rid of read-only attributes, if present -->
+        <exec program="attrib" commandline=" -R /S /D ${installsource.dir}\*.*" failonerror="false" />
+
+        <msm 
+            output="NAntContrib.msm"
+            sourcedir="${installsource.dir}"
+            id="NAntContrib_MergeModule.${NAntContrib.id}"
+            version="${nantcontrib.version}"
+            debug="true"
+            verbose="true"
+        >
+            <properties>
+                <property name="ProductName" value="NAntContrib" />
+                <property name="ProductVersion" value="${nantcontrib.version}" />
+                <property name="Manufacturer" value="The NAntContrib SourceForge Project"/>
+                <property name="ProductCode" value="{2D2FB50C-DADF-4813-8932-8EF1E8CB8E80}" />
+                <property name="UpgradeCode" value="{B989702A-035F-44F1-B40D-192BA25DECB7}" />
+            </properties>
+            <directories>
+                <directory name="NANT_NANTFOLDER" foldername="NAnt" root="ProgramFilesFolder">
+                    <directory name="NANT_TASKSFOLDER" foldername="Tasks" />
+                    <directory name="NANT_DOCSFOLDER" foldername="Docs" >
+                        <directory name="NANT_HELPFOLDER" foldername="Help" >
+                            <directory name="NANT_NANTCONTRIBHELPTASKSFOLDER" foldername="NAntContrib_Tasks" />
+                        </directory>
+                    </directory>
+                </directory>
+				<directory name="NANT_NANTMENUFOLDER" foldername="NAnt" root="ProgramMenuFolder" />                
+            </directories>
+            <components>
+                <component name="OptionalTasksFiles_${NAntContrib.id}" id="{C97CAD02-A80E-4e08-8C63-2D42F84D7A52}" attr="2" directory="NANT_TASKSFOLDER">
+                    <key file="MSITaskTemplate.msi" />
+                    <fileset basedir="${installsource.dir}\NAnt\Tasks">
+                        <includes name="CollectionGen.dll" />
+                        <includes name="Interop.*.dll" />
+                        <includes name="MSI*.*" />
+                        <includes name="MSM*.*" />
+                        <includes name="NAnt.Contrib.Tasks.dll" />
+                        <includes name="Sourcesafe.Interop.dll" />
+                    </fileset>
+                </component>
+                <component name="TasksDocsFiles_${NAntContrib.id}" id="{0E81AA23-D232-4356-92BA-678029E4A822}" attr="2" directory="NANT_NANTCONTRIBHELPTASKSFOLDER">
+                    <key file="index.html" />
+                    <fileset basedir="${installsource.dir}\NAnt\Docs\Help\NAntContrib_Tasks">
+                        <includes name="*.html" />
+                    </fileset>
+                </component>
+            </components>
+            <shortcuts>
+			    <shortcut name="TasksReferenceDocs_${NAntContrib.id}" directory="NANT_NANTMENUFOLDER" filename="NAntContrib Tasks Reference" 
+						    component="TasksDocsFiles_${NAntContrib.id}" target="[$TasksDocsFiles_${NAntContrib.id}]\index.html" showcmd="3" >
+					    <description>NAntContrib Tasks Reference</description>
+			    </shortcut>
+            </shortcuts>            
+        </msm>
+    </target>    
+    
+    <!--************************************************************************-->
+    <!--* Sets the version of NAnt.Contrib.Tasks.dll to nantcontrib.version    *-->
+    <!--************************************************************************-->    
+	<target name="getNAntContribVersion" description="Sets the version of NAnt.Contrib.Tasks.dll to nantcontrib.version" >
+		<script language="C#">
+		<code><![CDATA[
+		public static void ScriptMain(Project project) {
+			string buildPath = Path.Combine(project.BaseDirectory, project.Properties["build.dir"]);
+			project.Properties["nantcontrib.version"] = System.Diagnostics.FileVersionInfo.GetVersionInfo(Path.Combine(buildPath, "NAnt.Contrib.Tasks.dll")).FileVersion.ToString();
+		}
+		]]></code>
+		</script>        
+	</target>
+    
+</project>

@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<!--*****************************************************************-->
+<!--* @(#)NAntContribInstall.include                                *-->
+<!--*                                                               *-->  
+<!--* Builds the MSI or MSM of the NAntContrib project              *-->
+<!--*****************************************************************-->
+<project name="SLiNgshoTInstall" >
+    <property name="installsource.dir" value="../../install" />
+
+    <!--*****************************************************************-->
+    <!--* Create the .msm Windows Installer Merge Module                *-->
+    <!--*****************************************************************-->
+    <target name="SLiNgshoT.msm" description="Build MSM Merge Module" >
+        <property name="SLiNgshoT.id" value="954D12C8_16E7_4ee0_A4B0_B4C8D4188416" />
+        
+        <call target="getSlingshotVersion" />
+    
+        <mkdir dir="${installsource.dir}\NAnt" failonerror="false" />
+        <copy todir="${installsource.dir}\NAnt" file="${build.dir}\SLiNgshoT.Core.dll" />
+        <copy todir="${installsource.dir}\NAnt" file="${build.dir}\SLiNgshoT.exe" />
+
+        <!-- Get rid of read-only attributes, if present -->
+        <exec program="attrib" commandline=" -R /S /D ${installsource.dir}\*.*" failonerror="false" />
+           
+        <msm 
+            output="SLiNgshoT.msm"
+            sourcedir="${installsource.dir}"
+            id="SLiNgshoT_MergeModule.${SLiNgshoT.id}"
+            version="${slingshot.version}"
+            debug="true"
+            verbose="true"
+        >
+            <properties>
+                <property name="ProductName" value="SLiNgshoT" />
+                <property name="ProductVersion" value="${slingshot.version}" />
+                <property name="Manufacturer" value="The NAntContrib SourceForge Project"/>
+                <property name="ProductCode" value="{2D2FB50C-DADF-4813-8932-8EF1E8CB8E80}" />
+                <property name="UpgradeCode" value="{B989702A-035F-44F1-B40D-192BA25DECB7}" />
+            </properties>
+            <directories>
+                <directory name="NANT_NANTFOLDER" foldername="NAnt" root="ProgramFilesFolder" />
+            </directories>
+            <components>
+                <component name="SlingshotFiles_${SLiNgshoT.id}" id="{D63F2198-582D-47b5-B5B3-7C4E6A9F23B4}" attr="2" directory="NANT_NANTFOLDER">
+                    <key file="SLiNgshoT.exe" />
+                    <fileset basedir="${installsource.dir}\NAnt">
+                        <includes name="SLiNgshoT.exe" />
+                    </fileset>
+                </component>
+                <component name="SlingshotLibFiles_${SLiNgshoT.id}" id="{80265672-EC2C-4f30-9E48-7FF11CBC565C}" attr="2" directory="NANT_NANTFOLDER">
+                    <key file="SLiNgshoT.Core.dll" />
+                    <fileset basedir="${installsource.dir}\NAnt">
+                        <includes name="SLiNgshoT.Core.dll" />
+                    </fileset>
+                </component>
+            </components>
+        </msm>
+    </target>
+    
+    <!--*****************************************************************-->
+    <!--* Sets the version of output to slingshot.version               *-->
+    <!--*****************************************************************-->
+	<target name="getSlingshotVersion" description="Sets the version of output to slingshot.version" >
+		<script language="C#">
+		<code><![CDATA[
+		public static void ScriptMain(Project project) {
+			string buildPath = Path.Combine(project.BaseDirectory, project.Properties["build.dir"]);
+			project.Properties["slingshot.version"] = System.Diagnostics.FileVersionInfo.GetVersionInfo(Path.Combine(buildPath, "SLiNgshoT.Core.dll")).FileVersion.ToString();
+		}
+		]]></code>
+		</script>        
+	</target>
+    
+</project>
