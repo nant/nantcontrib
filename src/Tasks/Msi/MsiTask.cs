@@ -54,7 +54,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// An .rtf (rich text format) file containing the license agreement for your software. 
         /// The contents of this file will be displayed to the user when setup runs and must be accepted to continue.
         /// </summary>
-        [TaskAttribute("license", Required=true)]
+        [TaskAttribute("license", Required=false)]
         public string MsiLicense {
             get { return ((msi)_taskCommand.MsiBase).license; }
         }
