@@ -57,6 +57,14 @@
                     AssemblyName = "NAnt.Core"
                     HintPath = "..\NAntRelease\bin\NAnt.Core.dll"
                 />
+                <Reference
+                    Name = "System.Data"
+                    AssemblyName = "System.Data"
+                />
+                <Reference
+                    Name = "System.XML"
+                    AssemblyName = "System.XML"
+                />
             </References>
         </Build>
         <Files>
@@ -66,32 +74,59 @@
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
-               <File
-                   RelPath = "CommonAssemblyInfo.cs"
-                   Link = "..\src\CommonAssemblyInfo.cs"
-                   SubType = "Code"
-                   BuildAction = "Compile"
-               />
+                <File
+                    RelPath = "BuildTestBase.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "CommonAssemblyInfo.cs"
+                    Link = "..\src\CommonAssemblyInfo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ConsoleCapture.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TempDir.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TempFile.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TestBuildException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\TryCatchTaskTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
                 <File
                     RelPath = "Tasks\VersionTaskTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
-               <File
+                <File
                     RelPath = "Tasks\SourceSafe\GetTaskTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
-               <File
+                <File
                     RelPath = "Util\SqlStatementListTests.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
-           </Include>
+            </Include>
         </Files>
     </CSHARP>
 </VisualStudioProject>
-
-
-
 
