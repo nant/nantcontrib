@@ -36,7 +36,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         #region Attributes
 
         /// <summary>
-        /// The name of the file that will be generated when the task completes execution. (Eg. MyInstall.msi or MyMergeModule.msm)
+        /// The name of the file that will be generated when the task completes 
+        /// execution (eg. MyInstall.msi or MyMergeModule.msm).
         /// </summary>
         [TaskAttribute("output", Required=true, ProcessXml=false)]
         public string MsiOutput {
@@ -44,8 +45,9 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
 
         /// <summary>
-        /// A directory relative to the NAnt script in which the msi task resides from which to retrieve files 
-        /// that will be installed by the msi database. All files that will be included in your installation need 
+        /// A directory relative to the NAnt script in which the msi task resides 
+        /// from which to retrieve files  that will be installed by the msi 
+        /// database. All files that will be included in your installation need 
         /// to be located directly within or in subdirectories of this directory. 
         /// </summary>
         [TaskAttribute("sourcedir", Required=true, ProcessXml=false)]
@@ -54,9 +56,11 @@ namespace NAnt.Contrib.Tasks.Msi {
         }        
 
         /// <summary>
-        /// A installer file to use as the starting database in which all files and entries will be made, and then copied to the filename 
-        /// specified by the output parameter. Install templates are included with the install tasks, you only need to supply this value if you 
-        /// want to override the default template. 
+        /// A installer file to use as the starting database in which all files 
+        /// and entries will be made, and then copied to the filename specified 
+        /// by the output parameter. Install templates are included with the 
+        /// install tasks, you only need to supply this value if you want to 
+        /// override the default template. 
         /// </summary>
         [TaskAttribute("template", Required=false, ProcessXml=false)]
         public string MsiTemplate {
@@ -64,9 +68,12 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
 
         /// <summary>
-        /// A .mst file to use as the starting database containing strings displayed to the user when errors occur during installation. 
-        /// A .mst template is included with the msi task, you only need to supply this value if you want to override the default error 
-        /// template and cannot perform something through the features of the msi task.
+        /// A .mst file to use as the starting database containing strings 
+        /// displayed to the user when errors occur during installation. 
+        /// A .mst template is included with the msi task, you only need to 
+        /// supply this value if you want to override the default error 
+        /// template and cannot perform something through the features of the 
+        /// msi task.
         /// </summary>
         [TaskAttribute("errortemplate", Required=false, ProcessXml=false)]
         public string MsiErrorTemplate {
@@ -74,8 +81,10 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
 
         /// <summary>
-        /// Causes the generated msi database file to contain debug messages for errors created by inconsistencies in creation of the 
-        /// database. This makes the file slightly larger and should be avoided when generating a production release of your software.
+        /// Causes the generated msi database file to contain debug messages for 
+        /// errors created by inconsistencies in creation of the database. This 
+        /// makes the file slightly larger and should be avoided when generating 
+        /// a production release of your software.
         /// </summary>
         [TaskAttribute("debug", Required=false, ProcessXml=false)]
         public bool MsiDebug {
@@ -87,15 +96,18 @@ namespace NAnt.Contrib.Tasks.Msi {
         #region Nested build elements
 
         /// <summary>
-        /// Name/value pairs which will be set in the PROPERTY table of the installer database.
+        /// <para>
+        /// Name/value pairs which will be set in the PROPERTY table of the 
+        /// installer database.
+        /// </para>
         /// <para>
         /// The properties element contains within it one to any number of property elements.<br/>
-        /// <a href="http://msdn.microsoft.com/library/en-us/msi/setup/protected_properties.asp">Public property</a> names cannot contain lowercase letters.<br/>
-        /// <a href="http://msdn.microsoft.com/library/en-us/msi/setup/protected_properties.asp">Private property</a> names must contain some lowercase letters.<br/>
+        /// <see href="http://msdn.microsoft.com/library/en-us/msi/setup/protected_properties.asp">Public property</see> names cannot contain lowercase letters.<br/>
+        /// <see href="http://msdn.microsoft.com/library/en-us/msi/setup/protected_properties.asp">Private property</see> names must contain some lowercase letters.<br/>
         /// Property names prefixed with % represent system and user environment variables. These are 
-        /// never entered into the <a href="http://msdn.microsoft.com/library/en-us/msi/setup/property_table.asp">Property 
-        /// table</a>. The permanent settings of environment variables can only be modified using the <a href="http://msdn.microsoft.com/library/en-us/msi/setup/environment_table.asp">Environment Table</a>. 
-        /// More information available: <a href="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/properties.asp">http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/properties.asp</a>
+        /// never entered into the <see href="http://msdn.microsoft.com/library/en-us/msi/setup/property_table.asp">Property 
+        /// table</see>. The permanent settings of environment variables can only be modified using the <see href="http://msdn.microsoft.com/library/en-us/msi/setup/environment_table.asp">Environment Table</see>. 
+        /// More information is available <see href="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/properties.asp">here</see>.
         /// </para>
         /// <h3>Parameters</h3>
         /// <list type="table">
@@ -139,7 +151,12 @@ namespace NAnt.Contrib.Tasks.Msi {
         }        
 
         /// <summary>
-        /// The search element contains within it one to any number of key elements. Key elements are used to search for an existing filesystem directory, file, or Windows Registry setting.  A property in the installer database is then set with the value obtained from that registry value.
+        /// <para>
+        /// Contains within it one to any number of key elements. Key elements 
+        /// are used to search for an existing filesystem directory, file, or 
+        /// Windows Registry setting.  A property in the installer database is 
+        /// then set with the value obtained from that registry value.
+        /// </para>
         /// <h3>Parameters</h3>
         /// <list type="table">
         ///     <listheader>
@@ -244,7 +261,11 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
 
         /// <summary>
-        /// The launchconditions element contains within it one to any number of launchcondition elements.  Launch conditions are conditions that all must be satisfied for the installation to begin.
+        /// <para>
+        /// Contains within it one to any number of launchcondition elements.  
+        /// Launch conditions are conditions that all must be satisfied for the 
+        /// installation to begin.
+        /// </para>
         /// <h3>Parameters</h3>
         /// <list type="table">
         ///     <listheader>
@@ -293,7 +314,10 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
 
         /// <summary>
-        /// Creates custom tables not directly managed by default features of the installer task.
+        /// <para>
+        /// Creates custom tables not directly managed by default features of 
+        /// the installer task.
+        /// </para>
         /// <h3>Parameters</h3>
         /// <list type="table">
         /// <listheader>
@@ -505,7 +529,9 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
         
         /// <summary>
+        /// <para>
         /// Specifies the directory layout for the product.
+        /// </para>
         /// <h3>Parameters</h3>
         /// <list type="table">
         ///     <listheader>
@@ -607,7 +633,10 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
 
         /// <summary>
-        /// Used to modify the environment variables of the target computer at runtime.
+        /// <para>
+        /// Used to modify the environment variables of the target computer at 
+        /// runtime.
+        /// </para>
         /// <h3>Parameters</h3>
         /// <list type="table">
         ///     <listheader>
@@ -690,7 +719,10 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
 
         /// <summary>
-        /// Groups sets of files into named sets, these can be used to install and perform operations on a set of files as one entity. 
+        /// <para>
+        /// Groups sets of files into named sets, these can be used to install 
+        /// and perform operations on a set of files as one entity. 
+        /// </para>
         /// <h3>Parameters</h3>
         /// <list type="table">
         ///     <listheader>
@@ -1073,7 +1105,10 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
 
         /// <summary>
-        /// Creates custom dialogs that can gather information not handled by the default installer template.
+        /// <para>
+        /// Creates custom dialogs that can gather information not handled by 
+        /// the default installer template.
+        /// </para>
         /// <h3>Parameters</h3>
         /// <list type="table">
         ///     <listheader>
@@ -1230,7 +1265,9 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
 
         /// <summary>
+        /// <para>
         /// Creates user interface controls displayed on custom dialogs.
+        /// </para>
         /// <h3>Parameters</h3>
         /// <list type="table">
         ///     <listheader>
@@ -1481,7 +1518,10 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
 
         /// <summary>
-        /// Used to validate and perform operations as the result of information entered by the user into controls on custom dialogs.
+        /// <para>
+        /// Used to validate and perform operations as the result of information 
+        /// entered by the user into controls on custom dialogs.
+        /// </para>
         /// <h3>Parameters</h3>
         /// <list type="table">
         ///     <listheader>
@@ -1572,7 +1612,10 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
 
         /// <summary>
-        /// Used to route the flow of the installation process as the result of events raised by the user interacting with controls on dialogs.
+        /// <para>
+        /// Used to route the flow of the installation process as the result of 
+        /// events raised by the user interacting with controls on dialogs.
+        /// </para>
         /// <h3>Parameters</h3>
         /// <list type="table">
         ///     <listheader>
@@ -1686,7 +1729,10 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
                 
         /// <summary>
-        /// Makes modifications to the Windows Registry of the target computer at runtime.
+        /// <para>
+        /// Makes modifications to the Windows Registry of the target computer 
+        /// at runtime.
+        /// </para>
         /// <h3>Parameters</h3>
         /// <list type="table">
         ///     <listheader>
@@ -1866,7 +1912,10 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
         
         /// <summary>
-        /// Stores icons to be used with shortcuts, file extensions, CLSIDs or similar uses.
+        /// <para>
+        /// Stores icons to be used with shortcuts, file extensions, CLSIDs or 
+        /// similar uses.
+        /// </para>
         /// <h3>Parameters</h3>
         /// <list type="table">
         ///     <listheader>
@@ -1905,7 +1954,9 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
 
         /// <summary>
+        /// <para>
         /// Creates shortcuts on the target computer.
+        /// </para>
         /// <h3>Parameters</h3>
         /// <list type="table">
         ///     <listheader>
@@ -2026,7 +2077,11 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
 
         /// <summary>
-        /// Stores the binary data for items such as bitmaps, animations, and icons. The binary table is also used to store data for custom actions. 
+        /// <para>
+        /// Stores the binary data for items such as bitmaps, animations, and 
+        /// icons. The binary table is also used to store data for custom 
+        /// actions.
+        /// </para>
         /// <h3>Parameters</h3>
         /// <list type="table">
         ///     <listheader>
@@ -2065,7 +2120,12 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
 
         /// <summary>
-        /// Used to configure executables that may be run during steps in the installation process to do things outside the bounds of MSI technology's feature set. This is the main spot you can extend MSI technology to perform custom processes via compiled code. Used to configure executables that may be run during steps in the installation process to do things outside the bounds of MSI technology's feature set. This is the main spot you can extend MSI technology to perform custom processes via compiled code. 
+        /// <para>
+        /// Used to configure executables that may be run during steps in the 
+        /// installation process to do things outside the bounds of MSI 
+        /// technology's feature set. This is the main spot you can extend MSI 
+        /// technology to perform custom processes via compiled code.
+        /// </para>
         /// <h3>Parameters</h3>
         /// <list type="table">
         ///     <listheader>
@@ -2160,7 +2220,10 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
         
         /// <summary>
-        /// Used to modify the sequence of tasks/events that execute during the overall installation process.
+        /// <para>
+        /// Used to modify the sequence of tasks/events that execute during the 
+        /// overall installation process.
+        /// </para>
         /// <h3>Parameters</h3>
         /// <list type="table">
         ///     <listheader>
@@ -2264,7 +2327,13 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
         
         /// <summary>
-        /// Creates text to be displayed in a progress dialog box and written to the log for actions that take a long time to execute. The text displayed consists of the action description and optionally formatted data from the action.  The entries in the ActionText table typically refer to actions in sequence tables.
+        /// <para>
+        /// Creates text to be displayed in a progress dialog box and written 
+        /// to the log for actions that take a long time to execute. The text 
+        /// displayed consists of the action description and optionally formatted 
+        /// data from the action.  The entries in the ActionText table typically 
+        /// refer to actions in sequence tables.
+        /// </para>
         /// <h3>Parameters</h3>
         /// <list type="table">
         ///     <listheader>
@@ -2338,8 +2407,10 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
         
         /// <summary>
-        /// Attn!  Not an officially Microsoft supported table.  Used by the virtual directory custom action.<br/>
-        ///    Adds Verbs and a handler for the specified file type.
+        /// <para>
+        /// Adds Verbs and a handler for the specified file type.
+        /// </para>
+        /// <note>This not an officially Microsoft supported table.</note>
         /// <h3>Parameters</h3>
         /// <list type="table">
         ///     <listheader>
@@ -2390,8 +2461,11 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
         
         /// <summary>
-        /// Attn!  Not an officially Microsoft supported table.  Used by the virtual directory custom action.<br/>
-        ///    Determines the local path equivalent for a url and stores this information in a property.
+        /// <para>
+        /// Determines the local path equivalent for a url and stores this 
+        /// information in a property.
+        /// </para>
+        /// <note>This not an officially Microsoft supported table.</note>
         /// <h3>Parameters</h3>
         /// <list type="table">
         ///     <listheader>
@@ -2430,8 +2504,10 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
 
         /// <summary>
-        /// Attn!  Not an officially Microsoft supported table.  Used by the virtual directory custom action.<br/>
-        ///    Creates a URLProperty representing the virtual directory and port.
+        /// <para>
+        /// Creates a URLProperty representing the virtual directory and port.
+        /// </para>
+        /// <note>This not an officially Microsoft supported table.</note>
         /// <h3>Parameters</h3>
         /// <list type="table">
         ///     <listheader>
@@ -2476,8 +2552,13 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
         
         /// <summary>
-        /// Attn!  Not an officially Microsoft supported table.  Used by the virtual directory custom action.<br/>
-        /// Create a Web application definition and mark it as running in-process or out-of-process. If an application already exists at the specified path, you can use this method to reconfigure the application from in-process to out-of-process, or the reverse.
+        /// <para>
+        /// Create a Web application definition and marks it as running in-process 
+        /// or out-of-process. If an application already exists at the specified 
+        /// path, you can use this method to reconfigure the application from 
+        /// in-process to out-of-process, or the reverse.
+        /// </para>
+        /// <note>This not an officially Microsoft supported table.</note>
         /// <h3>Parameters</h3>
         /// <list type="table">
         ///     <listheader>
@@ -2522,8 +2603,11 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
         
         /// <summary>
-        /// Attn!  Not an officially Microsoft supported table.  Used by the virtual directory custom action.<br/>
-        /// Specifies directory security in IIS.  Also can configure the default documents supported by each directory.
+        /// <para>
+        /// Specifies directory security in IIS.  Can also configure the default 
+        /// documents supported by each directory.
+        /// </para>
+        /// <note>This not an officially Microsoft supported table.</note>
         /// <h3>Parameters</h3>
         /// <list type="table">
         ///     <listheader>

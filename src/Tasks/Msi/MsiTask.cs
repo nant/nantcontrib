@@ -31,11 +31,16 @@ using NAnt.Contrib.Schemas.Msi;
 namespace NAnt.Contrib.Tasks.Msi {
     /// <summary>
     /// Creates a Windows Installer (also known as Microsoft Installer, or MSI) setup database for installing software on the Windows Platform. 
-    /// <br />See the <a href="http://msdn.microsoft.com/library/en-us/msi/setup/roadmap_to_windows_installer_documentation.asp?frame=true" >Roadmap to Windows Installer Documentation</a> at Microsoft's MSDN website for more information.
     /// </summary>
     /// <remarks>
-    /// Requires <c>cabarc.exe</c> in the path.  This tool is included in the 
-    /// Microsoft Cabinet SDK. (<a href="http://msdn.microsoft.com/library/en-us/dncabsdk/html/cabdl.asp">http://msdn.microsoft.com/library/en-us/dncabsdk/html/cabdl.asp</a>)
+    /// <para>
+    /// Requires <c>cabarc.exe</c> in the path.  This tool is part of the 
+    /// <see href="http://msdn.microsoft.com/library/en-us/dncabsdk/html/cabdl.asp">Microsoft Cabinet SDK</see>.
+    /// </para>
+    /// <para>
+    /// See the <see href="http://msdn.microsoft.com/library/en-us/msi/setup/roadmap_to_windows_installer_documentation.asp?frame=true" >Roadmap to Windows Installer Documentation</see> 
+    /// at Microsoft's MSDN website for more information.
+    /// </para>
     /// </remarks>
     [TaskName("msi")]
     [SchemaValidator(typeof(msi))]
@@ -51,8 +56,9 @@ namespace NAnt.Contrib.Tasks.Msi {
         #region Attributes
 
         /// <summary>
-        /// An .rtf (rich text format) file containing the license agreement for your software. 
-        /// The contents of this file will be displayed to the user when setup runs and must be accepted to continue.
+        /// An .rtf (rich text format) file containing the license agreement 
+        /// for your software. The contents of this file will be displayed to 
+        /// the user when setup runs and must be accepted to continue.
         /// </summary>
         [TaskAttribute("license", Required=false)]
         public string MsiLicense {
@@ -60,7 +66,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
 
         /// <summary>
-        /// A .bmp (bitmap) file 495x60 pixels in size that will be displayed as the banner (top) image of the installation user interface.
+        /// A .bmp (bitmap) file 495x60 pixels in size that will be displayed 
+        /// as the banner (top) image of the installation user interface.
         /// </summary>
         [TaskAttribute("banner", Required=false)]
         public string MsiBanner {
@@ -68,7 +75,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
 
         /// <summary>
-        /// A .bmp (bitmap) file 495x315 pixels in size that will be displayed as the background image of the installation user interface.
+        /// A .bmp (bitmap) file 495x315 pixels in size that will be displayed 
+        /// as the background image of the installation user interface.
         /// </summary>
         [TaskAttribute("background", Required=false)]
         public string MsiBackground {
@@ -80,7 +88,12 @@ namespace NAnt.Contrib.Tasks.Msi {
         #region Sub-Elements
 
         /// <summary>
-        /// Groups sets of components into named sets, these can be used to layout the tree control that allows users to select and deselect features of your software product when a custom installation is selected at runtime.
+        /// <para>
+        /// Groups sets of components into named sets, these can be used to 
+        /// layout the tree control that allows users to select and deselect 
+        /// features of your software product when a custom installation is 
+        /// selected at runtime.
+        /// </para>
         /// <h3>Parameters</h3>
         /// <list type="table">
         ///     <listheader>
@@ -245,7 +258,12 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
 
         /// <summary>
-        /// Includes pre-packaged installation components (.msm files) as part of the msi database. This feature allows reuse of installation components that use MSI technology from other setup vendors or as created by the <see cref="MsmTask"/> task. 
+        /// <para>
+        /// Includes pre-packaged installation components (.msm files) as part 
+        /// of the msi database. This feature allows reuse of installation 
+        /// components that use MSI technology from other setup vendors or as 
+        /// created by the <see cref="MsmTask" />.
+        /// </para>
         /// <h3>Parameters</h3>
         /// <list type="table">
         ///     <listheader>

@@ -32,10 +32,10 @@ namespace NAnt.Contrib.Tasks.Msi {
     /// <summary>
     /// Builds a Windows Installer Merge Module (MSM) database.
     /// </summary>
-    /// <remarks>
-    /// Requires <c>cabarc.exe</c> in the path.  This tool is included in the 
-    /// Microsoft Cabinet SDK.
-    /// </remarks>
+    /// <para>
+    /// Requires <c>cabarc.exe</c> in the path.  This tool is part of the 
+    /// <see href="http://msdn.microsoft.com/library/en-us/dncabsdk/html/cabdl.asp">http://msdn.microsoft.com/library/en-us/dncabsdk/html/cabdl.asp">Microsoft Cabinet SDK</see>.
+    /// </para>
     [TaskName("msm")]
     [SchemaValidator(typeof(msm), "NAnt.Contrib.Tasks.Msi.MsiTask")]
     public class MsmTask : InstallerTaskBase {
@@ -76,10 +76,15 @@ namespace NAnt.Contrib.Tasks.Msi {
         #region Nested build elements
 
         /// <summary>
-        /// Lists other merge modules that are required for this merge module to operate properly.
         /// <para>
-        /// The moduledependencies element contains within it one to any number of dependency elements.<br/>
-        /// More information available: <a href="http://msdn.microsoft.com/library/en-us/msi/setup/moduledependency_table.asp">http://msdn.microsoft.com/library/en-us/msi/setup/moduledependency_table.asp</a>
+        /// Lists other merge modules that are required for this merge module 
+        /// to operate properly.
+        /// </para>
+        /// <para>
+        /// Contains any number of dependency elements.
+        /// </para>
+        /// <para>
+        /// More information is available <see href="http://msdn.microsoft.com/library/en-us/msi/setup/moduledependency_table.asp">here</see>.
         /// </para>
         /// <h3>Parameters</h3>
         /// <list type="table">
@@ -125,10 +130,15 @@ namespace NAnt.Contrib.Tasks.Msi {
         }        
 
         /// <summary>
-        /// Lists other merge modules that are incompatible in the same installer database.
         /// <para>
-        /// The moduleexclusions element contains within it one to any number of exclusion elements.<br/>
-        /// More information available: <a href="http://msdn.microsoft.com/library/en-us/msi/setup/moduleexclusion_table.asp">http://msdn.microsoft.com/library/en-us/msi/setup/moduleexclusion_table.asp</a>
+        /// Lists other merge modules that are incompatible in the same 
+        /// installer database.
+        /// </para>
+        /// <para>
+        /// Contains any number of exclusion elements.
+        /// </para>
+        /// <para>
+        /// More information is available <see href="http://msdn.microsoft.com/library/en-us/msi/setup/moduleexclusion_table.asp">here</see>.
         /// </para>
         /// <h3>Parameters</h3>
         /// <list type="table">
@@ -199,7 +209,10 @@ namespace NAnt.Contrib.Tasks.Msi {
         }  
         
         /// <summary>
-        /// Used to modify the sequence of tasks/events that execute during the overall installation process.
+        /// <para>
+        /// Used to modify the sequence of tasks/events that execute during the 
+        /// overall installation process.
+        /// </para>
         /// <h3>Parameters</h3>
         /// <list type="table">
         ///     <listheader>
@@ -276,9 +289,15 @@ namespace NAnt.Contrib.Tasks.Msi {
         }  
 
         /// <summary>
-        /// If a table in the merge module is listed in the ModuleIgnoreTable table, it is not merged into the .msi file. If the table already exists in the .msi file, it is not modified by the merge. The tables in the ModuleIgnoreTable can therefore contain data that is unneeded after the merge.
         /// <para>
-        /// More information available: <a href="http://msdn.microsoft.com/library/en-us/msi/setup/moduleignoretable_table.asp?frame=true">http://msdn.microsoft.com/library/en-us/msi/setup/moduleignoretable_table.asp?frame=true</a>
+        /// If a table in the merge module is listed in the ModuleIgnoreTable 
+        /// table, it is not merged into the .msi file. If the table already 
+        /// exists in the .msi file, it is not modified by the merge. The tables 
+        /// in the ModuleIgnoreTable can therefore contain data that is unneeded 
+        /// after the merge.
+        /// </para>
+        /// <para>
+        /// More information is available <see href="http://msdn.microsoft.com/library/en-us/msi/setup/moduleignoretable_table.asp?frame=true">here</see>.
         /// </para>
         /// <h3>Parameters</h3>
         /// <list type="table">
@@ -314,9 +333,15 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
 
         /// <summary>
-        /// The ModuleSubstitution table specifies the configurable fields of a module database and provides a template for the configuration of each field. The user or merge tool may query this table to determine what configuration operations are to take place. This table is not merged into the target database.
         /// <para>
-        /// More information available: <a href="http://msdn.microsoft.com/library/en-us/msi/setup/modulesubstitution_table.asp">http://msdn.microsoft.com/library/en-us/msi/setup/modulesubstitution_table.asp</a>
+        /// The ModuleSubstitution table specifies the configurable fields of a 
+        /// module database and provides a template for the configuration of each 
+        /// field. The user or merge tool may query this table to determine what 
+        /// configuration operations are to take place. This table is not merged 
+        /// into the target database.
+        /// </para>
+        /// <para>
+        /// More information is available <see href="http://msdn.microsoft.com/library/en-us/msi/setup/modulesubstitution_table.asp">here</see>.
         /// </para>
         /// <h3>Parameters</h3>
         /// <list type="table">
@@ -392,9 +417,12 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
 
         /// <summary>
-        /// Identifies the configurable attributes of the module. This table is not merged into the database.
         /// <para>
-        /// More information available: <a href="http://msdn.microsoft.com/library/en-us/msi/setup/moduleconfiguration_table.asp">http://msdn.microsoft.com/library/en-us/msi/setup/moduleconfiguration_table.asp</a>
+        /// Identifies the configurable attributes of the module. This table is 
+        /// not merged into the database.
+        /// </para>
+        /// <para>
+        /// More information is available <see href="http://msdn.microsoft.com/library/en-us/msi/setup/moduleconfiguration_table.asp">here</see>.
         /// </para>
         /// <h3>Parameters</h3>
         /// <list type="table">
