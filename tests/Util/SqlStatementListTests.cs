@@ -32,160 +32,185 @@ using NAnt.Core.Attributes;
 using NAnt.Contrib.Util;
 
 namespace NAnt.Contrib.Tests.Util {
-   /// <summary>
-   /// SqlStatementList class tests
-   /// </summary>
-   [TestFixture]
-   public class SqlStatementListTests
-   {
-      const string STATEMENT_1 = "select * from tables";
-      const string STATEMENT_2 = "insert into tables values(1,2,3)";
-      const string STATEMENT_3 = "drop tables";
-      const string STATEMENT_GOTO = "goto error_handling";
-      const string DELIMITER = ";";
-     
+    /// <summary>
+    /// SqlStatementList class tests
+    /// </summary>
+    [TestFixture]
+    public class SqlStatementListTests {
+        private const string STATEMENT_1 = "select * from tables";
+        private const string STATEMENT_2 = "insert into tables values(1,2,3)";
+        private const string STATEMENT_3 = "drop tables";
+        private const string STATEMENT_GOTO = "goto error_handling";
+        private const string DELIMITER = ";";
 
-      public void TestLoadFromString()
-      {
-         string statements = STATEMENT_1 + "\n  " + DELIMITER + STATEMENT_2
-            + DELIMITER + "   \n " + STATEMENT_3;
+        private const string ProjectXml = @"<?xml version='1.0'?>
+            <project name='ProjectTest' default='test'>
+                <target name='test' />
+            </project>";
 
-         SqlStatementList list = new SqlStatementList(DELIMITER, DelimiterStyle.Normal);
-         list.ParseSql(statements);
+        public void TestLoadFromString() {
+            string statements = STATEMENT_1 + "\n  " + DELIMITER + STATEMENT_2
+                + DELIMITER + "   \n " + STATEMENT_3;
 
-         Assertion.AssertEquals(3, list.Count);
-         Assertion.AssertEquals(STATEMENT_1, list[0]);
-         Assertion.AssertEquals(STATEMENT_2, list[1]);
-         Assertion.AssertEquals(STATEMENT_3, list[2]);
-      }
+            SqlStatementList list = new SqlStatementList(DELIMITER, DelimiterStyle.Normal);
+            list.ParseSql(statements);
 
+            Assertion.AssertEquals(3, list.Count);
+            Assertion.AssertEquals(STATEMENT_1, list[0]);
+            Assertion.AssertEquals(STATEMENT_2, list[1]);
+            Assertion.AssertEquals(STATEMENT_3, list[2]);
+        }
 
-      public void TestCommentStripping()
-      {
-         string statements = STATEMENT_1 + DELIMITER + "\n //" + STATEMENT_2
-            + DELIMITER + "   \n --" + STATEMENT_3
-            + DELIMITER + "\n" + STATEMENT_1;
+        public void TestCommentStripping() {
+            string statements = STATEMENT_1 + DELIMITER + "\n //" + STATEMENT_2
+                + DELIMITER + "   \n --" + STATEMENT_3
+                + DELIMITER + "\n" + STATEMENT_1;
 
-         SqlStatementList list = new SqlStatementList(DELIMITER, DelimiterStyle.Normal);
-         list.ParseSql(statements);
+            SqlStatementList list = new SqlStatementList(DELIMITER, DelimiterStyle.Normal);
+            list.ParseSql(statements);
 
-         Assertion.AssertEquals(2, list.Count);
-         Assertion.AssertEquals(STATEMENT_1, list[0]);
-         Assertion.AssertEquals(STATEMENT_1, list[1]);
-      }
+            Assertion.AssertEquals(2, list.Count);
+            Assertion.AssertEquals(STATEMENT_1, list[0]);
+            Assertion.AssertEquals(STATEMENT_1, list[1]);
+        }
 
-      public void TestIgnoreEmptyLines()
-      {
-         string statements = STATEMENT_1 + DELIMITER + "\n \n";
+        public void TestIgnoreEmptyLines() {
+            string statements = STATEMENT_1 + DELIMITER + "\n \n";
 
-         SqlStatementList list = new SqlStatementList(DELIMITER, DelimiterStyle.Normal);
-         list.ParseSql(statements);
+            SqlStatementList list = new SqlStatementList(DELIMITER, DelimiterStyle.Normal);
+            list.ParseSql(statements);
 
-         Assertion.AssertEquals(1, list.Count);
-         Assertion.AssertEquals(STATEMENT_1, list[0]);
-      }
+            Assertion.AssertEquals(1, list.Count);
+            Assertion.AssertEquals(STATEMENT_1, list[0]);
+        }
 
-      public void TestGoLineBatch()
-      {
-         string goDelimiter = "go";
+        public void TestGoLineBatch() {
+            string goDelimiter = "go";
 
-         string statements =
-            STATEMENT_1 + Environment.NewLine
-            + STATEMENT_2 + Environment.NewLine
-            + goDelimiter + Environment.NewLine
-            + STATEMENT_3 + Environment.NewLine
-            + goDelimiter + Environment.NewLine
-            + STATEMENT_3 + Environment.NewLine
-            + goDelimiter + Environment.NewLine
-            + "-- " + STATEMENT_3;
+            string statements =
+                STATEMENT_1 + Environment.NewLine
+                + STATEMENT_2 + Environment.NewLine
+                + goDelimiter + Environment.NewLine
+                + STATEMENT_3 + Environment.NewLine
+                + goDelimiter + Environment.NewLine
+                + STATEMENT_3 + Environment.NewLine
+                + goDelimiter + Environment.NewLine
+                + "-- " + STATEMENT_3;
 
-         SqlStatementList list = new SqlStatementList(goDelimiter, DelimiterStyle.Line);
-         list.ParseSql(statements);
+            SqlStatementList list = new SqlStatementList(goDelimiter, DelimiterStyle.Line);
+            list.ParseSql(statements);
 
-         Assertion.AssertEquals(4, list.Count);
-         Assertion.AssertEquals("Statement 1", STATEMENT_1 + Environment.NewLine + STATEMENT_2 + Environment.NewLine, list[0]);
-         Assertion.AssertEquals("Statement 3.1", STATEMENT_3 + Environment.NewLine, list[1]);
-         Assertion.AssertEquals("Statement 3.2", STATEMENT_3 + Environment.NewLine, list[2]);
-         Assertion.AssertEquals("Comment", "-- " + STATEMENT_3 + Environment.NewLine, list[3]);
-      }
+            Assertion.AssertEquals(4, list.Count);
+            Assertion.AssertEquals("Statement 1", STATEMENT_1 + Environment.NewLine + STATEMENT_2 + Environment.NewLine, list[0]);
+            Assertion.AssertEquals("Statement 3.1", STATEMENT_3 + Environment.NewLine, list[1]);
+            Assertion.AssertEquals("Statement 3.2", STATEMENT_3 + Environment.NewLine, list[2]);
+            Assertion.AssertEquals("Comment", "-- " + STATEMENT_3 + Environment.NewLine, list[3]);
+        }
 
-      public void TestDifferentGoDelimiters()
-      {
-         string goDelimiter1 = "go";
-         string goDelimiter2 = "gO";
+        public void TestDifferentGoDelimiters() {
+            string goDelimiter1 = "go";
+            string goDelimiter2 = "gO";
 
-         string statements =
-            STATEMENT_1 + Environment.NewLine
-            + STATEMENT_2 + Environment.NewLine
-            + goDelimiter1 + Environment.NewLine
-            + STATEMENT_3 + Environment.NewLine
-            + goDelimiter1 + Environment.NewLine
-            + STATEMENT_3 + Environment.NewLine
-            + goDelimiter2 + Environment.NewLine
-            + "-- " + STATEMENT_3;
+            string statements =
+                STATEMENT_1 + Environment.NewLine
+                + STATEMENT_2 + Environment.NewLine
+                + goDelimiter1 + Environment.NewLine
+                + STATEMENT_3 + Environment.NewLine
+                + goDelimiter1 + Environment.NewLine
+                + STATEMENT_3 + Environment.NewLine
+                + goDelimiter2 + Environment.NewLine
+                + "-- " + STATEMENT_3;
 
-         SqlStatementList list = new SqlStatementList(goDelimiter1, DelimiterStyle.Line);
-         list.ParseSql(statements);
+            SqlStatementList list = new SqlStatementList(goDelimiter1, DelimiterStyle.Line);
+            list.ParseSql(statements);
 
-         Assertion.AssertEquals(4, list.Count);
-         Assertion.AssertEquals("Statement 1", STATEMENT_1 + Environment.NewLine + STATEMENT_2  + Environment.NewLine, list[0]);
-         Assertion.AssertEquals("Statement 3.1", STATEMENT_3 + Environment.NewLine, list[1]);
-         Assertion.AssertEquals("Statement 3.2", STATEMENT_3 + Environment.NewLine, list[2]);
-         Assertion.AssertEquals("Comment", "-- " + STATEMENT_3 + Environment.NewLine, list[3]);
-      }
+            Assertion.AssertEquals(4, list.Count);
+            Assertion.AssertEquals("Statement 1", STATEMENT_1 + Environment.NewLine + STATEMENT_2  + Environment.NewLine, list[0]);
+            Assertion.AssertEquals("Statement 3.1", STATEMENT_3 + Environment.NewLine, list[1]);
+            Assertion.AssertEquals("Statement 3.2", STATEMENT_3 + Environment.NewLine, list[2]);
+            Assertion.AssertEquals("Comment", "-- " + STATEMENT_3 + Environment.NewLine, list[3]);
+        }
 
-      public void TestKeepLineFormatting()
-      {
-         string goDelimiter = "go";
+        public void TestKeepLineFormatting() {
+            string goDelimiter = "go";
 
-         string statements = "\t" +
-            STATEMENT_1 + Environment.NewLine
-            + "\t" + STATEMENT_2 + Environment.NewLine;
+            string statements = "\t" +
+                STATEMENT_1 + Environment.NewLine
+                + "\t" + STATEMENT_2 + Environment.NewLine;
 
-         SqlStatementList list = new SqlStatementList(goDelimiter, DelimiterStyle.Line);
-         list.ParseSql(statements);
+            SqlStatementList list = new SqlStatementList(goDelimiter, DelimiterStyle.Line);
+            list.ParseSql(statements);
 
-         Assertion.AssertEquals(1, list.Count);
-         Assertion.AssertEquals(statements, list[0]);
-      }
+            Assertion.AssertEquals(1, list.Count);
+            Assertion.AssertEquals(statements, list[0]);
+        }
 
-      public void TestPropertyReplacement()
-      {
-         string sqlWithPropertyTags = @"use ${dbName}";
-         string expectedSqlStatement = @"use master";
+        public void TestPropertyReplacement() {
+            string sqlWithPropertyTags = @"use ${dbName}";
+            string expectedSqlStatement = @"use master";
 
-         string goDelimiter = "go";
+            string goDelimiter = "go";
 
-         string inputStatements = "\t" +
-            sqlWithPropertyTags + Environment.NewLine
-            + "\t" + sqlWithPropertyTags + Environment.NewLine;
+            string inputStatements = "\t" +
+                sqlWithPropertyTags + Environment.NewLine
+                + "\t" + sqlWithPropertyTags + Environment.NewLine;
 
-         string expectedStatements = "\t" +
-            expectedSqlStatement + Environment.NewLine
-            + "\t" + expectedSqlStatement + Environment.NewLine;
+            string expectedStatements = "\t" +
+                expectedSqlStatement + Environment.NewLine
+                + "\t" + expectedSqlStatement + Environment.NewLine;
 
-         SqlStatementList list = new SqlStatementList(goDelimiter, DelimiterStyle.Line);
+            SqlStatementList list = new SqlStatementList(goDelimiter, DelimiterStyle.Line);
 
-         list.Properties = new PropertyDictionary();
-         list.Properties.Add("dbName", "master");
+            string buildFile = null;
 
-         list.ParseSql(inputStatements);
+            try {
+                // persist buildfile
+                buildFile = CreateFileWithContents(ProjectXml);
 
-         Assertion.AssertEquals(1, list.Count);
-         Assertion.AssertEquals(expectedStatements, list[0]);
-      }
+                // create project for buildfile
+                Project project = new Project(buildFile, Level.Info);
 
-      public void TestGoSeparatorMustNotSplitGoto()
-      {
-         string goDelimiter = "go";
+                list.Properties = new PropertyDictionary(project);
+                list.Properties.Add("dbName", "master");
 
-         string statements = STATEMENT_1 + Environment.NewLine + STATEMENT_GOTO + Environment.NewLine;
+                list.ParseSql(inputStatements);
 
-         SqlStatementList list = new SqlStatementList(goDelimiter, DelimiterStyle.Line);
-         list.ParseSql(statements);
+                Assertion.AssertEquals(1, list.Count);
+                Assertion.AssertEquals(expectedStatements, list[0]);
+            } finally {
+                // make sure temp buildfile is deleted
+                if (buildFile != null) {
+                    File.Delete(buildFile);
+                }
+            }
+        }
 
-         Assertion.AssertEquals(1, list.Count);
-         Assertion.AssertEquals(statements, list[0]);
-      }
-   }
+        public void TestGoSeparatorMustNotSplitGoto() {
+            string goDelimiter = "go";
+
+            string statements = STATEMENT_1 + Environment.NewLine + STATEMENT_GOTO + Environment.NewLine;
+
+            SqlStatementList list = new SqlStatementList(goDelimiter, DelimiterStyle.Line);
+            list.ParseSql(statements);
+
+            Assertion.AssertEquals(1, list.Count);
+            Assertion.AssertEquals(statements, list[0]);
+        }
+
+        private static string CreateFileWithContents(string contents) {
+            // get path of new temp file
+            string fileName = Path.GetTempFileName();
+
+            // write the text into the temp file.
+            using (FileStream f = new FileStream(fileName, FileMode.Create)) {
+                StreamWriter s = new StreamWriter(f);
+                s.Write(contents);
+                s.Close();
+                f.Close();
+            }
+
+            // return path of temp file
+            return fileName;
+        }
+    }
 }
