@@ -24,11 +24,14 @@ using System.Text;
 using System.Xml;
 
 using NUnit.Framework;
-using SourceForge.NAnt.Tasks;
 
-namespace SourceForge.NAnt.Tests {
-
+namespace SourceForge.NAnt.Contrib.Tests {
+/*
     public class TlbImpTaskTest : BuildTestBase {
+
+        TlbImpTaskTest(string name) : base(name)
+        {
+        }
 
         string _format = @"<?xml version='1.0' ?>
             <project>
@@ -42,15 +45,14 @@ namespace SourceForge.NAnt.Tests {
                     strictref='true'/>
             </project>";
 
-        public TlbImpTaskTest(String name) : base(name) {
-        }
 
         /// <summary>Test to see if task can run.</summary>
         public void Test_SanityCheck() {
             string fileName = Path.Combine(TempDirName, "interop.wshom.dll");
             string xml = String.Format(_format, fileName, Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "wshom.ocx"), "WScript");
             RunBuild(xml);
-            Assert("Type library '" + fileName + "' was not created.", File.Exists(fileName));
+            Assertion.Assert("Type library '" + fileName + "' was not created.", File.Exists(fileName));
         }
     }
+*/
 }

@@ -37,7 +37,6 @@ namespace NAnt.Contrib.Tests.Util
    /// </summary>
    public class SqlStatementListTests : TestCase
    {
-
       const string STATEMENT_1 = "select * from tables";
       const string STATEMENT_2 = "insert into tables values(1,2,3)";
       const string STATEMENT_3 = "drop tables";
