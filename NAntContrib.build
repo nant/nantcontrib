@@ -59,10 +59,11 @@
             <fileset basedir="bin">
                 <includes name="CollectionGen.dll"/>
                 <includes name="SourceSafe.Interop.dll"/>
-                <includes name="bin\Interop.StarTeam.dll"/>
+                <includes name="Interop.StarTeam.dll"/>
                 <includes name="Interop.WindowsInstaller.dll"/>
-		    <includes name="MSITaskErrors.mst"/>
-		    <includes name="MSITaskTemplate.msi"/>
+                <includes name="Interop.MsmMergeTypeLib.dll"/>
+		<includes name="MSITaskErrors.mst"/>
+		<includes name="MSITaskTemplate.msi"/>
             </fileset>
       </copy>
     </target>
@@ -91,6 +92,7 @@
                 <includes name="bin\SourceSafe.Interop.dll"/>
                 <includes name="bin\Interop.StarTeam.dll"/>
                 <includes name="bin\Interop.WindowsInstaller.dll"/>
+                <includes name="bin\Interop.MsmMergeTypeLib.dll"/>
                 <includes name="build\SLiNgshoT.Core.dll"/>
             </references>
             <resources>
