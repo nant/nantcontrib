@@ -4,17 +4,23 @@
     <!-- global project settings -->
     <property name="project.name" value="nantcontrib" />
     <property name="project.FormalName" value="NAnt.Contrib" />
-    <property name="project.version" value="0.85" overwrite="false" />
-    <property name="project.release.type" value="dev" overwrite="false" /> <!-- nightly / dev / alpha / beta# / rc# / release -->
+    <property name="project.version" value="0.85" unless="${property::exists('project.version')}" />
+    <property name="project.release.type" value="dev" unless="${property::exists('project.release.type')}" /> <!-- nightly / dev / alpha / beta# / rc# / release -->
+    <!-- 
+        specifies whether the CommonAssemblyInfo.cs file should be created.
+        we do not want this for releases (whether they're beta or release) as
+        this would cause the build number to be updated
+    -->
+    <property name="create.assemblyinfo" value="true" />
 
     <!-- default configuration -->
     <property name="project.config" value="debug" /> <!-- debug|release -->
     <property name="build.defines" value="" />
-    <property name="build.number" value="${math::abs(math::floor(timespan::get-total-days(datetime::now() - datetime::parse('01-01-2000'))))}" overwrite="false" />
+    <property name="build.number" value="${math::abs(math::floor(timespan::get-total-days(datetime::now() - datetime::parse('01-01-2000'))))}" />
     <property name="src.dir" value="src" />
     <property name="tests.dir" value="tests" />
     <property name="tools.dir" value="Tools" />
-    <property name="nant.base.uri" value="${nant.dir}/doc/help/" overwrite="false" dynamic="true" />
+    <property name="nant.base.uri" value="${nant.dir}/doc/help/" dynamic="true" unless="${property::exists('nant.base.uri')}" />
 
     <!-- named project configurations (used by self-test and self-doc tasks) -->
     <target name="debug" description="Perform a 'debug' build">
@@ -40,7 +46,7 @@
         </if>
         <echo message="Using nant files from ${nant.dir}"/>
     </target>
-    <target name="create-common-assemblyinfo">
+    <target name="create-common-assemblyinfo" if="${create.assemblyinfo}">
         <!-- ensure src/CommonAssemblyInfo.cs is writable if it already exists -->
         <attrib file="src/CommonAssemblyInfo.cs" readonly="false" if="${file::exists('src/CommonAssemblyInfo.cs')}" />
         <!-- generate the source file holding the common assembly-level attributes -->
@@ -333,7 +339,8 @@
         
         <echo message="Preview task references: file://${build.dir}/doc/help/tasks/index.html"/>
     </target>
-    <target name="package" depends="test doc" description="Creates a package zip file.">
+    
+    <target name="package-common" depends="test, doc">
         <!-- remove non-release files -->
         <delete>
             <fileset basedir="${build.dir}">
@@ -379,7 +386,7 @@
             <fileset>
                 <include name="doc/**/*.html" />
             </fileset>
-            <filterchain encoding="utf-8">
+            <filterchain>
                 <replacetokens>
                     <token key="PRODUCT_VERSION" value="${project.version}" />
                 </replacetokens>
@@ -397,22 +404,52 @@
                 />
             </filterchain>
         </copy>
-
-        <!-- create zip file -->
-        <property name="project.zip-path" value="${project::get-base-directory()}/build/${project.name}.Tasks-${project.version}.zip" />
-        <zip zipfile="${project.zip-path}">
-            <fileset basedir="${build.dir}">
-                <include name="**/*" />
-                <!-- exclude NAnt.Xsd.Tasks assembly and debug symbols -->
-                <exclude name="bin/NAnt.Xsd.Tasks.dll" />
-                <exclude name="bin/NAnt.Xsd.Tasks.pdb" />
-                <!-- exclude temporary files -->
-                <exclude name="**/cache/**"/>
-                <exclude name="**/_*/**"/>
+        <!-- determine the zip file prefix directory -->
+        <if test="${project.release.type == 'release'}">
+            <property name="project.zip.prefix" value="${project.name}-${project.version}" />
+        </if>    
+        <if test="${not(project.release.type == 'release')}">
+            <property name="project.zip.prefix" value="${project.name}-${project.version}-${project.release.type}" />
+        </if>
+    </target>
+    
+    <target name="package-src" depends="package-common">
+        <!-- determine name of package zip file -->
+        <property name="project.zip-path.src" value="${project::get-base-directory()}/build/${project.name}-${project.version}-src.zip" />
+        <!-- remove package zip file if it already exists -->
+        <delete file="${project.zip-path.src}" if="${file::exists(project.zip-path.src)}" />
+        <!-- create package zip file -->
+        <zip zipfile="${project.zip-path.src}">
+            <fileset basedir="${build.dir}" prefix="${project.zip.prefix}">
+                <include name="license.txt" />
+                <include name="NAntContrib.build" />
+                <include name="NAntContribInstall.include" />
+                <include name="doc/**/*" />
+                <include name="src/**/*" />
+                <include name="tests/**/*" />
             </fileset>
         </zip>
-        <echo message="Created a '${project.config}' package at file://${project.zip-path}" />
+        <echo message="Created a '${project.config}' source package at file://${project.zip-path.src}" />        
     </target>
+
+    <target name="package-bin" depends="package-common">
+        <!-- determine name of package zip file -->
+        <property name="project.zip-path.bin" value="${project::get-base-directory()}/build/${project.name}-${project.version}-bin.zip" />
+        <!-- remove package zip file if it already exists -->
+        <delete file="${project.zip-path.bin}" if="${file::exists(project.zip-path.bin)}" />
+        <!-- create package zip file -->
+        <zip zipfile="${project.zip-path.bin}">
+            <fileset basedir="${build.dir}" prefix="${project.zip.prefix}">
+                <include name="license.txt" />
+                <include name="bin/**/*" />
+                <include name="doc/**/*" />
+            </fileset>
+        </zip>
+        <echo message="Created a '${project.config}' binary package at file://${project.zip-path.bin}" />
+    </target>
+    
+    <target name="package" depends="package-src, package-bin" description="Creates a binary and source distribution package." />
+
     <!-- Framework support targets -->
     <target name="set-framework-configuration">
         <if test="${not(target::exists('set-'+framework::get-target-framework()+'-framework-configuration'))}">
