@@ -160,6 +160,10 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// <param name="Version">The version string to verify.</param>
         /// <returns></returns>
         protected static bool IsVersion(ref string Version) {
+            if (Version == null || Version.Length == 0) {
+                return false;
+            }
+
             // For cases of 5,5,2,2
             Version = Version.Trim().Replace(",", ".");
             Version = Version.Replace(" ", "");
@@ -2221,7 +2225,10 @@ namespace NAnt.Contrib.Tasks.Msi {
                 string fileVersion = "";
                 try {
                     FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(filePath);
-                    fileVersion = fileVersionInfo.FileVersion;
+                    fileVersion = string.Format(CultureInfo.InvariantCulture, 
+                        "{0}.{1}.{2}.{3}", fileVersionInfo.FileMajorPart, 
+                        fileVersionInfo.FileMinorPart, fileVersionInfo.FileBuildPart, 
+                        fileVersionInfo.FilePrivatePart);
                 } catch {}
 
                 try {
