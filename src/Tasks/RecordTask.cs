@@ -60,7 +60,7 @@ namespace NAnt.Contrib.Tasks {
 
         #region Private Instance Fields
 
-        private string _logname;
+        private FileInfo _logname;
         private ActionType _actionType;
         private bool _autoFlush = false;
         private Level _thresholdLevel = Level.Info;
@@ -79,10 +79,9 @@ namespace NAnt.Contrib.Tasks {
         /// Name of destination file.
         /// </summary>
         [TaskAttribute("name", Required=true)]
-        [StringValidator(AllowEmpty=false)]
-        public string LogName {
-            get { return (_logname != null) ? Project.GetFullPath(_logname) : null; }
-            set { _logname = StringUtils.ConvertEmptyToNull(value); }
+        public FileInfo LogName {
+            get { return _logname; }
+            set { _logname = value; }
         }    
 
         /// <summary>
@@ -155,12 +154,12 @@ namespace NAnt.Contrib.Tasks {
         /// This is where the work is done.
         /// </summary>
         protected override void ExecuteTask() {
-            IRecorder recorder = _recorders[LogName];
+            IRecorder recorder = _recorders[LogName.FullName];
 
             switch (Action) {
                 case ActionType.Start:
                     if (recorder == null) {
-                        recorder = new FileLogListener(LogName);
+                        recorder = new FileLogListener(LogName.FullName);
                         Recorders.Add(recorder);
                     }
                     recorder.AutoFlush = AutoFlush;
@@ -171,7 +170,7 @@ namespace NAnt.Contrib.Tasks {
                 case ActionType.Stop:
                     if (recorder == null) {
                         throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                            "Tried to stop non-existent recorder '{0}'", LogName), 
+                            "Tried to stop non-existent recorder '{0}'", LogName.FullName), 
                             Location);
                     }
                     recorder.Stop();
@@ -179,7 +178,7 @@ namespace NAnt.Contrib.Tasks {
                 case ActionType.Close:
                     if (recorder == null) {
                         throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                            "Tried to close non-existent recorder '{0}'", LogName),
+                            "Tried to close non-existent recorder '{0}'", LogName.FullName),
                             Location);
                     }
                     DetachRecorder(recorder);
@@ -189,7 +188,7 @@ namespace NAnt.Contrib.Tasks {
                 case ActionType.Flush:
                     if (recorder == null) {
                         throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                            "Tried to flush non-existent recorder '{0}'", LogName),
+                            "Tried to flush non-existent recorder '{0}'", LogName.FullName),
                             Location);
                     }
                     recorder.Flush();
