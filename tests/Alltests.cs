@@ -46,7 +46,9 @@ namespace NAnt.Contrib.Tests
 
             // force NAnt.Contrib.Tasks.dll to be loaded
             string corePath = Path.Combine(path, "NAnt.Contrib.Tasks.dll");
-            Assembly.LoadFrom(corePath);
+            Assembly tasks = Assembly.LoadFrom(corePath);
+            // add tests in NAnt.Contrib.Tasks.DLL to NAnt
+            TaskFactory.AddTasks(tasks);
 
             // Use reflection to automagically scan all the classes that 
             // inherit from TestCase and add them to the suite.
