@@ -1,9 +1,4 @@
 <?xml version="1.0"?>
-<!--*****************************************************************-->
-<!--* @(#)NAntContrib.build                                         *-->
-<!--*                                                               *-->
-<!--* Builds the NAntContrib Project                                *-->
-<!--*****************************************************************-->
 <project name="NAntContrib" default="build">
     <property name="project.name" value="nantcontrib"/>
     <property name="project.FormalName" value="NAnt.Contrib"/>
@@ -43,16 +38,12 @@
     <include buildfile="NAntContribInstall.include" />
     <include buildfile="Tools/SLiNgshoT/SLiNgshoTInstall.include" />
 
-    <!--*****************************************************************-->
-    <!--* Clean the outputs                                             *-->
-    <!--*****************************************************************-->
+    <!-- Clean the output of the current build configuration -->
     <target name="clean" depends="init" description="cleans up everything">
         <delete dir="${build.dir}" failonerror="false"/>
     </target>
 
-    <!--*****************************************************************-->
-    <!--* Clean the outputs                                             *-->
-    <!--*****************************************************************-->
+    <!-- Clean the output of both the debug and release build configurations -->
     <target name="cleanall" depends="" description="cleans up everything">
         <foreach item="String" in="release debug" delim=" " property="target">
             <call target="${target}"/>
@@ -61,9 +52,7 @@
         <delete dir="build"/>
     </target>
 
-    <!--*****************************************************************-->
-    <!--* Prepare directories and build settings                        *-->
-    <!--*****************************************************************-->
+    <!-- Prepare directories and build settings -->
     <target name="prepare" depends="init">
       <mkdir dir="${build.dir}/bin"/>
       <copy todir="${build.dir}/bin">
@@ -81,11 +70,9 @@
       </copy>
     </target>
 
-    <!--*****************************************************************-->
-    <!--* Bootstrap the Xsd Task                                        *-->
-    <!--*****************************************************************-->
+    <!-- Bootstrap the Xsd Task -->
     <target name="compile.schematask" depends="init" description="compiles the Xsd task">
-        <csc target="library" output="${build.dir}/bin/NAnt.Xsd.Tasks.dll" doc="${build.dir}/bin/NAnt.Xsd.Tasks.xml">
+        <csc target="library" output="${build.dir}/bin/NAnt.Xsd.Tasks.dll">
             <sources basedir="${src.dir}">
                 <includes name="Tasks/XsdTask.cs" />
             </sources>
@@ -93,13 +80,11 @@
                 <includes name="${nant.dir}/bin/NAnt.Core.dll" />
                 <includes name="${nant.dir}/bin/NAnt.DotNetTasks.dll" />
             </references>
-            <arg value="/nowarn:1591" />
+<!--            <arg value="/nowarn:1591" />-->
         </csc>
     </target>
 
-    <!--*****************************************************************-->
-    <!--* Bootstrap XML Schemas into assemblies for task validation     *-->
-    <!--*****************************************************************-->
+    <!-- Bootstrap XML Schemas into assemblies for task validation -->
     <target name="compile.schemas" depends="compile.schematask" description="compiles Task XML Schemas into assemblies">
         <loadtasks assembly="${build.dir}/bin/NAnt.Xsd.Tasks.dll"/>
         <if uptodate="${src.dir}/Tasks/MSITask.xsd">
@@ -116,17 +101,17 @@
             <mkdir dir="${build.dir}/schema/MSM" />
             <xsd schema="${src.dir}/Tasks/MSMTask.xsd" language="CS" namespace="NAnt.Contrib.Schemas.MSM" nologo="true" outputdir="${build.dir}/schema/MSM" uri="NAnt.Contrib.Tasks.MSMTask" />
         </if>
+<!--        
         <csc target="library" output="${build.dir}/bin/NAnt.Contrib.Schemas.dll">
             <sources basedir="${build.dir}/schema">
                 <includes name="**.cs"/>
             </sources>
             <arg value="/nowarn:1591,1595" />
         </csc>
+-->        
     </target>
 
-    <!--*****************************************************************-->
-    <!--* Build the NAnt.Contrib.Tasks.dll library                      *-->
-    <!--*****************************************************************-->
+    <!-- Build the NAnt.Contrib.Tasks.dll library -->
     <target name="build" depends="prepare, prepare.slingshot, compile.schemas" description="compiles the source code">
         <csc target="library" debug="${debug}" output="${build.dir}/bin/${project.FormalName}.Tasks.dll" doc="${build.dir}/bin/${project.FormalName}.Tasks.xml">
             <sources>
@@ -146,25 +131,21 @@
                 <includes name="${build.dir}/bin/NAnt.Contrib.Schemas.dll" />
             </references>
             <resources>
-                <includes name="${src.dir}\xsl\*.*" />
+                <includes name="${src.dir}/xsl/**" />
                 <includes name="${build.dir}/schema/**.resources" />
             </resources>
             <arg value="/nowarn:1591,1595" />
         </csc>
     </target>
 
-    <!--*****************************************************************-->
-    <!--* Build the SLiNgshoT.Core.dll assemblies                       *-->
-    <!--*****************************************************************-->
+    <!-- Build the SLiNgshoT.Core.dll assemblies -->
     <target name="prepare.slingshot" depends="init" description="Compiles and copies the SLiNgshoT assemblies">
         <nant buildfile="Tools/SLiNgshoT/SLiNgshoT.build" target="Release"/>
         <copy file="Tools/SLiNgshoT/build/Release/SLiNgshoT.Core.dll" tofile="${build.dir}/bin/SLiNgshoT.Core.dll"/>
         <copy file="Tools/SLiNgshoT/build/Release/SLiNgshoT.exe" tofile="${build.dir}/bin/SLiNgshoT.exe"/>
     </target>
 
-    <!--*****************************************************************-->
-    <!--* Build the unit tests library                                  *-->
-    <!--*****************************************************************-->
+    <!-- Build the unit tests library -->
     <target name="buildtests" depends="build" description="Compiles the NUnit Tests">
         <!-- copy NAnt assemblies needed for the tests to run -->
         <copy todir="${build.dir}/bin">
@@ -190,12 +171,7 @@
         </csc>
     </target>
 
-    <!--*****************************************************************-->
-    <!--* Perform unit tests.  If a unit test fails, the build fails.   *-->
-    <!--* The base directory is set to the Test directory so that tests *-->
-    <!--* can easily load external data files wihtout having to worry   *-->
-    <!--* about complicated paths.                                      *-->
-    <!--*****************************************************************-->
+    <!-- Perform unit tests. -->
     <target name="test" depends="buildtests init" description="run unit tests">
         <nunit2>
             <formatter type="Plain" />
@@ -213,9 +189,7 @@
         </delete>
     </target>
 
-    <!--*****************************************************************-->
-    <!--* Build NDoc documentation                                      *-->
-    <!--*****************************************************************-->
+    <!-- Build task and sdk documentation -->
     <target name="doc" depends="build" description="build documentation">
         <available property="NantDocumenterExists" resource="${nant.dir}/bin/NDoc.Documenter.NAnt.dll" type="File" />
         <ifnot propertytrue="NantDocumenterExists">
@@ -223,7 +197,7 @@
         </ifnot>
         <ndoc>
             <assemblies basedir="${build.dir}/bin" failonempty="true">
-                <includes name="*Tasks.dll"/>
+                <includes name="NAnt.Contrib.Tasks.dll"/>
             </assemblies>
             <documenters>
                 <documenter name="NAntTask">
@@ -270,12 +244,11 @@
     <target name="package" depends="test doc" description="Creates a package zip file.">
         <!-- remove non-release files -->
         <delete>
-            <fileset basedir="${build.dir}/bin">
-                <includes name="*.Tests.*" />
-                <includes name="nunit.framework.dll" />
-                <includes name="NAnt.Core.dll" />
-                <includes name="NAnt.DotNetTasks.dll" />
-                <includes name="log4net.dll" />
+            <fileset basedir="${build.dir}">
+                <!-- remove test assemblies -->
+                <includes name="bin/*.Tests.*" />
+                <!-- remove generated schema's -->
+                <includes name="schema/**" />
             </fileset>
         </delete>
 
@@ -308,6 +281,9 @@
             <fileset basedir="${build.dir}">
                 <includes name="**/*" />
 
+                <!-- exclude NAnt.Xsd.Tasks assembly -->
+                <excludes name="bin/NAnt.Xsd.Tasks.dll" />
+                <!-- exclude temporary files -->
                 <excludes name="**/cache/**"/>
                 <excludes name="**/_*/**"/>
             </fileset>
