@@ -21,11 +21,12 @@ using System;
 using System.Collections;
 using System.IO;
 
+using SourceForge.NAnt;
 using SourceForge.NAnt.Attributes;
 
 using SLiNgshoT.Core;
 
-namespace SourceForge.NAnt.Tasks {
+namespace NAnt.Contrib.Tasks {
 
     /// <summary>Converts a Visual Studio.NET Solution to a NAnt build file or nmake file.</summary>
     /// <example>
