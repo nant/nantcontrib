@@ -72,7 +72,7 @@
     <!--
         Build the NAnt.Contrib.Tasks.dll library
     -->
-    <target name="build" depends="prepare" description="compiles the source code">
+    <target name="build" depends="prepare, prepare.slingshot" description="compiles the source code">
 
         <!-- compile NAnt.Contrib.Tasks.dll -->
         <csc target="library" 
@@ -91,12 +91,21 @@
                 <includes name="bin\SourceSafe.Interop.dll"/>
                 <includes name="bin\Interop.StarTeam.dll"/>
                 <includes name="bin\Interop.WindowsInstaller.dll"/>
+                <includes name="build\SLiNgshoT.Core.dll"/>
             </references>
             <resources>
                 <includes name="${src.dir}/xsl/*.*"/>
             </resources>
             <arg value="/nowarn:1591"/>
         </csc>
+
+    </target>
+
+    <target name="prepare.slingshot" description="Compiles and copies the SLiNgshoT library">
+
+      <!-- compile SLiNgshoT.Core.dll -->
+      <nant buildfile="Tools/SLiNgshoT/SLiNgshoT.build" target="SLiNgshoT.Core.Release"/>
+      <copy file="Tools/SLiNgshoT/build/Release/SLiNgshoT.Core.dll" tofile="${build.dir}/SLiNgshoT.Core.dll"/>
 
     </target>
 
