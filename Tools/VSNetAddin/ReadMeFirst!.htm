@@ -32,16 +32,15 @@
 		</P>
 		<BLOCKQUOTE dir="ltr" style="MARGIN-RIGHT: 0px">
 			<P><FONT face="Verdana"><FONT size="2"><EM>NAntAddin.sln</EM> - The Solution file you open 
-						with Visual Studio.NET to build the project.</FONT></FONT></P>
+						with to build the Addin with Visual Studio.NET.</FONT></FONT></P>
+			<P><FONT face="Verdana"><FONT size="2"><EM>Default.build</EM> - The NAnt script you run 
+						to build the Addin from the command-line.</FONT></FONT></P>
 			<P><FONT face="Verdana"><FONT size="2"><EM>installlogo.bmp</EM>&nbsp;-&nbsp;The image used 
 						for the installation logo of the MSI (Windows Installer) setup file.</FONT></FONT></P>
 			<P><FONT face="Verdana"><FONT size="2"><EM>nanttabicon.bmp</EM> -&nbsp;The image used for 
 						the ToolWindow's tab&nbsp;icon when the Addin is docked with the IDE.</FONT></FONT></P>
 			<P><FONT face="Verdana"><FONT size="2"><EM>license.txt/license.rtf</EM> - The GNU Lesser 
 						Public License.</FONT></FONT></P>
-			<P><FONT face="Verdana"><FONT size="2"><EM>NAntAddinAPI.ndoc</EM> -&nbsp;The NDoc 
-						documentation file (if you wish to build the API reference for the Addin). See <A href="http://ndoc.sourceforge.net">
-							http://ndoc.sourceforge.net</A> for details.</FONT></FONT></P>
 			<P><FONT face="Verdana"><FONT size="2"><EM>NAntTaskNodes.xml</EM> -&nbsp;The XML file used 
 						to configure which Task Nodes are available.</FONT></FONT></P>
 			<P><FONT face="Verdana" size="2"><EM>vsnetabout.ico</EM> - The icon that shows up in 
@@ -50,6 +49,8 @@
 					allows Microsoft.NET Windows Forms classes to be hosted as ToolWindows. This 
 					file is registered as a COM object during installation.</FONT></P>
 		</BLOCKQUOTE>
+		<P><FONT face="Verdana" size="2"><STRONG>VSNetAddin\bin</STRONG> - The directory 
+				containing binaries needed to compile and install the Addin.</FONT></P>
 		<P><FONT face="Verdana" size="2"><STRONG>VSNetAddin\Controls</STRONG> - The directory 
 				containing Microsoft.NET Windows Forms Controls used by the Addin.</FONT></P>
 		<P><FONT face="Verdana" size="2"><STRONG>VSNetAddin\NAntAddinDocs</STRONG> - The 
@@ -82,13 +83,11 @@
 				Addin distribution. These are loaded at runtime when debugging, so don't move 
 				the images (they get installed with the MSI installation file at deploy time).</FONT></P>
 		<P><STRONG><FONT face="Tahoma" size="4"></FONT></STRONG>&nbsp;</P>
-		<P><STRONG><FONT face="Tahoma" size="4">Building the NAnt Addin</FONT></STRONG></P>
-		<P><FONT face="Verdana" size="2">Building the NAnt Addin is a little different than 
-				most Sourceforge open source projects. First of all the build process cannot be 
-				easily accomplished using an NAnt build file since some of the tasks that need 
-				to be achieved can only be done by Visual Studio.NET projects (namely the Help 
-				and Setup projects). To get ready to debug builds of the Addin on your own 
-				machine, you first need to have the following software installed:</FONT></P>
+		<P><STRONG><FONT face="Tahoma" size="4">Building the NAnt Addin with Visual Studio.NET</FONT></STRONG></P>
+		<P><FONT face="Verdana" size="2">Building the NAnt Addin can be accomplished two ways. The 
+				first, most complete method is to use Visual Studio.NET. This is the only method 
+				that can be used if you also want to debug the Addin using the IDE. 
+				To build and debug the Addin in Visual Studio.NET, you first need to have the following software installed:</FONT></P>
 		<UL dir="ltr" style="MARGIN-RIGHT: 0px">
 			<LI>
 				<FONT face="Verdana" size="2">Visual Studio.NET with C# and C++ languages and 
@@ -97,7 +96,7 @@
 				<FONT face="Verdana" size="2">Visual Studio.NET Help Integration Kit (available on <A href="http://msdn.microsoft.com">
 						http://msdn.microsoft.com</A>)</FONT></LI></UL>
 		<P><FONT face="Verdana" size="2">The first time you build the Addin, you need to 
-				perform some special steps that only need to be performed once.</FONT></P>
+				perform some special steps:</FONT></P>
 		<OL>
 			<LI>
 				<FONT face="Verdana" size="2">Open the <STRONG>NAntAddin</STRONG> solution 
@@ -106,8 +105,8 @@
 						least once, you need to do a full rebuild of the&nbsp;solution and then 
 						right-click the <STRONG>NAntAddinSetup</STRONG> project that is loaded&nbsp;and 
 						select "Install". Run through the installation to get the Addin installed on 
-						your computer. This only needs to be done once to get the registry settings on 
-						your computer (or if you uninstall the Addin).</FONT></P>
+						your computer. This only needs to be done once to get the correct settings 
+						entered in your system's registry (or if you uninstall the Addin).</FONT></P>
 			<LI>
 				<P><FONT face="Verdana" size="2">Check the Addins dialog in Visual Studio.NET 
 						(Tools-&gt;Add-in Manager menu) to make sure the "NAnt Addin" is <U>unchecked</U>, 
@@ -137,6 +136,67 @@
 				unchecking the NAnt Addin, it will load the next time you load the IDE and you 
 				wont be able to debug because the files are in use. If this happens start at 
 				step 2 again and you will be ready to continue debugging again.</FONT></P>
+
+		<P><STRONG><FONT face="Tahoma" size="4"></FONT></STRONG>&nbsp;</P>
+		<P><STRONG><FONT face="Tahoma" size="4">Building the NAnt Addin with NAnt</FONT></STRONG></P>
+		<P><FONT face="Verdana" size="2">The second, more community-acceptable method for building the NAnt Addin 
+				is to use NAnt itself. To build the Addin from the command-line with NAnt, you first need 
+				to have the following software installed:</FONT></P>
+		<UL dir="ltr" style="MARGIN-RIGHT: 0px">
+			<LI>
+				<FONT face="Verdana" size="2">Visual Studio.NET with C# and C++ languages and 
+					setup&nbsp;authoring&nbsp;installed</FONT>
+			<LI>
+				<FONT face="Verdana" size="2">Visual Studio.NET Help Integration Kit (available on <A href="http://msdn.microsoft.com">
+						http://msdn.microsoft.com</A>)</FONT></LI>
+			<LI>
+				<FONT face="Verdana" size="2">NAnt Build Tool (available on <A href="http://nant.sourceforge.net">
+						http://nant.sourceforge.net</A>)</FONT></LI>
+		</UL>
+		<P><FONT face="Verdana" size="2">The first time you build the Addin with NAnt, you need to 
+				perform the following steps:</FONT></P>
+		<OL>
+			<LI>
+				<FONT face="Verdana" size="2">Using CVS, checkout a copy of the latest source code 
+				for the NAnt project (directions are available at <a href="http://sourceforge.net/cvs/?group_id=31650">Sourceforge</a>) 
+				to the same directory you have the NAntContrib source code (this project) checked out 
+				to. For instance, if you checked out the source for this project to:
+				<p>&nbsp;&nbsp;C:\MyProjects\NAntContrib</p>
+				You would want to checkout the NAnt source code to:
+				<p>&nbsp;&nbsp;C:\MyProjects\NAnt</p></FONT>
+			<LI>
+				<P><FONT face="Verdana" size="2">Open a command prompt with the environment for the Microsoft.NET 
+						SDK command-line tools in your path. This is most easily accomplished by opening the 
+						item in your Start Menu that is installed by Visual Studio.NET named 
+						&quot;Visual Studio.NET Command Prompt&quot;. You can also run this file by 
+						opening a command prompt and changing to the Visual Studio.NET &quot;Common Tools&quot; 
+						directory, and running the file &quot;vsvars32.bat&quot; The default location of 
+						this folder on most Visual Studio.NET installations is:
+						<p>
+						&nbsp;&nbsp;C:\Program Files\Microsoft Visual Studio .NET\Common7\Tools
+						</p>
+				</FONT></P>
+			</LI>
+			<LI>
+				<P><FONT face="Verdana" size="2">Open the NAnt script for the Addin and verify your build 
+						environment. There are 3 properties at the top of the file that point to the 
+						Visual Studio.NET, Microsoft.NET public assemblies, and Microsoft Help 2.0 SDK 
+						directories on your computer. You may need to modify these to get the Addin to 
+						build properly on your computer. This file is located at:
+						<p>
+						&nbsp;&nbsp;C:\MyProjects\NAntContrib\Tools\VSNetAddin\Default.build
+						</p>
+				</FONT></P>
+			</LI>
+		</OL>
+		<P><FONT face="Verdana" size="2">Once you have checked out 
+		the NAnt source code, set your environment using vsvars32.bat, and matched the properties 
+		in the build script with your computer's environment, you can change 
+		to the VSNetAddin directory using your command prompt and run NAnt. For instance:
+		<p>&nbsp;&nbsp;C:\MyProjects><b>cd NAntContrib\Tools\VSNetAddin</b></p>
+		<p>&nbsp;&nbsp;C:\MyProjects\NAntContrib\Tools\VSNetAddin><b>nant</b></p></FONT></P>
+
+
 		<P><FONT face="Verdana" size="2">Good Luck!</FONT></P>
 		<P><FONT face="Verdana" size="2">-Jayme</FONT></P>
 		<P><FONT face="Verdana" size="2"></FONT>&nbsp;</P>
