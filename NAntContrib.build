@@ -278,7 +278,7 @@
                     <!-- set the name and version of the product for which docs are generated -->
                     <property name="ProductName" value="NAntContrib" />
                     <property name="ProductVersion" value="${project.version}" />
-                    <property name="Preliminary" value="${not(project.release.type='release')}" />
+                    <property name="Preliminary" value="${not(project.release.type=='release')}" />
                     <property name="DocumentAttributes" value="True" />
                     <property name="IncludeAssemblyVersion" value="True" />
                     <property name="ShowMissingParams" value="True" />
@@ -300,7 +300,7 @@
                     <property name="ShowMissingParams" value="${build.debug}" />
                     <property name="ShowMissingReturns" value="${build.debug}" />
                     <property name="ShowMissingValues" value="${build.debug}" />
-                    <property name="Preliminary" value="${not(project.release.type='release')}" />
+                    <property name="Preliminary" value="${not(project.release.type=='release')}" />
                     <property name="DocumentAttributes" value="True" />
                     <property name="ShowTypeIdInAttributes" value="False" />
                     <property name="DocumentInternals" value="False" />
@@ -387,13 +387,13 @@
                 <replacestring
                     from="&lt;!-- @PRELIMINARY_NOTICE@ -->"
                     to="&lt;p class=&quot;topicstatus&quot;>[This is preliminary documentation and subject to change.]&lt;/p>"
-                    unless="${project.release.type='release'}" 
+                    unless="${project.release.type=='release'}" 
                 />
                 <!-- when building a release package, remove the placeholder -->
                 <replacestring
                     from="&lt;!-- @PRELIMINARY_NOTICE@ -->"
                     to=""
-                    if="${project.release.type='release'}"
+                    if="${project.release.type=='release'}"
                 />
             </filterchain>
         </copy>
