@@ -20,13 +20,13 @@
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
+
 using NAnt.Core;
+using NAnt.Core.Attributes;
 using NAnt.Core.Tasks;
 using NAnt.Core.Util;
-using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks.Perforce {
-
     /// <summary>
     /// Base class for Perforce (P4) NAnt tasks. See individual task for example usage.
     /// <seealso cref="P4Add">P4Add</seealso>
@@ -44,21 +44,21 @@ namespace NAnt.Contrib.Tasks.Perforce {
     public abstract class P4Base: ExternalProgramBase {
         #region Private Instance Fields
         
-        string _arguments = null;
-        private string _perforcePort = null;
-        private string _perforceClient = null;
-        private string _perforceUser = null;
-        private string _perforceView = null;
-        private bool _scriptOutput = false;
+        private string _arguments;
+        private string _perforcePort;
+        private string _perforceClient;
+        private string _perforceUser;
+        private string _perforceView;
+        private bool _scriptOutput;
 
         #endregion Private Instance Fields
 
         #region Public Instance Properties
         
-        /// <summary> The p4d server and port to connect to;
-        /// optional, default "perforce:1666"
+        /// <summary>
+        /// The p4 server and port to connect to. The default is "perforce:1666".
         /// </summary>
-        [TaskAttribute("port",Required=false)]
+        [TaskAttribute("port", Required=false)]
         public string Port {
             get { return _perforcePort; }
             set {_perforcePort = StringUtils.ConvertEmptyToNull(value); }
@@ -66,9 +66,9 @@ namespace NAnt.Contrib.Tasks.Perforce {
         }
 
         /// <summary>
-        /// The p4 client spec to use; optional, defaults to the current user.
+        /// The p4 client spec to use. The default is the current client.
         /// </summary>
-        [TaskAttribute("client",Required=false)]
+        [TaskAttribute("client", Required=false)]
         public string Client {
             get { 
                 if (_perforceClient == null) {
@@ -77,13 +77,12 @@ namespace NAnt.Contrib.Tasks.Perforce {
                 return _perforceClient; 
             }
             set { _perforceClient = StringUtils.ConvertEmptyToNull(value); }
-
         }
 
         /// <summary>
-        /// The p4 username; optional, defaults to the current user.
+        /// The p4 username. The default is the current user.
         /// </summary>
-        [TaskAttribute("user",Required=false)]
+        [TaskAttribute("user", Required=false)]
         public string User {
             get { 
                 if (_perforceUser == null){
@@ -92,30 +91,33 @@ namespace NAnt.Contrib.Tasks.Perforce {
                 return _perforceUser; 
             }
             set { _perforceUser = StringUtils.ConvertEmptyToNull(value); }
-
         }
 
         /// <summary>
-        /// The client, branch or label view to operate upon; optional default "//...".
+        /// The client, branch or label view to operate upon. The default is
+        /// "//...".
         /// </summary>
-        [TaskAttribute("view",Required=false)]
-        virtual public string View {
+        [TaskAttribute("view", Required=false)]
+        public virtual string View {
             get { return _perforceView; }
             set { _perforceView = StringUtils.ConvertEmptyToNull(value); }
         }
 
         /// <summary>
-        /// Prepends a descriptive field (for example, text:, info:, error:, exit:) to each 
-        /// line of output produced by a Perforce command. 
-        /// This is most often used when scripting.
-        /// optional default false
+        /// Prepends a descriptive field (for example, text:, info:, error:, exit:) 
+        /// to each line of output produced by a Perforce command. This is most 
+        /// often used when scripting. The default is <see langword="false" />.
         /// </summary>
-        [TaskAttribute("script",Required=false)]
+        [TaskAttribute("script", Required=false)]
         [BooleanValidator()]
-        virtual public bool Script {
+        public bool Script {
             get { return _scriptOutput; }
             set { _scriptOutput = value; }
         }
+
+        #endregion Public Instance Properties
+        
+        #region Override implementation of ExternalProgramBase
 
         /// <summary>
         /// Gets the command line arguments for the external program.
@@ -134,17 +136,6 @@ namespace NAnt.Contrib.Tasks.Perforce {
             get { return "p4"; }
         }
             
-        #endregion Public Instance Properties
-        
-        /// <summary>
-        /// / Derived classes to override this
-        /// </summary>
-        protected abstract string CommandSpecificArguments {
-            get;
-        }
-        
-        #region Override implementation of Task
-        
         /// <summary>
         /// Execute the perforce command assembled by subclasses.
         /// </summary>
@@ -153,13 +144,13 @@ namespace NAnt.Contrib.Tasks.Perforce {
 
             //perforce global options
             if (Port != null) {
-                arguments.Append(string.Format(" -p {0}", Port ) );
+                arguments.Append(string.Format(" -p {0}", Port));
             }
-            if (User != null ) {
-                arguments.Append(string.Format(" -u {0}", User ) );
+            if (User != null) {
+                arguments.Append(string.Format(" -u {0}", User));
             }
-            if (Client != null ) {
-                arguments.Append(string.Format(" -c {0}", Client ) );
+            if (Client != null) {
+                arguments.Append(string.Format(" -c {0}", Client));
             }
             if (Script) {
                 arguments.Append(" -s");
@@ -173,9 +164,22 @@ namespace NAnt.Contrib.Tasks.Perforce {
 
             // call base class to do perform the actual call
             Log(Level.Verbose, ExeName + _arguments.ToString());
-            base.ExecuteTask();
 
+            base.ExecuteTask();
         } 
-        #endregion Override implementation of Task
+
+        #endregion Override implementation of ExternalProgramBase
+
+        #region Protected Instance Methods
+
+        /// <summary>
+        /// Derived classes should override this to provide command-specific
+        /// commandline arguments.
+        /// </summary>
+        protected abstract string CommandSpecificArguments {
+            get;
+        }
+
+        #endregion Protected Instance Methods
     }
 }

@@ -24,7 +24,7 @@ using NAnt.Core;
 
 namespace NAnt.Contrib.Tasks.Perforce {
     /// <summary>
-    /// Static helper class for Perforce tasks
+    /// Static helper class for Perforce tasks.
     /// </summary>
     public class Perforce {
         /// <summary>
@@ -239,7 +239,7 @@ namespace NAnt.Contrib.Tasks.Perforce {
                 StreamWriter sw = p.StandardInput;
                 sw.Write( input );
                 sw.Close();
-            }          
+            }
             output = p.StandardOutput.ReadToEnd();
             p.WaitForExit();
             return p.ExitCode;
@@ -264,7 +264,7 @@ namespace NAnt.Contrib.Tasks.Perforce {
                 StreamWriter sw = p.StandardInput;
                 sw.Write( input );
                 sw.Close();
-            }          
+            }
             p.WaitForExit();
             return p.ExitCode;
         }

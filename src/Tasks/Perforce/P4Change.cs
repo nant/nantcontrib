@@ -19,60 +19,67 @@
 
 using System;
 using System.Text;
+
 using NAnt.Core;
-using NAnt.Core.Util;
-using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
+using NAnt.Core.Tasks;
+using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks.Perforce {
     /// <summary>
-    /// Create or delete a changelist specification. Wraps the 'p4 change' command.
+    /// Create or delete a changelist specification.
     /// </summary>
     /// <example>
-    /// <para>Create a new changelist called "mynewchange".</para>
-    /// <code>
-    ///        <![CDATA[
-    ///    <p4change changelist="mynewchange" />
-    ///        ]]>
-    /// </code>
-    /// <para>Delete the changelist called "mynewchange".</para>
-    /// <code>
-    ///        <![CDATA[
-    ///    <p4change changelist="mynewchange" delete="true" />
-    ///        ]]>
-    /// </code>
+    ///   <para>Create a new changelist called "mynewchange".</para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <p4change changelist="mynewchange" />
+    ///     ]]>
+    ///   </code>
+    /// </example>
+    /// <example>
+    ///   <para>Delete the changelist called "mynewchange".</para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <p4change changelist="mynewchange" delete="true" />
+    ///     ]]>
+    ///   </code>
     /// </example>
     [TaskName("p4change")]
     public class P4Change : P4Base {
         #region Private Instance Fields
 
-        private string _changelist = null;
-        private bool _delete = false;
+        private string _changelist;
+        private bool _delete;
 
-        #endregion
+        #endregion Private Instance Fields
 
-        #region Public Instance Fields
+        #region Public Instance Properties
 
         /// <summary>
-        /// Changelist to create or delete. required.
+        /// Changelist to create or delete.
         /// </summary>
-        [TaskAttribute("changelist",Required=true)]
+        [TaskAttribute("changelist", Required=true)]
+        [StringValidator(AllowEmpty=false)]
         public string Changelist {
             get { return _changelist; }
             set { _changelist = StringUtils.ConvertEmptyToNull(value); }
         }
 
         /// <summary>
-        /// If true causes passed in changelist to be deleted. optional.
+        /// If <see langword="false" /> causes passed in changelist to be 
+        /// deleted. The default is <see langword="false" />.
         /// </summary>
-        [TaskAttribute("delete",Required=false)]
+        [TaskAttribute("delete", Required=false)]
         [BooleanValidator()]
-        virtual public bool Delete {
+        public bool Delete {
             get { return _delete; }
             set { _delete = value; }
         }
 
-        #endregion
+        #endregion Public Instance Properties
+
+        #region Override implementation of P4Base
 
         /// <summary>
         /// This is an override used by the base class to get command specific args.
@@ -80,13 +87,17 @@ namespace NAnt.Contrib.Tasks.Perforce {
         protected override string CommandSpecificArguments {
             get { return getSpecificCommandArguments(); }
         }
-        
-        #region Override implementation of Task
-        
+
+        #endregion Override implementation of P4Base
+
+        #region Protected Instance Methods
+
         /// <summary>
-        /// local method to build the command string for this particular command
+        /// Builds the command string for this particular command.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// The command string for this particular command.
+        /// </returns>
         protected string getSpecificCommandArguments( ) {
             StringBuilder arguments = new StringBuilder();
             arguments.Append("change ");
@@ -106,7 +117,7 @@ namespace NAnt.Contrib.Tasks.Perforce {
 
             return arguments.ToString();
         }
-        
-        #endregion Override implementation of Task
+
+        #endregion Protected Instance Methods
     }
 }

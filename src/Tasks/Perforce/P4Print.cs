@@ -19,73 +19,78 @@
 
 using System;
 using System.Text;
+
 using NAnt.Core;
-using NAnt.Core.Util;
-using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
+using NAnt.Core.Tasks;
+using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks.Perforce {
-    
     /// <summary>
-    /// Fetch a specific file from a Perforce depot without needing a clientspec to map it. Wraps the 'p4 print' command.
+    /// Fetch a specific file from a Perforce depot without needing a clientspec 
+    /// to map it.
     /// </summary>
-    ///<example>
-    /// <para>
-    ///<code>
+    /// <example>
+    ///   <code>
     ///     <![CDATA[
-    ///<p4print file="//depot/foo/mainline/clientspec" outputfile=".\clientspec" />
-    ///<p4client input=".\clientspec" />
+    /// <p4print file="//depot/foo/mainline/clientspec" outputfile=".\clientspec" />
+    /// <p4client input=".\clientspec" />
     ///     ]]>
     ///   </code>
-    /// </para>
     /// </example>
-    /// <todo> fileset? </todo>
-    /// <author> <a href="mailto:nant@bobs.org">Bob Arnson</a></author>
     [TaskName("p4print")]
     public class P4Print : P4Base {
-        
         #region Private Instance Fields
-        
-        private string _file = null;
-        private string _outputFile = null;
-        
+
+        private string _file;
+        private string _outputFile;
+
         #endregion Private Instance Fields
-        
+
         #region Public Instance Properties
-        
+
         /// <summary> 
-        /// The depot or local filename (including optional path) of the file to fetch; required
+        /// The depot or local filename (including optional path) of the file 
+        /// to fetch.
         /// </summary>
-        [TaskAttribute("file", Required = true)]
+        [TaskAttribute("file", Required=true)]
+        [StringValidator(AllowEmpty=false)]
         public string File {
             get { return _file; }
             set { _file = StringUtils.ConvertEmptyToNull(value); }
         }
-        
+
         /// <summary> 
-        /// The local filename to write the fetched file to; required
+        /// The local filename to write the fetched file to.
         /// </summary>
-        [TaskAttribute("outputfile", Required = true)]
+        [TaskAttribute("outputfile", Required=true)]
+        [StringValidator(AllowEmpty=false)]
         public string P4OutputFile {
             get { return _outputFile; }
             set { _outputFile = StringUtils.ConvertEmptyToNull(value); }
         }
-        
+
         #endregion Public Instance Properties
         
+        #region Override implementation of P4Base
+
         /// <summary>
         /// This is an override used by the base class to get command specific args.
         /// </summary>
         protected override string CommandSpecificArguments {
             get { return getSpecificCommandArguments(); }
         }
-        
-        #region Override implementation of Task
-        
+
+        #endregion Override implementation of P4Base
+
+        #region Protected Instance Methods
+
         /// <summary>
-        /// local method to build the command string for this particular command
+        /// Builds the command string for this particular command.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// The command string for this particular command.
+        /// </returns>
         protected string getSpecificCommandArguments( ) {
             StringBuilder arguments = new StringBuilder();
             arguments.Append("-s print -q ");
@@ -93,7 +98,7 @@ namespace NAnt.Contrib.Tasks.Perforce {
             arguments.Append(File);
             return arguments.ToString();
         }
-        
-        #endregion Override implementation of Task
+
+        #endregion Protected Instance Methods
     }
 }

@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
 // Ian MacLean ( ian_maclean@another.com )
 // Jeff Hemry ( jdhemry@qwest.net )
 
@@ -25,74 +26,83 @@ using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks.Perforce {
-    /// <summary>Add/Modify/Delete a client spec in perforce.
-    /// <example>
-    /// <para>Add a client (Modify if already present and have sufficient rights)</para>
-    /// <code>
-    ///        <![CDATA[
-    ///        <p4client clientname="myClient" view="//root/test/..." />
-    ///        ]]>
-    /// </code>
-    /// <para>Delete a client</para>
-    /// <code>
-    ///     <![CDATA[
-    ///        <p4client delete="true" clientname="myClient" />
-    ///        ]]>
-    /// </code>
-    /// </example>
+    /// <summary>
+    /// Add/modify/delete a client spec in perforce.
     /// </summary>
+    /// <example>
+    ///   <para>
+    ///   Add a client (modify if already present and have sufficient rights).
+    ///   </para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <p4client clientname="myClient" view="//root/test/..." />
+    ///     ]]>
+    ///   </code>
+    /// </example>
+    /// <example>
+    ///   <para>Delete a client.</para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <p4client delete="true" clientname="myClient" />
+    ///     ]]>
+    ///   </code>
+    /// </example>
     [TaskName("p4client")]
     public class P4Client : P4Base {
         #region Private Instance Fields
 
-        private string _clientname = null;
-        private string _root = null;
-        private bool _delete = false;
-        private bool _force = false;
+        private string _client;
+        private string _root;
+        private bool _delete;
+        private bool _force;
 
-        #endregion
+        #endregion Private Instance Fields
 
-        #region Public Instance Fields
+        #region Public Instance Properties
 
         /// <summary>
-        /// Name of client to create/delete. required.
+        /// Name of client to create/delete.
         /// </summary>
-        [TaskAttribute("clientname",Required=true)]
-        public string Clientname  {
-            get { return _clientname; }
-            set { _clientname = StringUtils.ConvertEmptyToNull(value); }
+        [TaskAttribute("clientname", Required=true)]
+        [StringValidator(AllowEmpty=false)]
+        public string ClientName {
+            get { return _client; }
+            set { _client = StringUtils.ConvertEmptyToNull(value); }
         }
 
         /// <summary>
         /// Root path for client spec.
         /// </summary>
-        [TaskAttribute("root",Required=false)]
+        [TaskAttribute("root", Required=false)]
         public string Root {
             get { return _root; }
             set { _root = StringUtils.ConvertEmptyToNull(value); }
         }
 
         /// <summary>
-        /// Delete the named client. default is false. optional.
+        /// Delete the named client. The default is <see langword="false" />.
         /// </summary>
-        [TaskAttribute("delete",Required=false)]
+        [TaskAttribute("delete", Required=false)]
         [BooleanValidator()]
-        virtual public bool Delete {
+        public bool Delete {
             get { return _delete; }
             set { _delete = value; }
         }
 
         /// <summary>
-        /// Force a delete even if files open. default is false. optional.
+        /// Force a delete even if files are open. The default is 
+        /// <see langword="false" />.
         /// </summary>
-        [TaskAttribute("force",Required=false)]
+        [TaskAttribute("force", Required=false)]
         [BooleanValidator()]
-        virtual public bool Force {
+        public bool Force {
             get { return _force; }
             set { _force = value; }
         }
 
-        #endregion
+        #endregion Public Instance Properties
+
+        #region Override implementation of P4Base
 
         /// <summary>
         /// This is an override used by the base class to get command specific args.
@@ -101,40 +111,44 @@ namespace NAnt.Contrib.Tasks.Perforce {
             get { return getSpecificCommandArguments(); }
         }
         
-        #region Override implementation of Task
+        #endregion Override implementation of P4Base
+        
+        #region Protected Instance Methods
         
         /// <summary>
-        /// local method to build the command string for this particular command
+        /// Builds the command string for this particular command.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// The command string for this particular command.
+        /// </returns>
         protected string getSpecificCommandArguments( ) {
             StringBuilder arguments = new StringBuilder();
             arguments.Append("client ");
 
-            if ( Clientname == null) {
-                throw new BuildException("A \"clientname\" is required for p4client");
-            }
-            if ( !Delete && View == null ) {
-                throw new BuildException("p4client requires either a \"view\" to create, or delete=true to delete a client.");
+            if (!Delete && View == null) {
+                throw new BuildException("<p4client> requires either a \"view\""
+                    + " to create, or \"delete\"=\"true\" to delete a client.",
+                    Location);
             }
 
-            if ( Delete ) {
+            if (Delete) {
                 arguments.Append("-d ");
-                if ( Force ) {
+                if (Force) {
                     arguments.Append("-f ");
                 }
             } else {
-                if ( ( View == null ) || ( Root == null ) ) {
-                    throw new BuildException("A \"view\" and \"root\" are required for creating/editing with p4client.");
+                if (View == null || Root == null) {
+                    throw new BuildException("A \"view\" and \"root\" are required for creating/editing with <p4client>.");
                 }
                 // this creates or edits the client, then the -o outputs to standard out
-                Perforce.CreateClient(User,Clientname,Root,View);
+                Perforce.CreateClient(User, ClientName, Root, View);
                 arguments.Append("-o ");
             }
-            arguments.Append( Clientname );
+            arguments.Append(ClientName);
 
             return arguments.ToString();
         }
-        #endregion Override implementation of Task
+
+        #endregion Protected Instance Methods
     }
 }

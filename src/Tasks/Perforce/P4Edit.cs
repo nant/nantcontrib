@@ -19,62 +19,80 @@
 
 using System;
 using System.Text;
+
 using NAnt.Core;
-using NAnt.Core.Util;
-using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
+using NAnt.Core.Tasks;
+using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks.Perforce {
-    
     /// <summary>
-    /// Opens file(s) in a client workspace for edit. Wraps the 'p4 edit' command.
-    /// The P4Submit command is required to submit to the perforce server.
+    /// Opens file(s) in a client workspace for edit.
     /// </summary>
     /// <example>
-    /// <para>Open all files in the ProjectX Test folder for edit, and place into the default changelist.</para>
-    /// <code>
-    ///        <![CDATA[
-    ///    <p4edit view="//Root/ProjectX/Test/..." />
-    ///        ]]>
-    /// </code>
-    /// <para>Open all *.txt files in the ProjectX Test folder for edit, and place into the "testing" changelist.</para>
-    /// <code>
-    ///        <![CDATA[
-    ///    <p4edit view="//Root/ProjectX/Test/...*.txt" changelist="testing" />
-    ///        ]]>
-    /// </code>
+    ///   <para>
+    ///   Open all files in the ProjectX Test folder for edit, and place into 
+    ///   the default changelist.
+    ///   </para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <p4edit view="//Root/ProjectX/Test/..." />
+    ///     ]]>
+    ///   </code>
+    /// </example>
+    /// <example>
+    ///   <para>
+    ///   Open all *.txt files in the ProjectX Test folder for edit, and place 
+    ///   into the "testing" changelist.
+    ///   </para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <p4edit view="//Root/ProjectX/Test/...*.txt" changelist="testing" />
+    ///     ]]>
+    ///   </code>
     /// </example>
     [TaskName("p4edit")]
     public class P4Edit : P4Base {
-        
         #region Private Instance Fields
 
-        private string _changelist = null;
-        private string _type = null;
+        private string _changelist;
+        private string _type;
 
-        #endregion
+        #endregion Private Instance Fields
 
-        #region Public Instance Fields
+        #region Public Instance Properties
 
         /// <summary>
-        /// Changelist to place the opened files into. optional.
+        /// Changelist to place the opened files into.
         /// </summary>
-        [TaskAttribute("changelist",Required=false)]
+        [TaskAttribute("changelist", Required=false)]
         public string Changelist {
             get { return _changelist; }
             set { _changelist = StringUtils.ConvertEmptyToNull(value); }
         }
 
         /// <summary>
-        /// File Type settings. optional.
+        /// File Type settings.
         /// </summary>
-        [TaskAttribute("type",Required=false)]
+        [TaskAttribute("type", Required=false)]
         public string Type {
             get { return _type; }
             set { _type = StringUtils.ConvertEmptyToNull(value); }
         }
 
-        #endregion
+        /// <summary>
+        /// The client, branch or label view to operate upon.
+        /// </summary>
+        [TaskAttribute("view", Required=true)]
+        [StringValidator(AllowEmpty=false)]
+        public override string View {
+            get { return base.View; }
+            set { base.View = value; }
+        }
+
+        #endregion Public Instance Properties
+
+        #region Override implementation of P4Base
 
         /// <summary>
         /// This is an override used by the base class to get command specific args.
@@ -83,35 +101,35 @@ namespace NAnt.Contrib.Tasks.Perforce {
             get { return getSpecificCommandArguments(); }
         }
         
-        #region Override implementation of Task
+        #endregion Override implementation of P4Base
+        
+        #region Protected Instance Methods
         
         /// <summary>
-        /// local method to build the command string for this particular command
+        /// Builds the command string for this particular command.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// The command string for this particular command.
+        /// </returns>
         protected string getSpecificCommandArguments( ) {
             StringBuilder arguments = new StringBuilder();
             arguments.Append("edit ");
             
-            if ( View == null) {
-                throw new BuildException("A \"view\" is required for p4edit");
-            }
-            
-            if ( Changelist != null ) {
-                if ( Changelist.ToLower() == "default" ) {
+            if (Changelist != null) {
+                if (Changelist.ToLower() == "default") {
                     arguments.Append("-c default ");
                 } else {
-                    arguments.Append( string.Format("-c {0} ", Perforce.GetChangelistNumber(User, Client, Changelist, true) ));
+                    arguments.Append(string.Format("-c {0} ", Perforce.GetChangelistNumber(User, Client, Changelist, true)));
                 }
             }
-            if ( Type != null ) {
-                arguments.Append( string.Format("-t {0} ", Type ));
+            if (Type != null) {
+                arguments.Append(string.Format("-t {0} ", Type));
             }
-            arguments.Append( View );
+            arguments.Append(View);
 
             return arguments.ToString();
         }
         
-        #endregion Override implementation of Task
+        #endregion Protected Instance Methods
     }
 }

@@ -19,55 +19,62 @@
 
 using System;
 using System.Text;
+
 using NAnt.Core;
-using NAnt.Core.Util;
-using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
+using NAnt.Core.Tasks;
+using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks.Perforce {
     /// <summary>
-    /// Send changes made to open files to the depot. Wraps the 'p4 submit' command.
+    /// Send changes made to open files to the depot.
     /// </summary>
     /// <example>
-    /// <para>Submit changelist "Temp", but first revert all unchanged files in the changelist.</para>
-    /// <code>
-    ///        <![CDATA[
-    ///    <p4submit changelist="Temp" revertunchanged="true" />
-    ///        ]]>
-    /// </code>
-    /// <para>Submit changelist, but leave the files open afterwards.</para>
-    /// <code>
-    ///        <![CDATA[
-    ///    <p4submit changelist="Temp" remainopen="true" />
-    ///        ]]>
-    /// </code>
+    ///   <para>
+    ///   Submit changelist "Temp", but first revert all unchanged files in the 
+    ///   changelist.
+    ///   </para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <p4submit changelist="Temp" revertunchanged="true" />
+    ///     ]]>
+    ///   </code>
+    /// </example>
+    /// <example>
+    ///   <para>Submit changelist, but leave the files open afterwards.</para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <p4submit changelist="Temp" remainopen="true" />
+    ///     ]]>
+    ///   </code>
     /// </example>
     [TaskName("p4submit")]
     public class P4Submit : P4Base {
-        
         #region Private Instance Fields
 
-        private string _changelist = null;
-        private bool _remainopen = false;
-        private bool _revertunchanged = false;
+        private string _changelist;
+        private bool _remainopen;
+        private bool _revertunchanged;
 
-        #endregion
+        #endregion Private Instance Fields
 
-        #region Public Instance Fields
+        #region Public Instance Properties
 
         /// <summary>
-        /// Changelist to submit. required.
+        /// Changelist to submit.
         /// </summary>
-        [TaskAttribute("changelist",Required=true)]
+        [TaskAttribute("changelist", Required=true)]
+        [StringValidator(AllowEmpty=false)]
         public string Changelist {
             get { return _changelist; }
             set { _changelist = StringUtils.ConvertEmptyToNull(value); }
         }
 
         /// <summary>
-        /// Keep the files open after submitting. default is false. optional.
+        /// Keep the files open after submitting. The default is 
+        /// <see langword="false" />.
         /// </summary>
-        [TaskAttribute("remainopen",Required=false)]
+        [TaskAttribute("remainopen", Required=false)]
         [BooleanValidator()]
         public bool RemainOpen {
             get { return _remainopen; }
@@ -75,16 +82,19 @@ namespace NAnt.Contrib.Tasks.Perforce {
         }
 
         /// <summary>
-        /// Revert all unchanged or missing files from the changelist. default is false. optional.
+        /// Revert all unchanged or missing files from the changelist.
+        /// The default is <see langword="false" />.
         /// </summary>
-        [TaskAttribute("revertunchanged",Required=false)]
+        [TaskAttribute("revertunchanged", Required=false)]
         [BooleanValidator()]
         public bool RevertUnchanged {
             get { return _revertunchanged; }
             set { _revertunchanged = value; }
         }
 
-        #endregion
+        #endregion Public Instance Properties
+
+        #region Override implementation of P4Base
 
         /// <summary>
         /// This is an override used by the base class to get command specific args.
@@ -92,46 +102,50 @@ namespace NAnt.Contrib.Tasks.Perforce {
         protected override string CommandSpecificArguments {
             get { return getSpecificCommandArguments(); }
         }
-        
-        #region Override implementation of Task
-        
+
+        #endregion Override implementation of P4Base
+
+        #region Protected Instance Methods
+
         /// <summary>
-        /// local method to build the command string for this particular command
+        /// Builds the command string for this particular command.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// The command string for this particular command.
+        /// </returns>
         protected string getSpecificCommandArguments( ) {
             StringBuilder arguments = new StringBuilder();
             arguments.Append("submit ");
 
-            if ( Changelist == null) {
-                throw new BuildException("A \"changelist\" is required for p4submit.");
-            }
-
-            string _changelistnumber = Perforce.GetChangelistNumber(User, Client, Changelist);
-            if ( _changelistnumber == null && View == null) {
-                throw new BuildException("If the \"changelist\" does not currently exist, a \"view\" is also required.");
+            string changelistnumber = Perforce.GetChangelistNumber(User, Client, Changelist);
+            if (changelistnumber == null && View == null) {
+                throw new BuildException("If the \"changelist\" does not currently"
+                    + " exist, a \"view\" is required.", Location);
             } 
-            
-            if ( _changelistnumber == null ) {
-                _changelistnumber = Perforce.GetChangelistNumber(User, Client, Changelist, true);
+
+            if (changelistnumber == null) {
+                changelistnumber = Perforce.GetChangelistNumber(User, Client, 
+                    Changelist, true);
             }
-            if ( View != null ) {
+            if (View != null) {
                 // reopen view into changelist
-                string exitcode = Perforce.getProcessOutput("p4", string.Format("-u {0} -c {1} reopen -c {2} {3}", User, Client, _changelistnumber, View ), null );
+                Perforce.getProcessOutput("p4", string.Format("-u {0} -c {1} reopen -c {2} {3}", 
+                    User, Client, changelistnumber, View), null);
             }
-            if ( RevertUnchanged ) {
+            if (RevertUnchanged) {
                 // revert
-                string exitcode = Perforce.getProcessOutput("p4", string.Format("-u {0} -c {1} revert -a -c {2}", User, Client, _changelistnumber ), null );
+                Perforce.getProcessOutput("p4", string.Format("-u {0} -c {1} revert -a -c {2}", 
+                    User, Client, changelistnumber), null);
             }
 
-            if ( RemainOpen ) {
+            if (RemainOpen) {
                 arguments.Append("-r ");
             }
-            arguments.Append( string.Format("-c {0} ", _changelistnumber ));
+            arguments.Append(string.Format("-c {0} ", changelistnumber));
 
             return arguments.ToString();
         }
-        
-        #endregion Override implementation of Task
+
+        #endregion Protected Instance Methods
     }
 }

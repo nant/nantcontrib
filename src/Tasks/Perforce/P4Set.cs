@@ -19,38 +19,31 @@
 
 using System;
 using System.Text;
+
 using NAnt.Core;
-using NAnt.Core.Util;
-using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
+using NAnt.Core.Tasks;
+using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks.Perforce {
     /// <summary>
     /// Set registry variables that perforce uses.
     /// </summary>
+    /// <remarks>
+    /// Note: the environment variables that p4 uses will be set, but will not
+    /// be validated.
+    /// </remarks>
     /// <example>
-    /// <para>Modify any of the three variables (at least one required).
-    /// <br/>Note: this sets the environment variables that p4 uses, but does 
-    /// not validate them.</para>
-    /// <code>
-    ///        <![CDATA[
-    ///        <p4set client="myClient" user="jonb" port="server:1666" />
-    ///        ]]>
-    /// </code>
+    ///   <para>Modify any of the three variables (at least one required).</para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <p4set client="myClient" user="jonb" port="server:1666" />
+    ///     ]]>
+    ///   </code>
     /// </example>
     [TaskName("p4set")]
-        public class P4Set : P4Base {
-
-        
-        #region Private Instance Fields
-
-
-        #endregion
-
-        #region Public Instance Fields
-
-
-        #endregion
+    public class P4Set : P4Base {
+        #region Override implementation of P4Base
 
         /// <summary>
         /// This is an override used by the base class to get command specific args.
@@ -59,33 +52,37 @@ namespace NAnt.Contrib.Tasks.Perforce {
             get { return getSpecificCommandArguments(); }
         }
 
-        #region Override implementation of Task
+        #endregion Override implementation of P4Base
+
+        #region Protected Instance Methods
 
         /// <summary>
-        /// local method to build the command string for this particular command
+        /// Builds the command string for this particular command.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// The command string for this particular command.
+        /// </returns>
         protected string getSpecificCommandArguments( ) {
             StringBuilder arguments = new StringBuilder();
             arguments.Append("info ");
 
-            if ( User == null && Client == null && Port == null ) {
+            if (User == null && Client == null && Port == null) {
                 throw new BuildException("At least one of the following: \"client\", \"user\", or \"port\" is required for p4set");
             }
 
-            if ( User != null ) {
+            if (User != null) {
                 Perforce.SetVariable("P4USER",User);
             }
-            if ( Client != null ) {
+            if (Client != null) {
                 Perforce.SetVariable("P4CLIENT",Client);
             }
-            if ( Port != null ) {
+            if (Port != null) {
                 Perforce.SetVariable("P4PORT",Port);
             }
 
             return arguments.ToString();
         }
 
-        #endregion Override implementation of Task
+        #endregion Protected Instance Methods
     }
 }

@@ -19,44 +19,59 @@
 
 using System;
 using System.Text;
+
 using NAnt.Core;
-using NAnt.Core.Util;
-using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
+using NAnt.Core.Tasks;
+using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks.Perforce {
     /// <summary>
-    /// Open file(s) in a client workspace for deletion from the depot. Wraps the 'p4 delete' command.
-    /// The P4Submit command is required to submit to the perforce server.
+    /// Open file(s) in a client workspace for deletion from the depot.
     /// </summary>
     /// <example>
-    /// <para>Mark all cs files under the give view for deletion and place them in the "Deleting" changelist</para>
-    /// <code>
-    ///        <![CDATA[
-    ///    <p4delete view="//Root/ProjectX/Test/...*.cs" changelist="Deleting" />
-    ///        ]]>
-    /// </code>
+    ///   <para>
+    ///   Mark all cs files under the give view for deletion and place them in 
+    ///   the "Deleting" changelist.
+    ///   </para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <p4delete view="//Root/ProjectX/Test/...*.cs" changelist="Deleting" />
+    ///     ]]>
+    ///   </code>
     /// </example>
     [TaskName("p4delete")]
     public class P4Delete : P4Base {
         #region Private Instance Fields
 
-        private string _changelist = null;
+        private string _changelist;
 
-        #endregion
+        #endregion Private Instance Fields
 
-        #region Public Instance Fields
+        #region Public Instance Properties
 
         /// <summary>
-        /// Changelist to place the marked for deletion item into. optional.
+        /// Changelist to place the marked for deletion item into.
         /// </summary>
-        [TaskAttribute("changelist",Required=false)]
+        [TaskAttribute("changelist", Required=false)]
         public string Changelist {
             get { return _changelist; }
             set { _changelist = StringUtils.ConvertEmptyToNull(value); }
         }
 
-        #endregion
+        /// <summary>
+        /// The client, branch or label view to operate upon.
+        /// </summary>
+        [TaskAttribute("view", Required=true)]
+        [StringValidator(AllowEmpty=false)]
+        public override string View {
+            get { return base.View; }
+            set { base.View = value; }
+        }
+
+        #endregion Public Instance Properties
+
+        #region Override implementation of P4Base
 
         /// <summary>
         /// This is an override used by the base class to get command specific args.
@@ -65,27 +80,29 @@ namespace NAnt.Contrib.Tasks.Perforce {
             get { return getSpecificCommandArguments(); }
         }
         
-        #region Override implementation of Task
+        #endregion Override implementation of P4Base
+        
+        #region Protected Instance Methods
         
         /// <summary>
-        /// local method to build the command string for this particular command
+        /// Builds the command string for this particular command.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// The command string for this particular command.
+        /// </returns>
         protected string getSpecificCommandArguments( ) {
             StringBuilder arguments = new StringBuilder();
             arguments.Append("delete ");
 
-            if ( View == null) {
-                throw new BuildException("A \"view\" attribute is required for p4add");
+            if (Changelist != null) {
+                arguments.Append(string.Format("-c {0} ", Perforce.GetChangelistNumber(
+                    User, Client, Changelist, true)));
             }
-            if ( Changelist != null ) {
-                arguments.Append( string.Format("-c {0} ", Perforce.GetChangelistNumber( User, Client, Changelist, true )));
-            }
-            arguments.Append( View );
+            arguments.Append(View);
 
             return arguments.ToString();
         }
         
-        #endregion Override implementation of Task
+        #endregion Protected Instance Methods
     }
 }

@@ -19,54 +19,59 @@
 
 using System;
 using System.Text;
+
 using NAnt.Core;
-using NAnt.Core.Util;
-using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
+using NAnt.Core.Tasks;
+using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks.Perforce {
     /// <summary>
-    /// Synchronize a label with the contents of the current client workspace. Wraps the 'p4 labelsync' command.
+    /// Synchronize a label with the contents of the current client workspace.
     /// </summary>
     /// <example>
-    /// <para>Apply a previously created label to the specified view.</para>
-    /// <code>
-    ///        <![CDATA[
-    ///    <p4labelsync labelname="SDK_V1.2" view="//Root/..." />
-    ///        ]]>
-    /// </code>
+    ///   <para>Apply a previously created label to the specified view.</para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <p4labelsync label="SDK_V1.2" view="//Root/..." />
+    ///     ]]>
+    ///   </code>
     /// </example>
     [TaskName("p4labelsync")]
     public class P4Labelsync : P4Base {
         #region Private Instance Fields
 
-        private string _labelname = null;
-        private bool _delete = false;
+        private string _labelname;
+        private bool _delete;
 
-        #endregion
+        #endregion Private Instance Fields
 
-        #region Public Instance Fields
+        #region Public Instance Properties
 
         /// <summary>
-        /// Labelname to sync the specified or default view with. required.
+        /// Name of the label to sync the specified or default view with.
         /// </summary>
-        [TaskAttribute("labelname",Required=true)]
-        public string Labelname {
+        [TaskAttribute("label", Required=true)]
+        [StringValidator(AllowEmpty=false)]
+        public string Label {
             get { return _labelname; }
             set { _labelname = StringUtils.ConvertEmptyToNull(value); }
         }
 
         /// <summary>
-        /// Delete the view defined in the label, or matching the input view from the label. optional.
+        /// Delete the view defined in the label, or matching the input view 
+        /// from the label. The default is <see langword="false" />.
         /// </summary>
-        [TaskAttribute("delete",Required=false)]
+        [TaskAttribute("delete", Required=false)]
         [BooleanValidator()]
-        virtual public bool Delete {
+        public bool Delete {
             get { return _delete; }
             set { _delete = value; }
         }
 
-        #endregion
+        #endregion Public Instance Properties
+
+        #region Override implementation of P4Base
 
         /// <summary>
         /// This is an override used by the base class to get command specific args.
@@ -75,30 +80,30 @@ namespace NAnt.Contrib.Tasks.Perforce {
             get { return getSpecificCommandArguments(); }
         }
         
-        #region Override implementation of Task
+        #endregion Override implementation of P4Base
+        
+        #region Protected Instance Methods
         
         /// <summary>
-        /// local method to build the command string for this particular command
+        /// Builds the command string for this particular command.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// The command string for this particular command.
+        /// </returns>
         protected string getSpecificCommandArguments( ) {
             StringBuilder arguments = new StringBuilder();
             arguments.Append("labelsync ");
 
-            if ( Labelname == null) {
-                throw new BuildException("A \"labelname\" is required for p4labelsync");
-            }
-
-            if ( Delete ) {
+            if (Delete) {
                 arguments.Append("-d ");
             }
-            if ( View != null ) {
-                arguments.Append( View );
+            if (View != null) {
+                arguments.Append(View);
             }
 
             return arguments.ToString();
         }
         
-        #endregion Override implementation of Task
+        #endregion Protected Instance Methods
     }
 }

@@ -19,71 +19,81 @@
 
 using System;
 using System.Text;
+
 using NAnt.Core;
-using NAnt.Core.Util;
-using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
+using NAnt.Core.Tasks;
+using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks.Perforce {
-    /// <summary>Returns information from the "p4 info" command back into
-    /// variables for use within the build process
-    /// <example>
-    /// <para>Fill the variables using the task.</para>
-    /// <code>
-    ///  <![CDATA[
-    ///  <p4info user="myuser" client="myclient" host="myhost" root="myroot" />
-    ///  <echo message="User: ${myuser} - Client: ${myclient} - Host: ${myhost} - Root: ${myroot}" />
-    ///  ]]>
-    /// </code>
-    /// </example>
+    /// <summary>
+    /// Returns information from the "p4 info" command back into variables for 
+    /// use within the build process.
     /// </summary>
+    /// <example>
+    ///   <para>Fill the variables using the task.</para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <p4info user="myuser" client="myclient" host="myhost" root="myroot" />
+    /// <echo message="User: ${myuser} - Client: ${myclient} - Host: ${myhost} - Root: ${myroot}" />
+    ///     ]]>
+    ///   </code>
+    /// </example>
     [TaskName("p4info")]
-        public class P4Info : P4Base {
-
+    public class P4Info : Task {
         #region Private Instance Fields
 
-        private string _user = null;
-        private string _client = null;
-        private string _host = null;
-        private string _root = null;
+        private string _user;
+        private string _client;
+        private string _host;
+        private string _root;
 
-        #endregion
+        #endregion Private Instance Fields
 
-        #region Public Instance Fields
+        #region Public Instance Properties
 
-        [TaskAttribute("user", Required = false)]
-        [StringValidator(AllowEmpty = false)]
-        public new string User {
+        /// <summary>
+        /// The name of the property to store the p4 user name in.
+        /// </summary>
+        [TaskAttribute("user", Required=true)]
+        [StringValidator(AllowEmpty=false)]
+        public string User {
             get { return _user; }
             set { _user = StringUtils.ConvertEmptyToNull(value); }
         }
 
-        [TaskAttribute("client", Required = false)]
-        [StringValidator(AllowEmpty = false)]
-        public new string Client {
+        /// <summary>
+        /// The name of the property to store the p4 client name in.
+        /// </summary>
+        [TaskAttribute("client", Required=true)]
+        [StringValidator(AllowEmpty=false)]
+        public string Client {
             get { return _client; }
             set { _client = StringUtils.ConvertEmptyToNull(value); }
         }
 
-        [TaskAttribute("host", Required = false)]
-        [StringValidator(AllowEmpty = false)]
+        /// <summary>
+        /// The name of the property to store the p4 host name in.
+        /// </summary>
+        [TaskAttribute("host", Required=true)]
+        [StringValidator(AllowEmpty=false)]
         public string Host {
             get { return _host;}
             set {_host = StringUtils.ConvertEmptyToNull(value); }
         }
 
-        [TaskAttribute("root", Required = false)]
+        /// <summary>
+        /// The name of the property to store the p4 client root in.
+        /// </summary>
+        [TaskAttribute("root", Required=true)]
         [StringValidator(AllowEmpty = false)]
         public string Root {
             get { return _root; }
             set { _root = StringUtils.ConvertEmptyToNull(value); }
         }
 
-        #endregion
+        #endregion Public Instance Properties
 
-        protected override string CommandSpecificArguments {
-            get { return ""; }
-        }
         #region Override implementation of Task
 
         protected override void ExecuteTask() {
@@ -95,7 +105,7 @@ namespace NAnt.Contrib.Tasks.Perforce {
             Project.Properties[Host] = results[2].ToString();
             Project.Properties[Root] = results[3].ToString();
         }
-        #endregion Override implementation of Task
 
+        #endregion Override implementation of Task
     }
 }

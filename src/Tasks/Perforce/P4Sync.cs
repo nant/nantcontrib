@@ -19,54 +19,64 @@
 
 using System;
 using System.Text;
+
 using NAnt.Core;
-using NAnt.Core.Util;
-using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
+using NAnt.Core.Tasks;
+using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks.Perforce {
-
-    /// <summary>Synchronize client space to a Perforce depot view.  
-    /// The API allows additional functionality of the "p4 sync" command
-    /// (such as "p4 sync -f //...#have" or other exotic invocations). Wraps the 'p4 sync' command.
-    /// </summary>
-    ///<example>
-    ///<para>Sync to head using P4USER, P4PORT and P4CLIENT settings specified</para>    
-    ///<code>
+    /// <summary>
+    /// Synchronize client space to a Perforce depot view.
+    /// </summary>  
+    /// <example>
+    ///   <para>
+    ///   Sync to head using P4USER, P4PORT and P4CLIENT settings specified.
+    ///   </para>
+    ///   <code>
     ///     <![CDATA[
-    ///<p4Sync view="//projects/foo/main/source/..." user="fbloggs" port="km01:1666" client="fbloggsclient" />
+    /// <p4Sync 
+    ///     view="//projects/foo/main/source/..."
+    ///     user="fbloggs"
+    ///     port="km01:1666"
+    ///     client="fbloggsclient"
+    /// />
     ///     ]]>
     ///   </code>
-    ///<para>Sync to head using default p4 environment variables</para>    
-    ///<code>
+    /// </example>
+    /// <example>
+    ///   <para>Sync to head using default p4 environment variables.</para>
+    ///   <code>
     ///     <![CDATA[
-    ///<p4sync p4view="//projects/foo/main/source/..." />
-    ///     ]]>
-    ///   </code>    
-    ///<para>Force a re-sync to head, refreshing all files</para>
-    ///<code>
-    ///     <![CDATA[
-    ///<p4sync force="true" view="//projects/foo/main/source/..." />
+    /// <p4sync view="//projects/foo/main/source/..." />
     ///     ]]>
     ///   </code>
-    ///<para>Sync to a label</para>
-    ///<code>
+    /// </example>
+    /// <example>
+    ///   <para>Force a re-sync to head, refreshing all files.</para>
+    ///   <code>
     ///     <![CDATA[
-    ///<p4-sync label="myPerforceLabel" />
+    /// <p4sync force="true" view="//projects/foo/main/source/..." />
+    ///     ]]>
+    ///   </code>
+    /// </example>
+    /// <example>
+    ///   <para>Sync to a label.</para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <p4sync label="myPerforceLabel" />
     ///     ]]>
     ///   </code>
     ///</example>
-    /// <todo> Add decent label error handling for non-exsitant labels</todo>    
     [TaskName("p4sync")]
     public class P4Sync : P4Base {
-        
         #region Private Instance Fields
-        
-        private string _label = null;
-        private bool _force = false;
-        
+
+        private string _label;
+        private bool _force;
+
         #endregion Private Instance Fields
-        
+
         #region Public Instance Properties
         
         /// <summary> Label to sync client to; optional.
@@ -75,9 +85,10 @@ namespace NAnt.Contrib.Tasks.Perforce {
         public string Label {
             get { return _label; }
             set { _label = StringUtils.ConvertEmptyToNull(value); }
-        }       
+        }
         
-        /// <summary> force a refresh of files, if this attribute is set; false by default.
+        /// <summary>
+        /// Force a refresh of files. The default is <see langword="false" />.
         /// </summary>
         [TaskAttribute("force")]
         [BooleanValidator()]
@@ -85,39 +96,45 @@ namespace NAnt.Contrib.Tasks.Perforce {
             set { _force = value;}
             get { return _force; }
         }
-        
+
         #endregion Public Instance Properties
-        
+
+        #region Override implementation of P4Base
+
         /// <summary>
         /// This is an override used by the base class to get command specific args.
         /// </summary>
         protected override string CommandSpecificArguments {
             get { return getSpecificCommandArguments(); }
         }
-        
-        #region Override implementation of Task
-        
+
+        #endregion Override implementation of P4Base
+
+        #region Protected Instance Methods
+
         /// <summary>
-        /// local method to build the command string for this particular command
+        /// Builds the command string for this particular command.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// The command string for this particular command.
+        /// </returns>
         protected string getSpecificCommandArguments( ) {
             StringBuilder arguments = new StringBuilder();
             arguments.Append("sync ");
-            
-            if ( View  != null ) {
-                arguments.Append( View );
+
+            if (View != null) {
+                arguments.Append(View);
             }
-            if ( Label  != null ) {
-                arguments.Append( string.Format("@{0}", Label ));
+            if (Label != null) {
+                arguments.Append(string.Format("@{0}", Label));
             }
-            if ( Force ) {
+            if (Force) {
                 arguments.Append( " -f");
             }
-           
+
            return arguments.ToString();
         }
-        
+
         #endregion Override implementation of Task
     }
 }
