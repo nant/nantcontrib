@@ -184,7 +184,7 @@ namespace SLiNgshoT.Core
 
 		private void AddDependency(string dependencyLine)
 		{
-			string pattern = @"^\t\t(?<source>\S+).\d+ = (?<target>\S+)";
+			string pattern = @"^\t\t(?<source>\{\S+}).\d+ = (?<target>\S+)";
 			Regex regex = new Regex(pattern);
 			Match match = regex.Match(dependencyLine);
 
