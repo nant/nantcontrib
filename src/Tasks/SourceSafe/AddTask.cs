@@ -1,4 +1,4 @@
-#region GNU General Public License
+#region GNU General Public License 
 //
 // NAntContrib
 // Copyright (C) 2001-2003 Gerry Shaw
@@ -23,6 +23,8 @@
 #endregion
 
 using System;
+using System.IO;
+using System.Text;
 using SourceSafeTypeLib;
 using NAnt.Core;
 using NAnt.Core.Types;
@@ -33,29 +35,35 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
     /// Used to add files to a Visual SourceSafe database.  If the file is currently
     /// in the SourceSafe database a message will be logged but files will continue to be added.
     /// </summary>
-    /// <remarks>    
+    /// <remarks>
     /// This version does not support recursive adds.  Only adds in the root directory will be added to the
     /// SourceSafe database.
     /// </remarks>
     /// <example>
     ///   <code><![CDATA[
     ///     <vssadd dbpath="C:\SourceSafeFolder\srcsafe.ini" user="user1" password="" path="$/Somefolder">
-    ///       <fileset basedir="C:\SourceFolder\">  
+    ///       <fileset basedir="C:\SourceFolder\">
     ///         <includes name="*.dll"/>
     ///       </fileset>
     ///     </vssadd>
     ///   ]]></code>
     /// </example>
     [TaskName("vssadd")]
-    public sealed class AddTask : BaseTask {
+    public class AddTask : BaseTask {
 
-        string _comment = "";
-        FileSet _fileset=new FileSet();
+        #region Private Instance Fields
+        
+        private string _comment = "";
+        private FileSet _fileset = new FileSet();
+        
+        #endregion Private Instance Fields
 
+        #region Public Instance Properties
+        
         /// <summary>
         /// Places a comment on all files added into the SourceSafe repository.  Not Required.
         /// </summary>
-        [TaskAttribute("comment",Required=false)]
+        [TaskAttribute("comment", Required = false)]
         public string Comment {
             get { return _comment;}
             set {_comment = value;}
@@ -69,31 +77,98 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
             get { return _fileset; }
             set { _fileset = value; }
         }
-
+        
+        #endregion Public Instance Properties
+        
+        #region Override implementation of Task
+        
+        /// <summary>
+        /// Main task execution method
+        /// </summary>
         protected override void ExecuteTask() {
             Open();
-            
+
             const int FILE_ALREADY_ADDED = -2147166572;
-          
+
             // Attempt to add each file to SourceSafe.  If file is already in SourceSafe
             // then log a message and continue otherwise throw an exception.
-            foreach( string currentFile in _fileset.FileNames ) {
+            foreach( string currentFile in AddFileSet.FileNames ) {
                 try {
-                    Item.Add(currentFile,_comment,0);
-                    Log(Level.Info, LogPrefix + "Added File : " + currentFile);       
+                    IVSSItem actualProject = CreateProjectPath( currentFile );
+
+                    if ( actualProject != null )
+                        actualProject.Add(currentFile, Comment, 0);
+                    else
+                        Item.Add(currentFile, Comment, 0);
+
+                    Log(Level.Info, LogPrefix + "Added File : " + currentFile);
                 } catch (System.Runtime.InteropServices.COMException e) {
-                    if (e.ErrorCode  == FILE_ALREADY_ADDED) {
-                        Log(Level.Info, LogPrefix + "File already added : " + currentFile);                                         
-                        // just continue here 
-                    } else {                                             
-                        throw new BuildException("Adding files to SourceSafe failed.", Location, e);                                                     
+                    if (e.ErrorCode == FILE_ALREADY_ADDED) {
+                        Log(Level.Info, LogPrefix + "File already added : " + currentFile);
+                        // just continue here
+                    } else {
+                        throw new BuildException("Adding files to SourceSafe failed.", Location, e);
                     }
-                } 
-                    // All other exceptions
-                catch (Exception e) {                                            
-                    throw new BuildException("Adding files to SourceSafe failed.", Location, e);                                                                       
+                }
+                // All other exceptions
+                catch (Exception e) {
+                    throw new BuildException("Adding files to SourceSafe failed.", Location, e);
                 }
             }
-        }              
+        }
+        
+        #endregion Override implementation of Task
+        
+        /// <summary>
+        /// Create project hierarchy in vss
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        protected IVSSItem CreateProjectPath( string file ) {
+            //Determine relitivity using the base directory
+            if ( file.StartsWith(AddFileSet.BaseDirectory.FullName ) ) {
+                FileInfo fi = new FileInfo( file );
+
+                string relativePath, currentPath;
+                string[] projects;
+                IVSSItem currentItem = null;
+
+                relativePath = fi.DirectoryName.Replace( AddFileSet.BaseDirectory.FullName, "" ).Replace( '/', '\\' );
+
+                if ( relativePath[0] == '\\' ) {
+                    relativePath = relativePath.Substring( 1, relativePath.Length - 1);
+                }
+
+                projects = relativePath.Split( '\\' );
+
+                currentPath = Path;
+                currentItem = Database.get_VSSItem( currentPath, false );
+
+                Log(Level.Info, LogPrefix + "RelativePath: " + relativePath);
+                Log(Level.Info, LogPrefix + "BaseDir: " + AddFileSet.BaseDirectory.FullName );
+
+                //Walk the path creating as we go
+                foreach( string project in projects ) {
+                    string newPath = string.Format( "{0}/{1}", currentPath, project );
+                    IVSSItem newItem = null;
+
+                    //Try to get the next item in the path
+                    try {
+                        newItem = Database.get_VSSItem( newPath, false );
+                    } catch {}
+
+                    //Create it if it doesn't exist
+                    if ( newItem == null ) {
+                        newItem = currentItem.NewSubproject( project, "NAntContrib vssadd" );
+                        Log(Level.Info, LogPrefix + "Adding VSS Project : " + newPath);
+                    }
+                    //Move on
+                    currentItem = newItem;
+                    currentPath = newPath;
+                }
+                return currentItem;
+            } else
+                return null;
+        }
     }
 }
