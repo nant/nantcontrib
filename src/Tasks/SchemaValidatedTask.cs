@@ -19,17 +19,17 @@
 //
 
 using System;
+using System.Collections;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using System.Text;
-using System.Resources;
-using System.Reflection;
-using System.Diagnostics;
-using System.ComponentModel;
-using System.Collections;
-using System.Collections.Specialized;
 
 using NAnt.Core;
 using NAnt.Core.Tasks;
@@ -90,15 +90,20 @@ namespace NAnt.Contrib.Tasks {
                 SchemaValidatorAttribute taskValidator = taskValidators[0];
                 XmlSerializer taskSerializer = new XmlSerializer(taskValidator.ValidatorType);
 
-                // Load the embedded schema resource
-                ResourceManager resMgr = new ResourceManager(
-                    taskValidator.ValidatorType.Namespace,
-                    Assembly.GetExecutingAssembly());
+                // get embedded schema resource stream
+                Stream schemaStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(
+                    taskValidator.ValidatorType.Namespace);
 
-                // Get the "schema" named resource string
-                string schemaXml = resMgr.GetString("schema");
+                // ensure schema resource was embedded
+                if (schemaStream == null) {
+                    throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                        "Schema resource '{0}' could not be found.",
+                        taskValidator.ValidatorType.Namespace), Location);
+                }
+
+                // load schema resource
                 XmlTextReader tr = new XmlTextReader(
-                    schemaXml, XmlNodeType.Element, null);
+                    schemaStream, XmlNodeType.Element, null);
                 
                 // Add the schema to a schema collection
                 XmlSchema schema = XmlSchema.Read(tr, null);
