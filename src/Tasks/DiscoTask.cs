@@ -20,17 +20,18 @@
 // Jayme C. Edwards (jedwards@wi.rr.com)
 
 using System;
+using System.Globalization;
 using System.IO;
 using System.Xml;
 using System.Text;
 using System.Collections.Specialized;
 
 using NAnt.Core;
+using NAnt.Core.Util;
 using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
 
-namespace NAnt.Contrib.Tasks
-{
+namespace NAnt.Contrib.Tasks {
     /// <summary>Discovers the URLs of XML web services on a web server and saves documents
     /// related to them to the local disk. The resulting .discomap, .wsdl, and .xsd files
     /// can be used with the <see cref="WsdlTask"/> to produce web service clients and
@@ -42,34 +43,35 @@ namespace NAnt.Contrib.Tasks
     /// </example>
     [TaskName("disco")]
     [ProgramLocation(LocationType.FrameworkSdkDir)]
-    public class DicsoTask : ExternalProgramBase
-    {
-        private string _args;
-        private string _path;
+    public class DicsoTask : ExternalProgramBase {
+        #region Private Instance Fields
+        
+        private StringBuilder _argumentBuilder = null;
+        private string _path = null;
         private bool _nologo = true;
         private bool _nosave;
-        private string _outputdir;
-        private string _username;
-        private string _password;
-        private string _domain;
-        private string _proxy;
-        private string _proxyusername;
-        private string _proxypassword;
-        private string _proxydomain;
+        private string _outputdir = null;
+        private string _username = null;
+        private string _password = null;
+        private string _domain = null;
+        private string _proxy = null;
+        private string _proxyusername = null;
+        private string _proxypassword = null;
+        private string _proxydomain = null;
+        #endregion Private Instance Fields
+        #region Public Instance Properties
 
         /// <summary>The URL or Path to discover.</summary>
         [TaskAttribute("path")]
-        public string Path
-        {
+        public string Path {
             get { return _path; }
-            set { _path = value; }
+            set { _path = StringUtils.ConvertEmptyToNull(value); }
         }
 
         /// <summary>Suppresses the banner.</summary>
         [TaskAttribute("nologo")]
         [BooleanValidator()]
-        public bool NoLogo
-        {
+        public bool NoLogo {
             get { return _nologo; }
             set { _nologo = value; }
         }
@@ -77,169 +79,137 @@ namespace NAnt.Contrib.Tasks
         /// <summary>Do not save the discovered documents to the local disk.</summary>
         [TaskAttribute("nosave")]
         [BooleanValidator()]
-        public bool NoSave
-        {
+        public bool NoSave {
             get { return _nosave; }
             set { _nosave = value; }
         }
 
         /// <summary>The output directory to save discovered documents in.</summary>
         [TaskAttribute("outputdir")]
-        public string OutputDir
-        {
+        public string OutputDir {
             get { return _outputdir; }
-            set { _outputdir = value; }
+            set { _outputdir = StringUtils.ConvertEmptyToNull(value); }
         }
 
         /// <summary>Username of an account with credentials to access a
         /// server that requires authentication.</summary>
         [TaskAttribute("username")]
-        public string Username
-        {
+        public string Username {
             get { return _username; }
-            set { _username = value; }
+            set { _username = StringUtils.ConvertEmptyToNull(value); }
         }
 
         /// <summary>Password of an account with credentials to access a
         /// server that requires authentication.</summary>
         [TaskAttribute("password")]
-        public string Password
-        {
+        public string Password {
             get { return _password; }
-            set { _password = value; }
+            set { _password = StringUtils.ConvertEmptyToNull(value); }
         }
 
         /// <summary>Domain of an account with credentials to access a
         /// server that requires authentication.</summary>
         [TaskAttribute("domain")]
-        public string Domain
-        {
+        public string Domain {
             get { return _domain; }
-            set { _domain = value; }
+            set { _domain = StringUtils.ConvertEmptyToNull(value); }
         }
 
         /// <summary>URL of a proxy server to use for HTTP requests.
         /// The default is to use the system proxy setting.</summary>
         [TaskAttribute("proxy")]
-        public string Proxy
-        {
+        public string Proxy {
             get { return _proxy; }
-            set { _proxy = value; }
+            set { _proxy = StringUtils.ConvertEmptyToNull(value); }
         }
 
         /// <summary>Username of an account with credentials to access a
         /// proxy that requires authentication.</summary>
         [TaskAttribute("proxyusername")]
-        public string ProxyUsername
-        {
+        public string ProxyUsername {
             get { return _proxyusername; }
-            set { _proxyusername = value; }
+            set { _proxyusername = StringUtils.ConvertEmptyToNull(value); }
         }
 
         /// <summary>Password of an account with credentials to access a
         /// proxy that requires authentication.</summary>
         [TaskAttribute("proxypassword")]
-        public string ProxyPassword
-        {
+        public string ProxyPassword {
             get { return _proxypassword; }
-            set { _proxypassword = value; }
+            set { _proxypassword = StringUtils.ConvertEmptyToNull(value); }
         }
 
         /// <summary>Domain of an account with credentials to access a
         /// proxy that requires authentication.</summary>
         [TaskAttribute("proxydomain")]
-        public string ProxyDomain
-        {
+        public string ProxyDomain {
             get { return _proxydomain; }
-            set { _proxydomain = value; }
+            set { _proxydomain = StringUtils.ConvertEmptyToNull(value); }
         }
+        #endregion Public Instance Properties
+
+        #region Override implementation of ExternalProgramBase
 
         /// <summary>
-        /// Arguments of program to execute
+        /// Gets the command-line arguments for the external program.
         /// </summary>
-        public override string ProgramArguments
-        {
-            get
-            {
-                return _args;
+        /// <value>
+        /// The command-line arguments for the external program.
+        /// </value>
+        public override string ProgramArguments {
+            get {
+                if (_argumentBuilder != null) {
+                    return _argumentBuilder.ToString();
+                } else {
+                    return null;
+                }
             }
         }
+        /// <summary>
+        /// Discover the details for the specified web service.
+        /// </summary>
+        protected override void ExecuteTask() {
+            _argumentBuilder = new StringBuilder();
 
-        ///<summary>
-        ///Initializes task and ensures the supplied attributes are valid.
-        ///</summary>
-        ///<param name="taskNode">Xml node used to define this task instance.</param>
-        protected override void InitializeTask(System.Xml.XmlNode taskNode)
-        {
+            if (NoLogo) {
+                _argumentBuilder.Append(" /nologo ");
+            }
+
+            if (NoSave) {
+                _argumentBuilder.Append("/nosave ");
+            }
+
+            if (OutputDir != null) {
+                _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /o:\"{0}\"", OutputDir);
+            }
+            if (Username != null) {
+                _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /u:\"{0}\"", Username);
+            }
+            if (Password != null) {
+                _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /p:\"{0}\"", Password);
+            }
+            if (Domain != null) {
+                _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /d:{0}", Domain);
+            }
+            if (Proxy != null) {
+                _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /proxy:\"{0}\"", Proxy);
+            }
+            if (ProxyUsername != null) {
+                _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /proxyusername:\"{0}\"", ProxyUsername);
+            }
+            if (ProxyPassword != null) {
+                _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /proxypassword:\"{0}\"", ProxyPassword);
+            }
+            if (ProxyDomain != null) {
+                _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " /proxydomain:\"{0}\"", ProxyDomain);
+            }
+            
+            _argumentBuilder.AppendFormat(CultureInfo.InvariantCulture, " \"{0}\"", Path);
+
+            // call base class to do perform the actual call
+            base.ExecuteTask();
+
         }
-
-        protected override void ExecuteTask()
-        {
-            StringBuilder arguments = new StringBuilder();
-
-            if (NoLogo)
-            {
-                arguments.Append("/nologo ");
-            }
-
-            if (NoSave)
-            {
-                arguments.Append("/nosave ");
-            }
-
-            if (OutputDir != null)
-            {
-                arguments.Append(" /o:");
-                arguments.Append(OutputDir);
-            }
-            if (Username != null)
-            {
-                arguments.Append(" /u:");
-                arguments.Append(Username);
-            }
-            if (Password != null)
-            {
-                arguments.Append(" /p:");
-                arguments.Append(Password);
-            }
-            if (Domain != null)
-            {
-                arguments.Append(" /d:");
-                arguments.Append(Domain);
-            }
-            if (Proxy != null)
-            {
-                arguments.Append(" /proxy:");
-                arguments.Append(Proxy);
-            }
-            if (ProxyUsername != null)
-            {
-                arguments.Append(" /pu:");
-                arguments.Append(ProxyUsername);
-            }
-            if (ProxyPassword != null)
-            {
-                arguments.Append(" /pp:");
-                arguments.Append(ProxyPassword);
-            }
-            if (ProxyDomain != null)
-            {
-                arguments.Append(" /pd:");
-                arguments.Append(ProxyDomain);
-            }
-
-            arguments.Append(Path);
-
-            try
-            {
-                _args = arguments.ToString();
-
-                base.ExecuteTask();
-            }
-            catch (Exception e)
-            {
-                throw new BuildException(LogPrefix + "ERROR: " + e);
-            }
-        }
+        #endregion Override implementation of ExternalProgramBase
     }
 }
