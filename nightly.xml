@@ -1,7 +1,10 @@
 <?xml version="1.0"?>
 <project name="nantcontrib" default="nightly-self">
+    <!-- set base uri for linking to NAnt help -->
+    <property name="nant.base.uri" value="http://nant.sourceforge.net/nightly/help/" />
     <!-- set project.version to current date/time in yyyyMMdd format -->
     <tstamp property="project.version" pattern="yyyyMMdd" />
+    <!-- set name of sourceforge project server -->    
     <property name="sf.net.ssh.server" value="shell1.sf.net" />
     <property name="sf.net.web.path" value="/home/groups/n/na/nantcontrib/htdocs" />
     <!-- include master build file -->
