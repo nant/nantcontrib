@@ -133,7 +133,17 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
                 | GetFileTimestampFlags(FileTimestamp);
 
             try {
-                Item.Checkout("", LocalPath.FullName, flags);
+                switch (Item.Type) {
+                    case (int) VSSItemType.VSSITEM_PROJECT:
+                        Item.Checkout("", LocalPath.FullName, flags);
+                        break;
+                    case (int) VSSItemType.VSSITEM_FILE:
+                        string filePath = System.IO.Path.Combine(LocalPath.FullName, 
+                            Item.Name);
+                        Item.Checkout("", filePath, flags);
+                        break;
+                }
+
             } catch (Exception ex) {
                 throw new BuildException("The check-out operation failed.", 
                     Location, ex);

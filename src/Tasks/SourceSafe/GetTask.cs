@@ -34,7 +34,7 @@ using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks.SourceSafe {
     /// <summary>
-    /// Used to retreive an item or project from a Visual Source Safe database.
+    /// Used to retrieve an item or project from a Visual Source Safe database.
     /// </summary>
     /// <example>
     ///   <para>Get the latest files from a local sourcesafe database.</para>
@@ -200,9 +200,19 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
 
             // Get the version to the local path
             try {
-                string localPath = LocalPath.FullName;
-                Item.Get(ref localPath, flags);
-                LocalPath = new DirectoryInfo(localPath);
+                string localPath;
+
+                switch (Item.Type) {
+                    case (int) VSSItemType.VSSITEM_PROJECT:
+                        localPath = LocalPath.FullName;
+                        Item.Get(ref localPath, flags);
+                        break;
+                    case (int) VSSItemType.VSSITEM_FILE:
+                        localPath = System.IO.Path.Combine(LocalPath.FullName, 
+                            Item.Name);
+                        Item.Get(ref localPath, flags);
+                        break;
+                }
             } catch (Exception ex) {
                 throw new BuildException("The get operation failed.", Location, ex);
             }
