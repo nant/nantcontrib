@@ -26,16 +26,21 @@ using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks {
 
-    /// <summary>Increments a version number counter and auto-generates an AssemblyInfo.cs file.</summary>
+    /// <summary>Increments a version number counter from a text file. Resulting version string is written back
+    ///  to the file and entered in a NAnt property defined by <c>prefix</c> + &quot;version&quot;.</summary>
     /// <remarks>
-    ///   <para>Macros in the message will be expanded.</para>
+    ///   <para><c>buildtype</c> determines how the build number is generated:
+    ///   <list type="bullet">
+    ///    <item><term>monthday</term><description>use the # months since start of project * 100 + current day in month as build number</description></item>
+    ///    <item><term>increment</term><description>increment a build number stored in the build.number file in current directory</description></item>
+    ///    <item><term>noincrement</term><description>do not increment the build number - we use this if we need to update an existing build</description></item>
+    ///   </list></para>
+    ///   <para><c>revisiontype</c> determines how the revision number is generated:
+    ///   <list type="bullet">
+    ///    <item><term>automatic</term><description>use the # seconds since the start of today / 10</description></item>
+    ///    <item><term>increment</term><description>use the file version's revision number spec'd by the revisionbin attribute</description></item>
+    ///   </list></para>
     /// </remarks>
-    /// <example>
-    ///   <para>Writes message to build log.</para>
-    ///   <code>&lt;echo message="Hello, World!"/&gt;</code>
-    ///   <para>Writes message with expanded macro to build log.</para>
-    ///   <code>&lt;echo message="Base build directory = ${nant.project.basedir}"/&gt;</code>
-    /// </example>
     [TaskName("version")]
     public class VersionTask : Task 
     {
@@ -61,18 +66,24 @@ namespace NAnt.Contrib.Tasks {
         private const int     maskMatchCount_   = 5;
         private DateTime      startDate_        = DateTime.MinValue;
 
-      /// <summary>The string to prefix the property names with.  Default is "sys."</summary>
+        /// <summary>The string to prefix the property names with.  Default is "sys."</summary>
         [TaskAttribute("prefix", Required=false)]
         public string Prefix {
           get { return prefix_; }
           set { prefix_ = value; }
         }
 
+        /// <summary>
+        /// Start of project. Date from which to calculate build number. Required if &quot;monthday&quot; is used as <c>buildtype</c>.
+        /// </summary>
         [ TaskAttribute( "startDate" ) ]
         public string StartDate {
           set { startDate_ = Convert.ToDateTime( value ); }
         }
 
+        /// <summary>
+        /// Path to the file containing the current version number. Defaults to 'build.number'.
+        /// </summary>
         [ TaskAttribute( "path" ) ]
         public string Path 
         {
@@ -80,10 +91,10 @@ namespace NAnt.Contrib.Tasks {
           set { path_ = value; }
         }
 
-        // Generate the version number using the appropriate algorithm: 
-        // 1) monthday    = use the # months since start of project + current day in month as build number
-        // 2) increment   = increment a build number stored in the build.number file in current directory
-        // 3) noincrement = do not increment the build number - we use this if we need to update an existing build
+        /// <summary>
+        /// Algorithm for generating build number. Valid values are &quot;monthday&quot;,
+        /// &quot;increment&quot; and &quot;noincrement&quot;. Defaults to &quot;monthday&quot;.
+        /// </summary>
         [ TaskAttribute( "buildtype" ) ]
         public string BuildType { 
             set {
@@ -95,9 +106,10 @@ namespace NAnt.Contrib.Tasks {
           get { return buildType_; }
         }
 
-        // Generate the revision number using the appropriate algorithm:
-        // 1) automatic   = use the # seconds since the start of today / 10
-        // 2) increment   = use the file version's revision number spec'd by the revisionbin attribute
+        /// <summary>
+        /// Algorithm for generating revision number. Valid values are &quot;automatic&quot; and
+        /// &quot;increment&quot;.
+        /// </summary>
         [ TaskAttribute( "revisiontype" ) ]
         public string RevisionType {
           set 
