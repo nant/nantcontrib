@@ -50,6 +50,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         private NAnt.Core.Task task;
         private Location location;
         private XmlNode node;
+        private string _tempFolderPath;
 
         protected InstallerCreationCommand(MSIBase msi, NAnt.Core.Task task, Location location, XmlNode node) {
             this.msi = msi;
@@ -127,7 +128,10 @@ namespace NAnt.Contrib.Tasks.Msi {
 
         protected string TempFolderPath {
             get {
-                return Path.Combine(Project.BaseDirectory, Path.Combine(msi.sourcedir, @"Temp"));
+                if (_tempFolderPath == null) {
+                    _tempFolderPath = FileUtils.GetTempDirectory().FullName;
+                }
+                return _tempFolderPath;
             }
         }
 
@@ -205,26 +209,20 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// <param name="database">The MSI database.</param>
         /// <param name="LastSequence">The last file's sequence number.</param>
         protected void ReorderFiles(InstallerDatabase database, ref int LastSequence) {
-            string curPath = Path.Combine(Project.BaseDirectory, msi.sourcedir);
-            string curTempPath = Path.Combine(curPath, "Temp");
-            
-            if (Directory.Exists(curTempPath)) {
-                string[] curFileNames = Directory.GetFiles(curTempPath, "*.*");
+            if (Directory.Exists(TempFolderPath)) {
+                string[] curFileNames = Directory.GetFiles(TempFolderPath, "*.*");
 
                 LastSequence = 1;
 
                 foreach (string curDirFileName in curFileNames) {
-
                     using (InstallerRecordReader reader = database.FindRecords("File", 
                             new InstallerSearchClause("File", Comparison.Equals, Path.GetFileName(curDirFileName)))) {
 
                         if (reader.Read()) {
                             reader.SetValue(7, LastSequence.ToString());
                             reader.Commit();
-
                             LastSequence++;
-                        }
-                        else {
+                        } else {
                             throw new BuildException("File " +
                                 Path.GetFileName(curDirFileName) +
                                 " not found during reordering.");
@@ -2183,7 +2181,7 @@ namespace NAnt.Contrib.Tasks.Msi {
 
             string shortCabDir = GetShortDir(Path.Combine(Project.BaseDirectory, msi.sourcedir));
             string cabFilePath = shortCabDir + @"\" + CabFileName;
-            string tempDir = Path.Combine(msi.sourcedir, "Temp");
+            string tempDir = TempFolderPath;
             if (tempDir.ToLower().StartsWith(Project.BaseDirectory.ToLower())) {
                 tempDir = tempDir.Substring(Project.BaseDirectory.Length+1);
             }

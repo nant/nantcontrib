@@ -157,27 +157,24 @@ namespace NAnt.Contrib.Tasks.Msi {
          */
 
         public void Import(string tableStructureContents) {
-            string tempFileName = "85E99F65_1B01_4add_8835_EB2C9DA4E8BF.idt";
-            string tempFolderPath = Environment.GetEnvironmentVariable("TEMP");
-            string tempFilePath = Path.Combine(tempFolderPath, tempFileName);
+            string tempFilePath = Path.Combine(Path.GetTempPath(), 
+                Path.GetTempFileName());
 
-            FileStream tableStream = File.Create(tempFilePath);
             try {
-                try {
+                using (FileStream tableStream = File.Create(tempFilePath)) {
                     StreamWriter writer = new StreamWriter(tableStream);
                     writer.Write(tableStructureContents);
                     writer.Flush();
-                } finally {
+                    writer.Close();
                     tableStream.Close();
                 }
 
-                _database.Import(Path.GetFullPath(tempFolderPath), tempFileName);
+                _database.Import(Path.GetDirectoryName(tempFilePath), 
+                    Path.GetFileName(tempFilePath));
             } finally {
                 File.Delete(tempFilePath);
             }
         }
-
-
 
         /// <summary>
         /// Drops empty tables.
