@@ -37,8 +37,8 @@ using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks {
     /// <summary>
-    /// Abstract Task that validates inheriting classes against an XML Schema of 
-    /// the same name.
+    /// Abstract <see cref="Task" /> that validates inheriting classes against 
+    /// an XML schema of the same name.
     /// </summary>
     public abstract class SchemaValidatedTask : Task {
         #region Private Instance Fields
@@ -47,7 +47,6 @@ namespace NAnt.Contrib.Tasks {
         private bool _validated = true;
         private ArrayList _validationExceptions = new ArrayList();
         private XmlNode _xmlNode;
-        private string _namespace;
 
         #endregion Private Instance Fields
 
@@ -246,7 +245,8 @@ namespace NAnt.Contrib.Tasks {
         /// Initializes a new instance of the <see cref="SchemaValidatorAttribute"/>
         /// class.
         /// </summary>
-        /// <param name="schemaType">The <see cref="Type"/> of the object created by <see cref="XsdTask" /> to represent the root node of your task.</param>
+        /// <param name="schemaType">The <see cref="Type" /> of the object created by <see cref="XsdTask" /> to represent the root node of your task.</param>
+        /// <param name="xmlNamespace"></param>
         public SchemaValidatorAttribute(Type schemaType, string xmlNamespace) { 
             _type = schemaType;
             _namespace = xmlNamespace;
