@@ -158,10 +158,10 @@ namespace NAnt.Optional.Tasks {
         /// Import the ActiveX control.
         /// </summary>
         protected override void ExecuteTask() {
-            Log(Level.Info, LogPrefix + "Generating Windows Forms Control wrapping '{0}'.",
+            Log(Level.Info, "Generating Windows Forms Control wrapping '{0}'.",
                 OcxFile.FullName);
 
-            Arguments.Add(new Argument(OcxFile.FullName));
+            Arguments.Add(new Argument(OcxFile));
 
             if (DelaySign) {
                 Arguments.Add(new Argument("/delaysign"));
@@ -178,18 +178,15 @@ namespace NAnt.Optional.Tasks {
             }
 
             if (OutputFile != null) {
-                Arguments.Add(new Argument(string.Format(CultureInfo.InvariantCulture, 
-                    "/out:\"{0}\"", OutputFile.FullName)));
+                Arguments.Add(new Argument(OutputFile));
             }
 
             if (PublicKeyFile != null) {
-                Arguments.Add(new Argument(string.Format(CultureInfo.InvariantCulture, 
-                    "/publickey:\"{0}\"", PublicKeyFile.FullName)));
+                Arguments.Add(new Argument(PublicKeyFile));
             }
 
             if (KeyFile != null) {
-                Arguments.Add(new Argument(string.Format(CultureInfo.InvariantCulture, 
-                    "/keyfile:\"{0}\"", KeyFile.FullName)));
+                Arguments.Add(new Argument(KeyFile));
             }
 
             if (KeyContainer != null) {
