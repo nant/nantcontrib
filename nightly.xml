@@ -11,7 +11,9 @@
     <target name="nightly-self">
 		<call target="nightly-tasks"/>
 		<call target="nightly-web"/>
-		<call target="nightly-msi"/>
+		<!--
+		<call target="nightly-msi"/> 
+		-->
 		<call target="sf.net-updateperms" failonerror="false"/>
     </target>
     
@@ -34,7 +36,14 @@
     
     <target name="nightly-tasks" depends="build doc" description="Updates SF.Net site with new release build of tasks">
         <property name="project.zip-path" value="${nant.project.basedir}/build/${project.name}.Tasks-${project.version}.zip" />
-
+        <!-- copy project files -->
+        <copy todir="${build.dir}">
+            <fileset>
+                <includes name="src/**" />
+                <includes name="*" />
+            </fileset>		
+		</copy>
+		
         <zip zipfile="${project.zip-path}">
             <fileset basedir="${build.dir}">
                 <includes name="**/*" />
