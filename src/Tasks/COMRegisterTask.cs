@@ -161,7 +161,7 @@ namespace NAnt.Contrib.Tasks {
             string entryPoint = "DllRegisterServer";
             string action = "register";                                
             if ( Unregister ) {
-                entryPoint = "DllUnRegisterServer";
+                entryPoint = "DllUnregisterServer";
                 action = "unregister";
             }
             IntPtr address = GetProcAddress( handle, entryPoint );   

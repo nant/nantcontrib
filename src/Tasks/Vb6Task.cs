@@ -22,7 +22,7 @@
 // Kevin Dente (kevin_d@mindspring.com)
 
 using System;
-using System.Collections.Specialized;
+using System.Collections.Specialized; 
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -130,7 +130,7 @@ namespace NAnt.Contrib.Tasks {
 
                         if ((key == "StartupProject") || (key == "Project")) {
                             // This is a project file - get the file name and add it to the project list
-                            projectFiles.Add(keyValue);							
+                            projectFiles.Add(keyValue);                         
                         }
                     }
                 }
@@ -198,7 +198,7 @@ namespace NAnt.Contrib.Tasks {
         /// <param name="sources">
         /// A fileset representing the source files of the project, which will
         /// populated by the method.
-        ///	</param>
+        /// </param>
         /// <param name="references">
         /// A fileset representing the references of the project, which will
         /// populated by the method.
@@ -215,14 +215,15 @@ namespace NAnt.Contrib.Tasks {
             string projectName = null;
             string projectType = null;
         
+            //# Modified each regular expressioni to properly parse the project references in the vbp file #
             // Regexp that extracts INI-style "key=value" entries used in the VBP
-            Regex keyValueRegEx = new Regex(@"(?<key>\w+)\s*=\s*(?<value>.*)\s*$");
+            Regex keyValueRegEx = new Regex(@"(?<key>\w+)\s*=\s*(?<value>.*($^\.)*)\s*$");
 
             // Regexp that extracts source file entries from the VBP (Class=,Module=,Form=,UserControl=)
-            Regex codeRegEx = new Regex(@"(Class|Module)\s*=\s*\w*;\s*(?<filename>.*)\s*$");
+            Regex codeRegEx = new Regex(@"(Class|Module)\s*=\s*\w*;\s*(?<filename>.*($^\.)*)\s*$");
 
             // Regexp that extracts reference entries from the VBP (Reference=)
-            Regex referenceRegEx = new Regex(@"Reference\s*=\s*\*\\G{[0-9\-A-Fa-f]*}\#[0-9\.]*\#[0-9]\#(?<tlbname>.*)\#");
+            Regex referenceRegEx = new Regex(@"Reference\s*=\s*\*\\G{(?<tlbguid>[0-9\-A-Fa-f]*($^\.)*)}\#(?<majorver>[0-9\.0-9($^\.)*]*)\#(?<minorver>[0-9]($^\.)*)\#(?<tlbname>.*)\#");
 
             string key = String.Empty;
             string keyValue = String.Empty;
@@ -261,10 +262,23 @@ namespace NAnt.Contrib.Tasks {
                                     //a hint about where to look for it. If the file isn't
                                     //at that location, the typelib ID is used to lookup
                                     //the file name
+                                            
+                                    // # Added to properly cast the parts of the version #
+                                    // Ensure that we use the correct cast option
+                                    string temp = match.Groups["majorver"].Value;
+                                    ushort majorVer = (-1 < temp.IndexOf(".")) ? (ushort)double.Parse(temp) : ushort.Parse(temp);
+                                    
+                                    temp = match.Groups["minorver"].Value;
+                                    ushort minorVer = (-1 < temp.IndexOf(".")) ? (ushort)double.Parse(temp) : ushort.Parse(temp);
+
+                                    temp = match.Groups["lcid"].Value;
+                                    uint lcid = 0;
+                                    
+                                    if (0 < temp.Length) {
+                                        lcid = (-1 < temp.IndexOf(".")) ? (uint)double.Parse(temp) : uint.Parse(temp);
+                                    }
+                                    
                                     string tlbGuid = match.Groups["tlbguid"].Value;
-                                    ushort majorVer = ushort.Parse(match.Groups["majorver"].Value);
-                                    ushort minorVer = ushort.Parse(match.Groups["minorver"].Value);
-                                    uint lcid = uint.Parse(match.Groups["lcid"].Value);
                                     Guid guid = new Guid(tlbGuid);
                                     try {
                                         QueryPathOfRegTypeLib(ref guid, majorVer, minorVer, lcid, out tlbName);
