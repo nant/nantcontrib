@@ -1,7 +1,7 @@
 <?xml version="1.0" ?> <!--
 //
 // NAntContrib
-// Copyright (C) 2002 James Geurts (jgeurts@users.sourceforge.net)
+// Copyright (C) 2003 James Geurts (jgeurts@users.sourceforge.net)
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,766 +19,766 @@
 //
 -->
 <xsd:schema targetNamespace="NAnt.Contrib.Tasks.MSMTask" xmlns:msm="NAnt.Contrib.Tasks.MSMTask" xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="qualified">
-	<!-- msm -->
-	<xsd:element name="msm">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element ref="msm:properties" minOccurs="1" maxOccurs="1" />
-				<xsd:element ref="msm:search" minOccurs="0" maxOccurs="1" />
-				<xsd:element ref="msm:tables" minOccurs="0" maxOccurs="1" />
-				<xsd:element ref="msm:moduledependencies" minOccurs="0" maxOccurs="1" />
-				<xsd:element ref="msm:moduleexclusions" minOccurs="0" maxOccurs="1" />
-				<xsd:element ref="msm:modulesequences" minOccurs="0" maxOccurs="1" />
-				<xsd:element ref="msm:moduleignoretables" minOccurs="0" maxOccurs="1" />
-				<xsd:element ref="msm:modulesubstitutions" minOccurs="0" maxOccurs="1" />
-				<xsd:element ref="msm:moduleconfigurations" minOccurs="0" maxOccurs="1" />
-				<xsd:element ref="msm:directories" minOccurs="0" maxOccurs="1" />
-				<xsd:element name="environment" minOccurs="0" maxOccurs="1">
-					<xsd:complexType>
-						<xsd:sequence>
-							<xsd:element name="variable" type="msm:MSMVariable" minOccurs="1" maxOccurs="unbounded">
-								<xsd:keyref name="variableComponentRefs" refer="msm:componentKey">
-									<xsd:selector xpath="." />
-									<xsd:field xpath="@component" />
-								</xsd:keyref>
-							</xsd:element>
-						</xsd:sequence>
-					</xsd:complexType>
-				</xsd:element>
-				<xsd:element ref="msm:components" minOccurs="0" maxOccurs="1" />
-				<xsd:element ref="msm:dialogs" minOccurs="0" maxOccurs="1" />
-				<xsd:element name="controls" minOccurs="0" maxOccurs="1">
-					<xsd:complexType>
-						<xsd:sequence>
-							<xsd:element name="control" type="msm:MSMControl" minOccurs="1" maxOccurs="unbounded">
-								<xsd:keyref name="controlDialogRefs" refer="msm:dialogKey">
-									<xsd:selector xpath="." />
-									<xsd:field xpath="@dialog" />
-								</xsd:keyref>
-								<xsd:keyref name="controlPropertyRefs" refer="msm:propertyKey">
-									<xsd:selector xpath="." />
-									<xsd:field xpath="@property" />
-								</xsd:keyref>
-							</xsd:element>
-						</xsd:sequence>
-					</xsd:complexType>
-				</xsd:element>
-				<xsd:element ref="msm:controlconditions" minOccurs="0" maxOccurs="1" />
-				<xsd:element ref="msm:controlevents" minOccurs="0" maxOccurs="1" />
-				<xsd:element name="registry" minOccurs="0" maxOccurs="1">
-					<xsd:complexType>
-						<xsd:sequence>
-							<xsd:element name="key" type="msm:MSMRegistryKey" minOccurs="1" maxOccurs="unbounded">
-								<xsd:keyref name="registryKeyComponentRefs" refer="msm:componentKey">
-									<xsd:selector xpath="." />
-									<xsd:field xpath="@component" />
-								</xsd:keyref>
-							</xsd:element>
-						</xsd:sequence>
-					</xsd:complexType>
-				</xsd:element>
-				<xsd:element ref="msm:icons" minOccurs="0" maxOccurs="1" />
-				<xsd:element name="shortcuts" minOccurs="0" maxOccurs="1">
-					<xsd:complexType>
-						<xsd:sequence>
-							<xsd:element name="shortcut" type="msm:MSMShortcut" minOccurs="1" maxOccurs="unbounded">
-								<xsd:keyref name="shortcutComponentRefs" refer="msm:componentKey">
-									<xsd:selector xpath="." />
-									<xsd:field xpath="@component" />
-								</xsd:keyref>
-								<xsd:keyref name="shortcutIconRefs" refer="msm:iconKey">
-									<xsd:selector xpath="." />
-									<xsd:field xpath="@icon" />
-								</xsd:keyref>
-								<xsd:keyref name="shortcutPropertyRefs" refer="msm:propertyKey">
-									<xsd:selector xpath="." />
-									<xsd:field xpath="@wkdir" />
-								</xsd:keyref>
-							</xsd:element>
-						</xsd:sequence>
-					</xsd:complexType>
-				</xsd:element>
-				<xsd:element ref="msm:binaries" minOccurs="0" maxOccurs="1" />
-				<xsd:element ref="msm:customactions" minOccurs="0" maxOccurs="1" />
-				<xsd:element name="sequences" minOccurs="0" maxOccurs="1">
-					<xsd:complexType>
-						<xsd:sequence>
-							<xsd:element name="sequence" type="msm:MSMSequence" minOccurs="1" maxOccurs="unbounded">
-								<xsd:keyref name="sequenceCustomActionRefs" refer="msm:customActionKey">
-									<xsd:selector xpath="." />
-									<xsd:field xpath="@action" />
-								</xsd:keyref>
-							</xsd:element>
-						</xsd:sequence>
-					</xsd:complexType>
-				</xsd:element>
-				<xsd:element name="appmappings" minOccurs="0" maxOccurs="1">
-					<xsd:complexType>
-						<xsd:sequence>
-							<xsd:element name="appmapping" type="msm:MSMAppMapping" minOccurs="1" maxOccurs="unbounded">
-								<xsd:keyref name="appmapDirectoryRefs" refer="msm:directoryKey">
-									<xsd:selector xpath="." />
-									<xsd:field xpath="@directory" />
-								</xsd:keyref>
-							</xsd:element>
-						</xsd:sequence>
-					</xsd:complexType>
-				</xsd:element>
-				<xsd:element ref="msm:urlproperties" minOccurs="0" maxOccurs="1" />
-				<xsd:element name="vdirproperties" minOccurs="0" maxOccurs="1">
-					<xsd:complexType>
-						<xsd:sequence>
-							<xsd:element name="vdirproperty" type="msm:MSMVDirProperty" minOccurs="1" maxOccurs="unbounded">
-								<xsd:keyref name="vdirpropertyRefs" refer="msm:propertyKey">
-									<xsd:selector xpath="." />
-									<xsd:field xpath="@name" />
-								</xsd:keyref>
-								<xsd:keyref name="vdirportpropertyRefs" refer="msm:propertyKey">
-									<xsd:selector xpath="." />
-									<xsd:field xpath="@portproperty" />
-								</xsd:keyref>
-								<xsd:keyref name="vdirURLPropertyRefs" refer="msm:urlpropertyKey">
-									<xsd:selector xpath="." />
-									<xsd:field xpath="@urlproperty" />
-								</xsd:keyref>
-							</xsd:element>
-						</xsd:sequence>
-					</xsd:complexType>
-				</xsd:element>
-				<xsd:element name="approots" minOccurs="0" maxOccurs="1">
-					<xsd:complexType>
-						<xsd:sequence>
-							<xsd:element name="approot" type="msm:MSMAppRoot" minOccurs="1" maxOccurs="unbounded">
-								<xsd:keyref name="approotComponentRefs" refer="msm:componentKey">
-									<xsd:selector xpath="." />
-									<xsd:field xpath="@component" />
-								</xsd:keyref>
-								<xsd:keyref name="approotURLPropertyRefs" refer="msm:urlpropertyKey">
-									<xsd:selector xpath="." />
-									<xsd:field xpath="@urlproperty" />
-								</xsd:keyref>
-							</xsd:element>
-						</xsd:sequence>
-					</xsd:complexType>
-				</xsd:element>
-				<xsd:element ref="msm:iisproperties" minOccurs="0" maxOccurs="1" />
-			</xsd:sequence>
-			<xsd:attribute name="output" type="xsd:string" use="required" />
-			<xsd:attribute name="sourcedir" type="xsd:string" use="required" />
-			<xsd:attribute name="license" type="xsd:string" use="optional" />
-			<xsd:attribute name="banner" type="xsd:string" use="optional" />
-			<xsd:attribute name="background" type="xsd:string" use="optional" />
-			<xsd:attribute name="id" type="xsd:string" use="required" />
-			<xsd:attribute name="language" type="xsd:string" use="optional" default="1033" />
-			<xsd:attribute name="version" type="xsd:string" use="optional" default="1.0.0.0" />
-			<xsd:attribute name="verbose" type="xsd:boolean" use="optional" default="false" />
-			<xsd:attribute name="debug" type="xsd:boolean" use="optional" default="false" />
-		</xsd:complexType>
-		<xsd:key name="directoryKey">
-			<xsd:selector xpath=".//msm:directory" />
-			<xsd:field xpath="@name" />
-		</xsd:key>
-		<xsd:key name="componentKey">
-			<xsd:selector xpath="msm:components/msm:component" />
-			<xsd:field xpath="@name" />
-		</xsd:key>
-		<xsd:unique name="propertyKey">
-			<xsd:selector xpath="msm:properties/msm:property" />
-			<xsd:field xpath="@name" />
-		</xsd:unique>
-		<xsd:unique name="dialogKey">
-			<xsd:selector xpath="msm:dialogs/msm:dialog" />
-			<xsd:field xpath="@name" />
-		</xsd:unique>
-		<xsd:unique name="controlKey">
-			<xsd:selector xpath="msm:controls/msm:control" />
-			<xsd:field xpath="@name" />
-		</xsd:unique>
-		<xsd:unique name="binaryKey">
-			<xsd:selector xpath="msm:binaries/msm:binary" />
-			<xsd:field xpath="@name" />
-		</xsd:unique>
-		<xsd:unique name="iconKey">
-			<xsd:selector xpath="msm:icons/msm:icon" />
-			<xsd:field xpath="@name" />
-		</xsd:unique>
-		<xsd:unique name="customActionKey">
-			<xsd:selector xpath=".//msm:customaction" />
-			<xsd:field xpath="@action" />
-		</xsd:unique>
-		<xsd:unique name="urlpropertyKey">
-			<xsd:selector xpath="msm:urlproperties/msm:urlproperty" />
-			<xsd:field xpath="@name" />
-		</xsd:unique>
-		<!--
-		<xsd:key name="tableColumnKey">
-			<xsd:selector xpath="msm:tables/msm:table/msm:columns/msm:column" />
-			<xsd:field xpath="@name" />
-		</xsd:key>
-		-->
-	</xsd:element>
-	<!-- msm/properties -->
-	<xsd:element name="properties">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element ref="msm:property" minOccurs="1" maxOccurs="unbounded" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-	<!-- msm/properties/property -->
-	<xsd:element name="property">
-		<xsd:complexType>
-			<xsd:attribute name="name" type="xsd:string" use="required" />
-			<xsd:attribute name="value" type="xsd:string" use="required" />
-		</xsd:complexType>
-	</xsd:element>
-	<!-- msm/search -->
-	<xsd:element name="search">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="key" minOccurs="1" maxOccurs="unbounded">
-					<xsd:complexType>
-						<xsd:sequence>
-							<xsd:element name="value" minOccurs="1" maxOccurs="unbounded">
-								<xsd:complexType>
-									<xsd:attribute name="name" type="xsd:string" use="required" />
-									<xsd:attribute name="setproperty" type="xsd:string" use="required" />
-								</xsd:complexType>
-							</xsd:element>
-						</xsd:sequence>
-						<xsd:attribute name="type" type="msm:MSMSearchKeyType" use="required" />
-						<xsd:attribute name="path" type="xsd:string" use="required" />
-						<xsd:attribute name="root" type="msm:MSMRegistryKeyRoot" use="required" />
-					</xsd:complexType>
-				</xsd:element>
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-	<!-- msm/search/key/@type -->
-	<xsd:simpleType name="MSMSearchKeyType">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="registry" />
-			<xsd:enumeration value="file" />
-		</xsd:restriction>
-	</xsd:simpleType>
-	<!-- msm/tables -->
-	<xsd:element name="tables">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="table" type="msm:MSMTable" minOccurs="1" maxOccurs="unbounded" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-	<!-- msm/tables/table -->
-	<xsd:complexType name="MSMTable">
-		<xsd:sequence>
-			<xsd:element name="columns" type="msm:MSMTableColumns" minOccurs="1" maxOccurs="1" />
-			<xsd:element name="rows" type="msm:MSMTableRows" minOccurs="0" maxOccurs="1" />
-		</xsd:sequence>
-		<xsd:attribute name="name" type="xsd:string" use="required" />
-	</xsd:complexType>
-	<!-- msm/tables/table/columns -->
-	<xsd:complexType name="MSMTableColumns">
-		<xsd:sequence>
-			<xsd:element name="column" type="msm:MSMTableColumn" minOccurs="1" maxOccurs="unbounded" />
-		</xsd:sequence>
-	</xsd:complexType>
-	<!-- msm/tables/table/rows -->
-	<xsd:complexType name="MSMTableRows">
-		<xsd:sequence>
-			<xsd:element name="row" type="msm:MSMTableRow" minOccurs="1" maxOccurs="unbounded" />
-		</xsd:sequence>
-	</xsd:complexType>
-	<!-- msm/tables/table/columns/column -->
-	<!-- category and type are optional, but one is required.  Also
-	     If both are defined, type gets precidence -->
-	<xsd:complexType name="MSMTableColumn">
-		<xsd:attribute name="name" type="xsd:string" use="required" />
-		<xsd:attribute name="nullable" type="xsd:boolean" use="required" />
-		<xsd:attribute name="category" type="msm:MSMTableColumnCategoryType" use="optional" />
-		<xsd:attribute name="type" type="xsd:string" use="optional" />
-		<xsd:attribute name="key" type="xsd:boolean" use="optional" />
-		<xsd:attribute name="minvalue" type="xsd:integer" use="optional" />
-		<xsd:attribute name="maxvalue" type="xsd:integer" use="optional" />
-		<xsd:attribute name="keytable" type="xsd:string" use="optional" />
-		<xsd:attribute name="keycolumn" type="xsd:integer" use="optional" />
-		<xsd:attribute name="set" type="xsd:string" use="optional" />
-		<xsd:attribute name="description" type="xsd:string" use="optional" />
-	</xsd:complexType>
-	<!-- msm/tables/table/rows/row -->
-	<xsd:complexType name="MSMTableRow">
-		<xsd:sequence>
-			<xsd:element name="columns" type="msm:MSMTableRowColumns" minOccurs="1" maxOccurs="1" />
-		</xsd:sequence>
-	</xsd:complexType>
-	<xsd:complexType name="MSMTableRowColumns">
-		<xsd:sequence>
-			<xsd:element name="column" type="msm:MSMTableRowColumnData" minOccurs="1" maxOccurs="unbounded" />
+    <!-- msm -->
+    <xsd:element name="msm">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="msm:properties" minOccurs="1" maxOccurs="1" />
+                <xsd:element ref="msm:search" minOccurs="0" maxOccurs="1" />
+                <xsd:element ref="msm:tables" minOccurs="0" maxOccurs="1" />
+                <xsd:element ref="msm:moduledependencies" minOccurs="0" maxOccurs="1" />
+                <xsd:element ref="msm:moduleexclusions" minOccurs="0" maxOccurs="1" />
+                <xsd:element ref="msm:modulesequences" minOccurs="0" maxOccurs="1" />
+                <xsd:element ref="msm:moduleignoretables" minOccurs="0" maxOccurs="1" />
+                <xsd:element ref="msm:modulesubstitutions" minOccurs="0" maxOccurs="1" />
+                <xsd:element ref="msm:moduleconfigurations" minOccurs="0" maxOccurs="1" />
+                <xsd:element ref="msm:directories" minOccurs="0" maxOccurs="1" />
+                <xsd:element name="environment" minOccurs="0" maxOccurs="1">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="variable" type="msm:MSMVariable" minOccurs="1" maxOccurs="unbounded">
+                                <xsd:keyref name="variableComponentRefs" refer="msm:componentKey">
+                                    <xsd:selector xpath="." />
+                                    <xsd:field xpath="@component" />
+                                </xsd:keyref>
+                            </xsd:element>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element ref="msm:components" minOccurs="0" maxOccurs="1" />
+                <xsd:element ref="msm:dialogs" minOccurs="0" maxOccurs="1" />
+                <xsd:element name="controls" minOccurs="0" maxOccurs="1">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="control" type="msm:MSMControl" minOccurs="1" maxOccurs="unbounded">
+                                <xsd:keyref name="controlDialogRefs" refer="msm:dialogKey">
+                                    <xsd:selector xpath="." />
+                                    <xsd:field xpath="@dialog" />
+                                </xsd:keyref>
+                                <xsd:keyref name="controlPropertyRefs" refer="msm:propertyKey">
+                                    <xsd:selector xpath="." />
+                                    <xsd:field xpath="@property" />
+                                </xsd:keyref>
+                            </xsd:element>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element ref="msm:controlconditions" minOccurs="0" maxOccurs="1" />
+                <xsd:element ref="msm:controlevents" minOccurs="0" maxOccurs="1" />
+                <xsd:element name="registry" minOccurs="0" maxOccurs="1">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="key" type="msm:MSMRegistryKey" minOccurs="1" maxOccurs="unbounded">
+                                <xsd:keyref name="registryKeyComponentRefs" refer="msm:componentKey">
+                                    <xsd:selector xpath="." />
+                                    <xsd:field xpath="@component" />
+                                </xsd:keyref>
+                            </xsd:element>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element ref="msm:icons" minOccurs="0" maxOccurs="1" />
+                <xsd:element name="shortcuts" minOccurs="0" maxOccurs="1">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="shortcut" type="msm:MSMShortcut" minOccurs="1" maxOccurs="unbounded">
+                                <xsd:keyref name="shortcutComponentRefs" refer="msm:componentKey">
+                                    <xsd:selector xpath="." />
+                                    <xsd:field xpath="@component" />
+                                </xsd:keyref>
+                                <xsd:keyref name="shortcutIconRefs" refer="msm:iconKey">
+                                    <xsd:selector xpath="." />
+                                    <xsd:field xpath="@icon" />
+                                </xsd:keyref>
+                                <xsd:keyref name="shortcutPropertyRefs" refer="msm:propertyKey">
+                                    <xsd:selector xpath="." />
+                                    <xsd:field xpath="@wkdir" />
+                                </xsd:keyref>
+                            </xsd:element>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element ref="msm:binaries" minOccurs="0" maxOccurs="1" />
+                <xsd:element ref="msm:customactions" minOccurs="0" maxOccurs="1" />
+                <xsd:element name="sequences" minOccurs="0" maxOccurs="1">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="sequence" type="msm:MSMSequence" minOccurs="1" maxOccurs="unbounded">
+                                <xsd:keyref name="sequenceCustomActionRefs" refer="msm:customActionKey">
+                                    <xsd:selector xpath="." />
+                                    <xsd:field xpath="@action" />
+                                </xsd:keyref>
+                            </xsd:element>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="appmappings" minOccurs="0" maxOccurs="1">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="appmapping" type="msm:MSMAppMapping" minOccurs="1" maxOccurs="unbounded">
+                                <xsd:keyref name="appmapDirectoryRefs" refer="msm:directoryKey">
+                                    <xsd:selector xpath="." />
+                                    <xsd:field xpath="@directory" />
+                                </xsd:keyref>
+                            </xsd:element>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element ref="msm:urlproperties" minOccurs="0" maxOccurs="1" />
+                <xsd:element name="vdirproperties" minOccurs="0" maxOccurs="1">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="vdirproperty" type="msm:MSMVDirProperty" minOccurs="1" maxOccurs="unbounded">
+                                <xsd:keyref name="vdirpropertyRefs" refer="msm:propertyKey">
+                                    <xsd:selector xpath="." />
+                                    <xsd:field xpath="@name" />
+                                </xsd:keyref>
+                                <xsd:keyref name="vdirportpropertyRefs" refer="msm:propertyKey">
+                                    <xsd:selector xpath="." />
+                                    <xsd:field xpath="@portproperty" />
+                                </xsd:keyref>
+                                <xsd:keyref name="vdirURLPropertyRefs" refer="msm:urlpropertyKey">
+                                    <xsd:selector xpath="." />
+                                    <xsd:field xpath="@urlproperty" />
+                                </xsd:keyref>
+                            </xsd:element>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="approots" minOccurs="0" maxOccurs="1">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="approot" type="msm:MSMAppRoot" minOccurs="1" maxOccurs="unbounded">
+                                <xsd:keyref name="approotComponentRefs" refer="msm:componentKey">
+                                    <xsd:selector xpath="." />
+                                    <xsd:field xpath="@component" />
+                                </xsd:keyref>
+                                <xsd:keyref name="approotURLPropertyRefs" refer="msm:urlpropertyKey">
+                                    <xsd:selector xpath="." />
+                                    <xsd:field xpath="@urlproperty" />
+                                </xsd:keyref>
+                            </xsd:element>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element ref="msm:iisproperties" minOccurs="0" maxOccurs="1" />
+            </xsd:sequence>
+            <xsd:attribute name="output" type="xsd:string" use="required" />
+            <xsd:attribute name="sourcedir" type="xsd:string" use="required" />
+            <xsd:attribute name="license" type="xsd:string" use="optional" />
+            <xsd:attribute name="banner" type="xsd:string" use="optional" />
+            <xsd:attribute name="background" type="xsd:string" use="optional" />
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="language" type="xsd:string" use="optional" default="1033" />
+            <xsd:attribute name="version" type="xsd:string" use="optional" default="1.0.0.0" />
+            <xsd:attribute name="verbose" type="xsd:boolean" use="optional" default="false" />
+            <xsd:attribute name="debug" type="xsd:boolean" use="optional" default="false" />
+        </xsd:complexType>
+        <xsd:key name="directoryKey">
+            <xsd:selector xpath=".//msm:directory" />
+            <xsd:field xpath="@name" />
+        </xsd:key>
+        <xsd:key name="componentKey">
+            <xsd:selector xpath="msm:components/msm:component" />
+            <xsd:field xpath="@name" />
+        </xsd:key>
+        <xsd:unique name="propertyKey">
+            <xsd:selector xpath="msm:properties/msm:property" />
+            <xsd:field xpath="@name" />
+        </xsd:unique>
+        <xsd:unique name="dialogKey">
+            <xsd:selector xpath="msm:dialogs/msm:dialog" />
+            <xsd:field xpath="@name" />
+        </xsd:unique>
+        <xsd:unique name="controlKey">
+            <xsd:selector xpath="msm:controls/msm:control" />
+            <xsd:field xpath="@name" />
+        </xsd:unique>
+        <xsd:unique name="binaryKey">
+            <xsd:selector xpath="msm:binaries/msm:binary" />
+            <xsd:field xpath="@name" />
+        </xsd:unique>
+        <xsd:unique name="iconKey">
+            <xsd:selector xpath="msm:icons/msm:icon" />
+            <xsd:field xpath="@name" />
+        </xsd:unique>
+        <xsd:unique name="customActionKey">
+            <xsd:selector xpath=".//msm:customaction" />
+            <xsd:field xpath="@action" />
+        </xsd:unique>
+        <xsd:unique name="urlpropertyKey">
+            <xsd:selector xpath="msm:urlproperties/msm:urlproperty" />
+            <xsd:field xpath="@name" />
+        </xsd:unique>
+        <!--
+        <xsd:key name="tableColumnKey">
+            <xsd:selector xpath="msm:tables/msm:table/msm:columns/msm:column" />
+            <xsd:field xpath="@name" />
+        </xsd:key>
+        -->
+    </xsd:element>
+    <!-- msm/properties -->
+    <xsd:element name="properties">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="msm:property" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msm/properties/property -->
+    <xsd:element name="property">
+        <xsd:complexType>
+            <xsd:attribute name="name" type="xsd:string" use="required" />
+            <xsd:attribute name="value" type="xsd:string" use="required" />
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msm/search -->
+    <xsd:element name="search">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="key" minOccurs="1" maxOccurs="unbounded">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="value" minOccurs="1" maxOccurs="unbounded">
+                                <xsd:complexType>
+                                    <xsd:attribute name="name" type="xsd:string" use="required" />
+                                    <xsd:attribute name="setproperty" type="xsd:string" use="required" />
+                                </xsd:complexType>
+                            </xsd:element>
+                        </xsd:sequence>
+                        <xsd:attribute name="type" type="msm:MSMSearchKeyType" use="required" />
+                        <xsd:attribute name="path" type="xsd:string" use="required" />
+                        <xsd:attribute name="root" type="msm:MSMRegistryKeyRoot" use="required" />
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msm/search/key/@type -->
+    <xsd:simpleType name="MSMSearchKeyType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="registry" />
+            <xsd:enumeration value="file" />
+        </xsd:restriction>
+    </xsd:simpleType>
+    <!-- msm/tables -->
+    <xsd:element name="tables">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="table" type="msm:MSMTable" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msm/tables/table -->
+    <xsd:complexType name="MSMTable">
+        <xsd:sequence>
+            <xsd:element name="columns" type="msm:MSMTableColumns" minOccurs="1" maxOccurs="1" />
+            <xsd:element name="rows" type="msm:MSMTableRows" minOccurs="0" maxOccurs="1" />
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <!-- msm/tables/table/columns -->
+    <xsd:complexType name="MSMTableColumns">
+        <xsd:sequence>
+            <xsd:element name="column" type="msm:MSMTableColumn" minOccurs="1" maxOccurs="unbounded" />
+        </xsd:sequence>
+    </xsd:complexType>
+    <!-- msm/tables/table/rows -->
+    <xsd:complexType name="MSMTableRows">
+        <xsd:sequence>
+            <xsd:element name="row" type="msm:MSMTableRow" minOccurs="1" maxOccurs="unbounded" />
+        </xsd:sequence>
+    </xsd:complexType>
+    <!-- msm/tables/table/columns/column -->
+    <!-- category and type are optional, but one is required.  Also
+         If both are defined, type gets precidence -->
+    <xsd:complexType name="MSMTableColumn">
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="nullable" type="xsd:boolean" use="required" />
+        <xsd:attribute name="category" type="msm:MSMTableColumnCategoryType" use="optional" />
+        <xsd:attribute name="type" type="xsd:string" use="optional" />
+        <xsd:attribute name="key" type="xsd:boolean" use="optional" />
+        <xsd:attribute name="minvalue" type="xsd:integer" use="optional" />
+        <xsd:attribute name="maxvalue" type="xsd:integer" use="optional" />
+        <xsd:attribute name="keytable" type="xsd:string" use="optional" />
+        <xsd:attribute name="keycolumn" type="xsd:integer" use="optional" />
+        <xsd:attribute name="set" type="xsd:string" use="optional" />
+        <xsd:attribute name="description" type="xsd:string" use="optional" />
+    </xsd:complexType>
+    <!-- msm/tables/table/rows/row -->
+    <xsd:complexType name="MSMTableRow">
+        <xsd:sequence>
+            <xsd:element name="columns" type="msm:MSMTableRowColumns" minOccurs="1" maxOccurs="1" />
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="MSMTableRowColumns">
+        <xsd:sequence>
+            <xsd:element name="column" type="msm:MSMTableRowColumnData" minOccurs="1" maxOccurs="unbounded" />
 <!--
-			<xsd:element name="column" type="msm:MSMTableRowColumnData" minOccurs="1" maxOccurs="unbounded">
-				<xsd:keyref name="tableRowColumnRefs" refer="msm:tableColumnKey">
-					<xsd:selector xpath="." />
-					<xsd:field xpath="@name" />
-				</xsd:keyref>
-			</xsd:element>
+            <xsd:element name="column" type="msm:MSMTableRowColumnData" minOccurs="1" maxOccurs="unbounded">
+                <xsd:keyref name="tableRowColumnRefs" refer="msm:tableColumnKey">
+                    <xsd:selector xpath="." />
+                    <xsd:field xpath="@name" />
+                </xsd:keyref>
+            </xsd:element>
 -->
-		</xsd:sequence>
-	</xsd:complexType>
-	<!-- msm/tables/table/rows/row/column -->
-	<xsd:complexType name="MSMTableRowColumnData">
-		<xsd:attribute name="name" type="xsd:string" use="required" />
-		<xsd:attribute name="value" type="xsd:string" use="required" />
-	</xsd:complexType>
-	<!-- msm/tables/table/columns/column/type -->
-	<xsd:simpleType name="MSMTableColumnCategoryType">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="Text" />
-			<xsd:enumeration value="UpperCase" />
-			<xsd:enumeration value="LowerCase" />
-			<xsd:enumeration value="Integer" />
-			<xsd:enumeration value="DoubleInteger" />
-			<xsd:enumeration value="Time/Date" />
-			<xsd:enumeration value="Identifier" />
-			<xsd:enumeration value="Property" />
-			<xsd:enumeration value="Filename" />
-			<xsd:enumeration value="WildCardFilename" />
-			<xsd:enumeration value="Path" />
-			<xsd:enumeration value="Paths" />
-			<xsd:enumeration value="AnyPath" />
-			<xsd:enumeration value="DefaultDir" />
-			<xsd:enumeration value="RegPath" />
-			<xsd:enumeration value="Formatted" />
-			<xsd:enumeration value="Template" />
-			<xsd:enumeration value="Condition" />
-			<xsd:enumeration value="GUID" />
-			<xsd:enumeration value="Version" />
-			<xsd:enumeration value="Language" />
-			<xsd:enumeration value="Binary" />
-			<xsd:enumeration value="Cabinet" />
-			<xsd:enumeration value="Shortcut" />
-		</xsd:restriction>
-	</xsd:simpleType>
-	<!-- msm/moduledependencies -->
-	<xsd:element name="moduledependencies">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="dependency" type="msm:MSMModuleDependency" minOccurs="1" maxOccurs="unbounded" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-	<!-- msm/moduledependencies/dependency -->
-	<xsd:complexType name="MSMModuleDependency">
-		<xsd:attribute name="id" type="xsd:string" use="required" />
-		<xsd:attribute name="language" type="xsd:integer" use="required" />
-		<xsd:attribute name="version" type="xsd:string" use="optional" />
-	</xsd:complexType>
-	<!-- msm/moduleexclusions -->
-	<xsd:element name="moduleexclusions">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="exclusion" type="msm:MSMModuleExclusion" minOccurs="1" maxOccurs="unbounded" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-	<!-- msm/moduleexclusions/exclusion -->
-	<xsd:complexType name="MSMModuleExclusion">
-		<xsd:attribute name="id" type="xsd:string" use="required" />
-		<xsd:attribute name="language" type="xsd:integer" use="required" />
-		<xsd:attribute name="minversion" type="xsd:string" use="optional" />
-		<xsd:attribute name="maxversion" type="xsd:string" use="optional" />
-	</xsd:complexType>
-	<!-- msm/modulesequences -->
-	<xsd:element name="modulesequences">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="sequence" type="msm:MSMModuleSequence" minOccurs="1" maxOccurs="unbounded" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-	<!-- msm/modulesequences/sequence -->
-	<xsd:complexType name="MSMModuleSequence">
-		<xsd:attribute name="type" type="msm:MSMSequenceTable" use="required" />
-		<xsd:attribute name="action" type="xsd:string" use="required" />
-		<xsd:attribute name="sequence" type="xsd:int" use="optional" />
-		<xsd:attribute name="baseaction" type="xsd:string" use="optional" />
-		<xsd:attribute name="after" type="xsd:boolean" use="optional" default="true" />
-		<xsd:attribute name="condition" type="xsd:string" use="optional" default="" />
-	</xsd:complexType>
-	<!-- msm/moduleignoretables	 -->
-	<xsd:element name="moduleignoretables">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="table" type="msm:MSMModuleIgnoreTable" minOccurs="1" maxOccurs="unbounded" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-	<!-- msm/moduleignoretables/table -->
-	<xsd:complexType name="MSMModuleIgnoreTable">
-		<xsd:attribute name="name" type="xsd:string" use="required" />
-	</xsd:complexType>
-	<!-- msm/substitutions	 -->
-	<xsd:element name="modulesubstitutions">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="substitution" type="msm:MSMModuleSubstitution" minOccurs="1" maxOccurs="unbounded" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-	<!-- msm/substitutions/substitution -->
-	<xsd:complexType name="MSMModuleSubstitution">
-		<xsd:attribute name="table" type="xsd:string" use="required" />
-		<xsd:attribute name="row" type="xsd:string" use="required" />
-		<xsd:attribute name="column" type="xsd:string" use="required" />
-		<xsd:attribute name="value" type="xsd:string" use="optional" />
-	</xsd:complexType>
-	<!-- msm/configurations	 -->
-	<xsd:element name="moduleconfigurations">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="configuration" type="msm:MSMModuleConfiguration" minOccurs="1" maxOccurs="unbounded" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-	<!-- msm/configurations/configuration -->
-	<xsd:complexType name="MSMModuleConfiguration">
-		<xsd:attribute name="name" type="xsd:string" use="required" />
-		<xsd:attribute name="format" type="msm:MSMModuleConfigurationFormat" use="required" />
-		<xsd:attribute name="type" type="xsd:string" use="optional" />
-		<xsd:attribute name="contextdata" type="xsd:string" use="optional" />
-		<xsd:attribute name="defaultvalue" type="xsd:string" use="optional" />
-		<xsd:attribute name="attr" type="xsd:integer" use="optional" default="0" />
-		<xsd:attribute name="displayname" type="xsd:string" use="optional" />
-		<xsd:attribute name="description" type="xsd:string" use="optional" />
-		<xsd:attribute name="helplocation" type="xsd:string" use="optional" />
-		<xsd:attribute name="helpkeyword" type="xsd:string" use="optional" />
-	</xsd:complexType>
-	<xsd:simpleType name="MSMModuleConfigurationFormat">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="text" />
-			<xsd:enumeration value="key" />
-			<xsd:enumeration value="integer" />
-			<xsd:enumeration value="bitfield" />
-		</xsd:restriction>
-	</xsd:simpleType>
-	<!-- msm/directories/directory -->
-	<xsd:complexType name="MSMDirectory">
-		<xsd:sequence>
-			<xsd:element name="directory" type="msm:MSMDirectory" minOccurs="0" maxOccurs="unbounded" />
-		</xsd:sequence>
-		<xsd:attribute name="name" type="xsd:string" use="required" />
-		<xsd:attribute name="foldername" type="xsd:string" use="required" />
-	</xsd:complexType>
-	<!-- msm/directories -->
-	<xsd:element name="directories">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="directory" type="msm:MSMRootDirectory" minOccurs="1" maxOccurs="unbounded" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-	<!-- msm/directories/directory -->
-	<xsd:complexType name="MSMRootDirectory">
-		<xsd:complexContent>
-			<xsd:extension base="msm:MSMDirectory">
-				<xsd:attribute name="root" type="xsd:string" use="required" />
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-	<!-- msm/environment/variable -->
-	<xsd:complexType name="MSMVariable">
-		<xsd:attribute name="name" type="xsd:string" use="required" />
-		<xsd:attribute name="append" type="xsd:string" use="required" />
-		<xsd:attribute name="component" type="xsd:string" use="required" />
-	</xsd:complexType>
-	<!-- msm/binaries -->
-	<xsd:element name="binaries">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="binary" type="msm:MSMBinary" minOccurs="1" maxOccurs="unbounded" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-	<!-- msm/binaries/binary -->
-	<xsd:complexType name="MSMBinary">
-		<xsd:attribute name="name" type="xsd:string" use="required" />
-		<xsd:attribute name="value" type="xsd:string" use="required" />
-	</xsd:complexType>
-	<!-- msm/dialogs -->
-	<xsd:element name="dialogs">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="dialog" type="msm:MSMDialog" minOccurs="1" maxOccurs="unbounded" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-	<!-- msm/dialogs/dialog -->
-	<xsd:complexType name="MSMDialog">
-		<xsd:attribute name="name" type="xsd:string" use="required" />
-		<xsd:attribute name="hcenter" type="xsd:int" use="required" />
-		<xsd:attribute name="vcenter" type="xsd:int" use="required" />
-		<xsd:attribute name="width" type="xsd:int" use="required" />
-		<xsd:attribute name="height" type="xsd:int" use="required" />
-		<xsd:attribute name="attr" type="xsd:int" use="required" />
-		<xsd:attribute name="title" type="xsd:string" use="required" />
-		<xsd:attribute name="firstcontrol" type="xsd:string" use="required" />
-		<xsd:attribute name="defaultcontrol" type="xsd:string" use="required" />
-		<xsd:attribute name="cancelcontrol" type="xsd:string" use="required" />
-	</xsd:complexType>
-	<!-- msm/controls -->
-	<xsd:element name="controls">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="control" type="msm:MSMControl" minOccurs="1" maxOccurs="unbounded" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-	<!-- msm/controls/control -->
-	<xsd:complexType name="MSMControl">
-		<xsd:attribute name="name" type="xsd:string" use="required" />
-		<xsd:attribute name="dialog" type="xsd:string" use="required" />
-		<xsd:attribute name="type" type="xsd:string" use="required" />
-		<xsd:attribute name="x" type="xsd:int" use="required" />
-		<xsd:attribute name="y" type="xsd:int" use="required" />
-		<xsd:attribute name="width" type="xsd:int" use="required" />
-		<xsd:attribute name="height" type="xsd:int" use="required" />
-		<xsd:attribute name="attr" type="xsd:int" use="required" />
-		<xsd:attribute name="property" type="xsd:string" use="optional" />
-		<xsd:attribute name="text" type="xsd:string" use="optional" />
-		<xsd:attribute name="nextcontrol" type="xsd:string" use="optional" />
-		<xsd:attribute name="help" type="xsd:string" use="optional" default="|" />
-	</xsd:complexType>
-	<!-- msm/controlconditions -->
-	<xsd:element name="controlconditions">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="controlcondition" type="msm:MSMControlCondition" minOccurs="1" maxOccurs="unbounded" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-	<!-- msm/controlconditions/controlcondition -->
-	<xsd:complexType name="MSMControlCondition">
-		<xsd:attribute name="dialog" type="xsd:string" use="required" />
-		<xsd:attribute name="control" type="xsd:string" use="required" />
-		<xsd:attribute name="action" type="xsd:string" use="required" />
-		<xsd:attribute name="condition" type="xsd:string" use="required" />
-	</xsd:complexType>
-	<!-- msm/controlevents -->
-	<xsd:element name="controlevents">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="controlevent" type="msm:MSMControlEvent" minOccurs="1" maxOccurs="unbounded" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-	<!-- msm/controlevents/controlevent -->
-	<xsd:complexType name="MSMControlEvent">
-		<xsd:attribute name="dialog" type="xsd:string" use="required" />
-		<xsd:attribute name="control" type="xsd:string" use="required" />
-		<xsd:attribute name="name" type="xsd:string" use="required" />
-		<xsd:attribute name="argument" type="xsd:string" use="required" />
-		<xsd:attribute name="condition" type="xsd:string" use="optional" />
-		<xsd:attribute name="order" type="msm:nonNegativeInt" use="optional" />
-		<xsd:attribute name="remove" type="xsd:boolean" use="optional" default="false" />
-	</xsd:complexType>
-	<!-- msm/customactions -->
-	<xsd:element name="customactions">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="customaction" type="msm:MSMCustomAction" minOccurs="1" maxOccurs="unbounded" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-	<!-- msm/customactions/customaction -->
-	<xsd:complexType name="MSMCustomAction">
-		<xsd:attribute name="action" type="xsd:string" use="required" />
-		<xsd:attribute name="type" type="xsd:int" use="required" />
-		<xsd:attribute name="source" type="xsd:string" use="required" />
-		<xsd:attribute name="target" type="xsd:string" use="required" />
-	</xsd:complexType>
-	<xsd:element name="components">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="component" type="msm:MSMComponent" minOccurs="1" maxOccurs="unbounded" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-	<!-- msm/components/component -->
-	<xsd:complexType name="MSMComponent">
-		<xsd:sequence>
-			<xsd:element name="key" type="msm:MSMKeyFile" minOccurs="1" />
-			<xsd:element name="fileset" type="msm:NAntFileSet" minOccurs="1" />
-			<xsd:element name="forceid" type="msm:MSMFileOverride" minOccurs="0" maxOccurs="unbounded" />
-		</xsd:sequence>
-		<xsd:attribute name="name" type="xsd:string" use="required" />
-		<xsd:attribute name="id" type="msm:MSMComponentGUID" use="required" />
-		<xsd:attribute name="attr" type="xsd:int" use="required" />
-		<xsd:attribute name="directory" type="xsd:string" use="required" />
-		<xsd:attribute name="feature" type="xsd:string" use="optional" default="{00000000-0000-0000-0000-000000000000}" />
-	</xsd:complexType>
-	<!-- msm/components/component/key -->
-	<xsd:complexType name="MSMKeyFile">
-		<xsd:attribute name="file" type="xsd:string" use="required" />
-	</xsd:complexType>
-	<!-- msm/components/component/override -->
-	<xsd:complexType name="MSMFileOverride">
-		<xsd:attribute name="file" type="xsd:string" use="required" />
-		<xsd:attribute name="id" type="msm:MSMFileID" use="required" />
-	</xsd:complexType>
-	<!-- msm/mergemodules/merge -->
-	<xsd:complexType name="MSMMerge">
-		<xsd:sequence>
-			<xsd:element name="modules" type="msm:NAntFileSet" minOccurs="1" maxOccurs="1" />
-		</xsd:sequence>
-		<xsd:attribute name="feature" type="xsd:string" use="required" />
-	</xsd:complexType>
-	<!-- msm/sequences/sequence -->
-	<xsd:complexType name="MSMSequence">
-		<xsd:attribute name="type" type="msm:MSMSequenceTable" use="required" />
-		<xsd:attribute name="action" type="xsd:string" use="required" />
-		<xsd:attribute name="value" type="xsd:int" use="required" />
-		<xsd:attribute name="condition" type="xsd:string" use="optional" default="" />
-	</xsd:complexType>
-	<!-- msm/appmappings/appmapping -->
-	<xsd:complexType name="MSMAppMapping">
-		<xsd:attribute name="directory" type="xsd:string" use="required" />
-		<xsd:attribute name="extension" type="xsd:string" use="required" />
-		<xsd:attribute name="exepath" type="xsd:string" use="required" />
-		<xsd:attribute name="verbs" type="xsd:string" use="required" />
-	</xsd:complexType>
-	<xsd:element name="urlproperties">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="urlproperty" type="msm:MSMURLProperty" minOccurs="1" maxOccurs="unbounded" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-	<!-- msm/urlproperties/urlproperty -->
-	<xsd:complexType name="MSMURLProperty">
-		<xsd:attribute name="name" type="xsd:string" use="required" />
-		<xsd:attribute name="property" type="xsd:string" use="required" />
-	</xsd:complexType>
-	<!-- msm/vdirproperties/vdirproperty -->
-	<xsd:complexType name="MSMVDirProperty">
-		<xsd:attribute name="name" type="xsd:string" use="required" />
-		<xsd:attribute name="portproperty" type="xsd:string" use="required" />
-		<xsd:attribute name="urlproperty" type="xsd:string" use="required" />
-	</xsd:complexType>
-	<!-- msm/approots/approot -->
-	<xsd:complexType name="MSMAppRoot">
-		<xsd:attribute name="component" type="xsd:string" use="required" />
-		<xsd:attribute name="urlproperty" type="xsd:string" use="required" />
-		<xsd:attribute name="inprocflag" type="msm:procflag" use="required" />
-	</xsd:complexType>
-	<!-- msm/approots/approot/procflag -->
-	<xsd:simpleType name="procflag">
-		<xsd:restriction base="xsd:int">
-			<xsd:minInclusive value="0" />
-			<xsd:maxInclusive value="2" />
-		</xsd:restriction>
-	</xsd:simpleType>
-	<xsd:element name="iisproperties">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="iisproperty" type="msm:MSMIISProperty" minOccurs="1" maxOccurs="unbounded" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-	<!-- msm/iisproperties/iisproperty -->
-	<xsd:complexType name="MSMIISProperty">
-		<xsd:attribute name="directory" type="xsd:string" use="required" />
-		<xsd:attribute name="attr" type="xsd:int" use="required" />
-		<xsd:attribute name="defaultdoc" type="xsd:string" use="optional" default="" />
-	</xsd:complexType>
-	<!-- msm/registry/key -->
-	<xsd:complexType name="MSMRegistryKey">
-		<xsd:sequence>
-			<xsd:element name="value" type="msm:MSMRegistryKeyValue" minOccurs="1" maxOccurs="unbounded" />
-		</xsd:sequence>
-		<xsd:attribute name="path" type="xsd:string" use="required" />
-		<xsd:attribute name="root" type="msm:MSMRegistryKeyRoot" use="required" />
-		<xsd:attribute name="component" type="xsd:string" use="required" />
-	</xsd:complexType>
-	<!-- msm/registry/key/value -->
-	<xsd:complexType name="MSMRegistryKeyValue">
-		<xsd:simpleContent>
-			<xsd:extension base="xsd:string">
-				<xsd:attribute name="name" type="xsd:string" use="required" />
-				<xsd:attribute name="value" type="xsd:string" use="optional" />
-				<xsd:attribute name="dword" type="xsd:string" use="optional" />
-			</xsd:extension>
-		</xsd:simpleContent>
-	</xsd:complexType>
-	<!-- msm/icons -->
-	<xsd:element name="icons">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="icon" type="msm:MSMIcon" minOccurs="1" maxOccurs="unbounded" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-	<!-- msm/icons/icon -->
-	<xsd:complexType name="MSMIcon">
-		<xsd:attribute name="name" type="xsd:string" use="required" />
-		<xsd:attribute name="value" type="xsd:string" use="required" />
-	</xsd:complexType>
-	<!-- msm/shortcuts/shortcut -->
-	<xsd:complexType name="MSMShortcut">
-		<xsd:sequence>
-			<xsd:element name="description" type="xsd:string" minOccurs="0" maxOccurs="1" />
-		</xsd:sequence>
-		<xsd:attribute name="name" type="xsd:string" use="required" />
-		<xsd:attribute name="directory" type="xsd:string" use="required" />
-		<xsd:attribute name="filename" type="xsd:string" use="required" />
-		<xsd:attribute name="displayname" type="xsd:string" use="optional" />
-		<xsd:attribute name="component" type="xsd:string" use="required" />
-		<xsd:attribute name="target" type="xsd:string" use="required" />
-		<xsd:attribute name="arguments" type="xsd:string" use="optional" />
-		<xsd:attribute name="hotkey" type="xsd:string" use="optional" />
-		<xsd:attribute name="icon" type="xsd:string" use="optional" />
-		<xsd:attribute name="iconindex" type="msm:nonNegativeInt" use="optional" />
-		<xsd:attribute name="showcmd" type="msm:nonNegativeInt" use="optional" />
-		<xsd:attribute name="wkdir" type="xsd:string" use="optional" />
-	</xsd:complexType>
-	<!-- shared types -->
-	<!-- msm/nonNegativeInt -->
-	<xsd:simpleType name="nonNegativeInt">
-		<xsd:restriction base="xsd:int">
-			<xsd:minInclusive value="0" />
-		</xsd:restriction>
-	</xsd:simpleType>
-	<xsd:simpleType name="MSMSequenceTable">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="installexecute" />
-			<xsd:enumeration value="installui" />
-			<xsd:enumeration value="adminexecute" />
-			<xsd:enumeration value="adminui" />
-			<xsd:enumeration value="advtexecute" />
-		</xsd:restriction>
-	</xsd:simpleType>
-	<xsd:simpleType name="MSMRegistryKeyRoot">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="machine" />
-			<xsd:enumeration value="classes" />
-			<xsd:enumeration value="users" />
-			<xsd:enumeration value="user" />
-		</xsd:restriction>
-	</xsd:simpleType>
-	<xsd:simpleType name="MSMComponentGUID">
-		<xsd:restriction base="xsd:string" />
-	</xsd:simpleType>
-	<xsd:simpleType name="MSMFileID">
-		<xsd:restriction base="xsd:string" />
-	</xsd:simpleType>
-	<xsd:element name="fileset" type="msm:NAntFileSet" />
-	<xsd:complexType name="NAntFileSet">
-		<xsd:sequence>
-			<xsd:element name="includes" type="msm:NAntFileSetPattern" minOccurs="0" maxOccurs="unbounded" />
-			<xsd:element name="excludes" type="msm:NAntFileSetPattern" minOccurs="0" maxOccurs="unbounded" />
-		</xsd:sequence>
-		<xsd:attribute name="basedir" type="xsd:string" use="optional" />
-	</xsd:complexType>
-	<xsd:complexType name="NAntFileSetPattern">
-		<xsd:attribute name="name" type="xsd:string" use="required" />
-		<xsd:attribute name="asIs" type="xsd:boolean" use="optional" />
-	</xsd:complexType>
+        </xsd:sequence>
+    </xsd:complexType>
+    <!-- msm/tables/table/rows/row/column -->
+    <xsd:complexType name="MSMTableRowColumnData">
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="value" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <!-- msm/tables/table/columns/column/type -->
+    <xsd:simpleType name="MSMTableColumnCategoryType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Text" />
+            <xsd:enumeration value="UpperCase" />
+            <xsd:enumeration value="LowerCase" />
+            <xsd:enumeration value="Integer" />
+            <xsd:enumeration value="DoubleInteger" />
+            <xsd:enumeration value="Time/Date" />
+            <xsd:enumeration value="Identifier" />
+            <xsd:enumeration value="Property" />
+            <xsd:enumeration value="Filename" />
+            <xsd:enumeration value="WildCardFilename" />
+            <xsd:enumeration value="Path" />
+            <xsd:enumeration value="Paths" />
+            <xsd:enumeration value="AnyPath" />
+            <xsd:enumeration value="DefaultDir" />
+            <xsd:enumeration value="RegPath" />
+            <xsd:enumeration value="Formatted" />
+            <xsd:enumeration value="Template" />
+            <xsd:enumeration value="Condition" />
+            <xsd:enumeration value="GUID" />
+            <xsd:enumeration value="Version" />
+            <xsd:enumeration value="Language" />
+            <xsd:enumeration value="Binary" />
+            <xsd:enumeration value="Cabinet" />
+            <xsd:enumeration value="Shortcut" />
+        </xsd:restriction>
+    </xsd:simpleType>
+    <!-- msm/moduledependencies -->
+    <xsd:element name="moduledependencies">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="dependency" type="msm:MSMModuleDependency" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msm/moduledependencies/dependency -->
+    <xsd:complexType name="MSMModuleDependency">
+        <xsd:attribute name="id" type="xsd:string" use="required" />
+        <xsd:attribute name="language" type="xsd:integer" use="required" />
+        <xsd:attribute name="version" type="xsd:string" use="optional" />
+    </xsd:complexType>
+    <!-- msm/moduleexclusions -->
+    <xsd:element name="moduleexclusions">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="exclusion" type="msm:MSMModuleExclusion" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msm/moduleexclusions/exclusion -->
+    <xsd:complexType name="MSMModuleExclusion">
+        <xsd:attribute name="id" type="xsd:string" use="required" />
+        <xsd:attribute name="language" type="xsd:integer" use="required" />
+        <xsd:attribute name="minversion" type="xsd:string" use="optional" />
+        <xsd:attribute name="maxversion" type="xsd:string" use="optional" />
+    </xsd:complexType>
+    <!-- msm/modulesequences -->
+    <xsd:element name="modulesequences">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="sequence" type="msm:MSMModuleSequence" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msm/modulesequences/sequence -->
+    <xsd:complexType name="MSMModuleSequence">
+        <xsd:attribute name="type" type="msm:MSMSequenceTable" use="required" />
+        <xsd:attribute name="action" type="xsd:string" use="required" />
+        <xsd:attribute name="sequence" type="xsd:int" use="optional" />
+        <xsd:attribute name="baseaction" type="xsd:string" use="optional" />
+        <xsd:attribute name="after" type="xsd:boolean" use="optional" default="true" />
+        <xsd:attribute name="condition" type="xsd:string" use="optional" default="" />
+    </xsd:complexType>
+    <!-- msm/moduleignoretables     -->
+    <xsd:element name="moduleignoretables">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="table" type="msm:MSMModuleIgnoreTable" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msm/moduleignoretables/table -->
+    <xsd:complexType name="MSMModuleIgnoreTable">
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <!-- msm/substitutions     -->
+    <xsd:element name="modulesubstitutions">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="substitution" type="msm:MSMModuleSubstitution" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msm/substitutions/substitution -->
+    <xsd:complexType name="MSMModuleSubstitution">
+        <xsd:attribute name="table" type="xsd:string" use="required" />
+        <xsd:attribute name="row" type="xsd:string" use="required" />
+        <xsd:attribute name="column" type="xsd:string" use="required" />
+        <xsd:attribute name="value" type="xsd:string" use="optional" />
+    </xsd:complexType>
+    <!-- msm/configurations     -->
+    <xsd:element name="moduleconfigurations">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="configuration" type="msm:MSMModuleConfiguration" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msm/configurations/configuration -->
+    <xsd:complexType name="MSMModuleConfiguration">
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="format" type="msm:MSMModuleConfigurationFormat" use="required" />
+        <xsd:attribute name="type" type="xsd:string" use="optional" />
+        <xsd:attribute name="contextdata" type="xsd:string" use="optional" />
+        <xsd:attribute name="defaultvalue" type="xsd:string" use="optional" />
+        <xsd:attribute name="attr" type="xsd:integer" use="optional" default="0" />
+        <xsd:attribute name="displayname" type="xsd:string" use="optional" />
+        <xsd:attribute name="description" type="xsd:string" use="optional" />
+        <xsd:attribute name="helplocation" type="xsd:string" use="optional" />
+        <xsd:attribute name="helpkeyword" type="xsd:string" use="optional" />
+    </xsd:complexType>
+    <xsd:simpleType name="MSMModuleConfigurationFormat">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="text" />
+            <xsd:enumeration value="key" />
+            <xsd:enumeration value="integer" />
+            <xsd:enumeration value="bitfield" />
+        </xsd:restriction>
+    </xsd:simpleType>
+    <!-- msm/directories/directory -->
+    <xsd:complexType name="MSMDirectory">
+        <xsd:sequence>
+            <xsd:element name="directory" type="msm:MSMDirectory" minOccurs="0" maxOccurs="unbounded" />
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="foldername" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <!-- msm/directories -->
+    <xsd:element name="directories">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="directory" type="msm:MSMRootDirectory" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msm/directories/directory -->
+    <xsd:complexType name="MSMRootDirectory">
+        <xsd:complexContent>
+            <xsd:extension base="msm:MSMDirectory">
+                <xsd:attribute name="root" type="xsd:string" use="required" />
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <!-- msm/environment/variable -->
+    <xsd:complexType name="MSMVariable">
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="append" type="xsd:string" use="required" />
+        <xsd:attribute name="component" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <!-- msm/binaries -->
+    <xsd:element name="binaries">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="binary" type="msm:MSMBinary" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msm/binaries/binary -->
+    <xsd:complexType name="MSMBinary">
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="value" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <!-- msm/dialogs -->
+    <xsd:element name="dialogs">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="dialog" type="msm:MSMDialog" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msm/dialogs/dialog -->
+    <xsd:complexType name="MSMDialog">
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="hcenter" type="xsd:int" use="required" />
+        <xsd:attribute name="vcenter" type="xsd:int" use="required" />
+        <xsd:attribute name="width" type="xsd:int" use="required" />
+        <xsd:attribute name="height" type="xsd:int" use="required" />
+        <xsd:attribute name="attr" type="xsd:int" use="required" />
+        <xsd:attribute name="title" type="xsd:string" use="required" />
+        <xsd:attribute name="firstcontrol" type="xsd:string" use="required" />
+        <xsd:attribute name="defaultcontrol" type="xsd:string" use="required" />
+        <xsd:attribute name="cancelcontrol" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <!-- msm/controls -->
+    <xsd:element name="controls">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="control" type="msm:MSMControl" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msm/controls/control -->
+    <xsd:complexType name="MSMControl">
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="dialog" type="xsd:string" use="required" />
+        <xsd:attribute name="type" type="xsd:string" use="required" />
+        <xsd:attribute name="x" type="xsd:int" use="required" />
+        <xsd:attribute name="y" type="xsd:int" use="required" />
+        <xsd:attribute name="width" type="xsd:int" use="required" />
+        <xsd:attribute name="height" type="xsd:int" use="required" />
+        <xsd:attribute name="attr" type="xsd:int" use="required" />
+        <xsd:attribute name="property" type="xsd:string" use="optional" />
+        <xsd:attribute name="text" type="xsd:string" use="optional" />
+        <xsd:attribute name="nextcontrol" type="xsd:string" use="optional" />
+        <xsd:attribute name="help" type="xsd:string" use="optional" default="|" />
+    </xsd:complexType>
+    <!-- msm/controlconditions -->
+    <xsd:element name="controlconditions">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="controlcondition" type="msm:MSMControlCondition" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msm/controlconditions/controlcondition -->
+    <xsd:complexType name="MSMControlCondition">
+        <xsd:attribute name="dialog" type="xsd:string" use="required" />
+        <xsd:attribute name="control" type="xsd:string" use="required" />
+        <xsd:attribute name="action" type="xsd:string" use="required" />
+        <xsd:attribute name="condition" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <!-- msm/controlevents -->
+    <xsd:element name="controlevents">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="controlevent" type="msm:MSMControlEvent" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msm/controlevents/controlevent -->
+    <xsd:complexType name="MSMControlEvent">
+        <xsd:attribute name="dialog" type="xsd:string" use="required" />
+        <xsd:attribute name="control" type="xsd:string" use="required" />
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="argument" type="xsd:string" use="required" />
+        <xsd:attribute name="condition" type="xsd:string" use="optional" />
+        <xsd:attribute name="order" type="msm:nonNegativeInt" use="optional" />
+        <xsd:attribute name="remove" type="xsd:boolean" use="optional" default="false" />
+    </xsd:complexType>
+    <!-- msm/customactions -->
+    <xsd:element name="customactions">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="customaction" type="msm:MSMCustomAction" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msm/customactions/customaction -->
+    <xsd:complexType name="MSMCustomAction">
+        <xsd:attribute name="action" type="xsd:string" use="required" />
+        <xsd:attribute name="type" type="xsd:int" use="required" />
+        <xsd:attribute name="source" type="xsd:string" use="required" />
+        <xsd:attribute name="target" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <xsd:element name="components">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="component" type="msm:MSMComponent" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msm/components/component -->
+    <xsd:complexType name="MSMComponent">
+        <xsd:sequence>
+            <xsd:element name="key" type="msm:MSMKeyFile" minOccurs="1" />
+            <xsd:element name="fileset" type="msm:NAntFileSet" minOccurs="1" />
+            <xsd:element name="forceid" type="msm:MSMFileOverride" minOccurs="0" maxOccurs="unbounded" />
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="id" type="msm:MSMComponentGUID" use="required" />
+        <xsd:attribute name="attr" type="xsd:int" use="required" />
+        <xsd:attribute name="directory" type="xsd:string" use="required" />
+        <xsd:attribute name="feature" type="xsd:string" use="optional" default="{00000000-0000-0000-0000-000000000000}" />
+    </xsd:complexType>
+    <!-- msm/components/component/key -->
+    <xsd:complexType name="MSMKeyFile">
+        <xsd:attribute name="file" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <!-- msm/components/component/override -->
+    <xsd:complexType name="MSMFileOverride">
+        <xsd:attribute name="file" type="xsd:string" use="required" />
+        <xsd:attribute name="id" type="msm:MSMFileID" use="required" />
+    </xsd:complexType>
+    <!-- msm/mergemodules/merge -->
+    <xsd:complexType name="MSMMerge">
+        <xsd:sequence>
+            <xsd:element name="modules" type="msm:NAntFileSet" minOccurs="1" maxOccurs="1" />
+        </xsd:sequence>
+        <xsd:attribute name="feature" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <!-- msm/sequences/sequence -->
+    <xsd:complexType name="MSMSequence">
+        <xsd:attribute name="type" type="msm:MSMSequenceTable" use="required" />
+        <xsd:attribute name="action" type="xsd:string" use="required" />
+        <xsd:attribute name="value" type="xsd:int" use="required" />
+        <xsd:attribute name="condition" type="xsd:string" use="optional" default="" />
+    </xsd:complexType>
+    <!-- msm/appmappings/appmapping -->
+    <xsd:complexType name="MSMAppMapping">
+        <xsd:attribute name="directory" type="xsd:string" use="required" />
+        <xsd:attribute name="extension" type="xsd:string" use="required" />
+        <xsd:attribute name="exepath" type="xsd:string" use="required" />
+        <xsd:attribute name="verbs" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <xsd:element name="urlproperties">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="urlproperty" type="msm:MSMURLProperty" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msm/urlproperties/urlproperty -->
+    <xsd:complexType name="MSMURLProperty">
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="property" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <!-- msm/vdirproperties/vdirproperty -->
+    <xsd:complexType name="MSMVDirProperty">
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="portproperty" type="xsd:string" use="required" />
+        <xsd:attribute name="urlproperty" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <!-- msm/approots/approot -->
+    <xsd:complexType name="MSMAppRoot">
+        <xsd:attribute name="component" type="xsd:string" use="required" />
+        <xsd:attribute name="urlproperty" type="xsd:string" use="required" />
+        <xsd:attribute name="inprocflag" type="msm:procflag" use="required" />
+    </xsd:complexType>
+    <!-- msm/approots/approot/procflag -->
+    <xsd:simpleType name="procflag">
+        <xsd:restriction base="xsd:int">
+            <xsd:minInclusive value="0" />
+            <xsd:maxInclusive value="2" />
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:element name="iisproperties">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="iisproperty" type="msm:MSMIISProperty" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msm/iisproperties/iisproperty -->
+    <xsd:complexType name="MSMIISProperty">
+        <xsd:attribute name="directory" type="xsd:string" use="required" />
+        <xsd:attribute name="attr" type="xsd:int" use="required" />
+        <xsd:attribute name="defaultdoc" type="xsd:string" use="optional" default="" />
+    </xsd:complexType>
+    <!-- msm/registry/key -->
+    <xsd:complexType name="MSMRegistryKey">
+        <xsd:sequence>
+            <xsd:element name="value" type="msm:MSMRegistryKeyValue" minOccurs="1" maxOccurs="unbounded" />
+        </xsd:sequence>
+        <xsd:attribute name="path" type="xsd:string" use="required" />
+        <xsd:attribute name="root" type="msm:MSMRegistryKeyRoot" use="required" />
+        <xsd:attribute name="component" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <!-- msm/registry/key/value -->
+    <xsd:complexType name="MSMRegistryKeyValue">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:string">
+                <xsd:attribute name="name" type="xsd:string" use="required" />
+                <xsd:attribute name="value" type="xsd:string" use="optional" />
+                <xsd:attribute name="dword" type="xsd:string" use="optional" />
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <!-- msm/icons -->
+    <xsd:element name="icons">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="icon" type="msm:MSMIcon" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- msm/icons/icon -->
+    <xsd:complexType name="MSMIcon">
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="value" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <!-- msm/shortcuts/shortcut -->
+    <xsd:complexType name="MSMShortcut">
+        <xsd:sequence>
+            <xsd:element name="description" type="xsd:string" minOccurs="0" maxOccurs="1" />
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="directory" type="xsd:string" use="required" />
+        <xsd:attribute name="filename" type="xsd:string" use="required" />
+        <xsd:attribute name="displayname" type="xsd:string" use="optional" />
+        <xsd:attribute name="component" type="xsd:string" use="required" />
+        <xsd:attribute name="target" type="xsd:string" use="required" />
+        <xsd:attribute name="arguments" type="xsd:string" use="optional" />
+        <xsd:attribute name="hotkey" type="xsd:string" use="optional" />
+        <xsd:attribute name="icon" type="xsd:string" use="optional" />
+        <xsd:attribute name="iconindex" type="msm:nonNegativeInt" use="optional" />
+        <xsd:attribute name="showcmd" type="msm:nonNegativeInt" use="optional" />
+        <xsd:attribute name="wkdir" type="xsd:string" use="optional" />
+    </xsd:complexType>
+    <!-- shared types -->
+    <!-- msm/nonNegativeInt -->
+    <xsd:simpleType name="nonNegativeInt">
+        <xsd:restriction base="xsd:int">
+            <xsd:minInclusive value="0" />
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="MSMSequenceTable">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="installexecute" />
+            <xsd:enumeration value="installui" />
+            <xsd:enumeration value="adminexecute" />
+            <xsd:enumeration value="adminui" />
+            <xsd:enumeration value="advtexecute" />
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="MSMRegistryKeyRoot">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="machine" />
+            <xsd:enumeration value="classes" />
+            <xsd:enumeration value="users" />
+            <xsd:enumeration value="user" />
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="MSMComponentGUID">
+        <xsd:restriction base="xsd:string" />
+    </xsd:simpleType>
+    <xsd:simpleType name="MSMFileID">
+        <xsd:restriction base="xsd:string" />
+    </xsd:simpleType>
+    <xsd:element name="fileset" type="msm:NAntFileSet" />
+    <xsd:complexType name="NAntFileSet">
+        <xsd:sequence>
+            <xsd:element name="includes" type="msm:NAntFileSetPattern" minOccurs="0" maxOccurs="unbounded" />
+            <xsd:element name="excludes" type="msm:NAntFileSetPattern" minOccurs="0" maxOccurs="unbounded" />
+        </xsd:sequence>
+        <xsd:attribute name="basedir" type="xsd:string" use="optional" />
+    </xsd:complexType>
+    <xsd:complexType name="NAntFileSetPattern">
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="asIs" type="xsd:boolean" use="optional" />
+    </xsd:complexType>
 </xsd:schema>

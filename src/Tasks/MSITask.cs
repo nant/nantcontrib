@@ -17,14 +17,14 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// 8/23/2002  - RegLocator/AppSearch Added (jgeurts@sourceforge.net)
+// 8/23/2002  - RegLocator/AppSearch Added (jgeurts@users.sourceforge.net)
 // 11/27/2002 - Dialog/Control/ControlCondition/ControlEvent/Binary/
-//				CustomAction/Sequence Added/UrlProperties/VDirProperties/
-//				AppRootCreate/IISProperties
-//			     Added (jgeurts@sourceforge.net)
-// 12/5/2002  - Icon/Shortcut Added (jgeurts@sourceforge.net)
-// 12/10/2002 - LaunchCondition Added (jgeurts@sourceforge.net)
-// 12/18/2002 - AddCustomTable Added (jgeurts@sourceforge.net)
+//              CustomAction/Sequence Added/UrlProperties/VDirProperties/
+//              AppRootCreate/IISProperties
+//                 Added (jgeurts@users.sourceforge.net)
+// 12/5/2002  - Icon/Shortcut Added (jgeurts@users.sourceforge.net)
+// 12/10/2002 - LaunchCondition Added (jgeurts@users.sourceforge.net)
+// 12/18/2002 - AddCustomTable Added (jgeurts@users.sourceforge.net)
 //
 
 using System;
@@ -107,7 +107,7 @@ namespace NAnt.Contrib.Tasks
 
             // Open the Template MSI File
             Module tasksModule = Assembly.GetExecutingAssembly().GetModule("NAnt.Contrib.Tasks.dll");
-        	
+            
             string source = Path.GetDirectoryName(
                 tasksModule.FullyQualifiedName) + "\\MSITaskTemplate.msi";
 
@@ -130,13 +130,12 @@ namespace NAnt.Contrib.Tasks
             try
             {
                 File.Copy(source, dest, true);
-				File.SetAttributes(dest, System.IO.FileAttributes.Normal);
-			}
+                File.SetAttributes(dest, System.IO.FileAttributes.Normal);
+            }
             catch (IOException)
             {
-                Log.WriteLine(LogPrefix + 
-                    "ERROR: file in use or cannot be copied to output.");
-                return;
+                throw new BuildException(LogPrefix + 
+                    "ERROR: File in use or cannot be copied to output.");
             }
 
             try
@@ -163,10 +162,8 @@ namespace NAnt.Contrib.Tasks
                 }
                 catch (Exception e)
                 {
-                    Log.WriteLine(LogPrefix + "ERROR: " + e.Message);
                     CleanOutput(cabFile, tempPath);
-
-                    return;
+                    throw new BuildException("ERROR: " + e.Message + "\n" + e.InnerException + "\n" + e.StackTrace);
                 }
 
                 Log.WriteLine(LogPrefix + "Building MSI Database \"" + msi.output + "\".");
@@ -175,65 +172,65 @@ namespace NAnt.Contrib.Tasks
                 if (!LoadBanner(d))
                 {
                     CleanOutput(cabFile, tempPath);
-                    return;
+                    throw new BuildException();
                 }
 
                 // Load the Background Image
                 if (!LoadBackground(d))
                 {
                     CleanOutput(cabFile, tempPath);
-                    return;
+                    throw new BuildException();
                 }
 
                 // Load the License File
                 if (!LoadLicense(d))
                 {
                     CleanOutput(cabFile, tempPath);
-                    return;
+                    throw new BuildException();
                 }
 
                 // Load Properties
                 if (!LoadProperties(d, msiType, obj))
                 {
                     CleanOutput(cabFile, tempPath);
-                    return;
+                    throw new BuildException();
                 }
 
                 // Load Registry Locators
                 if (!LoadRegLocator(d, msiType, obj))
                 {
-					CleanOutput(cabFile, tempPath);
-					return;
+                    CleanOutput(cabFile, tempPath);
+                    throw new BuildException();
                 }
 
                 // Load Application Search
                 if (!LoadAppSearch(d, msiType, obj))
                 {
-					CleanOutput(cabFile, tempPath);
-					return;
+                    CleanOutput(cabFile, tempPath);
+                    throw new BuildException();
                 }
 
-				// Load Launch Conditions
-				if (!LoadLaunchCondition(d, msiType, obj))
-				{
-					CleanOutput(cabFile, tempPath);
-					return;
-				}
+                // Load Launch Conditions
+                if (!LoadLaunchCondition(d, msiType, obj))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    throw new BuildException();
+                }
 
-				// Add user defined table(s) to the database
-				if (!AddTables(d, msiType, obj))
-				{
-					CleanOutput(cabFile, tempPath);
-					return;
-				}		
-		
+                // Add user defined table(s) to the database
+                if (!AddTables(d, msiType, obj))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    throw new BuildException();
+                }        
+        
                 View directoryView, asmView, asmNameView, classView, progIdView;
 
                 // Load Directories
                 if (!LoadDirectories(d, msiType, obj, out directoryView))
                 {
                     CleanOutput(cabFile, tempPath);
-                    return;
+                    throw new BuildException();
                 }
 
                 // Load Assemblies
@@ -241,7 +238,7 @@ namespace NAnt.Contrib.Tasks
                     out asmNameView, out classView, out progIdView))
                 {
                     CleanOutput(cabFile, tempPath);
-                    return;
+                    throw new BuildException();
                 }
 
                 int lastSequence = 0;
@@ -251,43 +248,43 @@ namespace NAnt.Contrib.Tasks
                     asmView, asmNameView, directoryView, classView, progIdView))
                 {
                     CleanOutput(cabFile, tempPath);
-                    return;
+                    throw new BuildException();
                 }
 
                 // Load Features
                 if (!LoadFeatures(d, msiType, obj))
                 {
                     CleanOutput(cabFile, tempPath);
-                    return;
+                    throw new BuildException();
                 }
 
-				// Load Dialog Data
-				if (!LoadDialog(d, msiType, obj))
-				{
-					CleanOutput(cabFile, tempPath);
-					return;
-				}
+                // Load Dialog Data
+                if (!LoadDialog(d, msiType, obj))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    throw new BuildException();
+                }
 
-				// Load Dialog Control Data
-				if (!LoadControl(d, msiType, obj))
-				{
-					CleanOutput(cabFile, tempPath);
-					return;
-				}
+                // Load Dialog Control Data
+                if (!LoadControl(d, msiType, obj))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    throw new BuildException();
+                }
 
-				// Load Dialog Control Condition Data
-				if (!LoadControlCondition(d, msiType, obj))
-				{
-					CleanOutput(cabFile, tempPath);
-					return;
-				}
+                // Load Dialog Control Condition Data
+                if (!LoadControlCondition(d, msiType, obj))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    throw new BuildException();
+                }
 
-				// Load Dialog Control Event Data
-				if (!LoadControlEvent(d, msiType, obj))
-				{
-					CleanOutput(cabFile, tempPath);
-					return;
-				}
+                // Load Dialog Control Event Data
+                if (!LoadControlEvent(d, msiType, obj))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    throw new BuildException();
+                }
 
                 View registryView;
 
@@ -295,102 +292,102 @@ namespace NAnt.Contrib.Tasks
                 if (!LoadRegistry(d, msiType, obj, out registryView))
                 {
                     CleanOutput(cabFile, tempPath);
-                    return;
+                    throw new BuildException();
                 }
 
                 // Load TypeLibs
                 if (!LoadTypeLibs(d, msiType, obj, registryView))
                 {
                     CleanOutput(cabFile, tempPath);
-                    return;
+                    throw new BuildException();
                 }
 
-				// Load Icon Data
-				if (!LoadIcon(d, msiType, obj))
-				{
-					CleanOutput(cabFile, tempPath);
-					return;
-				}
+                // Load Icon Data
+                if (!LoadIcon(d, msiType, obj))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    throw new BuildException();
+                }
 
-				// Load Shortcut Data
-				if (!LoadShortcut(d, msiType, obj))
-				{
-					CleanOutput(cabFile, tempPath);
-					return;
-				}
+                // Load Shortcut Data
+                if (!LoadShortcut(d, msiType, obj))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    throw new BuildException();
+                }
 
-				// Load Binary Data
-				if (!LoadBinary(d, msiType, obj))
-				{
-					CleanOutput(cabFile, tempPath);
-					return;
-				}
+                // Load Binary Data
+                if (!LoadBinary(d, msiType, obj))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    throw new BuildException();
+                }
 
-				// Load Custom Actions
-				if (!LoadCustomAction(d, msiType, obj))
-				{
-					CleanOutput(cabFile, tempPath);
-					return;
-				}
+                // Load Custom Actions
+                if (!LoadCustomAction(d, msiType, obj))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    throw new BuildException();
+                }
 
-				// Load Sequences
-				if (!LoadSequence(d, msiType, obj))
-				{
-					CleanOutput(cabFile, tempPath);
-					return;
-				}
+                // Load Sequences
+                if (!LoadSequence(d, msiType, obj))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    throw new BuildException();
+                }
 
-				// Load the application mappings
-				if (!LoadAppMappings(d, msiType, obj))
-				{
-					CleanOutput(cabFile, tempPath);
-					return;
-				}
-				
-				// Load the url properties to convert
-				// url properties to a properties object
-				if (!LoadUrlProperties(d, msiType, obj))
-				{
-					CleanOutput(cabFile, tempPath);
-					return;
-				}
+                // Load the application mappings
+                if (!LoadAppMappings(d, msiType, obj))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    throw new BuildException();
+                }
+                
+                // Load the url properties to convert
+                // url properties to a properties object
+                if (!LoadUrlProperties(d, msiType, obj))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    throw new BuildException();
+                }
 
-				// Load the vdir properties to convert
-				// a vdir to an url
-				if (!LoadVDirProperties(d, msiType, obj))
-				{
-					CleanOutput(cabFile, tempPath);
-					return;
-				}
+                // Load the vdir properties to convert
+                // a vdir to an url
+                if (!LoadVDirProperties(d, msiType, obj))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    throw new BuildException();
+                }
 
-				// Load the application root properties
-				// to make a virtual directory an virtual
-				// application
-				if (!LoadAppRootCreate(d, msiType, obj))
-				{
-					CleanOutput(cabFile, tempPath);
-					return;
-				}
+                // Load the application root properties
+                // to make a virtual directory an virtual
+                // application
+                if (!LoadAppRootCreate(d, msiType, obj))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    throw new BuildException();
+                }
 
-				// Load IIS Directory Properties
-				if (!LoadIISProperties(d, msiType, obj))
-				{
-					CleanOutput(cabFile, tempPath);
-					return;
-				}
+                // Load IIS Directory Properties
+                if (!LoadIISProperties(d, msiType, obj))
+                {
+                    CleanOutput(cabFile, tempPath);
+                    throw new BuildException();
+                }
 
                 // Load Summary Information
                 if (!LoadSummaryInfo(d))
                 {
                     CleanOutput(cabFile, tempPath);
-                    return;
+                    throw new BuildException();
                 }
 
                 // Load Environment Variables
                 if (!LoadEnvironment(d, msiType, obj))
                 {
                     CleanOutput(cabFile, tempPath);
-                    return;
+                    throw new BuildException();
                 }
 
                 try
@@ -402,7 +399,7 @@ namespace NAnt.Contrib.Tasks
                     classView.Close();
                     progIdView.Close();
 
-					directoryView = null;
+                    directoryView = null;
                     registryView = null;
                     asmView = null;
                     asmNameView = null;
@@ -410,31 +407,30 @@ namespace NAnt.Contrib.Tasks
                     progIdView = null;
 
                     // Commit the MSI Database
-					d.Commit();
+                    d.Commit();
 
                     d = null;
 
                     GC.Collect();
-					GC.WaitForPendingFinalizers();
+                    GC.WaitForPendingFinalizers();
                 }
                 catch (Exception e)
                 {
-                    Log.WriteLine(LogPrefix + "ERROR: " + e.Message);
                     CleanOutput(cabFile, tempPath);
-                    return;
+                    throw new BuildException("ERROR: " + e.Message + "\n" + e.InnerException + "\n" + e.StackTrace);
                 }
 
                 // Load Merge Modules
                 if (!LoadMergeModules(dest, tempPath))
                 {
                     CleanOutput(cabFile, tempPath);
-                    return;
+                    throw new BuildException();
                 }
 
-				try
+                try
                 {
 
-					d = (Database)msiType.InvokeMember(
+                    d = (Database)msiType.InvokeMember(
                         "OpenDatabase", 
                         BindingFlags.InvokeMethod, 
                         null, obj, 
@@ -444,33 +440,32 @@ namespace NAnt.Contrib.Tasks
                             MsiOpenDatabaseMode.msiOpenDatabaseModeDirect
                         });
 
-				}
+                }
                 catch (Exception e)
                 {
-                    Log.WriteLine(LogPrefix + "ERROR: " + e.Message);
                     CleanOutput(cabFile, tempPath);
-                    return;
+                    throw new BuildException("ERROR: " + e.Message + "\n" + e.InnerException + "\n" + e.StackTrace);
                 }
 
                 // Reorder Files
                 if (!ReorderFiles(d, ref lastSequence))
                 {
                     CleanOutput(cabFile, tempPath);
-                    return;
+                    throw new BuildException();
                 }
 
                 // Load Media
                 if (!LoadMedia(d, msiType, obj, lastSequence))
                 {
                     CleanOutput(cabFile, tempPath);
-                    return;
+                    throw new BuildException();
                 }
 
                 // Compress Files
                 if (!CreateCabFile(d, msiType, obj))
                 {
                     CleanOutput(cabFile, tempPath);
-                    return;
+                    throw new BuildException();
                 }
 
                 Log.Write(LogPrefix + "Deleting Temporary Files...");
@@ -483,23 +478,22 @@ namespace NAnt.Contrib.Tasks
 
                     // Commit the MSI Database
                     d.Commit();
-					d = null;
+                    d = null;
 
-					GC.Collect();
-					GC.WaitForPendingFinalizers();
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
 
                 }
                 catch (Exception e)
                 {
-                    Log.WriteLine(LogPrefix + "ERROR: " + e.Message);
-                    return;
+                    throw new BuildException("ERROR: " + e.Message + "\n" + e.InnerException + "\n" + e.StackTrace);
                 }
                 Log.WriteLine("Done.");
             }
             catch (Exception e)
             {
                 CleanOutput(cabFile, tempPath);
-                Log.WriteLine(LogPrefix + "ERROR: " + 
+                throw new BuildException(LogPrefix + "ERROR: " + 
                     e.GetType().FullName + " thrown:\n" + 
                     e.Message + "\n" + e.StackTrace);
             }
@@ -549,7 +543,7 @@ namespace NAnt.Contrib.Tasks
                     bannerRecord.SetStream(2, bannerFile);
                     bannerView.Modify(MsiViewModify.msiViewModifyUpdate, bannerRecord);
                     bannerView.Close();
-					bannerView = null;
+                    bannerView = null;
                 }
                 else
                 {
@@ -587,7 +581,7 @@ namespace NAnt.Contrib.Tasks
                     bgRecord.SetStream(2, bgFile);
                     bgView.Modify(MsiViewModify.msiViewModifyUpdate, bgRecord);
                     bgView.Close();
-					bgView = null;
+                    bgView = null;
                 }
                 else
                 {
@@ -638,11 +632,11 @@ namespace NAnt.Contrib.Tasks
                     finally
                     {
                         licView.Close();
-						licView = null;
+                        licView = null;
                         if (licReader != null)
                         {
                             licReader.Close();
-							licReader = null;
+                            licReader = null;
                         }
                     }
                 }
@@ -710,12 +704,9 @@ namespace NAnt.Contrib.Tasks
                 {
                     Log.WriteLine("\t" + name);
                 }
-
-//                propView.Close();
-//				propView = null;
             }
-			propView.Close();
-			propView = null;
+            propView.Close();
+            propView = null;
             return true;
         }
 
@@ -829,7 +820,7 @@ namespace NAnt.Contrib.Tasks
                             " mapped to nonexistent feature.");
                         return false;
                     }
-            		
+                    
                     // Insert the FeatureComponent
                     Record recFeatComps = (Record)InstallerType.InvokeMember(
                         "CreateRecord", 
@@ -848,10 +839,10 @@ namespace NAnt.Contrib.Tasks
             featCompView.Close();
             selfRegView.Close();
 
-			compView = null;
-			fileView = null;
-			featCompView = null;
-			selfRegView = null;
+            compView = null;
+            fileView = null;
+            featCompView = null;
+            selfRegView = null;
 
             return true;
         }
@@ -909,7 +900,7 @@ namespace NAnt.Contrib.Tasks
                 if (!result)
                 {
                     DirectoryView.Close();
-					DirectoryView = null;
+                    DirectoryView = null;
                     return result;
                 }
             }
@@ -947,7 +938,7 @@ namespace NAnt.Contrib.Tasks
 
             recDir.set_StringData(1, Directory.name);
             recDir.set_StringData(2, newParent);
-        	
+            
             StringBuilder relativePath = new StringBuilder();
 
             GetRelativePath(Database, InstallerType, InstallerObject, 
@@ -957,8 +948,8 @@ namespace NAnt.Contrib.Tasks
             string basePath = Path.Combine(Project.BaseDirectory, msi.sourcedir);
             string fullPath = Path.Combine(basePath, relativePath.ToString());
             string path = GetShortPath(fullPath) + "|" + Directory.foldername;
-			if (Directory.foldername == ".")
-				path = Directory.foldername;
+            if (Directory.foldername == ".")
+                path = Directory.foldername;
 
             if (relativePath.ToString() == "")
             {
@@ -973,9 +964,9 @@ namespace NAnt.Contrib.Tasks
             if (Verbose)
             {
                 Log.WriteLine("\t" + 
-                    Path.Combine(msi.sourcedir, relativePath.ToString()));
+                    Path.Combine(Project.BaseDirectory, Path.Combine(msi.sourcedir, relativePath.ToString())));
             }
-        	
+            
             recDir.set_StringData(3, path);
 
             DirectoryView.Modify(MsiViewModify.msiViewModifyInsert, recDir);
@@ -1026,7 +1017,7 @@ namespace NAnt.Contrib.Tasks
 
             mediaView.Close();
 
-			mediaView = null;
+            mediaView = null;
 
             return true;
         }
@@ -1080,7 +1071,7 @@ namespace NAnt.Contrib.Tasks
             summaryInfo.set_Property(9, "{"+Guid.NewGuid().ToString().ToUpper()+"}");
             summaryInfo.set_Property(14, 200);
             summaryInfo.set_Property(15, 2);
-        	
+            
             summaryInfo.Persist();
 
             return true;
@@ -1123,7 +1114,7 @@ namespace NAnt.Contrib.Tasks
                 }
             }
             envView.Close();
-			envView = null;
+            envView = null;
 
             return true;
         }
@@ -1148,7 +1139,7 @@ namespace NAnt.Contrib.Tasks
             {
                 Log.WriteLine(LogPrefix + "Adding Features:");
             }
-        	
+            
             foreach (MSIFeature feature in msi.features)
             {
                 bool result = AddFeature(featView, null, InstallerType, 
@@ -1163,7 +1154,7 @@ namespace NAnt.Contrib.Tasks
             }
 
             featView.Close();
-			featView = null;
+            featView = null;
             return true;
         }
 
@@ -1189,9 +1180,9 @@ namespace NAnt.Contrib.Tasks
             else
             {
                 bool foundComponent = false;
-        		
+                
                 IEnumerator featComps = featureComponents.Keys.GetEnumerator();
-        		
+                
                 while (featComps.MoveNext())
                 {
                     string componentName = (string)featComps.Current;
@@ -1234,7 +1225,7 @@ namespace NAnt.Contrib.Tasks
             {
                 recFeat.set_StringData(6, "3");
             }
-        	
+            
             recFeat.set_StringData(7, directory);
             recFeat.set_IntegerData(8, Feature.attr);
 
@@ -1308,7 +1299,7 @@ namespace NAnt.Contrib.Tasks
             componentFiles.Initialize(fileSetElem);
 
             MSIDirectory componentDirInfo = FindDirectory(ComponentDirectory);
-        	
+            
             StringBuilder relativePath = new StringBuilder();
 
             string newParent = null;
@@ -1342,7 +1333,7 @@ namespace NAnt.Contrib.Tasks
 
                 string fileName = Path.GetFileName(componentFiles.FileNames[i]);
                 string filePath = Path.Combine(fullPath, fileName);
-        		
+                
                 MSIFileOverride fileOverride = null;
 
                 if (Component.forceid != null)
@@ -1361,54 +1352,54 @@ namespace NAnt.Contrib.Tasks
                     "_" + Guid.NewGuid().ToString().ToUpper().Replace("-", null) :
                     fileOverride.id;
 
-		        files.Add(Component.directory + "|" + fileName, fileId);
-		        recFile.set_StringData(1, fileId);
-        	
-		        if (File.Exists(filePath))
-		        {
-			        try
-			        {
-				        recFile.set_StringData(4, new FileInfo(filePath).Length.ToString());
-			        }
-			        catch (Exception)
-			        {
-				        Log.WriteLine(LogPrefix + 
-					        "ERROR: Could not open file " + filePath);
-				        return false;
-			        }
-		        }
-		        else
-		        {
-			        Log.WriteLine(LogPrefix + 
-				        "ERROR: Could not open file " + filePath);
-			        return false;
-		        }
+                files.Add(Component.directory + "|" + fileName, fileId);
+                recFile.set_StringData(1, fileId);
+            
+                if (File.Exists(filePath))
+                {
+                    try
+                    {
+                        recFile.set_StringData(4, new FileInfo(filePath).Length.ToString());
+                    }
+                    catch (Exception)
+                    {
+                        Log.WriteLine(LogPrefix + 
+                            "ERROR: Could not open file " + filePath);
+                        return false;
+                    }
+                }
+                else
+                {
+                    Log.WriteLine(LogPrefix + 
+                        "ERROR: Could not open file " + filePath);
+                    return false;
+                }
 
-		        if (Verbose)
-		        {
-			        Log.WriteLine("\t" + 
-				        Path.Combine(Path.Combine(msi.sourcedir, 
-				        relativePath.ToString()), fileName));
-		        }
+                if (Verbose)
+                {
+                    Log.WriteLine("\t" + 
+                        Path.Combine(Project.BaseDirectory, Path.Combine(Path.Combine(msi.sourcedir, 
+                        relativePath.ToString()), fileName)));
+                }
 
-		        // If the file is an assembly, create a new component to contain it, 
-		        // add the new component, map the new component to the old component's 
-		        // feature, and create an entry in the MsiAssembly and MsiAssemblyName 
-		        // table.
-		        //
-		        bool isAssembly = false;
-		        Assembly fileAssembly = null;
-		        try
-		        {
-			        fileAssembly = Assembly.LoadFrom(filePath);
-			        isAssembly = true;
-		        }
-		        catch (Exception) {}
-        		
-		        if (isAssembly || filePath.EndsWith(".tlb"))
-		        {
-			        string feature = (string)featureComponents[ComponentName];
-        	
+                // If the file is an assembly, create a new component to contain it, 
+                // add the new component, map the new component to the old component's 
+                // feature, and create an entry in the MsiAssembly and MsiAssemblyName 
+                // table.
+                //
+                bool isAssembly = false;
+                Assembly fileAssembly = null;
+                try
+                {
+                    fileAssembly = Assembly.LoadFrom(filePath);
+                    isAssembly = true;
+                }
+                catch (Exception) {}
+                
+                if (isAssembly || filePath.EndsWith(".tlb"))
+                {
+                    string feature = (string)featureComponents[ComponentName];
+            
                     string asmCompName = ComponentName;
 
                     if (componentFiles.FileNames.Count > 1)
@@ -1417,7 +1408,7 @@ namespace NAnt.Contrib.Tasks
                         string newCompId = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
 
                         recFile.set_StringData(2, asmCompName);
-        			
+                    
                         // Add a record for a new Component
                         Record recComp = (Record)InstallerType.InvokeMember(
                             "CreateRecord", 
@@ -1445,190 +1436,190 @@ namespace NAnt.Contrib.Tasks
                         FeatureComponentView.Modify(MsiViewModify.msiViewModifyInsert, featComp);
                     }
 
-			        if (isAssembly)
-			        {
-				        // Add a record for a new MsiAssembly
-				        Record recAsm = (Record)InstallerType.InvokeMember(
-					        "CreateRecord", 
-					        BindingFlags.InvokeMethod, 
-					        null, InstallerObject, 
-					        new object[] { 5 });
+                    if (isAssembly)
+                    {
+                        // Add a record for a new MsiAssembly
+                        Record recAsm = (Record)InstallerType.InvokeMember(
+                            "CreateRecord", 
+                            BindingFlags.InvokeMethod, 
+                            null, InstallerObject, 
+                            new object[] { 5 });
 
-				        recAsm.set_StringData(1, asmCompName);
-				        recAsm.set_StringData(2, (string)featureComponents[ComponentName]);
-				        recAsm.set_StringData(3, fileId);
-				        recAsm.set_StringData(4, fileId);
-				        recAsm.set_IntegerData(5, 0);
-				        MsiAssemblyView.Modify(MsiViewModify.msiViewModifyInsert, recAsm);
+                        recAsm.set_StringData(1, asmCompName);
+                        recAsm.set_StringData(2, (string)featureComponents[ComponentName]);
+                        recAsm.set_StringData(3, fileId);
+                        recAsm.set_StringData(4, fileId);
+                        recAsm.set_IntegerData(5, 0);
+                        MsiAssemblyView.Modify(MsiViewModify.msiViewModifyInsert, recAsm);
 
-				        //
-				        // Add records for the Assembly Manifest
-				        //
+                        //
+                        // Add records for the Assembly Manifest
+                        //
 
-				        AssemblyName asmName = fileAssembly.GetName();
+                        AssemblyName asmName = fileAssembly.GetName();
 
-				        string name = asmName.Name;
-				        string version = asmName.Version.ToString(4);
-        				
-				        AssemblyCultureAttribute[] cultureAttrs = 
-					        (AssemblyCultureAttribute[])fileAssembly.GetCustomAttributes(
-					        typeof(AssemblyCultureAttribute), true);
+                        string name = asmName.Name;
+                        string version = asmName.Version.ToString(4);
+                        
+                        AssemblyCultureAttribute[] cultureAttrs = 
+                            (AssemblyCultureAttribute[])fileAssembly.GetCustomAttributes(
+                            typeof(AssemblyCultureAttribute), true);
 
-				        string culture = "neutral";
-				        if (cultureAttrs.Length > 0)
-				        {
-					        culture = cultureAttrs[0].Culture;
-				        }
+                        string culture = "neutral";
+                        if (cultureAttrs.Length > 0)
+                        {
+                            culture = cultureAttrs[0].Culture;
+                        }
 
-				        string publicKey = null;
-				        byte[] keyToken = asmName.GetPublicKeyToken();
-				        if (keyToken != null)
-				        {
-					        publicKey = ByteArrayToString(keyToken);
-				        }
+                        string publicKey = null;
+                        byte[] keyToken = asmName.GetPublicKeyToken();
+                        if (keyToken != null)
+                        {
+                            publicKey = ByteArrayToString(keyToken);
+                        }
 
-				        if (name != null && name != "")
-				        {
-					        Record recAsmName = (Record)InstallerType.InvokeMember(
-						        "CreateRecord", 
-						        BindingFlags.InvokeMethod, 
-						        null, InstallerObject, 
-						        new object[] { 3 });
+                        if (name != null && name != "")
+                        {
+                            Record recAsmName = (Record)InstallerType.InvokeMember(
+                                "CreateRecord", 
+                                BindingFlags.InvokeMethod, 
+                                null, InstallerObject, 
+                                new object[] { 3 });
 
-					        recAsmName.set_StringData(1, asmCompName);
-					        recAsmName.set_StringData(2, "Name");
-					        recAsmName.set_StringData(3, name);
-					        MsiAssemblyNameView.Modify(MsiViewModify.msiViewModifyInsert, recAsmName);
-				        }
+                            recAsmName.set_StringData(1, asmCompName);
+                            recAsmName.set_StringData(2, "Name");
+                            recAsmName.set_StringData(3, name);
+                            MsiAssemblyNameView.Modify(MsiViewModify.msiViewModifyInsert, recAsmName);
+                        }
 
-				        if (version != null && version != "")
-				        {
-					        Record recAsmVersion = (Record)InstallerType.InvokeMember(
-						        "CreateRecord", 
-						        BindingFlags.InvokeMethod, 
-						        null, InstallerObject, new object[] { 3 });
+                        if (version != null && version != "")
+                        {
+                            Record recAsmVersion = (Record)InstallerType.InvokeMember(
+                                "CreateRecord", 
+                                BindingFlags.InvokeMethod, 
+                                null, InstallerObject, new object[] { 3 });
 
-					        recAsmVersion.set_StringData(1, asmCompName);
-					        recAsmVersion.set_StringData(2, "Version");
-					        recAsmVersion.set_StringData(3, version);
-					        MsiAssemblyNameView.Modify(MsiViewModify.msiViewModifyInsert, recAsmVersion);
-				        }
+                            recAsmVersion.set_StringData(1, asmCompName);
+                            recAsmVersion.set_StringData(2, "Version");
+                            recAsmVersion.set_StringData(3, version);
+                            MsiAssemblyNameView.Modify(MsiViewModify.msiViewModifyInsert, recAsmVersion);
+                        }
 
-				        if (culture != null && culture != "")
-				        {
-					        Record recAsmLocale = (Record)InstallerType.InvokeMember(
-						        "CreateRecord", 
-						        BindingFlags.InvokeMethod, 
-						        null, InstallerObject, 
-						        new object[] { 3 });
+                        if (culture != null && culture != "")
+                        {
+                            Record recAsmLocale = (Record)InstallerType.InvokeMember(
+                                "CreateRecord", 
+                                BindingFlags.InvokeMethod, 
+                                null, InstallerObject, 
+                                new object[] { 3 });
 
-					        recAsmLocale.set_StringData(1, asmCompName);
-					        recAsmLocale.set_StringData(2, "Culture");
-					        recAsmLocale.set_StringData(3, culture);
-					        MsiAssemblyNameView.Modify(MsiViewModify.msiViewModifyInsert, recAsmLocale);
-				        }
+                            recAsmLocale.set_StringData(1, asmCompName);
+                            recAsmLocale.set_StringData(2, "Culture");
+                            recAsmLocale.set_StringData(3, culture);
+                            MsiAssemblyNameView.Modify(MsiViewModify.msiViewModifyInsert, recAsmLocale);
+                        }
 
-				        if (publicKey != null && publicKey != "")
-				        {
-					        Record recPublicKey = (Record)InstallerType.InvokeMember(
-						        "CreateRecord", 
-						        BindingFlags.InvokeMethod, 
-						        null, InstallerObject, 
-						        new object[] { 3 });
+                        if (publicKey != null && publicKey != "")
+                        {
+                            Record recPublicKey = (Record)InstallerType.InvokeMember(
+                                "CreateRecord", 
+                                BindingFlags.InvokeMethod, 
+                                null, InstallerObject, 
+                                new object[] { 3 });
 
-					        recPublicKey.set_StringData(1, asmCompName);
-					        recPublicKey.set_StringData(2, "PublicKeyToken");
-					        recPublicKey.set_StringData(3, publicKey);
-					        MsiAssemblyNameView.Modify(MsiViewModify.msiViewModifyInsert, recPublicKey);
-				        }
+                            recPublicKey.set_StringData(1, asmCompName);
+                            recPublicKey.set_StringData(2, "PublicKeyToken");
+                            recPublicKey.set_StringData(3, publicKey);
+                            MsiAssemblyNameView.Modify(MsiViewModify.msiViewModifyInsert, recPublicKey);
+                        }
 
-				        bool success = CheckAssemblyForCOMInterop(
-					        filePath, fileAssembly, InstallerType, 
-					        InstallerObject, ComponentName, 
-					        asmCompName, ClassView, ProgIdView);
+                        bool success = CheckAssemblyForCOMInterop(
+                            filePath, fileAssembly, InstallerType, 
+                            InstallerObject, ComponentName, 
+                            asmCompName, ClassView, ProgIdView);
 
-				        if (!success)
-				        {
-					        return success;
-				        }
+                        if (!success)
+                        {
+                            return success;
+                        }
 
-				        // File cant be a member of both components
+                        // File cant be a member of both components
                         if (componentFiles.FileNames.Count > 1)
                         {
                             files.Remove(ComponentDirectory + "|" + fileName);
                             files.Add(ComponentDirectory + "|" + fileName, "KeyIsDotNetAssembly");
                         }
-			        }
-			        else if (filePath.EndsWith(".tlb"))
-			        {
-				        typeLibComponents.Add(
-					        Path.GetFileName(filePath), 
-					        asmCompName);
-			        }
-		        }
+                    }
+                    else if (filePath.EndsWith(".tlb"))
+                    {
+                        typeLibComponents.Add(
+                            Path.GetFileName(filePath), 
+                            asmCompName);
+                    }
+                }
 
-		        if (filePath.EndsWith(".dll"))
-		        {
-			        int hmod = LoadLibrary(filePath);
-			        if (hmod != 0)
-			        {
-				        int regSvr = GetProcAddress(hmod, "DllRegisterServer");
-				        if (regSvr != 0)
-				        {
-					        Log.WriteLine(LogPrefix + 
-						        "Configuring " + 
-						        Path.GetFileName(filePath) + 
-						        " for COM Self Registration...");
+                if (filePath.EndsWith(".dll"))
+                {
+                    int hmod = LoadLibrary(filePath);
+                    if (hmod != 0)
+                    {
+                        int regSvr = GetProcAddress(hmod, "DllRegisterServer");
+                        if (regSvr != 0)
+                        {
+                            Log.WriteLine(LogPrefix + 
+                                "Configuring " + 
+                                Path.GetFileName(filePath) + 
+                                " for COM Self Registration...");
 
-					        // Add a record for a new Component
-					        Record recSelfReg = (Record)InstallerType.InvokeMember(
-						        "CreateRecord", 
-						        BindingFlags.InvokeMethod, 
-						        null, InstallerObject, 
-						        new object[] { 2 });
+                            // Add a record for a new Component
+                            Record recSelfReg = (Record)InstallerType.InvokeMember(
+                                "CreateRecord", 
+                                BindingFlags.InvokeMethod, 
+                                null, InstallerObject, 
+                                new object[] { 2 });
 
-					        recSelfReg.set_StringData(1, fileId);
-					        SelfRegView.Modify(MsiViewModify.msiViewModifyInsert, recSelfReg);
-				        }
-				        FreeLibrary(hmod);
-			        }
+                            recSelfReg.set_StringData(1, fileId);
+                            SelfRegView.Modify(MsiViewModify.msiViewModifyInsert, recSelfReg);
+                        }
+                        FreeLibrary(hmod);
+                    }
 
-			        // Register COM .dlls with an embedded 
-			        // type library for self registration.
-		        }
+                    // Register COM .dlls with an embedded 
+                    // type library for self registration.
+                }
 
-		        if (File.Exists(filePath))
-		        {
-			        string cabDir = Path.Combine(
-				        Project.BaseDirectory, 
-				        Path.Combine(msi.sourcedir, "Temp"));
+                if (File.Exists(filePath))
+                {
+                    string cabDir = Path.Combine(
+                        Project.BaseDirectory, 
+                        Path.Combine(msi.sourcedir, "Temp"));
 
-			        if (!Directory.Exists(cabDir))
-			        {
-				        Directory.CreateDirectory(cabDir);
-			        }
+                    if (!Directory.Exists(cabDir))
+                    {
+                        Directory.CreateDirectory(cabDir);
+                    }
 
-			        string cabPath = Path.Combine(cabDir, fileId);
-			        File.Copy(filePath, cabPath, true);
-		        }
+                    string cabPath = Path.Combine(cabDir, fileId);
+                    File.Copy(filePath, cabPath, true);
+                }
 
-		        if (!isAssembly && !filePath.EndsWith(".tlb") 
+                if (!isAssembly && !filePath.EndsWith(".tlb") 
                     || componentFiles.FileNames.Count == 1)
-		        {
-			        recFile.set_StringData(2, Component.name);
-		        }
+                {
+                    recFile.set_StringData(2, Component.name);
+                }
 
-		        recFile.set_StringData(3, GetShortFile(filePath) + "|" + fileName);
-		        recFile.set_StringData(5, null);	// Version
-		        recFile.set_StringData(6, null);
-		        recFile.set_StringData(7, "512");
-        		
-		        Sequence++;
-        		
-		        recFile.set_StringData(8, Sequence.ToString());
-		        FileView.Modify(MsiViewModify.msiViewModifyInsert, recFile);
-	        }
-	        return true;
+                recFile.set_StringData(3, GetShortFile(filePath) + "|" + fileName);
+                recFile.set_StringData(5, null);    // Version
+                recFile.set_StringData(6, null);
+                recFile.set_StringData(7, "512");
+                
+                Sequence++;
+                
+                recFile.set_StringData(8, Sequence.ToString());
+                FileView.Modify(MsiViewModify.msiViewModifyInsert, recFile);
+            }
+            return true;
         }
 
         /// <summary>
@@ -1640,10 +1631,10 @@ namespace NAnt.Contrib.Tasks
         /// <param name="RegistryView">View containing the Registry table.</param>
         /// <returns>True if successful.</returns>
         private bool LoadRegistry(Database Database, Type InstallerType, 
-	        Object InstallerObject, out View RegistryView)
+            Object InstallerObject, out View RegistryView)
         {
-	        // Open the "Registry" Table
-	        RegistryView = Database.OpenView("SELECT * FROM `Registry`");
+            // Open the "Registry" Table
+            RegistryView = Database.OpenView("SELECT * FROM `Registry`");
 
             if (msi.registry != null)
             {
@@ -1724,7 +1715,7 @@ namespace NAnt.Contrib.Tasks
                 }
             }
 
-	        return true;
+            return true;
         }
 
         /// <summary>
@@ -1739,16 +1730,16 @@ namespace NAnt.Contrib.Tasks
         /// <param name="ProgIdView">View containing the ProgId table.</param>
         /// <returns></returns>
         private bool LoadAssemblies(Database Database, Type InstallerType, 
-	        Object InstallerObject, out View MsiAssemblyView, 
-	        out View MsiAssemblyNameView, out View ClassView, 
-	        out View ProgIdView)
+            Object InstallerObject, out View MsiAssemblyView, 
+            out View MsiAssemblyNameView, out View ClassView, 
+            out View ProgIdView)
         {
-	        MsiAssemblyView = Database.OpenView("SELECT * FROM `MsiAssembly`");
-	        MsiAssemblyNameView = Database.OpenView("SELECT * FROM `MsiAssemblyName`");
-	        ClassView = Database.OpenView("SELECT * FROM `Class`");
-	        ProgIdView = Database.OpenView("SELECT * FROM `ProgId`");
+            MsiAssemblyView = Database.OpenView("SELECT * FROM `MsiAssembly`");
+            MsiAssemblyNameView = Database.OpenView("SELECT * FROM `MsiAssemblyName`");
+            ClassView = Database.OpenView("SELECT * FROM `Class`");
+            ProgIdView = Database.OpenView("SELECT * FROM `ProgId`");
 
-	        return true;
+            return true;
         }
 
         /// <summary>
@@ -1820,7 +1811,7 @@ namespace NAnt.Contrib.Tasks
                                     recRegLoc.set_StringData(2, rootKey.ToString());
                                     recRegLoc.set_StringData(3, key.path);
                                     recRegLoc.set_StringData(4, value.name);
-									// 2 represents msidbLocatorTypeRawValue
+                                    // 2 represents msidbLocatorTypeRawValue
                                     recRegLoc.set_IntegerData(5, 2);
 
                                     regLocatorView.Modify(MsiViewModify.msiViewModifyInsert, recRegLoc);
@@ -1833,7 +1824,7 @@ namespace NAnt.Contrib.Tasks
                                 }
                             }
                             regLocatorView.Close();
-							regLocatorView = null;
+                            regLocatorView = null;
 
                             break;
                         }
@@ -1847,2343 +1838,2338 @@ namespace NAnt.Contrib.Tasks
             return true;
         }
 
-		/// <summary>
-		/// Loads records for the RegLocator table
-		/// </summary>
-		/// <param name="Database">The MSI database.</param>
-		/// <param name="InstallerType">The MSI Installer type.</param>
-		/// <param name="InstallerObject">The MSI Installer object.</param>
-		/// <returns>True if successful.</returns>
-		private bool LoadAppSearch(Database Database, Type InstallerType, 
-			Object InstallerObject)
-		{
-			// Add properties from Task definition
-			if (msi.search != null)
-			{
-				foreach (searchKey key in msi.search)
-				{
-					switch (key.type.ToString())
-					{
-						case "registry":
-						{
-							// Select the "AppSearch" Table
-							View appSearchView = Database.OpenView("SELECT * FROM `AppSearch`");
+        /// <summary>
+        /// Loads records for the RegLocator table
+        /// </summary>
+        /// <param name="Database">The MSI database.</param>
+        /// <param name="InstallerType">The MSI Installer type.</param>
+        /// <param name="InstallerObject">The MSI Installer object.</param>
+        /// <returns>True if successful.</returns>
+        private bool LoadAppSearch(Database Database, Type InstallerType, 
+            Object InstallerObject)
+        {
+            // Add properties from Task definition
+            if (msi.search != null)
+            {
+                foreach (searchKey key in msi.search)
+                {
+                    switch (key.type.ToString())
+                    {
+                        case "registry":
+                        {
+                            // Select the "AppSearch" Table
+                            View appSearchView = Database.OpenView("SELECT * FROM `AppSearch`");
                                 
-							if (key.value != null)
-							{
-								foreach (searchKeyValue value in key.value)
-								{
-									string signature = "SIG_" + value.setproperty;
-
-									// Insert the Property/Signature into AppSearch Table
-									Record recAppSearch = (Record)InstallerType.InvokeMember(
-										"CreateRecord", 
-										BindingFlags.InvokeMethod, 
-										null, InstallerObject, 
-										new object[] { 2 });
-
-									recAppSearch.set_StringData(1, value.setproperty);
-									recAppSearch.set_StringData(2, signature);
-
-									appSearchView.Modify(MsiViewModify.msiViewModifyInsert, recAppSearch);
-								}
-							}
-							appSearchView.Close();
-							appSearchView = null;
-
-							break;
-						}
-						case "file":
-						{
-							break;
-						}
-					}
-				}
-			}
-			return true;
-		}
-
-		/// <summary>
-		/// Loads records for the LaunchCondition table
-		/// </summary>
-		/// <param name="Database">The MSI database.</param>
-		/// <param name="InstallerType">The MSI Installer type.</param>
-		/// <param name="InstallerObject">The MSI Installer object.</param>
-		/// <returns>True if successful.</returns>
-		private bool LoadLaunchCondition(Database Database, Type InstallerType, 
-			Object InstallerObject)
-		{
-			// Add properties from Task definition
-			if (msi.launchconditions != null)
-			{
-				if (Verbose)
-				{
-					Log.WriteLine(LogPrefix + "Adding Launch Conditions:");
-				}
-	        	
-				// Open the Launch Condition Table
-				View lcView = Database.OpenView("SELECT * FROM `LaunchCondition`");
-
-				// Add binary data from Task definition
-				foreach (MSILaunchCondition launchCondition in msi.launchconditions)
-				{
-					if (Verbose)
-					{
-						Log.WriteLine("\t" + launchCondition.name);
-					}
-
-					// Insert the icon data
-					Record recLC = (Record)InstallerType.InvokeMember(
-						"CreateRecord", 
-						BindingFlags.InvokeMethod, 
-						null, InstallerObject, 
-						new object[] { 2 });
-
-					recLC.set_StringData(1, launchCondition.condition);
-					recLC.set_StringData(2, launchCondition.description);
-					lcView.Modify(MsiViewModify.msiViewModifyInsert, recLC);
-
-				}
-
-				lcView.Close();
-				lcView = null;
-			}
-			return true;
-		}
-
-
-		/// <summary>
-		/// Loads records for the Icon table.  
-		/// </summary>
-		/// <param name="Database">The MSI database.</param>
-		/// <param name="InstallerType">The MSI Installer type.</param>
-		/// <param name="InstallerObject">The MSI Installer object.</param>
-		/// <returns>True if successful.</returns>
-		private bool LoadIcon(Database Database, Type InstallerType, 
-			Object InstallerObject)
-		{
-			if (msi.icons != null)
-			{
-
-				// Open the Icon Table
-				View iconView = Database.OpenView("SELECT * FROM `Icon`");
-
-				if (Verbose)
-				{
-					Log.WriteLine(LogPrefix + "Adding Icon Data:");
-				}
-	        	
-				// Add binary data from Task definition
-				foreach (MSIIcon icon in msi.icons)
-				{
-					if (Verbose)
-					{
-						Log.WriteLine("\t" + Path.GetFileName(icon.value));
-					}
-
-					if (File.Exists(icon.value))
-					{
-						// Insert the icon data
-						Record recIcon = (Record)InstallerType.InvokeMember(
-							"CreateRecord", 
-							BindingFlags.InvokeMethod, 
-							null, InstallerObject, 
-							new object[] { 2 });
-
-						recIcon.set_StringData(1, icon.name);
-						recIcon.SetStream(2, icon.value);
-						iconView.Modify(MsiViewModify.msiViewModifyInsert, recIcon);
-
-					}
-					else
-					{
-						Log.WriteLine(LogPrefix + 
-							"ERROR: Unable to open file:\n\n\t" + 
-							icon.value + "\n\n");
-
-						iconView.Close();
-						iconView = null;
-						return false;
-					}
-				}
-
-				iconView.Close();
-				iconView = null;
-			}
-			return true;
-		}
-
-		/// <summary>
-		/// Loads records for the Shortcut table.  
-		/// </summary>
-		/// <param name="Database">The MSI database.</param>
-		/// <param name="InstallerType">The MSI Installer type.</param>
-		/// <param name="InstallerObject">The MSI Installer object.</param>
-		/// <returns>True if successful.</returns>
-		private bool LoadShortcut(Database Database, Type InstallerType, 
-			Object InstallerObject)
-		{
-			// Add properties from Task definition
-			if (msi.shortcuts != null)
-			{
-				if (Verbose)
-				{
-					Log.WriteLine(LogPrefix + "Adding Shortcuts:");
-				}
-
-				View shortcutView = Database.OpenView("SELECT * FROM `Shortcut`");
-
-				foreach (MSIShortcut shortcut in msi.shortcuts)
-				{
-					if (Verbose)
-					{
-						Log.WriteLine("\t" + shortcut.name);
-					}
-
-					// Insert the record into the table
-					Record shortcutRec = (Record)InstallerType.InvokeMember(
-						"CreateRecord", 
-						BindingFlags.InvokeMethod, 
-						null, InstallerObject, 
-						new object[] { 12 });
-
-					shortcutRec.set_StringData(1, shortcut.name);
-					shortcutRec.set_StringData(2, shortcut.directory);
-					shortcutRec.set_StringData(3, shortcut.filename);
-					shortcutRec.set_StringData(4, shortcut.component);
-					shortcutRec.set_StringData(5, shortcut.target);
-					shortcutRec.set_StringData(6, shortcut.arguments);
-					shortcutRec.set_StringData(7, shortcut.description);
-					shortcutRec.set_StringData(8, shortcut.hotkey);
-					shortcutRec.set_StringData(9, shortcut.icon);
-					shortcutRec.set_IntegerData(10, shortcut.iconindex);
-					shortcutRec.set_IntegerData(11, shortcut.showcmd);
-					shortcutRec.set_StringData(12, shortcut.wkdir);
-
-					shortcutView.Modify(MsiViewModify.msiViewModifyInsert, shortcutRec);
-
-				}
-				shortcutView.Close();
-				shortcutView = null;
-			}
-			return true;
-
-		}
-
-		/// <summary>
-		/// Adds custom table(s) to the msi database
-		/// </summary>
-		/// <param name="Database">The MSI database.</param>
-		/// <param name="InstallerType">The MSI Installer type.</param>
-		/// <param name="InstallerObject">The MSI Installer object.</param>
-		/// <returns>True if successful.</returns>
-		private bool AddTables(Database Database, Type InstallerType, 
-			Object InstallerObject)
-		{
-			// Add properties from Task definition
-			if (msi.tables != null)
-			{
-				if (Verbose)
-				{
-					Log.WriteLine(LogPrefix + "Adding Tables:");
-				}
-
-				foreach (MSITable table in msi.tables)
-				{
-					if (Verbose)
-					{
-						Log.WriteLine("\t" + table.name);
-					}
-									
-					bool tableExists = true;
-					try
-					{
-						View tableView = Database.OpenView("SELECT * FROM `" + table.name + "`");
-					
-						if (Verbose)
-						{
-							Log.WriteLine("\t\tTable exists.. skipping");
-						}
-						tableExists = true;
-						tableView.Close();
-						tableView = null;
-					}
-					catch (Exception)
-					{
-						tableExists = false;
-					}
-
-					if (!tableExists)
-					{
-						if (Verbose)
-						{
-							Log.Write("\t\tAdding table structure...");
-						}
-
-						View validationView = Database.OpenView("SELECT * FROM `_Validation`");
-
-						string tableStructureColumns = "";
-						string tableStructureColumnTypes = "";
-						string tableStructureKeys = table.name;
-						bool firstColumn = true;
-
-						ArrayList columnList = new ArrayList();
-
-						foreach (MSITableColumn column in table.columns)
-						{
-							// Add this column to the column list
-							MSIRowColumnData currentColumn = new MSIRowColumnData();
-
-							currentColumn.name = column.name;
-							currentColumn.id = columnList.Count;
-
-							Record recValidation = (Record)InstallerType.InvokeMember(
-								"CreateRecord", 
-								BindingFlags.InvokeMethod, 
-								null, InstallerObject, 
-								new object[] { 10 });
-
-							recValidation.set_StringData(1, table.name);
-							recValidation.set_StringData(2, column.name);
-							if (column.nullable)
-								recValidation.set_StringData(3, "Y");
-							else
-								recValidation.set_StringData(3, "N");
-							recValidation.set_StringData(4, column.minvalue);
-							recValidation.set_StringData(5, column.maxvalue);
-							recValidation.set_StringData(6, column.keytable);
-							recValidation.set_StringData(7, column.keycolumn);
-
-
-							if (!firstColumn)
-							{
-								tableStructureColumns += "\t";
-								tableStructureColumnTypes += "\t";
-							}
-							else
-								firstColumn = false;
-
-							tableStructureColumns += column.name;
-
-							switch(column.category.ToString())
-							{
-								case "Text":
-									if (column.type == null || column.type == "")
-										tableStructureColumnTypes += "s0";
-									recValidation.set_StringData(8, "Text");
-									currentColumn.type = "string";
-									break;
-								case "UpperCase":
-									if (column.type == null || column.type == "")
-										tableStructureColumnTypes += "s72";
-									recValidation.set_StringData(8, "UpperCase");
-									currentColumn.type = "string";
-									break;
-								case "LowerCase":
-									if (column.type == null || column.type == "")
-										tableStructureColumnTypes += "s72";
-									recValidation.set_StringData(8, "LowerCase");
-									currentColumn.type = "string";
-									break;
-								case "Integer":
-									if (column.type == null || column.type == "")
-										tableStructureColumnTypes += "i2";
-									recValidation.set_StringData(8, "Integer");
-									currentColumn.type = "int";
-									break;
-								case "DoubleInteger":
-									if (column.type == null || column.type == "")
-										tableStructureColumnTypes += "i4";
-									recValidation.set_StringData(8, "DoubleInteger");
-									currentColumn.type = "int";
-									break;
-								case "Time/Date":
-									if (column.type == null || column.type == "")
-										tableStructureColumnTypes += "i4";
-									recValidation.set_StringData(8, "Time/Date");
-									currentColumn.type = "int";
-									break;
-								case "Identifier":
-									if (column.type == null || column.type == "")
-										tableStructureColumnTypes += "s72";
-									recValidation.set_StringData(8, "Identifier");
-									currentColumn.type = "string";
-									break;
-								case "Property":
-									if (column.type == null || column.type == "")
-										tableStructureColumnTypes += "s72";
-									recValidation.set_StringData(8, "Property");
-									currentColumn.type = "string";
-									break;
-								case "Filename":
-									if (column.type == null || column.type == "")
-										tableStructureColumnTypes += "s255";
-									recValidation.set_StringData(8, "Filename");
-									currentColumn.type = "string";
-									break;
-								case "WildCardFilename":
-									if (column.type == null || column.type == "")
-										tableStructureColumnTypes += "L0";
-									recValidation.set_StringData(8, "WildCardFilename");
-									currentColumn.type = "string";
-									break;
-								case "Path":
-									if (column.type == null || column.type == "")
-										tableStructureColumnTypes += "s255";
-									recValidation.set_StringData(8, "Path");
-									currentColumn.type = "string";
-									break;
-								case "Paths":
-									if (column.type == null || column.type == "")
-										tableStructureColumnTypes += "s255";
-									recValidation.set_StringData(8, "Paths");
-									currentColumn.type = "string";
-									break;
-								case "AnyPath":
-									if (column.type == null || column.type == "")
-										tableStructureColumnTypes += "s255";
-									recValidation.set_StringData(8, "AnyPath");
-									currentColumn.type = "string";
-									break;
-								case "DefaultDir":
-									if (column.type == null || column.type == "")
-										tableStructureColumnTypes += "l255";
-									recValidation.set_StringData(8, "DefaultDir");
-									currentColumn.type = "string";
-									break;
-								case "RegPath":
-									if (column.type == null || column.type == "")
-										tableStructureColumnTypes += "l255";
-									recValidation.set_StringData(8, "RegPath");
-									currentColumn.type = "string";
-									break;
-								case "Formatted":
-									if (column.type == null || column.type == "")
-										tableStructureColumnTypes += "s255";
-									recValidation.set_StringData(8, "Formatted");
-									currentColumn.type = "string";
-									break;
-								case "Template":
-									if (column.type == null || column.type == "")
-										tableStructureColumnTypes += "L0";
-									recValidation.set_StringData(8, "Template");
-									currentColumn.type = "string";
-									break;
-								case "Condition":
-									if (column.type == null || column.type == "")
-										tableStructureColumnTypes += "s255";
-									recValidation.set_StringData(8, "Condition");
-									currentColumn.type = "string";
-									break;
-								case "GUID":
-									if (column.type == null || column.type == "")
-										tableStructureColumnTypes += "s38";
-									recValidation.set_StringData(8, "GUID");
-									currentColumn.type = "string";
-									break;
-								case "Version":
-									if (column.type == null || column.type == "")
-										tableStructureColumnTypes += "s32";
-									recValidation.set_StringData(8, "Version");
-									currentColumn.type = "string";
-									break;
-								case "Language":
-									if (column.type == null || column.type == "")
-										tableStructureColumnTypes += "s255";
-									recValidation.set_StringData(8, "Language");
-									currentColumn.type = "string";
-									break;
-								case "Binary":
-									if (column.type == null || column.type == "")
-										tableStructureColumnTypes += "v0";
-									recValidation.set_StringData(8, "Binary");
-									currentColumn.type = "binary";
-									break;
-								case "CustomSource":
-									if (column.type == null || column.type == "")
-										tableStructureColumnTypes += "s72";
-									recValidation.set_StringData(8, "CustomSource");
-									currentColumn.type = "string";
-									break;
-								case "Cabinet":
-									if (column.type == null || column.type == "")
-										tableStructureColumnTypes += "S255";
-									recValidation.set_StringData(8, "Cabinet");
-									currentColumn.type = "string";
-									break;
-								case "Shortcut":
-									if (column.type == null || column.type == "")
-										tableStructureColumnTypes += "s72";
-									recValidation.set_StringData(8, "Shortcut");
-									currentColumn.type = "string";
-									break;
-								default:
-									if (column.type == null || column.type == "")
-									{
-										if (Verbose)
-										{
-											Log.WriteLine(" ");
-											Log.WriteLine(LogPrefix + "Must specify a valid category or type.  Defaulting to category type: s0");
-										}
-										tableStructureColumnTypes += "s0";
-										currentColumn.type = "string";
-									}
-									break;
-							}
-							if (column.type != null)
-							{
-								tableStructureColumnTypes += column.type;
-								if (column.type.ToString().StartsWith("i"))
-									currentColumn.type = "int";
-								else if(column.type.ToString().StartsWith("v"))
-									currentColumn.type = "binary";
-								else
-									currentColumn.type = "string";
-							}
-
-							recValidation.set_StringData(9, column.set);
-							recValidation.set_StringData(10, column.description);
-
-							if (column.key)
-								tableStructureKeys += "\t" + column.name;							
-
-							validationView.Modify(MsiViewModify.msiViewModifyInsert, recValidation);
-					
-							columnList.Add(currentColumn);
-
-						}
-
-						// Create temp file.  Dump table structure contents into the file
-						// Then import the file.  
-						string tableStructureContents = tableStructureColumns + "\n" + tableStructureColumnTypes + "\n" + tableStructureKeys + "\n";
-						string tempFileName = "85E99F65_1B01_4add_8835_EB2C9DA4E8BF.idt";
-						string fullTempFileName = Path.Combine(msi.sourcedir, tempFileName);
-						FileStream tableStream = null;
-						try 
-						{									
-							tableStream = File.Create(fullTempFileName);
-							StreamWriter writer = new StreamWriter(tableStream);
-							writer.Write(tableStructureContents);
-							writer.Flush();
-						}
-						finally 
-						{
-							tableStream.Close();
-						}
-
-						validationView.Close();
-						validationView = null;
-
-						try
-						{
-							Database.Import(Path.Combine(Project.BaseDirectory, msi.sourcedir), tempFileName);
-						}
-						catch (Exception ae)
-						{
-							Log.WriteLine(LogPrefix + "ERROR: Temporary table file is not valid:\n" + 
-								ae.GetType().FullName + " thrown:\n" + 
-								ae.Message + "\n" + ae.StackTrace);
-						}
-						File.Delete(fullTempFileName);
-
-						if (Verbose)
-						{
-							Log.WriteLine("Done");
-						}
-
-						if (table.rows != null)
-							AddTableData(Database, InstallerType, InstallerObject, table.name, table, columnList);
-
-					}
-				}
-			}
-			return true;
-
-		}
-
-
-		/// <summary>
-		/// Adds table data to the msi database table structure
-		/// </summary>
-		/// <param name="Database">The MSI database.</param>
-		/// <param name="InstallerType">The MSI Installer type.</param>
-		/// <param name="InstallerObject">The MSI Installer object.</param>
-		/// <param name="currentTable">The current table name</param>
-		/// <param name="table">Xml node representing the current table</param>
-		/// <param name="columnList">List of column objects for the current table (Containing: column name, id, type).</param>
-		/// <returns>True if successful.</returns>
-		private bool AddTableData(Database Database, Type InstallerType, 
-			Object InstallerObject, string currentTable, MSITable table, ArrayList columnList)
-		{
-
-			if (Verbose)
-			{
-				Log.Write("\t\tAdding table data...");
-			}
-			View tableView = Database.OpenView("SELECT * FROM `" + currentTable + "`");
-			
-			foreach (MSITableRow row in table.rows)
-			{
-				Record newRec = (Record)InstallerType.InvokeMember(
-					"CreateRecord", 
-					BindingFlags.InvokeMethod, 
-					null, InstallerObject, 
-					new object[] { columnList.Count });					
-				try
-				{
-					foreach(MSITableRowColumnData columnData in row.columns)
-					{
-
-						// Create the record and add it
-						foreach (MSIRowColumnData columnInfo in columnList)
-						{
-							if (columnInfo.name == columnData.name)
-							{
-								if (columnInfo.type == "int")
-								{
-									newRec.set_IntegerData((columnInfo.id + 1), Convert.ToInt32(columnData.value));
-								}
-								else if (columnInfo.type == "binary")
-								{
-									newRec.SetStream((columnInfo.id + 1), columnData.value);
-								}
-								else
-								{
-									newRec.set_StringData((columnInfo.id + 1), columnData.value);
-								}
-								break;
-							}
-						}
-					}				
-					tableView.Modify(MsiViewModify.msiViewModifyInsert, newRec);
-				}
-				catch (Exception)
-				{
-					Log.WriteLine(LogPrefix + "Incorrect row data format.");
-				}
-			}
-			tableView.Close();
-			tableView = null;					
-			
-			if (Verbose)
-			{
-				Log.WriteLine("Done");
-			}
-			return true;
-		}
-
-
-
-
-
-            /// <summary>
-            /// Sets the sequence number of files to match their 
-            /// storage order in the cabinet file, after some 
-            /// files have had their filenames changed to go in 
-            /// their own component.
-            /// </summary>
-            /// <param name="Database">The MSI database.</param>
-            /// <param name="LastSequence">The last file's sequence number.</param>
-            /// <returns>True if successful</returns>
-            private bool ReorderFiles(Database Database, ref int LastSequence)
-            {
-	            string curPath = Path.Combine(Project.BaseDirectory, msi.sourcedir);
-	            string curTempPath = Path.Combine(curPath, "Temp");
-
-				try
-				{
-					string[] curFileNames = Directory.GetFiles(curTempPath, "*.*");
-					LastSequence = 1;
-
-					foreach (string curDirFileName in curFileNames)
-					{
-						View curFileView = Database.OpenView(
-							"SELECT * FROM `File` WHERE `File`='" + 
-							Path.GetFileName(curDirFileName) + "'");
-
-						if (curFileView != null)
-						{
-							curFileView.Execute(null);
-							Record recCurFile = curFileView.Fetch();
-
-							if (recCurFile != null)
-							{
-								recCurFile.set_StringData(8, LastSequence.ToString());
-								curFileView.Modify(MsiViewModify.msiViewModifyUpdate, recCurFile);
-
-								LastSequence++;
-							}
-							else
-							{
-								Log.WriteLine(LogPrefix + "File " + 
-									Path.GetFileName(curDirFileName) + 
-									" not found during reordering.");
-
-								curFileView.Close();
-								curFileView = null;
-
-								return false;
-							}
-						}
-
-						curFileView.Close();
-						curFileView = null;
-					}
-				}
-				catch (Exception)
-				{
-					// There are no files added to the msi.  (Msi containing only merge modules?)
-					Log.WriteLine(LogPrefix + "NOTE: No files found to add to MSI (Does not include MSM files).");
-				}
-	            return true;
-            }
-
-            /// <summary>
-            /// Creates a .cab file with all source files included.
-            /// </summary>
-            /// <param name="Database">The MSI database.</param>
-            /// <param name="InstallerType">The MSI Installer type.</param>
-            /// <param name="InstallerObject">The MSI Installer object.</param>
-            /// <returns>True if successful.</returns>
-            private bool CreateCabFile(Database Database, Type InstallerType, Object InstallerObject)
-            {
-	            Log.Write(LogPrefix + "Compressing Files...");
-
-	            // Create the CabFile
-	            ProcessStartInfo processInfo = new ProcessStartInfo();
-            	
-	            processInfo.Arguments = "-p -r -P " + 
-		            Path.Combine(msi.sourcedir, "Temp") + @"\ N " + 
-		            msi.sourcedir + @"\" + 
-		            Path.GetFileNameWithoutExtension(msi.output) + @".cab " + 
-		            Path.Combine(msi.sourcedir, "Temp") + @"\*";
-
-				processInfo.CreateNoWindow = false;
-	            processInfo.WindowStyle = ProcessWindowStyle.Hidden;
-	            processInfo.WorkingDirectory = msi.output;
-	            processInfo.FileName = "cabarc";
-
-	            Process process = new Process();
-	            process.StartInfo = processInfo;
-	            process.EnableRaisingEvents = true;
-
-				try
-                {
-                    process.Start();
-                }
-                catch (Exception)
-                {
-                    Log.WriteLine(LogPrefix + "ERROR: cabarc.exe is not in your path");
-                    return false;
-                }
-
-				try
-	            {
-		            process.WaitForExit();
-	            }
-	            catch (Exception e)
-	            {
-		            Log.WriteLine();
-		            Log.WriteLine("Error creating cab file: " + e.Message);
-		            return false;
-	            }
-
-				if (process.ExitCode != 0)
-	            {
-		            Log.WriteLine();
-		            Log.WriteLine("Error creating cab file, application returned error " + 
-			            process.ExitCode + ".");
-		            return false;
-	            }
-
-				if (!process.HasExited)
-				{
-					Log.WriteLine();
-					Log.WriteLine("Killing the cabarc process.");
-					process.Kill();
-				}
-				process = null;
-				processInfo = null;
-
-				Log.WriteLine("Done.");
-            	
-	            string cabFile = Path.Combine(Project.BaseDirectory, 
-		            Path.Combine(msi.sourcedir, 
-		            Path.GetFileNameWithoutExtension(msi.output) + @".cab"));
-
-	            if (File.Exists(cabFile))
-	            {
-		            View cabView = Database.OpenView("SELECT * FROM `_Streams`");
-		            if (Verbose)
-		            {
-			            Log.WriteLine(LogPrefix + "Storing Cabinet in MSI Database...");
-		            }
-
-		            Record cabRecord = (Record)InstallerType.InvokeMember(
-			            "CreateRecord", 
-			            BindingFlags.InvokeMethod, 
-			            null, InstallerObject, 
-			            new object[] { 2 });
-
-		            cabRecord.set_StringData(1, Path.GetFileName(cabFile));
-		            cabRecord.SetStream(2, cabFile);
-
-		            cabView.Modify(MsiViewModify.msiViewModifyInsert, cabRecord);
-		            cabView.Close();
-					cabView = null;
-
-	            }
-	            else
-	            {
-		            Log.WriteLine(LogPrefix + 
-			            "ERROR: Unable to open Cabinet file:\n\n\t" + 
-			            cabFile + "\n\n");
-		            return false;
-	            }
-	            return true;
-            }
-
-            [DllImport("kernel32.dll", CharSet=CharSet.Auto)]
-            private static extern int GetShortPathName(string LongPath, StringBuilder ShortPath, int BufferSize); 
-
-            /// <summary>
-            /// Retrieves a DOS 8.3 filename for a file.
-            /// </summary>
-            /// <param name="LongFile">The file to shorten.</param>
-            /// <returns>The new shortened file.</returns>
-            private string GetShortFile(string LongFile)
-            {
-	            if (LongFile.Length <= 8)
-	            {
-		            return LongFile;
-	            }
-
-	            StringBuilder shortPath = new StringBuilder(255);
-	            int result = GetShortPathName(LongFile, shortPath, shortPath.Capacity);
-	            return Path.GetFileName(shortPath.ToString());
-            }
-
-            /// <summary>
-            /// Retrieves a DOS 8.3 filename for a directory.
-            /// </summary>
-            /// <param name="LongPath">The path to shorten.</param>
-            /// <returns>The new shortened path.</returns>
-            private string GetShortPath(string LongPath)
-            {
-	            if (LongPath.Length <= 8)
-	            {
-		            return LongPath;
-	            }
-
-	            StringBuilder shortPath = new StringBuilder(255);
-	            int result = GetShortPathName(LongPath, shortPath, shortPath.Capacity);
-            	
-                Uri shortPathUri = null;
-                try
-                {
-                    shortPathUri = new Uri("file://" + shortPath.ToString());
-                }
-                catch (Exception)
-                {
-                    Log.WriteLine(LogPrefix + "ERROR: Directory " + 
-                        LongPath + " not found.");
-                    return "MsiTaskPathNotFound";
-                }
-
-	            string[] shortPathSegments = shortPathUri.Segments;
-	            if (shortPathSegments.Length == 0)
-	            {
-		            return LongPath;
-	            }
-	            if (shortPathSegments.Length == 1)
-	            {
-		            return shortPathSegments[0];
-	            }
-	            return shortPathSegments[shortPathSegments.Length-1];
-            }
-
-            /// <summary>
-            /// Retrieves the relative path of a file based on 
-            /// the component it belongs to and its entry in 
-            /// the MSI directory table.
-            /// </summary>
-            /// <param name="Database">The MSI database.</param>
-            /// <param name="InstallerType">The MSI Installer type.</param>
-            /// <param name="InstallerObject">The MSI Installer object.</param>
-            /// <param name="Name">The Name of the Folder</param>
-            /// <param name="Parent">The Parent of the Folder</param>
-            /// <param name="Default">The Relative Filesystem Path of the Folder</param>
-            /// <param name="Path">The Path to the Folder from previous calls.</param>
-            /// <param name="DirectoryView">The MSI database view.</param>
-            private void GetRelativePath(
-                Database Database, 
-                Type InstallerType, 
-                Object InstallerObject,
-	            string Name, 
-	            string Parent, 
-	            string Default, 
-	            StringBuilder Path, 
-                View DirectoryView)
-            {
-	            if (Name == "TARGETDIR")
-	            {
-		            return;
-	            }
-
-	            for (int i = 0; i < commonFolderNames.Length; i++)
-	            {
-		            if (Name == commonFolderNames[i])
-		            {
-			            return;
-		            }
-	            }
-
-                ArrayList directoryList = new ArrayList();
-                foreach(MSIRootDirectory directory in msi.directories)
-                {
-                    directoryList.Add(directory);
-                }
-
-                foreach (property property in msi.properties)
-                {
-                    if (Name == property.name)
-                    {
-                        MSIDirectory directory = FindDirectory(Name);
-                        if (directory == null)
-                        {
-                            MSIRootDirectory propDirectory = new MSIRootDirectory();
-                            propDirectory.name = Name;
-                            propDirectory.root = "TARGETDIR";
-                            propDirectory.foldername = ".";
-
-                            directoryList.Add(propDirectory);
-
-                            MSIRootDirectory[] rootDirs = new MSIRootDirectory[directoryList.Count];
-                            directoryList.CopyTo(rootDirs);
-
-                            msi.directories = rootDirs;
-                        }
-
-                        return;
-                    }
-                }
-
-	            if (Path.Length > 0)
-	            {
-		            Path.Insert(0, @"\");
-	            }
-
-	            Path.Insert(0, Default);
-                if (Parent != null)
-                {
-                    MSIDirectory PathInfo = FindDirectory(Parent);
-
-                    if (PathInfo == null)
-                    {
-                        foreach (property property in msi.properties)
-                        {
-                            if (Parent == property.name)
+                            if (key.value != null)
                             {
-                                MSIRootDirectory directory = new MSIRootDirectory();
-                                directory.name = Parent;
-                                directory.root = "TARGETDIR";
-                                directory.foldername = ".";
-
-                                directoryList.Add(directory);
-
-                                MSIRootDirectory[] rootDirs = new MSIRootDirectory[directoryList.Count];
-                                directoryList.CopyTo(rootDirs);
-
-                                msi.directories = rootDirs;
-
-                                // Insert the Directory that is a Property
-                                Record recDir = (Record)InstallerType.InvokeMember(
-                                    "CreateRecord", 
-                                    BindingFlags.InvokeMethod, 
-                                    null, InstallerObject, new object[] { 3 });
-
-                                recDir.set_StringData(1, Parent);
-                                recDir.set_StringData(2, "TARGETDIR");
-                                recDir.set_StringData(3, ".");
-
-                                DirectoryView.Modify(MsiViewModify.msiViewModifyInsert, recDir);
-
-                                PathInfo = directory;
-
-                                break;
-                            }
-                        }
-                    }   
-
-                    string newParent = null;
-                    if (PathInfo is MSIRootDirectory)
-                    {
-                        newParent = ((MSIRootDirectory)PathInfo).root;
-                    }
-                    else
-                    {
-                        newParent = FindParent(Parent);
-                    }
-
-                    GetRelativePath(Database, InstallerType, InstallerObject, 
-                        Parent, newParent, 
-                        PathInfo.foldername, Path, DirectoryView);
-                }
-            }
-
-            /// <summary>
-            /// Recursively expands properties of all attributes of 
-            /// a nodelist and their children.
-            /// </summary>
-            /// <param name="Nodes">The nodes to recurse.</param>
-            void ExpandPropertiesInNodes(XmlNodeList Nodes) 
-            {
-	            foreach (XmlNode node in Nodes)
-	            {
-		            if (node.ChildNodes != null)
-		            {
-			            ExpandPropertiesInNodes(node.ChildNodes);
-			            if (node.Attributes != null)
-			            {
-				            foreach (XmlAttribute attr in node.Attributes) 
-				            {
-					            attr.Value = Project.ExpandProperties(attr.Value);
-				            }
-			            }
-		            }
-	            }
-            }
-
-            /// <summary>
-            /// Converts the Byte array in a public key 
-            /// token of an assembly to a string MSI expects.
-            /// </summary>
-            /// <param name="ByteArray">The array of bytes.</param>
-            /// <returns>The string containing the array.</returns>
-            private string ByteArrayToString(Byte[] ByteArray)
-            {
-	            if ((ByteArray == null) || (ByteArray.Length == 0))
-		            return "";
-	            StringBuilder sb = new StringBuilder ();
-	            sb.Append (ByteArray[0].ToString("x2"));
-	            for (int i = 1; i < ByteArray.Length; i++) 
-	            {
-		            sb.Append(ByteArray[i].ToString("x2"));
-	            }
-	            return sb.ToString().ToUpper();
-            }
-
-            [DllImport("oleaut32.dll", CharSet=CharSet.Auto)]
-            private static extern int LoadTypeLib(string TypeLibFileName, ref IntPtr pTypeLib);
-
-            /// <summary>
-            /// Loads TypeLibs for the TypeLib table.
-            /// </summary>
-            /// <param name="Database">The MSI database.</param>
-            /// <param name="InstallerType">The MSI Installer type.</param>
-            /// <param name="InstallerObject">The MSI Installer object.</param>
-            /// <param name="RegistryView">View containing the Registry Table.</param>
-            /// <returns>True if successful.</returns>
-            private bool LoadTypeLibs(Database Database, Type InstallerType, object InstallerObject, View RegistryView)
-            {
-	            // Open the "TypeLib" Table
-	            View typeLibView = Database.OpenView("SELECT * FROM `TypeLib`");
-
-	            string runtimeVer = Environment.Version.ToString(4);
-
-	            for (int i = 0; i < typeLibRecords.Count; i++)
-	            {
-		            TypeLibRecord tlbRecord = (TypeLibRecord)typeLibRecords[i];
-
-		            IntPtr pTypeLib = new IntPtr(0);
-		            int result = LoadTypeLib(tlbRecord.TypeLibFileName, ref pTypeLib);
-		            if (result == 0)
-		            {
-			            UCOMITypeLib typeLib = (UCOMITypeLib)Marshal.GetTypedObjectForIUnknown(
-				            pTypeLib, typeof(UCOMITypeLib));
-			            if (typeLib != null)
-			            {
-				            int helpContextId;
-				            string name, docString, helpFile;
-
-				            typeLib.GetDocumentation(
-					            -1, out name, out docString, 
-					            out helpContextId, out helpFile);
-
-				            IntPtr pTypeLibAttr = new IntPtr(0);
-				            typeLib.GetLibAttr(out pTypeLibAttr);
-
-				            TYPELIBATTR typeLibAttr = (TYPELIBATTR)Marshal.PtrToStructure(pTypeLibAttr, typeof(TYPELIBATTR));
-
-				            string tlbCompName = (string)typeLibComponents[Path.GetFileName(tlbRecord.TypeLibFileName)];
-
-				            Record recTypeLib = (Record)InstallerType.InvokeMember(
-					            "CreateRecord", 
-					            BindingFlags.InvokeMethod, 
-					            null, InstallerObject, 
-					            new object[] { 8 });
-
-				            recTypeLib.set_StringData(1, "{"+typeLibAttr.guid.ToString().ToUpper()+"}");
-				            recTypeLib.set_IntegerData(2, Marshal.GetTypeLibLcid(typeLib));
-				            recTypeLib.set_StringData(3, tlbCompName);
-				            recTypeLib.set_IntegerData(4, 256);
-				            recTypeLib.set_StringData(5, docString == null ? name : docString);
-				            recTypeLib.set_StringData(7, tlbRecord.FeatureName);
-				            recTypeLib.set_IntegerData(8, 0);
-            				
-				            typeLib.ReleaseTLibAttr(pTypeLibAttr);
-
-				            typeLibView.Modify(MsiViewModify.msiViewModifyInsert, recTypeLib);
-
-				            // If a .NET type library wrapper for an assembly
-				            if (tlbRecord.AssemblyName != null)
-				            {
-					            // Get all the types defined in the typelibrary 
-					            // that are not marked "noncreatable"
-
-					            int typeCount = typeLib.GetTypeInfoCount();
-					            for (int j = 0; j < typeCount; j++)
-					            {
-						            UCOMITypeInfo typeInfo = null;
-						            typeLib.GetTypeInfo(j, out typeInfo);
-
-						            if (typeInfo != null)
-						            {
-							            IntPtr pTypeAttr = new IntPtr(0);
-							            typeInfo.GetTypeAttr(out pTypeAttr);
-
-							            TYPEATTR typeAttr = (TYPEATTR)Marshal.PtrToStructure(pTypeAttr, typeof(TYPEATTR));
-
-							            if (typeAttr.typekind == TYPEKIND.TKIND_COCLASS 
-								            && typeAttr.wTypeFlags == TYPEFLAGS.TYPEFLAG_FCANCREATE)
-							            {
-								            string clsid = "{" + typeAttr.guid.ToString().ToUpper() + "}";
-
-								            if (typeInfo is UCOMITypeInfo2)
-								            {
-									            UCOMITypeInfo2 typeInfo2 = (UCOMITypeInfo2)typeInfo;
-									            if (typeInfo2 != null)
-									            {
-											        object custData = new object();
-											        Guid g = new Guid("0F21F359-AB84-41E8-9A78-36D110E6D2F9");
-											        typeInfo2.GetCustData(ref g, out custData);
-
-											        if (custData != null)
-											        {
-												        string className = (string)custData;
-
-												        // Insert the Class
-												        Record recRegTlbRec = (Record)InstallerType.InvokeMember(
-													        "CreateRecord", 
-													        BindingFlags.InvokeMethod, 
-													        null, InstallerObject, 
-													        new object[] { 6 });
-
-												        recRegTlbRec.set_StringData(1, 
-													        "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
-												        recRegTlbRec.set_IntegerData(2, 0);
-												        recRegTlbRec.set_StringData(3,
-													        @"CLSID\" + clsid + 
-													        @"\InprocServer32");
-												        recRegTlbRec.set_StringData(4, "Class");
-												        recRegTlbRec.set_StringData(5, className);
-												        recRegTlbRec.set_StringData(6, tlbRecord.AssemblyComponent);
-												        RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
-
-												        recRegTlbRec.set_StringData(1, 
-													        "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
-												        recRegTlbRec.set_StringData(4, "ThreadingModel");
-												        recRegTlbRec.set_StringData(5, "Both");
-												        RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
-
-												        recRegTlbRec.set_StringData(1, 
-													        "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
-												        recRegTlbRec.set_StringData(4, "RuntimeVersion");
-												        recRegTlbRec.set_StringData(5, System.Environment.Version.ToString(3));
-												        RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
-
-												        recRegTlbRec.set_StringData(1, 
-													        "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
-												        recRegTlbRec.set_StringData(4, "Assembly");
-												        recRegTlbRec.set_StringData(5, tlbRecord.AssemblyName.FullName);
-												        RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
-
-												        recRegTlbRec.set_StringData(1, 
-													        "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
-												        recRegTlbRec.set_StringData(3,
-													        @"CLSID\" + clsid + 
-													        @"\Implemented Categories");
-												        recRegTlbRec.set_StringData(4, "+");
-												        recRegTlbRec.set_StringData(5, null);
-												        RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
-
-												        recRegTlbRec.set_StringData(1, 
-													        "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
-												        recRegTlbRec.set_StringData(3,
-													        @"CLSID\" + clsid + 
-													        @"\Implemented Categories\{62C8FE65-4EBB-45e7-B440-6E39B2CDBF29}");
-												        recRegTlbRec.set_StringData(4, "+");
-												        recRegTlbRec.set_StringData(5, null);
-												        RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
-											        }
-									            }
-								            }
-							            }
-							            else if (typeAttr.typekind == TYPEKIND.TKIND_DISPATCH)
-							            {
-								            string iid = "{" + typeAttr.guid.ToString().ToUpper() + "}";
-
-								            string typeName, typeDocString, typeHelpFile;
-								            int typeHelpContextId;
-
-								            typeInfo.GetDocumentation(-1, out typeName, 
-									            out typeDocString, out typeHelpContextId, 
-									            out typeHelpFile);
-
-								            if (typeInfo is UCOMITypeInfo2)
-								            {
-									            UCOMITypeInfo2 typeInfo2 = (UCOMITypeInfo2)typeInfo;
-									            if (typeInfo2 != null)
-									            {
-										            object custData = new object();
-										            Guid g = new Guid("0F21F359-AB84-41E8-9A78-36D110E6D2F9");
-										            typeInfo2.GetCustData(ref g, out custData);
-
-										            if (custData != null)
-										            {
-											            string className = (string)custData;
-
-											            // Insert the Interface
-											            Record recRegTlbRec = (Record)InstallerType.InvokeMember(
-												            "CreateRecord", 
-												            BindingFlags.InvokeMethod, 
-												            null, InstallerObject, 
-												            new object[] { 6 });
-
-											            string typeLibComponent = (string)typeLibComponents[Path.GetFileName(tlbRecord.TypeLibFileName)];
-
-											            recRegTlbRec.set_StringData(1, 
-												            "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
-											            recRegTlbRec.set_IntegerData(2, 0);
-											            recRegTlbRec.set_StringData(3,
-												            @"Interface\" + iid);
-											            recRegTlbRec.set_StringData(4, null);
-											            recRegTlbRec.set_StringData(5, typeName);
-											            recRegTlbRec.set_StringData(6, typeLibComponent);
-											            RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
-
-											            recRegTlbRec.set_StringData(1, 
-												            "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
-											            recRegTlbRec.set_StringData(3,
-												            @"Interface\" + iid + @"\TypeLib");
-											            recRegTlbRec.set_StringData(4, "Version");
-											            recRegTlbRec.set_StringData(5, "1.0");
-											            RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
-
-											            recRegTlbRec.set_StringData(1, 
-												            "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
-											            recRegTlbRec.set_StringData(4, null);
-											            recRegTlbRec.set_StringData(5, "{"+typeLibAttr.guid.ToString().ToUpper()+"}");
-											            RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
-
-											            recRegTlbRec.set_StringData(1, 
-												            "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
-											            recRegTlbRec.set_StringData(3,
-												            @"Interface\" + iid + @"\ProxyStubClsid32");
-											            recRegTlbRec.set_StringData(4, null);
-											            recRegTlbRec.set_StringData(5, "{00020424-0000-0000-C000-000000000046}");
-											            RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
-
-											            recRegTlbRec.set_StringData(1, 
-												            "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
-											            recRegTlbRec.set_StringData(3,
-												            @"Interface\" + iid + @"\ProxyStubClsid");
-											            recRegTlbRec.set_StringData(4, null);
-											            recRegTlbRec.set_StringData(5, "{00020424-0000-0000-C000-000000000046}");
-											            RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
-										            }
-									            }
-								            }
-							            }
-						            }
-					            }
-				            }
-			            }
-		            }
-	            }
-
-	            typeLibView.Close();
-				typeLibView = null;
-
-	            return true;
-            }
-
-            /// <summary>
-            /// Merges Merge Modules into the MSI Database.
-            /// </summary>
-            /// <param name="Database">The MSI Database.</param>
-            /// <param name="TempPath">The path to temporary files.</param>
-            /// <returns>True if successful.</returns>
-            private bool LoadMergeModules(string Database, string TempPath)
-            {
-                MsmMergeClass mergeClass = new MsmMergeClass();
-
-                int index = 1;
-				// If <mergemodules>...</mergemodules> exists in the nant msi task
-
-                if (msi.mergemodules != null)
-                {
-                    if (Verbose)
-                    {
-                        Log.WriteLine(LogPrefix + "Storing Merge Modules:");
-                    }
-
-					// Merge module(s) assigned to a specific feature
-                    foreach (MSIMerge merge in msi.mergemodules)
-                    {
-						// Get each merge module file name assigned to this feature
-                        NAntFileSet modules = merge.modules;
-
-                        FileSet mergeSet = new FileSet();
-                        mergeSet.Project = Project;
-
-                        XmlElement modulesElem = (XmlElement)((XmlElement)_xmlNode).SelectSingleNode(
-                            "mergemodules/merge[@feature='" + merge.feature + "']/modules");
-                        
-                        mergeSet.Initialize(modulesElem);
-
-						// Iterate each module assigned to this feature
-                        foreach (string mergeModule in mergeSet.FileNames)
-                        {
-                            if (Verbose)
-                            {
-                                Log.WriteLine("\t" + Path.GetFileName(mergeModule));
-                            }
-                            
-                            try
-                            {
-								// Open the merge module (by Filename)
-                                mergeClass.OpenModule(mergeModule, 1033);
-
-                                try
+                                foreach (searchKeyValue value in key.value)
                                 {
-                                    mergeClass.OpenDatabase(Database);
+                                    string signature = "SIG_" + value.setproperty;
+
+                                    // Insert the Property/Signature into AppSearch Table
+                                    Record recAppSearch = (Record)InstallerType.InvokeMember(
+                                        "CreateRecord", 
+                                        BindingFlags.InvokeMethod, 
+                                        null, InstallerObject, 
+                                        new object[] { 2 });
+
+                                    recAppSearch.set_StringData(1, value.setproperty);
+                                    recAppSearch.set_StringData(2, signature);
+
+                                    appSearchView.Modify(MsiViewModify.msiViewModifyInsert, recAppSearch);
                                 }
-                                catch (FileLoadException fle)
-                                {
-                                    Log.WriteLine(fle.Message + " " + fle.FileName + " " + fle.StackTrace);
-                                    return false;
-                                }
-								
-								// Once the merge is complete, components in the module are attached to the 
-								// feature identified by Feature. This feature is not created and must be 
-								// an existing feature. Note that the Merge method gets all the feature 
-								// references in the module and substitutes the feature reference for all 
-								// occurrences of the null GUID in the module database.								
-                                mergeClass.Merge(merge.feature, null);
-
-                                string moduleCab = Path.Combine(Path.GetDirectoryName(Database), 
-                                    "mergemodule" + index + ".cab");
-
-                                index++;
-
-                                mergeClass.ExtractCAB(moduleCab);
-
-                                Process process = new Process();
-
-                                if (File.Exists(moduleCab))
-                                {
-                                    // Create the CabFile
-                                    ProcessStartInfo processInfo = new ProcessStartInfo();
-                
-                                    processInfo.Arguments = "-o X " + 
-                                        moduleCab + " " + Path.Combine(msi.sourcedir, @"Temp\");
-
-                                    processInfo.CreateNoWindow = false;
-                                    processInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                                    processInfo.WorkingDirectory = msi.output;
-                                    processInfo.FileName = "cabarc";
-
-                                
-                                    process.StartInfo = processInfo;
-                                    process.EnableRaisingEvents = true;
-
-                                    process.Start();
-                            
-                                    try
-                                    {
-                                        process.WaitForExit();
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        Log.WriteLine();
-                                        Log.WriteLine("Error extracting merge module cab file: " + moduleCab);
-                                        Log.WriteLine("Error was: " + e.Message);
-
-                                        File.Delete(moduleCab);
-                                        return false;
-                                    }
-
-                                    if (process.ExitCode != 0)
-                                    {
-                                        Log.WriteLine();
-                                        Log.WriteLine("Error extracting merge module cab file: " + moduleCab);
-                                        Log.WriteLine("Application returned ERROR: " + process.ExitCode);
-
-                                        File.Delete(moduleCab);
-                                        return false;
-                                    }
-
-                                    File.Delete(moduleCab);
-                                }
-									
                             }
-                            catch (Exception)
-                            {
-                                Log.WriteLine(LogPrefix + "ERROR: cabarc.exe is not in your path");
-                                Log.WriteLine(LogPrefix + "or file " + mergeModule + " is not found.");
-                                return false;
-                            }
+                            appSearchView.Close();
+                            appSearchView = null;
+
+                            break;
                         }
-                        mergeClass.CloseModule();
-						// Close and save the database
-                        mergeClass.CloseDatabase(true);
-
-                    }
-                }
-
-                return true;
-            }
-
-		/// <summary>
-		/// Loads records for the Binary table.  This table stores items 
-		/// such as bitmaps, animations, and icons. The binary table is 
-		/// also used to store data for custom actions.
-		/// </summary>
-		/// <param name="Database">The MSI database.</param>
-		/// <param name="InstallerType">The MSI Installer type.</param>
-		/// <param name="InstallerObject">The MSI Installer object.</param>
-		/// <returns>True if successful.</returns>
-		private bool LoadBinary(Database Database, Type InstallerType, Object InstallerObject)
-		{
-			if (msi.binaries != null)
-			{
-
-				// Open the Binary Table
-				View binaryView = Database.OpenView("SELECT * FROM `Binary`");
-
-				if (Verbose)
-				{
-					Log.WriteLine(LogPrefix + "Adding Binary Data:");
-				}
-	        	
-				// Add binary data from Task definition
-				foreach (MSIBinary binary in msi.binaries)
-				{
-					if (Verbose)
-					{
-						Log.WriteLine("\t" + Path.GetFileName(binary.value));
-					}
-
-					if (File.Exists(binary.value))
-					{
-						// Insert the binary data
-						Record recBinary = (Record)InstallerType.InvokeMember(
-							"CreateRecord", 
-							BindingFlags.InvokeMethod, 
-							null, InstallerObject, 
-							new object[] { 2 });
-
-						recBinary.set_StringData(1, binary.name);
-						recBinary.SetStream(2, binary.value);
-						binaryView.Modify(MsiViewModify.msiViewModifyInsert, recBinary);
-
-					}
-					else
-					{
-						Log.WriteLine(LogPrefix + 
-							"ERROR: Unable to open file:\n\n\t" + 
-							binary.value + "\n\n");
-
-						binaryView.Close();
-						binaryView = null;
-						return false;
-					}
-				}
-
-				binaryView.Close();
-				binaryView = null;
-			}
-			return true;
-		}
-
-		/// <summary>
-		/// Loads records for the Dialog table.
-		/// </summary>
-		/// <param name="Database">The MSI database.</param>
-		/// <param name="InstallerType">The MSI Installer type.</param>
-		/// <param name="InstallerObject">The MSI Installer object.</param>
-		/// <returns>True if successful.</returns>
-		private bool LoadDialog(Database Database, Type InstallerType, Object InstallerObject)
-		{
-			if (msi.dialogs != null)
-			{
-
-				// Open the Dialog Table
-				View dialogView = Database.OpenView("SELECT * FROM `Dialog`");
-
-				if (Verbose)
-				{
-					Log.WriteLine(LogPrefix + "Adding Dialogs:");
-				}
-	        	
-				foreach (MSIDialog dialog in msi.dialogs)
-				{
-					if (Verbose)
-					{
-						Log.WriteLine("\t" + dialog.name);
-					}
-
-					// Insert the dialog
-					Record recDialog = (Record)InstallerType.InvokeMember(
-						"CreateRecord", 
-						BindingFlags.InvokeMethod, 
-						null, InstallerObject, 
-						new object[] { 10 });
-
-					recDialog.set_StringData(1, dialog.name);
-					recDialog.set_IntegerData(2, dialog.hcenter);
-					recDialog.set_IntegerData(3, dialog.vcenter);
-					recDialog.set_IntegerData(4, dialog.width);
-					recDialog.set_IntegerData(5, dialog.height);
-					recDialog.set_IntegerData(6, dialog.attr);
-					recDialog.set_StringData(7, dialog.title);
-					recDialog.set_StringData(8, dialog.firstcontrol);
-					recDialog.set_StringData(9, dialog.defaultcontrol);
-					recDialog.set_StringData(10, dialog.cancelcontrol);
-					
-					dialogView.Modify(MsiViewModify.msiViewModifyInsert, recDialog);
-
-				}
-
-				dialogView.Close();
-				dialogView = null;
-			}
-			return true;
-		}
-
-		/// <summary>
-		/// Loads records for the Control table.
-		/// </summary>
-		/// <param name="Database">The MSI database.</param>
-		/// <param name="InstallerType">The MSI Installer type.</param>
-		/// <param name="InstallerObject">The MSI Installer object.</param>
-		/// <returns>True if successful.</returns>
-		private bool LoadControl(Database Database, Type InstallerType, Object InstallerObject)
-		{
-			if (msi.controls != null)
-			{
-
-				// Open the Control Table
-				View controlView = Database.OpenView("SELECT * FROM `Control`");
-
-				if (Verbose)
-				{
-					Log.WriteLine(LogPrefix + "Adding Dialog Controls:");
-				}
-	        	
-				foreach (MSIControl control in msi.controls)
-				{
-					if (Verbose)
-					{
-						Log.WriteLine("\t" + control.name);
-					}
-
-					// Insert the control
-					Record recControl = (Record)InstallerType.InvokeMember(
-						"CreateRecord", 
-						BindingFlags.InvokeMethod, 
-						null, InstallerObject, 
-						new object[] { 12 });
-
-					recControl.set_StringData(1, control.dialog);
-					recControl.set_StringData(2, control.name);
-					recControl.set_StringData(3, control.type);
-					recControl.set_IntegerData(4, control.x);
-					recControl.set_IntegerData(5, control.y);
-					recControl.set_IntegerData(6, control.width);
-					recControl.set_IntegerData(7, control.height);
-					recControl.set_IntegerData(8, control.attr);
-					recControl.set_StringData(9, control.property);
-					recControl.set_StringData(10, control.text);
-					recControl.set_StringData(11, control.nextcontrol);
-					recControl.set_StringData(12, control.help);
-					
-					controlView.Modify(MsiViewModify.msiViewModifyInsert, recControl);
-
-				}
-
-				controlView.Close();
-				controlView = null;
-			}
-			return true;
-		}
-
-		/// <summary>
-		/// Loads records for the ControlCondtion table.
-		/// </summary>
-		/// <param name="Database">The MSI database.</param>
-		/// <param name="InstallerType">The MSI Installer type.</param>
-		/// <param name="InstallerObject">The MSI Installer object.</param>
-		/// <returns>True if successful.</returns>
-		private bool LoadControlCondition(Database Database, Type InstallerType, Object InstallerObject)
-		{
-			if (msi.controlconditions != null)
-			{
-
-				// Open the ControlCondition Table
-				View controlConditionView = Database.OpenView("SELECT * FROM `ControlCondition`");
-
-				if (Verbose)
-				{
-					Log.WriteLine(LogPrefix + "Adding Dialog Control Conditions For:");
-				}
-	        	
-				foreach (MSIControlCondition controlCondition in msi.controlconditions)
-				{
-					if (Verbose)
-					{
-						Log.WriteLine("\t" + controlCondition.control);
-					}
-
-					// Insert the condition
-					Record recControlCondition = (Record)InstallerType.InvokeMember(
-						"CreateRecord", 
-						BindingFlags.InvokeMethod, 
-						null, InstallerObject, 
-						new object[] { 4 });
-
-					recControlCondition.set_StringData(1, controlCondition.dialog);
-					recControlCondition.set_StringData(2, controlCondition.control);
-					recControlCondition.set_StringData(3, controlCondition.action);
-					recControlCondition.set_StringData(4, controlCondition.condition);
-					
-					controlConditionView.Modify(MsiViewModify.msiViewModifyInsert, recControlCondition);
-
-				}
-
-				controlConditionView.Close();
-				controlConditionView = null;
-			}
-			return true;
-		}
-
-		/// <summary>
-		/// Loads records for the ControlEvent table.
-		/// </summary>
-		/// <param name="Database">The MSI database.</param>
-		/// <param name="InstallerType">The MSI Installer type.</param>
-		/// <param name="InstallerObject">The MSI Installer object.</param>
-		/// <returns>True if successful.</returns>
-		private bool LoadControlEvent(Database Database, Type InstallerType, Object InstallerObject)
-		{
-			if (msi.controlevents != null)
-			{
-				if (Verbose)
-				{
-					Log.WriteLine(LogPrefix + "Modifying Dialog Control Events:");
-				}
-	        	
-				foreach (MSIControlEvent controlEvent in msi.controlevents)
-				{
-					// Open the ControlEvent Table
-					View controlEventView;
-
-					if (Verbose)
-					{
-						if (controlEvent.remove)
-						{
-							Log.Write("\tRemoving");
-						}
-						else
-						{
-							Log.Write("\tAdding");
-						}
-						Log.WriteLine("\tControl: " + controlEvent.control + "\tEvent: " + controlEvent.name);
-					}
-					if (controlEvent.remove)
-					{
-						controlEventView = Database.OpenView("SELECT * FROM `ControlEvent` WHERE `Dialog_`='" + controlEvent.dialog + "' AND `Control_`='" + controlEvent.control + "' AND `Event`='" + controlEvent.name + "' AND `Argument`='" + controlEvent.argument + "' AND `Condition`='" + controlEvent.condition + "'");
-						controlEventView.Execute(null);
-						try
-						{
-							Record recControlEvent = controlEventView.Fetch();
-							controlEventView.Modify(MsiViewModify.msiViewModifyDelete, recControlEvent);						
-						}
-						catch (IOException)
-						{
-							Log.WriteLine(LogPrefix + 
-								"ERROR: Control Event not found.\n\nSELECT * FROM `ControlEvent` WHERE `Dialog_`='" + controlEvent.dialog + "' AND `Control_`='" + controlEvent.control + "' AND `Event`='" + controlEvent.name + "' AND `Argument`='" + controlEvent.argument + "' AND `Condition`='" + controlEvent.condition + "'");
-							return false;
-						}
-						finally
-						{
-							controlEventView.Close();
-							controlEventView = null;
-
-						}
-
-					}
-					else
-					{
-						controlEventView = Database.OpenView("SELECT * FROM `ControlEvent`");
-						// Insert the condition
-						Record recControlEvent = (Record)InstallerType.InvokeMember(
-							"CreateRecord", 
-							BindingFlags.InvokeMethod, 
-							null, InstallerObject, 
-							new object[] { 6 });
-
-
-						recControlEvent.set_StringData(1, controlEvent.dialog);
-						recControlEvent.set_StringData(2, controlEvent.control);
-						recControlEvent.set_StringData(3, controlEvent.name);
-						recControlEvent.set_StringData(4, controlEvent.argument);
-						recControlEvent.set_StringData(5, controlEvent.condition);
-						recControlEvent.set_IntegerData(6, controlEvent.order);
-					
-						controlEventView.Modify(MsiViewModify.msiViewModifyInsert, recControlEvent);
-						controlEventView.Close();
-						controlEventView = null;
-
-
-					}
-				}
-
-			}
-			return true;
-		}
-
-		/// <summary>
-		/// Loads records for the CustomAction table
-		/// </summary>
-		/// <param name="Database">The MSI database.</param>
-		/// <param name="InstallerType">The MSI Installer type.</param>
-		/// <param name="InstallerObject">The MSI Installer object.</param>
-		/// <returns>True if successful.</returns>
-		private bool LoadCustomAction(Database Database, Type InstallerType, Object InstallerObject)
-		{
-			// Add custom actions from Task definition
-			if (msi.customactions != null)
-			{
-				if (Verbose)
-				{
-					Log.WriteLine(LogPrefix + "Adding Custom Actions:");
-				}
-
-				View customActionView = Database.OpenView("SELECT * FROM `CustomAction`");
-
-				foreach (MSICustomAction customAction in msi.customactions)
-				{
-					if (Verbose)
-					{
-						Log.WriteLine("\t" + customAction.action);
-					}
-
-					// Insert the record into the table
-					Record recCustomAction = (Record)InstallerType.InvokeMember(
-						"CreateRecord", 
-						BindingFlags.InvokeMethod, 
-						null, InstallerObject, 
-						new object[] { 4 });
-
-					recCustomAction.set_StringData(1, customAction.action);
-					recCustomAction.set_IntegerData(2, customAction.type);
-					recCustomAction.set_StringData(3, customAction.source);
-					recCustomAction.set_StringData(4, customAction.target);
-					
-					customActionView.Modify(MsiViewModify.msiViewModifyInsert, recCustomAction);
-
-				}
-				customActionView.Close();
-				customActionView = null;
-			}
-			return true;
-		}
-
-		/// <summary>
-		/// Loads records for the InstallUISequence, InstallExecuteSequence,
-		/// AdminUISequence, and AdminExecute tables.
-		/// </summary>
-		/// <param name="Database">The MSI database.</param>
-		/// <param name="InstallerType">The MSI Installer type.</param>
-		/// <param name="InstallerObject">The MSI Installer object.</param>
-		/// <returns>True if successful.</returns>
-		private bool LoadSequence(Database Database, Type InstallerType, Object InstallerObject)
-		{
-			// Add custom actions from Task definition
-			if (msi.sequences != null)
-			{
-				if (Verbose)
-				{
-					Log.WriteLine(LogPrefix + "Adding Install/Admin Sequences:");
-				}
-
-				// Open the sequence tables
-				View installExecuteView = Database.OpenView("SELECT * FROM `InstallExecuteSequence`");
-				View installUIView = Database.OpenView("SELECT * FROM `InstallUISequence`");
-				View adminExecuteView = Database.OpenView("SELECT * FROM `AdminExecuteSequence`");
-				View adminUIView = Database.OpenView("SELECT * FROM `AdminUISequence`");
-				View advtExecuteView = Database.OpenView("SELECT * FROM `AdvtExecuteSequence`");
-
-				// Add binary data from Task definition
-				foreach (MSISequence sequence in msi.sequences)
-				{
-					if (Verbose)
-					{
-						Log.WriteLine("\t" + sequence.action + " to the " + sequence.type.ToString() + "sequence table.");
-					}
-
-					// Insert the record to the respective table
-					Record recSequence = (Record)InstallerType.InvokeMember(
-						"CreateRecord", 
-						BindingFlags.InvokeMethod, 
-						null, InstallerObject, 
-						new object[] { 3 });
-
-					recSequence.set_StringData(1, sequence.action);
-					recSequence.set_StringData(2, sequence.condition);
-					recSequence.set_IntegerData(3, sequence.value);
-					switch(sequence.type.ToString())
-					{
-						case "installexecute":
-							installExecuteView.Modify(MsiViewModify.msiViewModifyInsert, recSequence);
-							break;
-						case "installui":
-							installUIView.Modify(MsiViewModify.msiViewModifyInsert, recSequence);
-							break;
-						case "adminexecute":
-							adminExecuteView.Modify(MsiViewModify.msiViewModifyInsert, recSequence);
-							break;
-						case "adminui":
-							adminUIView.Modify(MsiViewModify.msiViewModifyInsert, recSequence);
-							break;
-						case "advtexecute":
-							advtExecuteView.Modify(MsiViewModify.msiViewModifyInsert, recSequence);
-							break;
-
-					}
-				}
-				installExecuteView.Close();
-				installUIView.Close();
-				adminExecuteView.Close();
-				adminUIView.Close();
-				advtExecuteView.Close();
-
-				installExecuteView = null;
-				installUIView = null;
-				adminExecuteView = null;
-				adminUIView = null;
-				advtExecuteView = null;
-			}
-			return true;
-		}
-
-		/// <summary>
-		/// Loads records for the _AppMappings table.
-		/// </summary>
-		/// <param name="Database">The MSI database.</param>
-		/// <param name="InstallerType">The MSI Installer type.</param>
-		/// <param name="InstallerObject">The MSI Installer object.</param>
-		/// <returns>True if successful.</returns>
-		private bool LoadAppMappings(Database Database, Type InstallerType, Object InstallerObject)
-		{
-			if (msi.appmappings != null)
-			{
-				if (Verbose)
-				{
-					Log.WriteLine(LogPrefix + "Adding Application Mappings:");
-				}
-
-				View appmapView = Database.OpenView("SELECT * FROM `_AppMappings`");
-
-				foreach (MSIAppMapping appmap in msi.appmappings)
-				{
-					if (Verbose)
-					{
-						Log.WriteLine("\t" + appmap.directory);
-					}
-
-					// Insert the record into the table
-					Record recAppMap = (Record)InstallerType.InvokeMember(
-						"CreateRecord", 
-						BindingFlags.InvokeMethod, 
-						null, InstallerObject, 
-						new object[] { 4 });
-
-					recAppMap.set_StringData(1, appmap.directory);
-					recAppMap.set_StringData(2, appmap.extension);
-					recAppMap.set_StringData(3, appmap.exepath);
-					recAppMap.set_StringData(4, appmap.verbs);
-					
-					appmapView.Modify(MsiViewModify.msiViewModifyInsert, recAppMap);
-
-				}
-				appmapView.Close();
-				appmapView = null;
-			}
-			return true;
-		}
-
-		/// <summary>
-		/// Loads records for the _UrlToDir table.
-		/// </summary>
-		/// <param name="Database">The MSI database.</param>
-		/// <param name="InstallerType">The MSI Installer type.</param>
-		/// <param name="InstallerObject">The MSI Installer object.</param>
-		/// <returns>True if successful.</returns>
-		private bool LoadUrlProperties(Database Database, Type InstallerType, Object InstallerObject)
-		{
-			if (msi.urlproperties != null)
-			{
-				if (Verbose)
-				{
-					Log.WriteLine(LogPrefix + "Adding URL Properties:");
-				}
-
-				View urlpropView = Database.OpenView("SELECT * FROM `_UrlToDir`");
-
-				foreach (MSIURLProperty urlprop in msi.urlproperties)
-				{
-					if (Verbose)
-					{
-						Log.WriteLine("\t" + urlprop.name);
-					}
-
-					// Insert the record into the table
-					Record recURLProp = (Record)InstallerType.InvokeMember(
-						"CreateRecord", 
-						BindingFlags.InvokeMethod, 
-						null, InstallerObject, 
-						new object[] { 2 });
-
-					recURLProp.set_StringData(1, urlprop.name);
-					recURLProp.set_StringData(2, urlprop.property);
-					
-					urlpropView.Modify(MsiViewModify.msiViewModifyInsert, recURLProp);
-
-				}
-				urlpropView.Close();
-				urlpropView = null;
-			}
-			return true;
-		}
-
-		/// <summary>
-		/// Loads records for the _VDirToUrl table.
-		/// </summary>
-		/// <param name="Database">The MSI database.</param>
-		/// <param name="InstallerType">The MSI Installer type.</param>
-		/// <param name="InstallerObject">The MSI Installer object.</param>
-		/// <returns>True if successful.</returns>
-		private bool LoadVDirProperties(Database Database, Type InstallerType, Object InstallerObject)
-		{
-			if (msi.vdirproperties != null)
-			{
-				if (Verbose)
-				{
-					Log.WriteLine(LogPrefix + "Adding VDir Properties:");
-				}
-
-				View vdirpropView = Database.OpenView("SELECT * FROM `_VDirToUrl`");
-
-				foreach (MSIVDirProperty vdirprop in msi.vdirproperties)
-				{
-					if (Verbose)
-					{
-						Log.WriteLine("\t" + vdirprop.name);
-					}
-
-					// Insert the record into the table
-					Record recVDirProp = (Record)InstallerType.InvokeMember(
-						"CreateRecord", 
-						BindingFlags.InvokeMethod, 
-						null, InstallerObject, 
-						new object[] { 3 });
-
-					recVDirProp.set_StringData(1, vdirprop.name);
-					recVDirProp.set_StringData(2, vdirprop.portproperty);
-					recVDirProp.set_StringData(3, vdirprop.urlproperty);
-
-					vdirpropView.Modify(MsiViewModify.msiViewModifyInsert, recVDirProp);
-
-				}
-				vdirpropView.Close();
-				vdirpropView = null;
-			}
-			return true;
-		}
-
-		/// <summary>
-		/// Loads records for the _AppRootCreate table.
-		/// </summary>
-		/// <param name="Database">The MSI database.</param>
-		/// <param name="InstallerType">The MSI Installer type.</param>
-		/// <param name="InstallerObject">The MSI Installer object.</param>
-		/// <returns>True if successful.</returns>
-		private bool LoadAppRootCreate(Database Database, Type InstallerType, Object InstallerObject)
-		{
-			if (msi.approots != null)
-			{
-				if (Verbose)
-				{
-					Log.WriteLine(LogPrefix + "Adding Application Roots:");
-				}
-
-				View approotView = Database.OpenView("SELECT * FROM `_AppRootCreate`");
-
-				foreach (MSIAppRoot appRoot in msi.approots)
-				{
-					if (Verbose)
-					{
-						Log.WriteLine("\t" + appRoot.urlproperty);
-					}
-
-					// Insert the record into the table
-					Record recAppRootProp = (Record)InstallerType.InvokeMember(
-						"CreateRecord", 
-						BindingFlags.InvokeMethod, 
-						null, InstallerObject, 
-						new object[] { 3 });
-
-					recAppRootProp.set_StringData(1, appRoot.component);
-					recAppRootProp.set_StringData(2, appRoot.urlproperty);
-					recAppRootProp.set_IntegerData(3, appRoot.inprocflag);
-
-					approotView.Modify(MsiViewModify.msiViewModifyInsert, recAppRootProp);
-
-				}
-				approotView.Close();
-				approotView = null;
-			}
-			return true;
-		}
-
-		/// <summary>
-		/// Loads records for the _IISProperties table.
-		/// </summary>
-		/// <param name="Database">The MSI database.</param>
-		/// <param name="InstallerType">The MSI Installer type.</param>
-		/// <param name="InstallerObject">The MSI Installer object.</param>
-		/// <returns>True if successful.</returns>
-		private bool LoadIISProperties(Database Database, Type InstallerType, Object InstallerObject)
-		{
-			if (msi.iisproperties != null)
-			{
-				if (Verbose)
-				{
-					Log.WriteLine(LogPrefix + "Adding IIS Directory Properties:");
-				}
-
-				View iispropView = Database.OpenView("SELECT * FROM `_IISProperties`");
-
-
-				// Add binary data from Task definition
-				foreach (MSIIISProperty iisprop in msi.iisproperties)
-				{
-					if (Verbose)
-					{
-						Log.WriteLine("\t" + iisprop.directory);
-					}
-
-					// Insert the record into the table
-					Record recIISProp = (Record)InstallerType.InvokeMember(
-						"CreateRecord", 
-						BindingFlags.InvokeMethod, 
-						null, InstallerObject, 
-						new object[] { 3 });
-
-					recIISProp.set_StringData(1, iisprop.directory);
-					recIISProp.set_IntegerData(2, iisprop.attr);
-					recIISProp.set_StringData(3, iisprop.defaultdoc);
-					
-					iispropView.Modify(MsiViewModify.msiViewModifyInsert, recIISProp);
-
-				}
-				iispropView.Close();
-				iispropView = null;
-			}
-			return true;
-		}
-
-
-
-
-
-		/// <summary>
-		/// Checks to see if the specified table exists in the database
-		/// already.
-		/// </summary>
-		/// <param name="Database">The MSI database.</param>
-		/// <param name="TableName">Name of the table to check existance.</param>
-		/// <returns>True if successful.</returns>
-		private bool VerifyTableExistance(Database Database, string TableName)
-		{
-			View tableView = Database.OpenView("SELECT * FROM `_Tables` WHERE `Name`='" + TableName + "'");
-			tableView.Execute(null);
-			Record tableRecord = tableView.Fetch();
-
-			if (tableRecord != null)
-			{
-				tableView.Close();
-				tableView = null;
-				return true;
-			}
-			else
-			{
-				tableView.Close();
-				tableView = null;
-				return false;
-			}
-
-		}
-
-            /// <summary>
-            /// Enumerates the registry to see if an assembly has been registered 
-            /// for COM interop, and if so adds these registry keys to the Registry 
-            /// table, ProgIds to the ProgId table, classes to the Classes table, 
-            /// and a TypeLib to the TypeLib table.
-            /// </summary>
-            /// <param name="FileName">The Assembly filename.</param>
-            /// <param name="FileAssembly">The Assembly to check.</param>
-            /// <param name="InstallerType">The MSI Installer type.</param>
-            /// <param name="InstallerObject">The MSI Installer object.</param>
-            /// <param name="ComponentName">The name of the containing component.</param>
-            /// <param name="AssemblyComponentName">The name of the containing component's assembly GUID.</param>
-            /// <param name="ClassView">View containing the Class table.</param>
-            /// <param name="ProgIdView">View containing the ProgId table.</param>
-            /// <returns>True if successful.</returns>
-            private bool CheckAssemblyForCOMInterop(string FileName, Assembly FileAssembly, Type InstallerType, 
-                object InstallerObject, string ComponentName, string AssemblyComponentName, View ClassView, View ProgIdView)
-            {
-                AssemblyName asmName = FileAssembly.GetName();
-                string featureName = (string)featureComponents[ComponentName];
-                string typeLibName = Path.GetFileNameWithoutExtension(FileName) + ".tlb";
-                string typeLibFileName = Path.Combine(Path.GetDirectoryName(FileName), typeLibName);
-
-                bool foundTypeLib = false;
-
-                // Register the TypeLibrary
-                RegistryKey typeLibsKey = Registry.ClassesRoot.OpenSubKey("Typelib", false);
-
-                string[] typeLibs = typeLibsKey.GetSubKeyNames();
-                foreach (string typeLib in typeLibs)
-                {
-                    RegistryKey typeLibKey = typeLibsKey.OpenSubKey(typeLib, false);
-                    if (typeLibKey != null)
-                    {
-                        string[] typeLibSubKeys = typeLibKey.GetSubKeyNames();
-                        foreach (string typeLibSubKey in typeLibSubKeys)
-                        {
-                            RegistryKey win32Key = typeLibKey.OpenSubKey(typeLibSubKey + @"\0\win32");
-                            if (win32Key != null)
-                            {
-                                string curTypeLibFileName = (string)win32Key.GetValue(null, null);
-                                if (curTypeLibFileName != null)
-                                {
-                                    if (curTypeLibFileName == typeLibFileName)
-                                    {
-                                        Log.WriteLine(LogPrefix + "Configuring " + typeLibName + " for COM Interop...");
-
-                                        Record recTypeLib = (Record)InstallerType.InvokeMember(
-                                            "CreateRecord", 
-                                            BindingFlags.InvokeMethod, 
-                                            null, InstallerObject, 
-                                            new object[] { 8 });
-
-                                        TypeLibRecord tlbRecord = new TypeLibRecord(
-                                            typeLib, typeLibFileName, 
-                                            asmName, featureName, AssemblyComponentName);
-
-                                        typeLibRecords.Add(tlbRecord);
-
-                                        foundTypeLib = true;
-                                        win32Key.Close();
-                                        break;
-                                    }
-                                }
-                                win32Key.Close();
-                            }
-                        }
-                        typeLibKey.Close();
-
-                        if (foundTypeLib)
+                        case "file":
                         {
                             break;
                         }
                     }
                 }
-                typeLibsKey.Close();
+            }
+            return true;
+        }
 
-                // Register CLSID(s)
-                RegistryKey clsidsKey = Registry.ClassesRoot.OpenSubKey("CLSID", false);
+        /// <summary>
+        /// Loads records for the LaunchCondition table
+        /// </summary>
+        /// <param name="Database">The MSI database.</param>
+        /// <param name="InstallerType">The MSI Installer type.</param>
+        /// <param name="InstallerObject">The MSI Installer object.</param>
+        /// <returns>True if successful.</returns>
+        private bool LoadLaunchCondition(Database Database, Type InstallerType, 
+            Object InstallerObject)
+        {
+            // Add properties from Task definition
+            if (msi.launchconditions != null)
+            {
+                if (Verbose)
+                {
+                    Log.WriteLine(LogPrefix + "Adding Launch Conditions:");
+                }
                 
-                string[] clsids = clsidsKey.GetSubKeyNames();
-                foreach (string clsid in clsids)
+                // Open the Launch Condition Table
+                View lcView = Database.OpenView("SELECT * FROM `LaunchCondition`");
+
+                // Add binary data from Task definition
+                foreach (MSILaunchCondition launchCondition in msi.launchconditions)
                 {
-                    RegistryKey clsidKey = clsidsKey.OpenSubKey(clsid, false);
-                    if (clsidKey != null)
+                    if (Verbose)
                     {
-                        RegistryKey inprocKey = clsidKey.OpenSubKey("InprocServer32", false);
-                        if (inprocKey != null)
+                        Log.WriteLine("\t" + launchCondition.name);
+                    }
+
+                    // Insert the icon data
+                    Record recLC = (Record)InstallerType.InvokeMember(
+                        "CreateRecord", 
+                        BindingFlags.InvokeMethod, 
+                        null, InstallerObject, 
+                        new object[] { 2 });
+
+                    recLC.set_StringData(1, launchCondition.condition);
+                    recLC.set_StringData(2, launchCondition.description);
+                    lcView.Modify(MsiViewModify.msiViewModifyInsert, recLC);
+
+                }
+
+                lcView.Close();
+                lcView = null;
+            }
+            return true;
+        }
+
+
+        /// <summary>
+        /// Loads records for the Icon table.  
+        /// </summary>
+        /// <param name="Database">The MSI database.</param>
+        /// <param name="InstallerType">The MSI Installer type.</param>
+        /// <param name="InstallerObject">The MSI Installer object.</param>
+        /// <returns>True if successful.</returns>
+        private bool LoadIcon(Database Database, Type InstallerType, 
+            Object InstallerObject)
+        {
+            if (msi.icons != null)
+            {
+
+                // Open the Icon Table
+                View iconView = Database.OpenView("SELECT * FROM `Icon`");
+
+                if (Verbose)
+                {
+                    Log.WriteLine(LogPrefix + "Adding Icon Data:");
+                }
+                
+                // Add binary data from Task definition
+                foreach (MSIIcon icon in msi.icons)
+                {
+                    if (Verbose)
+                    {
+                        Log.WriteLine("\t" + Path.Combine(Project.BaseDirectory, icon.value));
+                    }
+
+                    if (File.Exists(Path.Combine(Project.BaseDirectory, icon.value)))
+                    {
+                        // Insert the icon data
+                        Record recIcon = (Record)InstallerType.InvokeMember(
+                            "CreateRecord", 
+                            BindingFlags.InvokeMethod, 
+                            null, InstallerObject, 
+                            new object[] { 2 });
+
+                        recIcon.set_StringData(1, icon.name);
+                        recIcon.SetStream(2, Path.Combine(Project.BaseDirectory, icon.value));
+                        iconView.Modify(MsiViewModify.msiViewModifyInsert, recIcon);
+
+                    }
+                    else
+                    {
+                        Log.WriteLine(LogPrefix + 
+                            "ERROR: Unable to open file:\n\n\t" + 
+                            Path.Combine(Project.BaseDirectory, icon.value) + "\n\n");
+
+                        iconView.Close();
+                        iconView = null;
+                        return false;
+                    }
+                }
+
+                iconView.Close();
+                iconView = null;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Loads records for the Shortcut table.  
+        /// </summary>
+        /// <param name="Database">The MSI database.</param>
+        /// <param name="InstallerType">The MSI Installer type.</param>
+        /// <param name="InstallerObject">The MSI Installer object.</param>
+        /// <returns>True if successful.</returns>
+        private bool LoadShortcut(Database Database, Type InstallerType, 
+            Object InstallerObject)
+        {
+            // Add properties from Task definition
+            if (msi.shortcuts != null)
+            {
+                if (Verbose)
+                {
+                    Log.WriteLine(LogPrefix + "Adding Shortcuts:");
+                }
+
+                View shortcutView = Database.OpenView("SELECT * FROM `Shortcut`");
+
+                foreach (MSIShortcut shortcut in msi.shortcuts)
+                {
+                    if (Verbose)
+                    {
+                        Log.WriteLine("\t" + shortcut.name);
+                    }
+
+                    // Insert the record into the table
+                    Record shortcutRec = (Record)InstallerType.InvokeMember(
+                        "CreateRecord", 
+                        BindingFlags.InvokeMethod, 
+                        null, InstallerObject, 
+                        new object[] { 12 });
+
+                    shortcutRec.set_StringData(1, shortcut.name);
+                    shortcutRec.set_StringData(2, shortcut.directory);
+                    shortcutRec.set_StringData(3, shortcut.filename);
+                    shortcutRec.set_StringData(4, shortcut.component);
+                    shortcutRec.set_StringData(5, shortcut.target);
+                    shortcutRec.set_StringData(6, shortcut.arguments);
+                    shortcutRec.set_StringData(7, shortcut.description);
+                    shortcutRec.set_StringData(8, shortcut.hotkey);
+                    shortcutRec.set_StringData(9, shortcut.icon);
+                    shortcutRec.set_IntegerData(10, shortcut.iconindex);
+                    shortcutRec.set_IntegerData(11, shortcut.showcmd);
+                    shortcutRec.set_StringData(12, shortcut.wkdir);
+
+                    shortcutView.Modify(MsiViewModify.msiViewModifyInsert, shortcutRec);
+
+                }
+                shortcutView.Close();
+                shortcutView = null;
+            }
+            return true;
+
+        }
+
+        /// <summary>
+        /// Adds custom table(s) to the msi database
+        /// </summary>
+        /// <param name="Database">The MSI database.</param>
+        /// <param name="InstallerType">The MSI Installer type.</param>
+        /// <param name="InstallerObject">The MSI Installer object.</param>
+        /// <returns>True if successful.</returns>
+        private bool AddTables(Database Database, Type InstallerType, 
+            Object InstallerObject)
+        {
+            // Add properties from Task definition
+            if (msi.tables != null)
+            {
+                if (Verbose)
+                {
+                    Log.WriteLine(LogPrefix + "Adding Tables:");
+                }
+
+                foreach (MSITable table in msi.tables)
+                {
+                    if (Verbose)
+                    {
+                        Log.WriteLine("\t" + table.name);
+                    }
+                                    
+                    bool tableExists = true;
+                    try
+                    {
+                        View tableView = Database.OpenView("SELECT * FROM `" + table.name + "`");
+                    
+                        if (Verbose)
                         {
-                            string clsidAsmName = (string)inprocKey.GetValue("Assembly", null);
-                            if (clsidAsmName != null)
-                            {
-                                if (asmName.FullName == clsidAsmName)
-                                {
-                                    // Register ProgId(s)
-                                    RegistryKey progIdKey = clsidKey.OpenSubKey("ProgId", false);
-                                    if (progIdKey != null)
-                                    {
-                                        string progId = (string)progIdKey.GetValue(null, null);
-                                        string className = (string)clsidKey.GetValue(null, null);
-
-                                        if (progId != null)
-                                        {
-                                            Record recProgId = (Record)InstallerType.InvokeMember(
-                                                "CreateRecord", 
-                                                BindingFlags.InvokeMethod, 
-                                                null, InstallerObject, 
-                                                new object[] { 6 });
-
-                                            recProgId.set_StringData(1, progId);
-                                            recProgId.set_StringData(3, clsid);
-                                            recProgId.set_StringData(4, className);
-                                            recProgId.set_IntegerData(6, 0);
-                                            ProgIdView.Modify(MsiViewModify.msiViewModifyInsert, recProgId);
-
-                                            Record recClass = (Record)InstallerType.InvokeMember(
-                                                "CreateRecord", 
-                                                BindingFlags.InvokeMethod, 
-                                                null, InstallerObject, 
-                                                new object[] { 13 });
-
-                                            recClass.set_StringData(1, clsid);
-                                            recClass.set_StringData(2, "InprocServer32");
-                                            recClass.set_StringData(3, AssemblyComponentName);
-                                            recClass.set_StringData(4, progId);
-                                            recClass.set_StringData(5, className);
-                                            //recClass.set_StringData(6, appId);
-                                            recClass.set_IntegerData(9, 0);
-                                            recClass.set_StringData(12, featureName);
-                                            recClass.set_IntegerData(13, 0);
-                                            ClassView.Modify(MsiViewModify.msiViewModifyInsert, recClass);
-                                        }
-                                        progIdKey.Close();
-										progIdKey = null;
-                                    }
-                                }
-                            }
-                            inprocKey.Close();
+                            Log.WriteLine("\t\tTable exists.. skipping");
                         }
-                        clsidKey.Close();
+                        tableExists = true;
+                        tableView.Close();
+                        tableView = null;
                     }
-                }
-                clsidsKey.Close();
-
-                return true;
-            }
-
-            private string FindParent(string DirectoryName)
-            {
-                foreach (MSIDirectory directory in msi.directories)
-                {
-                    string parent = FindParent(DirectoryName, directory);
-                    if (parent != null)
+                    catch (Exception)
                     {
-                        return parent;
+                        tableExists = false;
+                    }
+
+                    if (!tableExists)
+                    {
+                        if (Verbose)
+                        {
+                            Log.Write("\t\tAdding table structure...");
+                        }
+
+                        View validationView = Database.OpenView("SELECT * FROM `_Validation`");
+
+                        string tableStructureColumns = "";
+                        string tableStructureColumnTypes = "";
+                        string tableStructureKeys = table.name;
+                        bool firstColumn = true;
+
+                        ArrayList columnList = new ArrayList();
+
+                        foreach (MSITableColumn column in table.columns)
+                        {
+                            // Add this column to the column list
+                            MSIRowColumnData currentColumn = new MSIRowColumnData();
+
+                            currentColumn.name = column.name;
+                            currentColumn.id = columnList.Count;
+
+                            Record recValidation = (Record)InstallerType.InvokeMember(
+                                "CreateRecord", 
+                                BindingFlags.InvokeMethod, 
+                                null, InstallerObject, 
+                                new object[] { 10 });
+
+                            recValidation.set_StringData(1, table.name);
+                            recValidation.set_StringData(2, column.name);
+                            if (column.nullable)
+                                recValidation.set_StringData(3, "Y");
+                            else
+                                recValidation.set_StringData(3, "N");
+                            recValidation.set_StringData(4, column.minvalue);
+                            recValidation.set_StringData(5, column.maxvalue);
+                            recValidation.set_StringData(6, column.keytable);
+                            recValidation.set_StringData(7, column.keycolumn);
+
+
+                            if (!firstColumn)
+                            {
+                                tableStructureColumns += "\t";
+                                tableStructureColumnTypes += "\t";
+                            }
+                            else
+                                firstColumn = false;
+
+                            tableStructureColumns += column.name;
+
+                            switch(column.category.ToString())
+                            {
+                                case "Text":
+                                    if (column.type == null || column.type == "")
+                                        tableStructureColumnTypes += "s0";
+                                    recValidation.set_StringData(8, "Text");
+                                    currentColumn.type = "string";
+                                    break;
+                                case "UpperCase":
+                                    if (column.type == null || column.type == "")
+                                        tableStructureColumnTypes += "s72";
+                                    recValidation.set_StringData(8, "UpperCase");
+                                    currentColumn.type = "string";
+                                    break;
+                                case "LowerCase":
+                                    if (column.type == null || column.type == "")
+                                        tableStructureColumnTypes += "s72";
+                                    recValidation.set_StringData(8, "LowerCase");
+                                    currentColumn.type = "string";
+                                    break;
+                                case "Integer":
+                                    if (column.type == null || column.type == "")
+                                        tableStructureColumnTypes += "i2";
+                                    recValidation.set_StringData(8, "Integer");
+                                    currentColumn.type = "int";
+                                    break;
+                                case "DoubleInteger":
+                                    if (column.type == null || column.type == "")
+                                        tableStructureColumnTypes += "i4";
+                                    recValidation.set_StringData(8, "DoubleInteger");
+                                    currentColumn.type = "int";
+                                    break;
+                                case "Time/Date":
+                                    if (column.type == null || column.type == "")
+                                        tableStructureColumnTypes += "i4";
+                                    recValidation.set_StringData(8, "Time/Date");
+                                    currentColumn.type = "int";
+                                    break;
+                                case "Identifier":
+                                    if (column.type == null || column.type == "")
+                                        tableStructureColumnTypes += "s72";
+                                    recValidation.set_StringData(8, "Identifier");
+                                    currentColumn.type = "string";
+                                    break;
+                                case "Property":
+                                    if (column.type == null || column.type == "")
+                                        tableStructureColumnTypes += "s72";
+                                    recValidation.set_StringData(8, "Property");
+                                    currentColumn.type = "string";
+                                    break;
+                                case "Filename":
+                                    if (column.type == null || column.type == "")
+                                        tableStructureColumnTypes += "s255";
+                                    recValidation.set_StringData(8, "Filename");
+                                    currentColumn.type = "string";
+                                    break;
+                                case "WildCardFilename":
+                                    if (column.type == null || column.type == "")
+                                        tableStructureColumnTypes += "L0";
+                                    recValidation.set_StringData(8, "WildCardFilename");
+                                    currentColumn.type = "string";
+                                    break;
+                                case "Path":
+                                    if (column.type == null || column.type == "")
+                                        tableStructureColumnTypes += "s255";
+                                    recValidation.set_StringData(8, "Path");
+                                    currentColumn.type = "string";
+                                    break;
+                                case "Paths":
+                                    if (column.type == null || column.type == "")
+                                        tableStructureColumnTypes += "s255";
+                                    recValidation.set_StringData(8, "Paths");
+                                    currentColumn.type = "string";
+                                    break;
+                                case "AnyPath":
+                                    if (column.type == null || column.type == "")
+                                        tableStructureColumnTypes += "s255";
+                                    recValidation.set_StringData(8, "AnyPath");
+                                    currentColumn.type = "string";
+                                    break;
+                                case "DefaultDir":
+                                    if (column.type == null || column.type == "")
+                                        tableStructureColumnTypes += "l255";
+                                    recValidation.set_StringData(8, "DefaultDir");
+                                    currentColumn.type = "string";
+                                    break;
+                                case "RegPath":
+                                    if (column.type == null || column.type == "")
+                                        tableStructureColumnTypes += "l255";
+                                    recValidation.set_StringData(8, "RegPath");
+                                    currentColumn.type = "string";
+                                    break;
+                                case "Formatted":
+                                    if (column.type == null || column.type == "")
+                                        tableStructureColumnTypes += "s255";
+                                    recValidation.set_StringData(8, "Formatted");
+                                    currentColumn.type = "string";
+                                    break;
+                                case "Template":
+                                    if (column.type == null || column.type == "")
+                                        tableStructureColumnTypes += "L0";
+                                    recValidation.set_StringData(8, "Template");
+                                    currentColumn.type = "string";
+                                    break;
+                                case "Condition":
+                                    if (column.type == null || column.type == "")
+                                        tableStructureColumnTypes += "s255";
+                                    recValidation.set_StringData(8, "Condition");
+                                    currentColumn.type = "string";
+                                    break;
+                                case "GUID":
+                                    if (column.type == null || column.type == "")
+                                        tableStructureColumnTypes += "s38";
+                                    recValidation.set_StringData(8, "GUID");
+                                    currentColumn.type = "string";
+                                    break;
+                                case "Version":
+                                    if (column.type == null || column.type == "")
+                                        tableStructureColumnTypes += "s32";
+                                    recValidation.set_StringData(8, "Version");
+                                    currentColumn.type = "string";
+                                    break;
+                                case "Language":
+                                    if (column.type == null || column.type == "")
+                                        tableStructureColumnTypes += "s255";
+                                    recValidation.set_StringData(8, "Language");
+                                    currentColumn.type = "string";
+                                    break;
+                                case "Binary":
+                                    if (column.type == null || column.type == "")
+                                        tableStructureColumnTypes += "v0";
+                                    recValidation.set_StringData(8, "Binary");
+                                    currentColumn.type = "binary";
+                                    break;
+                                case "CustomSource":
+                                    if (column.type == null || column.type == "")
+                                        tableStructureColumnTypes += "s72";
+                                    recValidation.set_StringData(8, "CustomSource");
+                                    currentColumn.type = "string";
+                                    break;
+                                case "Cabinet":
+                                    if (column.type == null || column.type == "")
+                                        tableStructureColumnTypes += "S255";
+                                    recValidation.set_StringData(8, "Cabinet");
+                                    currentColumn.type = "string";
+                                    break;
+                                case "Shortcut":
+                                    if (column.type == null || column.type == "")
+                                        tableStructureColumnTypes += "s72";
+                                    recValidation.set_StringData(8, "Shortcut");
+                                    currentColumn.type = "string";
+                                    break;
+                                default:
+                                    if (column.type == null || column.type == "")
+                                    {
+                                        if (Verbose)
+                                        {
+                                            Log.WriteLine(" ");
+                                            Log.WriteLine(LogPrefix + "Must specify a valid category or type.  Defaulting to category type: s0");
+                                        }
+                                        tableStructureColumnTypes += "s0";
+                                        currentColumn.type = "string";
+                                    }
+                                    break;
+                            }
+                            if (column.type != null)
+                            {
+                                tableStructureColumnTypes += column.type;
+                                if (column.type.ToString().StartsWith("i"))
+                                    currentColumn.type = "int";
+                                else if(column.type.ToString().StartsWith("v"))
+                                    currentColumn.type = "binary";
+                                else
+                                    currentColumn.type = "string";
+                            }
+
+                            recValidation.set_StringData(9, column.set);
+                            recValidation.set_StringData(10, column.description);
+
+                            if (column.key)
+                                tableStructureKeys += "\t" + column.name;                            
+
+                            validationView.Modify(MsiViewModify.msiViewModifyInsert, recValidation);
+                    
+                            columnList.Add(currentColumn);
+
+                        }
+
+                        // Create temp file.  Dump table structure contents into the file
+                        // Then import the file.  
+                        string tableStructureContents = tableStructureColumns + "\n" + tableStructureColumnTypes + "\n" + tableStructureKeys + "\n";
+                        string tempFileName = "85E99F65_1B01_4add_8835_EB2C9DA4E8BF.idt";
+                        string fullTempFileName = Path.Combine(Path.Combine(Project.BaseDirectory, msi.sourcedir), tempFileName);
+                        FileStream tableStream = null;
+                        try 
+                        {                                    
+                            tableStream = File.Create(fullTempFileName);
+                            StreamWriter writer = new StreamWriter(tableStream);
+                            writer.Write(tableStructureContents);
+                            writer.Flush();
+                        }
+                        finally 
+                        {
+                            tableStream.Close();
+                        }
+
+                        validationView.Close();
+                        validationView = null;
+
+                        try
+                        {
+                            Database.Import(Path.Combine(Project.BaseDirectory, msi.sourcedir), tempFileName);
+                        }
+                        catch (Exception ae)
+                        {
+                            Log.WriteLine(LogPrefix + "ERROR: Temporary table file is not valid:\n" + 
+                                ae.GetType().FullName + " thrown:\n" + 
+                                ae.Message + "\n" + ae.StackTrace);
+                        }
+                        File.Delete(fullTempFileName);
+
+                        if (Verbose)
+                        {
+                            Log.WriteLine("Done");
+                        }
+
+                        if (table.rows != null)
+                            AddTableData(Database, InstallerType, InstallerObject, table.name, table, columnList);
+
                     }
                 }
-                return null;
+            }
+            return true;
+
+        }
+
+
+        /// <summary>
+        /// Adds table data to the msi database table structure
+        /// </summary>
+        /// <param name="Database">The MSI database.</param>
+        /// <param name="InstallerType">The MSI Installer type.</param>
+        /// <param name="InstallerObject">The MSI Installer object.</param>
+        /// <param name="currentTable">The current table name</param>
+        /// <param name="table">Xml node representing the current table</param>
+        /// <param name="columnList">List of column objects for the current table (Containing: column name, id, type).</param>
+        /// <returns>True if successful.</returns>
+        private bool AddTableData(Database Database, Type InstallerType, 
+            Object InstallerObject, string currentTable, MSITable table, ArrayList columnList)
+        {
+
+            if (Verbose)
+            {
+                Log.Write("\t\tAdding table data...");
+            }
+            View tableView = Database.OpenView("SELECT * FROM `" + currentTable + "`");
+            
+            foreach (MSITableRow row in table.rows)
+            {
+                Record newRec = (Record)InstallerType.InvokeMember(
+                    "CreateRecord", 
+                    BindingFlags.InvokeMethod, 
+                    null, InstallerObject, 
+                    new object[] { columnList.Count });                    
+                try
+                {
+                    foreach(MSITableRowColumnData columnData in row.columns)
+                    {
+
+                        // Create the record and add it
+                        foreach (MSIRowColumnData columnInfo in columnList)
+                        {
+                            if (columnInfo.name == columnData.name)
+                            {
+                                if (columnInfo.type == "int")
+                                {
+                                    newRec.set_IntegerData((columnInfo.id + 1), Convert.ToInt32(columnData.value));
+                                }
+                                else if (columnInfo.type == "binary")
+                                {
+                                    newRec.SetStream((columnInfo.id + 1), columnData.value);
+                                }
+                                else
+                                {
+                                    newRec.set_StringData((columnInfo.id + 1), columnData.value);
+                                }
+                                break;
+                            }
+                        }
+                    }                
+                    tableView.Modify(MsiViewModify.msiViewModifyInsert, newRec);
+                }
+                catch (Exception)
+                {
+                    Log.WriteLine(LogPrefix + "Incorrect row data format.");
+                }
+            }
+            tableView.Close();
+            tableView = null;                    
+            
+            if (Verbose)
+            {
+                Log.WriteLine("Done");
+            }
+            return true;
+        }
+
+
+        /// <summary>
+        /// Sets the sequence number of files to match their 
+        /// storage order in the cabinet file, after some 
+        /// files have had their filenames changed to go in 
+        /// their own component.
+        /// </summary>
+        /// <param name="Database">The MSI database.</param>
+        /// <param name="LastSequence">The last file's sequence number.</param>
+        /// <returns>True if successful</returns>
+        private bool ReorderFiles(Database Database, ref int LastSequence)
+        {
+            string curPath = Path.Combine(Project.BaseDirectory, msi.sourcedir);
+            string curTempPath = Path.Combine(curPath, "Temp");
+
+            try
+            {
+                string[] curFileNames = Directory.GetFiles(curTempPath, "*.*");
+                LastSequence = 1;
+
+                foreach (string curDirFileName in curFileNames)
+                {
+                    View curFileView = Database.OpenView(
+                        "SELECT * FROM `File` WHERE `File`='" + 
+                        Path.GetFileName(curDirFileName) + "'");
+
+                    if (curFileView != null)
+                    {
+                        curFileView.Execute(null);
+                        Record recCurFile = curFileView.Fetch();
+
+                        if (recCurFile != null)
+                        {
+                            recCurFile.set_StringData(8, LastSequence.ToString());
+                            curFileView.Modify(MsiViewModify.msiViewModifyUpdate, recCurFile);
+
+                            LastSequence++;
+                        }
+                        else
+                        {
+                            Log.WriteLine(LogPrefix + "File " + 
+                                Path.GetFileName(curDirFileName) + 
+                                " not found during reordering.");
+
+                            curFileView.Close();
+                            curFileView = null;
+
+                            return false;
+                        }
+                    }
+
+                    curFileView.Close();
+                    curFileView = null;
+                }
+            }
+            catch (Exception e)
+            {
+                // There are no files added to the msi.  (Msi containing only merge modules?)
+                Log.WriteLine(LogPrefix + "NOTE: No files found to add to MSI (Does not include MSM files).\n" + e.Message + "\n" + e.StackTrace);
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Creates a .cab file with all source files included.
+        /// </summary>
+        /// <param name="Database">The MSI database.</param>
+        /// <param name="InstallerType">The MSI Installer type.</param>
+        /// <param name="InstallerObject">The MSI Installer object.</param>
+        /// <returns>True if successful.</returns>
+        private bool CreateCabFile(Database Database, Type InstallerType, Object InstallerObject)
+        {
+            Log.Write(LogPrefix + "Compressing Files...");
+
+            // Create the CabFile
+            ProcessStartInfo processInfo = new ProcessStartInfo();
+            
+            processInfo.Arguments = "-p -r -P " + 
+                Path.Combine(msi.sourcedir, "Temp") + @"\ N " + 
+                Path.Combine(msi.sourcedir,  
+                Path.GetFileNameWithoutExtension(msi.output) + ".cab") + " " +
+                Path.Combine(msi.sourcedir, "Temp") + @"\*";
+
+            processInfo.CreateNoWindow = false;
+            processInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            processInfo.WorkingDirectory = Project.BaseDirectory;
+            processInfo.FileName = "cabarc";
+
+            Process process = new Process();
+            process.StartInfo = processInfo;
+            process.EnableRaisingEvents = true;
+
+            try
+            {
+                process.Start();
+            }
+            catch (Exception)
+            {
+                Log.WriteLine(LogPrefix + "ERROR: cabarc.exe is not in your path");
+                return false;
             }
 
-            private string FindParent(string DirectoryName, MSIDirectory directory)
+            try
             {
-                if (DirectoryName == directory.name && 
-                    directory is MSIRootDirectory)
+                process.WaitForExit();
+            }
+            catch (Exception e)
+            {
+                Log.WriteLine();
+                Log.WriteLine("Error creating cab file: " + e.Message);
+                return false;
+            }
+
+            if (process.ExitCode != 0)
+            {
+                Log.WriteLine();
+                Log.WriteLine("Error creating cab file, application returned error " + 
+                    process.ExitCode + ".");
+                return false;
+            }
+
+            if (!process.HasExited)
+            {
+                Log.WriteLine();
+                Log.WriteLine("Killing the cabarc process.");
+                process.Kill();
+            }
+            process = null;
+            processInfo = null;
+
+            Log.WriteLine("Done.");
+            
+            string cabFile = Path.Combine(Project.BaseDirectory, Path.Combine(msi.sourcedir, 
+                Path.GetFileNameWithoutExtension(msi.output) + @".cab"));
+
+            if (File.Exists(cabFile))
+            {
+                View cabView = Database.OpenView("SELECT * FROM `_Streams`");
+                if (Verbose)
                 {
-                    return ((MSIRootDirectory)directory).root;
+                    Log.WriteLine(LogPrefix + "Storing Cabinet in MSI Database...");
+                }
+
+                Record cabRecord = (Record)InstallerType.InvokeMember(
+                    "CreateRecord", 
+                    BindingFlags.InvokeMethod, 
+                    null, InstallerObject, 
+                    new object[] { 2 });
+
+                cabRecord.set_StringData(1, Path.GetFileName(cabFile));
+                cabRecord.SetStream(2, cabFile);
+
+                cabView.Modify(MsiViewModify.msiViewModifyInsert, cabRecord);
+                cabView.Close();
+                cabView = null;
+
+            }
+            else
+            {
+                Log.WriteLine(LogPrefix + 
+                    "ERROR: Unable to open Cabinet file:\n\n\t" + 
+                    cabFile + "\n\n");
+                return false;
+            }
+            return true;
+        }
+
+        [DllImport("kernel32.dll", CharSet=CharSet.Auto)]
+        private static extern int GetShortPathName(string LongPath, StringBuilder ShortPath, int BufferSize); 
+
+        /// <summary>
+        /// Retrieves a DOS 8.3 filename for a file.
+        /// </summary>
+        /// <param name="LongFile">The file to shorten.</param>
+        /// <returns>The new shortened file.</returns>
+        private string GetShortFile(string LongFile)
+        {
+            if (LongFile.Length <= 8)
+            {
+                return LongFile;
+            }
+
+            StringBuilder shortPath = new StringBuilder(255);
+            int result = GetShortPathName(LongFile, shortPath, shortPath.Capacity);
+            return Path.GetFileName(shortPath.ToString());
+        }
+
+        /// <summary>
+        /// Retrieves a DOS 8.3 filename for a directory.
+        /// </summary>
+        /// <param name="LongPath">The path to shorten.</param>
+        /// <returns>The new shortened path.</returns>
+        private string GetShortPath(string LongPath)
+        {
+            if (LongPath.Length <= 8)
+            {
+                return LongPath;
+            }
+
+            StringBuilder shortPath = new StringBuilder(255);
+            int result = GetShortPathName(LongPath, shortPath, shortPath.Capacity);
+            
+            Uri shortPathUri = null;
+            try
+            {
+                shortPathUri = new Uri("file://" + shortPath.ToString());
+            }
+            catch (Exception)
+            {
+                Log.WriteLine(LogPrefix + "ERROR: Directory " + 
+                    LongPath + " not found.");
+                return "MsiTaskPathNotFound";
+            }
+
+            string[] shortPathSegments = shortPathUri.Segments;
+            if (shortPathSegments.Length == 0)
+            {
+                return LongPath;
+            }
+            if (shortPathSegments.Length == 1)
+            {
+                return shortPathSegments[0];
+            }
+            return shortPathSegments[shortPathSegments.Length-1];
+        }
+
+        /// <summary>
+        /// Retrieves the relative path of a file based on 
+        /// the component it belongs to and its entry in 
+        /// the MSI directory table.
+        /// </summary>
+        /// <param name="Database">The MSI database.</param>
+        /// <param name="InstallerType">The MSI Installer type.</param>
+        /// <param name="InstallerObject">The MSI Installer object.</param>
+        /// <param name="Name">The Name of the Folder</param>
+        /// <param name="Parent">The Parent of the Folder</param>
+        /// <param name="Default">The Relative Filesystem Path of the Folder</param>
+        /// <param name="Path">The Path to the Folder from previous calls.</param>
+        /// <param name="DirectoryView">The MSI database view.</param>
+        private void GetRelativePath(
+            Database Database, 
+            Type InstallerType, 
+            Object InstallerObject,
+            string Name, 
+            string Parent, 
+            string Default, 
+            StringBuilder Path, 
+            View DirectoryView)
+        {
+            if (Name == "TARGETDIR")
+            {
+                return;
+            }
+
+            for (int i = 0; i < commonFolderNames.Length; i++)
+            {
+                if (Name == commonFolderNames[i])
+                {
+                    return;
+                }
+            }
+
+            ArrayList directoryList = new ArrayList();
+            foreach(MSIRootDirectory directory in msi.directories)
+            {
+                directoryList.Add(directory);
+            }
+
+            foreach (property property in msi.properties)
+            {
+                if (Name == property.name)
+                {
+                    MSIDirectory directory = FindDirectory(Name);
+                    if (directory == null)
+                    {
+                        MSIRootDirectory propDirectory = new MSIRootDirectory();
+                        propDirectory.name = Name;
+                        propDirectory.root = "TARGETDIR";
+                        propDirectory.foldername = ".";
+
+                        directoryList.Add(propDirectory);
+
+                        MSIRootDirectory[] rootDirs = new MSIRootDirectory[directoryList.Count];
+                        directoryList.CopyTo(rootDirs);
+
+                        msi.directories = rootDirs;
+                    }
+
+                    return;
+                }
+            }
+
+            if (Path.Length > 0)
+            {
+                Path.Insert(0, @"\");
+            }
+
+            Path.Insert(0, Default);
+            if (Parent != null)
+            {
+                MSIDirectory PathInfo = FindDirectory(Parent);
+
+                if (PathInfo == null)
+                {
+                    foreach (property property in msi.properties)
+                    {
+                        if (Parent == property.name)
+                        {
+                            MSIRootDirectory directory = new MSIRootDirectory();
+                            directory.name = Parent;
+                            directory.root = "TARGETDIR";
+                            directory.foldername = ".";
+
+                            directoryList.Add(directory);
+
+                            MSIRootDirectory[] rootDirs = new MSIRootDirectory[directoryList.Count];
+                            directoryList.CopyTo(rootDirs);
+
+                            msi.directories = rootDirs;
+
+                            // Insert the Directory that is a Property
+                            Record recDir = (Record)InstallerType.InvokeMember(
+                                "CreateRecord", 
+                                BindingFlags.InvokeMethod, 
+                                null, InstallerObject, new object[] { 3 });
+
+                            recDir.set_StringData(1, Parent);
+                            recDir.set_StringData(2, "TARGETDIR");
+                            recDir.set_StringData(3, ".");
+
+                            DirectoryView.Modify(MsiViewModify.msiViewModifyInsert, recDir);
+
+                            PathInfo = directory;
+
+                            break;
+                        }
+                    }
+                }   
+
+                string newParent = null;
+                if (PathInfo is MSIRootDirectory)
+                {
+                    newParent = ((MSIRootDirectory)PathInfo).root;
                 }
                 else
                 {
-                    if (directory.directory != null)
+                    newParent = FindParent(Parent);
+                }
+
+                GetRelativePath(Database, InstallerType, InstallerObject, 
+                    Parent, newParent, 
+                    PathInfo.foldername, Path, DirectoryView);
+            }
+        }
+
+        /// <summary>
+        /// Recursively expands properties of all attributes of 
+        /// a nodelist and their children.
+        /// </summary>
+        /// <param name="Nodes">The nodes to recurse.</param>
+        void ExpandPropertiesInNodes(XmlNodeList Nodes) 
+        {
+            foreach (XmlNode node in Nodes)
+            {
+                if (node.ChildNodes != null)
+                {
+                    ExpandPropertiesInNodes(node.ChildNodes);
+                    if (node.Attributes != null)
                     {
-                        foreach (MSIDirectory directory2 in directory.directory)
+                        foreach (XmlAttribute attr in node.Attributes) 
                         {
-                            if (directory2.name == DirectoryName)
+                            attr.Value = Project.ExpandProperties(attr.Value);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Converts the Byte array in a public key 
+        /// token of an assembly to a string MSI expects.
+        /// </summary>
+        /// <param name="ByteArray">The array of bytes.</param>
+        /// <returns>The string containing the array.</returns>
+        private string ByteArrayToString(Byte[] ByteArray)
+        {
+            if ((ByteArray == null) || (ByteArray.Length == 0))
+                return "";
+            StringBuilder sb = new StringBuilder ();
+            sb.Append (ByteArray[0].ToString("x2"));
+            for (int i = 1; i < ByteArray.Length; i++) 
+            {
+                sb.Append(ByteArray[i].ToString("x2"));
+            }
+            return sb.ToString().ToUpper();
+        }
+
+        [DllImport("oleaut32.dll", CharSet=CharSet.Auto)]
+        private static extern int LoadTypeLib(string TypeLibFileName, ref IntPtr pTypeLib);
+
+        /// <summary>
+        /// Loads TypeLibs for the TypeLib table.
+        /// </summary>
+        /// <param name="Database">The MSI database.</param>
+        /// <param name="InstallerType">The MSI Installer type.</param>
+        /// <param name="InstallerObject">The MSI Installer object.</param>
+        /// <param name="RegistryView">View containing the Registry Table.</param>
+        /// <returns>True if successful.</returns>
+        private bool LoadTypeLibs(Database Database, Type InstallerType, object InstallerObject, View RegistryView)
+        {
+            // Open the "TypeLib" Table
+            View typeLibView = Database.OpenView("SELECT * FROM `TypeLib`");
+
+            string runtimeVer = Environment.Version.ToString(4);
+
+            for (int i = 0; i < typeLibRecords.Count; i++)
+            {
+                TypeLibRecord tlbRecord = (TypeLibRecord)typeLibRecords[i];
+
+                IntPtr pTypeLib = new IntPtr(0);
+                int result = LoadTypeLib(tlbRecord.TypeLibFileName, ref pTypeLib);
+                if (result == 0)
+                {
+                    UCOMITypeLib typeLib = (UCOMITypeLib)Marshal.GetTypedObjectForIUnknown(
+                        pTypeLib, typeof(UCOMITypeLib));
+                    if (typeLib != null)
+                    {
+                        int helpContextId;
+                        string name, docString, helpFile;
+
+                        typeLib.GetDocumentation(
+                            -1, out name, out docString, 
+                            out helpContextId, out helpFile);
+
+                        IntPtr pTypeLibAttr = new IntPtr(0);
+                        typeLib.GetLibAttr(out pTypeLibAttr);
+
+                        TYPELIBATTR typeLibAttr = (TYPELIBATTR)Marshal.PtrToStructure(pTypeLibAttr, typeof(TYPELIBATTR));
+
+                        string tlbCompName = (string)typeLibComponents[Path.GetFileName(tlbRecord.TypeLibFileName)];
+
+                        Record recTypeLib = (Record)InstallerType.InvokeMember(
+                            "CreateRecord", 
+                            BindingFlags.InvokeMethod, 
+                            null, InstallerObject, 
+                            new object[] { 8 });
+
+                        recTypeLib.set_StringData(1, "{"+typeLibAttr.guid.ToString().ToUpper()+"}");
+                        recTypeLib.set_IntegerData(2, Marshal.GetTypeLibLcid(typeLib));
+                        recTypeLib.set_StringData(3, tlbCompName);
+                        recTypeLib.set_IntegerData(4, 256);
+                        recTypeLib.set_StringData(5, docString == null ? name : docString);
+                        recTypeLib.set_StringData(7, tlbRecord.FeatureName);
+                        recTypeLib.set_IntegerData(8, 0);
+                        
+                        typeLib.ReleaseTLibAttr(pTypeLibAttr);
+
+                        typeLibView.Modify(MsiViewModify.msiViewModifyInsert, recTypeLib);
+
+                        // If a .NET type library wrapper for an assembly
+                        if (tlbRecord.AssemblyName != null)
+                        {
+                            // Get all the types defined in the typelibrary 
+                            // that are not marked "noncreatable"
+
+                            int typeCount = typeLib.GetTypeInfoCount();
+                            for (int j = 0; j < typeCount; j++)
                             {
-                                return directory.name;
-                            }
-                            else
-                            {
-                                string parent = FindParent(DirectoryName, directory2);
-                                if (parent != null)
+                                UCOMITypeInfo typeInfo = null;
+                                typeLib.GetTypeInfo(j, out typeInfo);
+
+                                if (typeInfo != null)
                                 {
-                                    return parent;
+                                    IntPtr pTypeAttr = new IntPtr(0);
+                                    typeInfo.GetTypeAttr(out pTypeAttr);
+
+                                    TYPEATTR typeAttr = (TYPEATTR)Marshal.PtrToStructure(pTypeAttr, typeof(TYPEATTR));
+
+                                    if (typeAttr.typekind == TYPEKIND.TKIND_COCLASS 
+                                        && typeAttr.wTypeFlags == TYPEFLAGS.TYPEFLAG_FCANCREATE)
+                                    {
+                                        string clsid = "{" + typeAttr.guid.ToString().ToUpper() + "}";
+
+                                        if (typeInfo is UCOMITypeInfo2)
+                                        {
+                                            UCOMITypeInfo2 typeInfo2 = (UCOMITypeInfo2)typeInfo;
+                                            if (typeInfo2 != null)
+                                            {
+                                                object custData = new object();
+                                                Guid g = new Guid("0F21F359-AB84-41E8-9A78-36D110E6D2F9");
+                                                typeInfo2.GetCustData(ref g, out custData);
+
+                                                if (custData != null)
+                                                {
+                                                    string className = (string)custData;
+
+                                                    // Insert the Class
+                                                    Record recRegTlbRec = (Record)InstallerType.InvokeMember(
+                                                        "CreateRecord", 
+                                                        BindingFlags.InvokeMethod, 
+                                                        null, InstallerObject, 
+                                                        new object[] { 6 });
+
+                                                    recRegTlbRec.set_StringData(1, 
+                                                        "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
+                                                    recRegTlbRec.set_IntegerData(2, 0);
+                                                    recRegTlbRec.set_StringData(3,
+                                                        @"CLSID\" + clsid + 
+                                                        @"\InprocServer32");
+                                                    recRegTlbRec.set_StringData(4, "Class");
+                                                    recRegTlbRec.set_StringData(5, className);
+                                                    recRegTlbRec.set_StringData(6, tlbRecord.AssemblyComponent);
+                                                    RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+
+                                                    recRegTlbRec.set_StringData(1, 
+                                                        "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
+                                                    recRegTlbRec.set_StringData(4, "ThreadingModel");
+                                                    recRegTlbRec.set_StringData(5, "Both");
+                                                    RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+
+                                                    recRegTlbRec.set_StringData(1, 
+                                                        "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
+                                                    recRegTlbRec.set_StringData(4, "RuntimeVersion");
+                                                    recRegTlbRec.set_StringData(5, System.Environment.Version.ToString(3));
+                                                    RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+
+                                                    recRegTlbRec.set_StringData(1, 
+                                                        "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
+                                                    recRegTlbRec.set_StringData(4, "Assembly");
+                                                    recRegTlbRec.set_StringData(5, tlbRecord.AssemblyName.FullName);
+                                                    RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+
+                                                    recRegTlbRec.set_StringData(1, 
+                                                        "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
+                                                    recRegTlbRec.set_StringData(3,
+                                                        @"CLSID\" + clsid + 
+                                                        @"\Implemented Categories");
+                                                    recRegTlbRec.set_StringData(4, "+");
+                                                    recRegTlbRec.set_StringData(5, null);
+                                                    RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+
+                                                    recRegTlbRec.set_StringData(1, 
+                                                        "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
+                                                    recRegTlbRec.set_StringData(3,
+                                                        @"CLSID\" + clsid + 
+                                                        @"\Implemented Categories\{62C8FE65-4EBB-45e7-B440-6E39B2CDBF29}");
+                                                    recRegTlbRec.set_StringData(4, "+");
+                                                    recRegTlbRec.set_StringData(5, null);
+                                                    RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else if (typeAttr.typekind == TYPEKIND.TKIND_DISPATCH)
+                                    {
+                                        string iid = "{" + typeAttr.guid.ToString().ToUpper() + "}";
+
+                                        string typeName, typeDocString, typeHelpFile;
+                                        int typeHelpContextId;
+
+                                        typeInfo.GetDocumentation(-1, out typeName, 
+                                            out typeDocString, out typeHelpContextId, 
+                                            out typeHelpFile);
+
+                                        if (typeInfo is UCOMITypeInfo2)
+                                        {
+                                            UCOMITypeInfo2 typeInfo2 = (UCOMITypeInfo2)typeInfo;
+                                            if (typeInfo2 != null)
+                                            {
+                                                object custData = new object();
+                                                Guid g = new Guid("0F21F359-AB84-41E8-9A78-36D110E6D2F9");
+                                                typeInfo2.GetCustData(ref g, out custData);
+
+                                                if (custData != null)
+                                                {
+                                                    string className = (string)custData;
+
+                                                    // Insert the Interface
+                                                    Record recRegTlbRec = (Record)InstallerType.InvokeMember(
+                                                        "CreateRecord", 
+                                                        BindingFlags.InvokeMethod, 
+                                                        null, InstallerObject, 
+                                                        new object[] { 6 });
+
+                                                    string typeLibComponent = (string)typeLibComponents[Path.GetFileName(tlbRecord.TypeLibFileName)];
+
+                                                    recRegTlbRec.set_StringData(1, 
+                                                        "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
+                                                    recRegTlbRec.set_IntegerData(2, 0);
+                                                    recRegTlbRec.set_StringData(3,
+                                                        @"Interface\" + iid);
+                                                    recRegTlbRec.set_StringData(4, null);
+                                                    recRegTlbRec.set_StringData(5, typeName);
+                                                    recRegTlbRec.set_StringData(6, typeLibComponent);
+                                                    RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+
+                                                    recRegTlbRec.set_StringData(1, 
+                                                        "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
+                                                    recRegTlbRec.set_StringData(3,
+                                                        @"Interface\" + iid + @"\TypeLib");
+                                                    recRegTlbRec.set_StringData(4, "Version");
+                                                    recRegTlbRec.set_StringData(5, "1.0");
+                                                    RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+
+                                                    recRegTlbRec.set_StringData(1, 
+                                                        "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
+                                                    recRegTlbRec.set_StringData(4, null);
+                                                    recRegTlbRec.set_StringData(5, "{"+typeLibAttr.guid.ToString().ToUpper()+"}");
+                                                    RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+
+                                                    recRegTlbRec.set_StringData(1, 
+                                                        "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
+                                                    recRegTlbRec.set_StringData(3,
+                                                        @"Interface\" + iid + @"\ProxyStubClsid32");
+                                                    recRegTlbRec.set_StringData(4, null);
+                                                    recRegTlbRec.set_StringData(5, "{00020424-0000-0000-C000-000000000046}");
+                                                    RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+
+                                                    recRegTlbRec.set_StringData(1, 
+                                                        "_" + Guid.NewGuid().ToString().Replace("-", null).ToUpper());
+                                                    recRegTlbRec.set_StringData(3,
+                                                        @"Interface\" + iid + @"\ProxyStubClsid");
+                                                    recRegTlbRec.set_StringData(4, null);
+                                                    recRegTlbRec.set_StringData(5, "{00020424-0000-0000-C000-000000000046}");
+                                                    RegistryView.Modify(MsiViewModify.msiViewModifyInsert, recRegTlbRec);
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 }
-                return null;
             }
 
-            private MSIDirectory FindDirectory(string DirectoryName)
+            typeLibView.Close();
+            typeLibView = null;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Merges Merge Modules into the MSI Database.
+        /// </summary>
+        /// <param name="Database">The MSI Database.</param>
+        /// <param name="TempPath">The path to temporary files.</param>
+        /// <returns>True if successful.</returns>
+        private bool LoadMergeModules(string Database, string TempPath)
+        {
+            MsmMergeClass mergeClass = new MsmMergeClass();
+
+            int index = 1;
+            // If <mergemodules>...</mergemodules> exists in the nant msi task
+
+            if (msi.mergemodules != null)
             {
-                foreach (MSIDirectory directory in msi.directories)
+                if (Verbose)
                 {
-                    MSIDirectory childDirectory = FindDirectory(DirectoryName, directory);
-                    if (childDirectory != null)
+                    Log.WriteLine(LogPrefix + "Storing Merge Modules:");
+                }
+                
+                if (!Directory.Exists(TempPath))
+                    Directory.CreateDirectory(TempPath);
+
+                // Merge module(s) assigned to a specific feature
+                foreach (MSIMerge merge in msi.mergemodules)
+                {
+                    // Get each merge module file name assigned to this feature
+                    NAntFileSet modules = merge.modules;
+
+                    FileSet mergeSet = new FileSet();
+                    mergeSet.Project = Project;
+
+                    XmlElement modulesElem = (XmlElement)((XmlElement)_xmlNode).SelectSingleNode(
+                        "mergemodules/merge[@feature='" + merge.feature + "']/modules");
+                    
+                    mergeSet.Initialize(modulesElem);
+
+                    // Iterate each module assigned to this feature
+                    foreach (string mergeModule in mergeSet.FileNames)
                     {
-                        return childDirectory;
+                        if (Verbose)
+                        {
+                            Log.WriteLine("\t" + Path.GetFileName(mergeModule));
+                        }
+                        
+                        try
+                        {
+                            // Open the merge module (by Filename)
+                            mergeClass.OpenModule(mergeModule, 1033);
+
+                            try
+                            {
+                                mergeClass.OpenDatabase(Database);
+                            }
+                            catch (FileLoadException fle)
+                            {
+                                Log.WriteLine(fle.Message + " " + fle.FileName + " " + fle.StackTrace);
+                                return false;
+                            }
+                            
+                            // Once the merge is complete, components in the module are attached to the 
+                            // feature identified by Feature. This feature is not created and must be 
+                            // an existing feature. Note that the Merge method gets all the feature 
+                            // references in the module and substitutes the feature reference for all 
+                            // occurrences of the null GUID in the module database.                                
+                            mergeClass.Merge(merge.feature, null);
+
+                            string moduleCab = Path.Combine(Path.GetDirectoryName(Database), 
+                                "mergemodule" + index + ".cab");
+
+                            index++;
+
+                            mergeClass.ExtractCAB(moduleCab);
+
+                            Process process = new Process();
+
+                            if (File.Exists(moduleCab))
+                            {
+                                // Extract the cabfile contents to a Temp directory
+                                ProcessStartInfo processInfo = new ProcessStartInfo();
+            
+                                processInfo.Arguments = "-o X " + 
+                                    moduleCab + " " + Path.Combine(Project.BaseDirectory, Path.Combine(msi.sourcedir, @"Temp\"));
+
+                                processInfo.CreateNoWindow = false;
+                                processInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                                processInfo.WorkingDirectory = msi.output;
+                                processInfo.FileName = "cabarc";
+
+                            
+                                process.StartInfo = processInfo;
+                                process.EnableRaisingEvents = true;
+
+                                process.Start();
+                        
+                                try
+                                {
+                                    process.WaitForExit();
+                                }
+                                catch (Exception e)
+                                {
+                                    Log.WriteLine();
+                                    Log.WriteLine("Error extracting merge module cab file: " + moduleCab);
+                                    Log.WriteLine("Error was: " + e.Message);
+
+                                    File.Delete(moduleCab);
+                                    return false;
+                                }
+
+                                if (process.ExitCode != 0)
+                                {
+                                    Log.WriteLine();
+                                    Log.WriteLine("Error extracting merge module cab file: " + moduleCab);
+                                    Log.WriteLine("Application returned ERROR: " + process.ExitCode);
+
+                                    File.Delete(moduleCab);
+                                    return false;
+                                }
+
+                                File.Delete(moduleCab);
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            Log.WriteLine(LogPrefix + "ERROR: cabarc.exe is not in your path");
+                            Log.WriteLine(LogPrefix + "or file " + mergeModule + " is not found.");
+                            return false;
+                        }
+                    }
+                    mergeClass.CloseModule();
+                    // Close and save the database
+                    mergeClass.CloseDatabase(true);
+
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Loads records for the Binary table.  This table stores items 
+        /// such as bitmaps, animations, and icons. The binary table is 
+        /// also used to store data for custom actions.
+        /// </summary>
+        /// <param name="Database">The MSI database.</param>
+        /// <param name="InstallerType">The MSI Installer type.</param>
+        /// <param name="InstallerObject">The MSI Installer object.</param>
+        /// <returns>True if successful.</returns>
+        private bool LoadBinary(Database Database, Type InstallerType, Object InstallerObject)
+        {
+            if (msi.binaries != null)
+            {
+
+                // Open the Binary Table
+                View binaryView = Database.OpenView("SELECT * FROM `Binary`");
+
+                if (Verbose)
+                {
+                    Log.WriteLine(LogPrefix + "Adding Binary Data:");
+                }
+                
+                // Add binary data from Task definition
+                foreach (MSIBinary binary in msi.binaries)
+                {
+                    if (Verbose)
+                    {
+                        Log.WriteLine("\t" + Path.Combine(Project.BaseDirectory, binary.value));
+                    }
+
+                    if (File.Exists(Path.Combine(Project.BaseDirectory, binary.value)))
+                    {
+                        // Insert the binary data
+                        Record recBinary = (Record)InstallerType.InvokeMember(
+                            "CreateRecord", 
+                            BindingFlags.InvokeMethod, 
+                            null, InstallerObject, 
+                            new object[] { 2 });
+
+                        recBinary.set_StringData(1, binary.name);
+                        recBinary.SetStream(2, Path.Combine(Project.BaseDirectory, binary.value));
+                        binaryView.Modify(MsiViewModify.msiViewModifyInsert, recBinary);
+
+                    }
+                    else
+                    {
+                        Log.WriteLine(LogPrefix + 
+                            "ERROR: Unable to open file:\n\n\t" + 
+                            Path.Combine(Project.BaseDirectory, binary.value) + "\n\n");
+
+                        binaryView.Close();
+                        binaryView = null;
+                        return false;
                     }
                 }
 
-                return null;
+                binaryView.Close();
+                binaryView = null;
             }
+            return true;
+        }
 
-            private MSIDirectory FindDirectory(string DirectoryName, MSIDirectory directory)
+        /// <summary>
+        /// Loads records for the Dialog table.
+        /// </summary>
+        /// <param name="Database">The MSI database.</param>
+        /// <param name="InstallerType">The MSI Installer type.</param>
+        /// <param name="InstallerObject">The MSI Installer object.</param>
+        /// <returns>True if successful.</returns>
+        private bool LoadDialog(Database Database, Type InstallerType, Object InstallerObject)
+        {
+            if (msi.dialogs != null)
             {
-                if (directory.name == DirectoryName)
+
+                // Open the Dialog Table
+                View dialogView = Database.OpenView("SELECT * FROM `Dialog`");
+
+                if (Verbose)
                 {
-                    return directory;
+                    Log.WriteLine(LogPrefix + "Adding Dialogs:");
+                }
+                
+                foreach (MSIDialog dialog in msi.dialogs)
+                {
+                    if (Verbose)
+                    {
+                        Log.WriteLine("\t" + dialog.name);
+                    }
+
+                    // Insert the dialog
+                    Record recDialog = (Record)InstallerType.InvokeMember(
+                        "CreateRecord", 
+                        BindingFlags.InvokeMethod, 
+                        null, InstallerObject, 
+                        new object[] { 10 });
+
+                    recDialog.set_StringData(1, dialog.name);
+                    recDialog.set_IntegerData(2, dialog.hcenter);
+                    recDialog.set_IntegerData(3, dialog.vcenter);
+                    recDialog.set_IntegerData(4, dialog.width);
+                    recDialog.set_IntegerData(5, dialog.height);
+                    recDialog.set_IntegerData(6, dialog.attr);
+                    recDialog.set_StringData(7, dialog.title);
+                    recDialog.set_StringData(8, dialog.firstcontrol);
+                    recDialog.set_StringData(9, dialog.defaultcontrol);
+                    recDialog.set_StringData(10, dialog.cancelcontrol);
+                    
+                    dialogView.Modify(MsiViewModify.msiViewModifyInsert, recDialog);
+
                 }
 
+                dialogView.Close();
+                dialogView = null;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Loads records for the Control table.
+        /// </summary>
+        /// <param name="Database">The MSI database.</param>
+        /// <param name="InstallerType">The MSI Installer type.</param>
+        /// <param name="InstallerObject">The MSI Installer object.</param>
+        /// <returns>True if successful.</returns>
+        private bool LoadControl(Database Database, Type InstallerType, Object InstallerObject)
+        {
+            if (msi.controls != null)
+            {
+
+                // Open the Control Table
+                View controlView = Database.OpenView("SELECT * FROM `Control`");
+
+                if (Verbose)
+                {
+                    Log.WriteLine(LogPrefix + "Adding Dialog Controls:");
+                }
+                
+                foreach (MSIControl control in msi.controls)
+                {
+                    if (Verbose)
+                    {
+                        Log.WriteLine("\t" + control.name);
+                    }
+
+                    // Insert the control
+                    Record recControl = (Record)InstallerType.InvokeMember(
+                        "CreateRecord", 
+                        BindingFlags.InvokeMethod, 
+                        null, InstallerObject, 
+                        new object[] { 12 });
+
+                    recControl.set_StringData(1, control.dialog);
+                    recControl.set_StringData(2, control.name);
+                    recControl.set_StringData(3, control.type);
+                    recControl.set_IntegerData(4, control.x);
+                    recControl.set_IntegerData(5, control.y);
+                    recControl.set_IntegerData(6, control.width);
+                    recControl.set_IntegerData(7, control.height);
+                    recControl.set_IntegerData(8, control.attr);
+                    recControl.set_StringData(9, control.property);
+                    recControl.set_StringData(10, control.text);
+                    recControl.set_StringData(11, control.nextcontrol);
+                    recControl.set_StringData(12, control.help);
+                    
+                    controlView.Modify(MsiViewModify.msiViewModifyInsert, recControl);
+
+                }
+
+                controlView.Close();
+                controlView = null;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Loads records for the ControlCondtion table.
+        /// </summary>
+        /// <param name="Database">The MSI database.</param>
+        /// <param name="InstallerType">The MSI Installer type.</param>
+        /// <param name="InstallerObject">The MSI Installer object.</param>
+        /// <returns>True if successful.</returns>
+        private bool LoadControlCondition(Database Database, Type InstallerType, Object InstallerObject)
+        {
+            if (msi.controlconditions != null)
+            {
+
+                // Open the ControlCondition Table
+                View controlConditionView = Database.OpenView("SELECT * FROM `ControlCondition`");
+
+                if (Verbose)
+                {
+                    Log.WriteLine(LogPrefix + "Adding Dialog Control Conditions For:");
+                }
+                
+                foreach (MSIControlCondition controlCondition in msi.controlconditions)
+                {
+                    if (Verbose)
+                    {
+                        Log.WriteLine("\t" + controlCondition.control);
+                    }
+
+                    // Insert the condition
+                    Record recControlCondition = (Record)InstallerType.InvokeMember(
+                        "CreateRecord", 
+                        BindingFlags.InvokeMethod, 
+                        null, InstallerObject, 
+                        new object[] { 4 });
+
+                    recControlCondition.set_StringData(1, controlCondition.dialog);
+                    recControlCondition.set_StringData(2, controlCondition.control);
+                    recControlCondition.set_StringData(3, controlCondition.action);
+                    recControlCondition.set_StringData(4, controlCondition.condition);
+                    
+                    controlConditionView.Modify(MsiViewModify.msiViewModifyInsert, recControlCondition);
+
+                }
+
+                controlConditionView.Close();
+                controlConditionView = null;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Loads records for the ControlEvent table.
+        /// </summary>
+        /// <param name="Database">The MSI database.</param>
+        /// <param name="InstallerType">The MSI Installer type.</param>
+        /// <param name="InstallerObject">The MSI Installer object.</param>
+        /// <returns>True if successful.</returns>
+        private bool LoadControlEvent(Database Database, Type InstallerType, Object InstallerObject)
+        {
+            if (msi.controlevents != null)
+            {
+                if (Verbose)
+                {
+                    Log.WriteLine(LogPrefix + "Modifying Dialog Control Events:");
+                }
+                
+                foreach (MSIControlEvent controlEvent in msi.controlevents)
+                {
+                    // Open the ControlEvent Table
+                    View controlEventView;
+
+                    if (Verbose)
+                    {
+                        if (controlEvent.remove)
+                        {
+                            Log.Write("\tRemoving");
+                        }
+                        else
+                        {
+                            Log.Write("\tAdding");
+                        }
+                        Log.WriteLine("\tControl: " + controlEvent.control + "\tEvent: " + controlEvent.name);
+                    }
+                    if (controlEvent.remove)
+                    {
+                        controlEventView = Database.OpenView("SELECT * FROM `ControlEvent` WHERE `Dialog_`='" + controlEvent.dialog + "' AND `Control_`='" + controlEvent.control + "' AND `Event`='" + controlEvent.name + "' AND `Argument`='" + controlEvent.argument + "' AND `Condition`='" + controlEvent.condition + "'");
+                        controlEventView.Execute(null);
+                        try
+                        {
+                            Record recControlEvent = controlEventView.Fetch();
+                            controlEventView.Modify(MsiViewModify.msiViewModifyDelete, recControlEvent);                        
+                        }
+                        catch (IOException)
+                        {
+                            Log.WriteLine(LogPrefix + 
+                                "ERROR: Control Event not found.\n\nSELECT * FROM `ControlEvent` WHERE `Dialog_`='" + controlEvent.dialog + "' AND `Control_`='" + controlEvent.control + "' AND `Event`='" + controlEvent.name + "' AND `Argument`='" + controlEvent.argument + "' AND `Condition`='" + controlEvent.condition + "'");
+                            return false;
+                        }
+                        finally
+                        {
+                            controlEventView.Close();
+                            controlEventView = null;
+
+                        }
+
+                    }
+                    else
+                    {
+                        controlEventView = Database.OpenView("SELECT * FROM `ControlEvent`");
+                        // Insert the condition
+                        Record recControlEvent = (Record)InstallerType.InvokeMember(
+                            "CreateRecord", 
+                            BindingFlags.InvokeMethod, 
+                            null, InstallerObject, 
+                            new object[] { 6 });
+
+
+                        recControlEvent.set_StringData(1, controlEvent.dialog);
+                        recControlEvent.set_StringData(2, controlEvent.control);
+                        recControlEvent.set_StringData(3, controlEvent.name);
+                        recControlEvent.set_StringData(4, controlEvent.argument);
+                        recControlEvent.set_StringData(5, controlEvent.condition);
+                        recControlEvent.set_IntegerData(6, controlEvent.order);
+                    
+                        controlEventView.Modify(MsiViewModify.msiViewModifyInsert, recControlEvent);
+                        controlEventView.Close();
+                        controlEventView = null;
+
+
+                    }
+                }
+
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Loads records for the CustomAction table
+        /// </summary>
+        /// <param name="Database">The MSI database.</param>
+        /// <param name="InstallerType">The MSI Installer type.</param>
+        /// <param name="InstallerObject">The MSI Installer object.</param>
+        /// <returns>True if successful.</returns>
+        private bool LoadCustomAction(Database Database, Type InstallerType, Object InstallerObject)
+        {
+            // Add custom actions from Task definition
+            if (msi.customactions != null)
+            {
+                if (Verbose)
+                {
+                    Log.WriteLine(LogPrefix + "Adding Custom Actions:");
+                }
+
+                View customActionView = Database.OpenView("SELECT * FROM `CustomAction`");
+
+                foreach (MSICustomAction customAction in msi.customactions)
+                {
+                    if (Verbose)
+                    {
+                        Log.WriteLine("\t" + customAction.action);
+                    }
+
+                    // Insert the record into the table
+                    Record recCustomAction = (Record)InstallerType.InvokeMember(
+                        "CreateRecord", 
+                        BindingFlags.InvokeMethod, 
+                        null, InstallerObject, 
+                        new object[] { 4 });
+
+                    recCustomAction.set_StringData(1, customAction.action);
+                    recCustomAction.set_IntegerData(2, customAction.type);
+                    recCustomAction.set_StringData(3, customAction.source);
+                    recCustomAction.set_StringData(4, customAction.target);
+                    
+                    customActionView.Modify(MsiViewModify.msiViewModifyInsert, recCustomAction);
+
+                }
+                customActionView.Close();
+                customActionView = null;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Loads records for the InstallUISequence, InstallExecuteSequence,
+        /// AdminUISequence, and AdminExecute tables.
+        /// </summary>
+        /// <param name="Database">The MSI database.</param>
+        /// <param name="InstallerType">The MSI Installer type.</param>
+        /// <param name="InstallerObject">The MSI Installer object.</param>
+        /// <returns>True if successful.</returns>
+        private bool LoadSequence(Database Database, Type InstallerType, Object InstallerObject)
+        {
+            // Add custom actions from Task definition
+            if (msi.sequences != null)
+            {
+                if (Verbose)
+                {
+                    Log.WriteLine(LogPrefix + "Adding Install/Admin Sequences:");
+                }
+
+                // Open the sequence tables
+                View installExecuteView = Database.OpenView("SELECT * FROM `InstallExecuteSequence`");
+                View installUIView = Database.OpenView("SELECT * FROM `InstallUISequence`");
+                View adminExecuteView = Database.OpenView("SELECT * FROM `AdminExecuteSequence`");
+                View adminUIView = Database.OpenView("SELECT * FROM `AdminUISequence`");
+                View advtExecuteView = Database.OpenView("SELECT * FROM `AdvtExecuteSequence`");
+
+                // Add binary data from Task definition
+                foreach (MSISequence sequence in msi.sequences)
+                {
+                    if (Verbose)
+                    {
+                        Log.WriteLine("\t" + sequence.action + " to the " + sequence.type.ToString() + "sequence table.");
+                    }
+
+                    // Insert the record to the respective table
+                    Record recSequence = (Record)InstallerType.InvokeMember(
+                        "CreateRecord", 
+                        BindingFlags.InvokeMethod, 
+                        null, InstallerObject, 
+                        new object[] { 3 });
+
+                    recSequence.set_StringData(1, sequence.action);
+                    recSequence.set_StringData(2, sequence.condition);
+                    recSequence.set_IntegerData(3, sequence.value);
+                    switch(sequence.type.ToString())
+                    {
+                        case "installexecute":
+                            installExecuteView.Modify(MsiViewModify.msiViewModifyInsert, recSequence);
+                            break;
+                        case "installui":
+                            installUIView.Modify(MsiViewModify.msiViewModifyInsert, recSequence);
+                            break;
+                        case "adminexecute":
+                            adminExecuteView.Modify(MsiViewModify.msiViewModifyInsert, recSequence);
+                            break;
+                        case "adminui":
+                            adminUIView.Modify(MsiViewModify.msiViewModifyInsert, recSequence);
+                            break;
+                        case "advtexecute":
+                            advtExecuteView.Modify(MsiViewModify.msiViewModifyInsert, recSequence);
+                            break;
+
+                    }
+                }
+                installExecuteView.Close();
+                installUIView.Close();
+                adminExecuteView.Close();
+                adminUIView.Close();
+                advtExecuteView.Close();
+
+                installExecuteView = null;
+                installUIView = null;
+                adminExecuteView = null;
+                adminUIView = null;
+                advtExecuteView = null;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Loads records for the _AppMappings table.
+        /// </summary>
+        /// <param name="Database">The MSI database.</param>
+        /// <param name="InstallerType">The MSI Installer type.</param>
+        /// <param name="InstallerObject">The MSI Installer object.</param>
+        /// <returns>True if successful.</returns>
+        private bool LoadAppMappings(Database Database, Type InstallerType, Object InstallerObject)
+        {
+            if (msi.appmappings != null)
+            {
+                if (Verbose)
+                {
+                    Log.WriteLine(LogPrefix + "Adding Application Mappings:");
+                }
+
+                View appmapView = Database.OpenView("SELECT * FROM `_AppMappings`");
+
+                foreach (MSIAppMapping appmap in msi.appmappings)
+                {
+                    if (Verbose)
+                    {
+                        Log.WriteLine("\t" + appmap.directory);
+                    }
+
+                    // Insert the record into the table
+                    Record recAppMap = (Record)InstallerType.InvokeMember(
+                        "CreateRecord", 
+                        BindingFlags.InvokeMethod, 
+                        null, InstallerObject, 
+                        new object[] { 4 });
+
+                    recAppMap.set_StringData(1, appmap.directory);
+                    recAppMap.set_StringData(2, appmap.extension);
+                    recAppMap.set_StringData(3, appmap.exepath);
+                    recAppMap.set_StringData(4, appmap.verbs);
+                    
+                    appmapView.Modify(MsiViewModify.msiViewModifyInsert, recAppMap);
+
+                }
+                appmapView.Close();
+                appmapView = null;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Loads records for the _UrlToDir table.
+        /// </summary>
+        /// <param name="Database">The MSI database.</param>
+        /// <param name="InstallerType">The MSI Installer type.</param>
+        /// <param name="InstallerObject">The MSI Installer object.</param>
+        /// <returns>True if successful.</returns>
+        private bool LoadUrlProperties(Database Database, Type InstallerType, Object InstallerObject)
+        {
+            if (msi.urlproperties != null)
+            {
+                if (Verbose)
+                {
+                    Log.WriteLine(LogPrefix + "Adding URL Properties:");
+                }
+
+                View urlpropView = Database.OpenView("SELECT * FROM `_UrlToDir`");
+
+                foreach (MSIURLProperty urlprop in msi.urlproperties)
+                {
+                    if (Verbose)
+                    {
+                        Log.WriteLine("\t" + urlprop.name);
+                    }
+
+                    // Insert the record into the table
+                    Record recURLProp = (Record)InstallerType.InvokeMember(
+                        "CreateRecord", 
+                        BindingFlags.InvokeMethod, 
+                        null, InstallerObject, 
+                        new object[] { 2 });
+
+                    recURLProp.set_StringData(1, urlprop.name);
+                    recURLProp.set_StringData(2, urlprop.property);
+                    
+                    urlpropView.Modify(MsiViewModify.msiViewModifyInsert, recURLProp);
+
+                }
+                urlpropView.Close();
+                urlpropView = null;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Loads records for the _VDirToUrl table.
+        /// </summary>
+        /// <param name="Database">The MSI database.</param>
+        /// <param name="InstallerType">The MSI Installer type.</param>
+        /// <param name="InstallerObject">The MSI Installer object.</param>
+        /// <returns>True if successful.</returns>
+        private bool LoadVDirProperties(Database Database, Type InstallerType, Object InstallerObject)
+        {
+            if (msi.vdirproperties != null)
+            {
+                if (Verbose)
+                {
+                    Log.WriteLine(LogPrefix + "Adding VDir Properties:");
+                }
+
+                View vdirpropView = Database.OpenView("SELECT * FROM `_VDirToUrl`");
+
+                foreach (MSIVDirProperty vdirprop in msi.vdirproperties)
+                {
+                    if (Verbose)
+                    {
+                        Log.WriteLine("\t" + vdirprop.name);
+                    }
+
+                    // Insert the record into the table
+                    Record recVDirProp = (Record)InstallerType.InvokeMember(
+                        "CreateRecord", 
+                        BindingFlags.InvokeMethod, 
+                        null, InstallerObject, 
+                        new object[] { 3 });
+
+                    recVDirProp.set_StringData(1, vdirprop.name);
+                    recVDirProp.set_StringData(2, vdirprop.portproperty);
+                    recVDirProp.set_StringData(3, vdirprop.urlproperty);
+
+                    vdirpropView.Modify(MsiViewModify.msiViewModifyInsert, recVDirProp);
+
+                }
+                vdirpropView.Close();
+                vdirpropView = null;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Loads records for the _AppRootCreate table.
+        /// </summary>
+        /// <param name="Database">The MSI database.</param>
+        /// <param name="InstallerType">The MSI Installer type.</param>
+        /// <param name="InstallerObject">The MSI Installer object.</param>
+        /// <returns>True if successful.</returns>
+        private bool LoadAppRootCreate(Database Database, Type InstallerType, Object InstallerObject)
+        {
+            if (msi.approots != null)
+            {
+                if (Verbose)
+                {
+                    Log.WriteLine(LogPrefix + "Adding Application Roots:");
+                }
+
+                View approotView = Database.OpenView("SELECT * FROM `_AppRootCreate`");
+
+                foreach (MSIAppRoot appRoot in msi.approots)
+                {
+                    if (Verbose)
+                    {
+                        Log.WriteLine("\t" + appRoot.urlproperty);
+                    }
+
+                    // Insert the record into the table
+                    Record recAppRootProp = (Record)InstallerType.InvokeMember(
+                        "CreateRecord", 
+                        BindingFlags.InvokeMethod, 
+                        null, InstallerObject, 
+                        new object[] { 3 });
+
+                    recAppRootProp.set_StringData(1, appRoot.component);
+                    recAppRootProp.set_StringData(2, appRoot.urlproperty);
+                    recAppRootProp.set_IntegerData(3, appRoot.inprocflag);
+
+                    approotView.Modify(MsiViewModify.msiViewModifyInsert, recAppRootProp);
+
+                }
+                approotView.Close();
+                approotView = null;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Loads records for the _IISProperties table.
+        /// </summary>
+        /// <param name="Database">The MSI database.</param>
+        /// <param name="InstallerType">The MSI Installer type.</param>
+        /// <param name="InstallerObject">The MSI Installer object.</param>
+        /// <returns>True if successful.</returns>
+        private bool LoadIISProperties(Database Database, Type InstallerType, Object InstallerObject)
+        {
+            if (msi.iisproperties != null)
+            {
+                if (Verbose)
+                {
+                    Log.WriteLine(LogPrefix + "Adding IIS Directory Properties:");
+                }
+
+                View iispropView = Database.OpenView("SELECT * FROM `_IISProperties`");
+
+
+                // Add binary data from Task definition
+                foreach (MSIIISProperty iisprop in msi.iisproperties)
+                {
+                    if (Verbose)
+                    {
+                        Log.WriteLine("\t" + iisprop.directory);
+                    }
+
+                    // Insert the record into the table
+                    Record recIISProp = (Record)InstallerType.InvokeMember(
+                        "CreateRecord", 
+                        BindingFlags.InvokeMethod, 
+                        null, InstallerObject, 
+                        new object[] { 3 });
+
+                    recIISProp.set_StringData(1, iisprop.directory);
+                    recIISProp.set_IntegerData(2, iisprop.attr);
+                    recIISProp.set_StringData(3, iisprop.defaultdoc);
+                    
+                    iispropView.Modify(MsiViewModify.msiViewModifyInsert, recIISProp);
+
+                }
+                iispropView.Close();
+                iispropView = null;
+            }
+            return true;
+        }
+
+
+        /// <summary>
+        /// Checks to see if the specified table exists in the database
+        /// already.
+        /// </summary>
+        /// <param name="Database">The MSI database.</param>
+        /// <param name="TableName">Name of the table to check existance.</param>
+        /// <returns>True if successful.</returns>
+        private bool VerifyTableExistance(Database Database, string TableName)
+        {
+            View tableView = Database.OpenView("SELECT * FROM `_Tables` WHERE `Name`='" + TableName + "'");
+            tableView.Execute(null);
+            Record tableRecord = tableView.Fetch();
+
+            if (tableRecord != null)
+            {
+                tableView.Close();
+                tableView = null;
+                return true;
+            }
+            else
+            {
+                tableView.Close();
+                tableView = null;
+                return false;
+            }
+
+        }
+
+        /// <summary>
+        /// Enumerates the registry to see if an assembly has been registered 
+        /// for COM interop, and if so adds these registry keys to the Registry 
+        /// table, ProgIds to the ProgId table, classes to the Classes table, 
+        /// and a TypeLib to the TypeLib table.
+        /// </summary>
+        /// <param name="FileName">The Assembly filename.</param>
+        /// <param name="FileAssembly">The Assembly to check.</param>
+        /// <param name="InstallerType">The MSI Installer type.</param>
+        /// <param name="InstallerObject">The MSI Installer object.</param>
+        /// <param name="ComponentName">The name of the containing component.</param>
+        /// <param name="AssemblyComponentName">The name of the containing component's assembly GUID.</param>
+        /// <param name="ClassView">View containing the Class table.</param>
+        /// <param name="ProgIdView">View containing the ProgId table.</param>
+        /// <returns>True if successful.</returns>
+        private bool CheckAssemblyForCOMInterop(string FileName, Assembly FileAssembly, Type InstallerType, 
+            object InstallerObject, string ComponentName, string AssemblyComponentName, View ClassView, View ProgIdView)
+        {
+            AssemblyName asmName = FileAssembly.GetName();
+            string featureName = (string)featureComponents[ComponentName];
+            string typeLibName = Path.GetFileNameWithoutExtension(FileName) + ".tlb";
+            string typeLibFileName = Path.Combine(Path.GetDirectoryName(FileName), typeLibName);
+
+            bool foundTypeLib = false;
+
+            // Register the TypeLibrary
+            RegistryKey typeLibsKey = Registry.ClassesRoot.OpenSubKey("Typelib", false);
+
+            string[] typeLibs = typeLibsKey.GetSubKeyNames();
+            foreach (string typeLib in typeLibs)
+            {
+                RegistryKey typeLibKey = typeLibsKey.OpenSubKey(typeLib, false);
+                if (typeLibKey != null)
+                {
+                    string[] typeLibSubKeys = typeLibKey.GetSubKeyNames();
+                    foreach (string typeLibSubKey in typeLibSubKeys)
+                    {
+                        RegistryKey win32Key = typeLibKey.OpenSubKey(typeLibSubKey + @"\0\win32");
+                        if (win32Key != null)
+                        {
+                            string curTypeLibFileName = (string)win32Key.GetValue(null, null);
+                            if (curTypeLibFileName != null)
+                            {
+                                if (curTypeLibFileName == typeLibFileName)
+                                {
+                                    Log.WriteLine(LogPrefix + "Configuring " + typeLibName + " for COM Interop...");
+
+                                    Record recTypeLib = (Record)InstallerType.InvokeMember(
+                                        "CreateRecord", 
+                                        BindingFlags.InvokeMethod, 
+                                        null, InstallerObject, 
+                                        new object[] { 8 });
+
+                                    TypeLibRecord tlbRecord = new TypeLibRecord(
+                                        typeLib, typeLibFileName, 
+                                        asmName, featureName, AssemblyComponentName);
+
+                                    typeLibRecords.Add(tlbRecord);
+
+                                    foundTypeLib = true;
+                                    win32Key.Close();
+                                    break;
+                                }
+                            }
+                            win32Key.Close();
+                        }
+                    }
+                    typeLibKey.Close();
+
+                    if (foundTypeLib)
+                    {
+                        break;
+                    }
+                }
+            }
+            typeLibsKey.Close();
+
+            // Register CLSID(s)
+            RegistryKey clsidsKey = Registry.ClassesRoot.OpenSubKey("CLSID", false);
+            
+            string[] clsids = clsidsKey.GetSubKeyNames();
+            foreach (string clsid in clsids)
+            {
+                RegistryKey clsidKey = clsidsKey.OpenSubKey(clsid, false);
+                if (clsidKey != null)
+                {
+                    RegistryKey inprocKey = clsidKey.OpenSubKey("InprocServer32", false);
+                    if (inprocKey != null)
+                    {
+                        string clsidAsmName = (string)inprocKey.GetValue("Assembly", null);
+                        if (clsidAsmName != null)
+                        {
+                            if (asmName.FullName == clsidAsmName)
+                            {
+                                // Register ProgId(s)
+                                RegistryKey progIdKey = clsidKey.OpenSubKey("ProgId", false);
+                                if (progIdKey != null)
+                                {
+                                    string progId = (string)progIdKey.GetValue(null, null);
+                                    string className = (string)clsidKey.GetValue(null, null);
+
+                                    if (progId != null)
+                                    {
+                                        Record recProgId = (Record)InstallerType.InvokeMember(
+                                            "CreateRecord", 
+                                            BindingFlags.InvokeMethod, 
+                                            null, InstallerObject, 
+                                            new object[] { 6 });
+
+                                        recProgId.set_StringData(1, progId);
+                                        recProgId.set_StringData(3, clsid);
+                                        recProgId.set_StringData(4, className);
+                                        recProgId.set_IntegerData(6, 0);
+                                        ProgIdView.Modify(MsiViewModify.msiViewModifyInsert, recProgId);
+
+                                        Record recClass = (Record)InstallerType.InvokeMember(
+                                            "CreateRecord", 
+                                            BindingFlags.InvokeMethod, 
+                                            null, InstallerObject, 
+                                            new object[] { 13 });
+
+                                        recClass.set_StringData(1, clsid);
+                                        recClass.set_StringData(2, "InprocServer32");
+                                        recClass.set_StringData(3, AssemblyComponentName);
+                                        recClass.set_StringData(4, progId);
+                                        recClass.set_StringData(5, className);
+                                        //recClass.set_StringData(6, appId);
+                                        recClass.set_IntegerData(9, 0);
+                                        recClass.set_StringData(12, featureName);
+                                        recClass.set_IntegerData(13, 0);
+                                        ClassView.Modify(MsiViewModify.msiViewModifyInsert, recClass);
+                                    }
+                                    progIdKey.Close();
+                                    progIdKey = null;
+                                }
+                            }
+                        }
+                        inprocKey.Close();
+                    }
+                    clsidKey.Close();
+                }
+            }
+            clsidsKey.Close();
+
+            return true;
+        }
+
+        private string FindParent(string DirectoryName)
+        {
+            foreach (MSIDirectory directory in msi.directories)
+            {
+                string parent = FindParent(DirectoryName, directory);
+                if (parent != null)
+                {
+                    return parent;
+                }
+            }
+            return null;
+        }
+
+        private string FindParent(string DirectoryName, MSIDirectory directory)
+        {
+            if (DirectoryName == directory.name && 
+                directory is MSIRootDirectory)
+            {
+                return ((MSIRootDirectory)directory).root;
+            }
+            else
+            {
                 if (directory.directory != null)
                 {
-                    foreach (MSIDirectory childDirectory in directory.directory)
+                    foreach (MSIDirectory directory2 in directory.directory)
                     {
-                        MSIDirectory childDirectory2 = FindDirectory(DirectoryName, childDirectory);
-                        if (childDirectory2 != null)
+                        if (directory2.name == DirectoryName)
                         {
-                            return childDirectory2;
+                            return directory.name;
+                        }
+                        else
+                        {
+                            string parent = FindParent(DirectoryName, directory2);
+                            if (parent != null)
+                            {
+                                return parent;
+                            }
                         }
                     }
                 }
-
-                return null;
             }
-
-            private string GetDisplayablePath(string path)
-            {
-                if (path.Length > 40)
-                {
-                    return "..." + path.Substring(path.Length-37, 37);
-                }
-                return path;
-            }
+            return null;
         }
+
+        private MSIDirectory FindDirectory(string DirectoryName)
+        {
+            foreach (MSIDirectory directory in msi.directories)
+            {
+                MSIDirectory childDirectory = FindDirectory(DirectoryName, directory);
+                if (childDirectory != null)
+                {
+                    return childDirectory;
+                }
+            }
+
+            return null;
+        }
+
+        private MSIDirectory FindDirectory(string DirectoryName, MSIDirectory directory)
+        {
+            if (directory.name == DirectoryName)
+            {
+                return directory;
+            }
+
+            if (directory.directory != null)
+            {
+                foreach (MSIDirectory childDirectory in directory.directory)
+                {
+                    MSIDirectory childDirectory2 = FindDirectory(DirectoryName, childDirectory);
+                    if (childDirectory2 != null)
+                    {
+                        return childDirectory2;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private string GetDisplayablePath(string path)
+        {
+            if (path.Length > 40)
+            {
+                return "..." + path.Substring(path.Length-37, 37);
+            }
+            return path;
+        }
+    }
 
     /// <summary>
     /// Maintains a forward reference to a .tlb file 
@@ -4194,7 +4180,7 @@ namespace NAnt.Contrib.Tasks
     {
         private AssemblyName assemblyName;
         private string libId, typeLibFileName, 
-	        featureName, assemblyComponent;
+            featureName, assemblyComponent;
 
         /// <summary>
         /// Creates a new <see cref="TypeLibRecord"/>.
@@ -4205,15 +4191,15 @@ namespace NAnt.Contrib.Tasks
         /// <param name="FeatureName">The feature containing the typelibrary's file.</param>
         /// <param name="AssemblyComponent">The name of the Assembly's component.</param>
         public TypeLibRecord(
-	        string LibId, string TypeLibFileName, 
-	        AssemblyName AssemblyName, string FeatureName, 
-	        string AssemblyComponent)
+            string LibId, string TypeLibFileName, 
+            AssemblyName AssemblyName, string FeatureName, 
+            string AssemblyComponent)
         {
-	        libId = LibId;
-	        typeLibFileName = TypeLibFileName;
-	        assemblyName = AssemblyName;
-	        featureName = FeatureName;
-	        assemblyComponent = AssemblyComponent;
+            libId = LibId;
+            typeLibFileName = TypeLibFileName;
+            assemblyName = AssemblyName;
+            featureName = FeatureName;
+            assemblyComponent = AssemblyComponent;
         }
 
         /// <summary>
@@ -4223,7 +4209,7 @@ namespace NAnt.Contrib.Tasks
         /// <remarks>None.</remarks>
         public string AssemblyComponent
         {
-	        get { return assemblyComponent; }
+            get { return assemblyComponent; }
         }
 
         /// <summary>
@@ -4233,7 +4219,7 @@ namespace NAnt.Contrib.Tasks
         /// <remarks>None.</remarks>
         public string TypeLibFileName
         {
-	        get { return typeLibFileName; }
+            get { return typeLibFileName; }
         }
 
         /// <summary>
@@ -4243,7 +4229,7 @@ namespace NAnt.Contrib.Tasks
         /// <remarks>None.</remarks>
         public string LibId
         {
-	        get { return libId; }
+            get { return libId; }
         }
 
         /// <summary>
@@ -4253,7 +4239,7 @@ namespace NAnt.Contrib.Tasks
         /// <remarks>None.</remarks>
         public AssemblyName AssemblyName
         {
-	        get { return assemblyName; }
+            get { return assemblyName; }
         }
 
         /// <summary>
@@ -4263,17 +4249,17 @@ namespace NAnt.Contrib.Tasks
         /// <remarks>None.</remarks>
         public string FeatureName
         {
-	        get { return featureName; }
+            get { return featureName; }
         }
     }
 
-	[StructLayout(LayoutKind.Sequential)]
-	public struct MSIRowColumnData
-	{
-		public string name;
-		public int id;
-		public string type;
-	}
+    [StructLayout(LayoutKind.Sequential)]
+    public struct MSIRowColumnData
+    {
+        public string name;
+        public int id;
+        public string type;
+    }
 
 
     [StructLayout(LayoutKind.Sequential)]
