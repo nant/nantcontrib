@@ -80,9 +80,12 @@
         <xsl:attribute name="define">
           <xsl:value-of select="'${define}'" />
         </xsl:attribute>
+        <xsl:if test="$compiler != 'vbc'">
         <xsl:attribute name="doc">
           <xsl:value-of select="'${doc}'" />
         </xsl:attribute>
+        </xsl:if>
+        <xsl:if test="$compiler='vbc'">
         <xsl:attribute name="optioncompare">
           <xsl:value-of select="'${vbc.optionCompare}'" />
         </xsl:attribute>
@@ -92,8 +95,12 @@
         <xsl:attribute name="optionstrict">
           <xsl:value-of select="'${vbc.optionStrict}'" />
         </xsl:attribute>
+        <xsl:attribute name="main">
+			<xsl:value-of select="Settings/@StartupObject"/>
+        </xsl:attribute>
+        </xsl:if>
         <xsl:attribute name="removeintchecks">
-          <xsl:value-of select="'${removeIntChecks}'" />
+          <xsl:value-of select="'${removeintchecks}'" />
         </xsl:attribute>
         <xsl:attribute name="rootnamespace">
           <xsl:value-of select="'${rootNamespace}'" />
@@ -103,13 +110,16 @@
             <xsl:value-of select="Settings/@ApplicationIcon" />
           </xsl:attribute>
         </xsl:if>
+        <xsl:if test="$compiler = 'csc'">
         <xsl:element name="arg">
           <xsl:attribute name="value">
             <xsl:value-of select="'${unsafe}'" />
           </xsl:attribute>
         </xsl:element>
+        </xsl:if>
         <xsl:apply-templates select="../Files" />
         <xsl:apply-templates select="References" />
+		<xsl:apply-templates select="Imports" />        
       </xsl:element>
     </target>
   </xsl:template>
@@ -138,7 +148,7 @@
       <target name="package" depends="init" description="Create a redistributable package">
         <delete failonerror="false">
           <fileset basedir="${{dist.name}}">
-            <includes name="**" />
+            <include name="**" />
           </fileset>
         </delete>
         <mkdir dir="${{dist.name}}" />
@@ -153,9 +163,9 @@
         <copy todir="{$distdir}">
           <fileset basedir="${{dir.lib}}">
             <!-- include the output directory -->
-            <includes name="${{project.output}}" />
+            <include name="${{project.output}}" />
             <xsl:for-each select="References/Reference[@Project|@Guid]">
-              <includes name="{@Name}.dll" />
+              <include name="{@Name}.dll" />
             </xsl:for-each>
           </fileset>
         </copy>
@@ -260,7 +270,7 @@
     </xsl:if>
   </xsl:template>
   <xsl:template match="File">
-    <includes name="{@RelPath}" />
+    <include name="{@RelPath}" />
   </xsl:template>
   <!-- rules to handle importing COM components via tlbimp -->
   <xsl:template match="References" mode="tlbimp">
@@ -314,18 +324,18 @@
     <xsl:choose>
       <!-- straight assembly reference -->
       <xsl:when test="@AssemblyName">
-        <includes name="{@AssemblyName}.dll" />
+        <include name="{@AssemblyName}.dll" />
       </xsl:when>
       <!-- project references -->
       <xsl:when test="@Project">
         <!-- we assume that the project being referenced has been built
         already and the compiled dll is sitting in the lib directory. -->
-        <includes name="${{dir.lib}}/{@Name}.dll" />
+        <include name="${{dir.lib}}/{@Name}.dll" />
       </xsl:when>
       <!-- COM object reference -->
       <xsl:when test="@Guid">
         <!-- the tlbimp task will put the interop lib into the output directory -->
-        <includes name="${{dir.lib}}/{@Name}.dll" />
+        <include name="${{dir.lib}}/{@Name}.dll" />
       </xsl:when>
     </xsl:choose>
   </xsl:template>
@@ -354,14 +364,14 @@
       <link output="${{dir.output}}${{project.output}}" options="${{link.opts}} ${{link.libs}}" verbose="true">
         <sources>
           <xsl:for-each select="Files/Filter[@Name='Resource Files']/File" >
-            <includes name="${{dir.obj}}/substring-before(@RelativePath,'.').res" />
+            <include name="${{dir.obj}}/substring-before(@RelativePath,'.').res" />
           </xsl:for-each>
           <xsl:for-each select="Files/Filter[@Name='Source Files']/File" >
-            <includes name="${{dir.obj}}/{substring-before(@RelativePath,'.')}.obj"/>
+            <include name="${{dir.obj}}/{substring-before(@RelativePath,'.')}.obj"/>
           </xsl:for-each>
         </sources>
         <libdirs>
-          <includes name="${framework.lib}" />
+          <include name="${framework.lib}" />
         </libdirs>
       </link>
     </target>
@@ -409,8 +419,16 @@
   </xsl:template>
   <xsl:template match="Filter">
     <xsl:for-each select="File">
-    <includes name="{@RelativePath}" />
+    <include name="{@RelativePath}" />
     </xsl:for-each>
+  </xsl:template>
+  <xsl:template match="Imports">
+	<imports>
+		<xsl:apply-templates />
+	</imports>
+  </xsl:template>
+  <xsl:template match="Import">
+	<import name="{@Namespace}"/>
   </xsl:template>
   <xsl:template name="expand-vsmacro">
     <xsl:param name="str"/>

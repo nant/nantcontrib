@@ -35,18 +35,19 @@
   3) Allow searching for project files deeper down the tree, instead of 1 directory deep.
   -->
 <project name="master" default="build" description="example master build file">
-  <property name="debug" value="false"/>
   <property name="references" value=""/>
+  <property name="verbose" value="false"/>
 
   <target name="build">
     <foreach item="File" property="subproject" >
       <in> 
         <items>
-          <includes name="**\*.csproj"/>
-          <includes name="**\*.vbproj"/>
+          <include name="**\*.csproj"/>
+          <include name="**\*.vbproj"/>
         </items>
       </in>
       <do>
+      <echo message="Scanning ${subproject} for references"/>
   <script language="C#" verbose="true">
   <!-- produce a list of references for the ${subproject} in the order they need to be built.
      The rule is that a  project's references need to be built before the project itself.  
@@ -55,10 +56,10 @@
      ${subproject} - the project we'll parse to get a build order.
   -->
   <references>
-    <reference name="System.Xml.dll"/>
+    <include name="System.Xml.dll"/>
   </references>
   <imports>
-    <import namespace="System.Xml"/>
+    <import name="System.Xml"/>
   </imports>
   <code><![CDATA[
   public static void ScriptMain(Project project) {
@@ -101,7 +102,7 @@
   }
   ]]></code>
 </script>
-	<if propertytrue="debug">
+	<if test="${verbose}">
 	  <echo message="${subproject} refs: ${references}"/>
 	</if>
       </do>
@@ -109,23 +110,31 @@
 
     <foreach item="String" in="${references}" delim="," property="subproject" >
       <do>
-        <if propertytrue="debug">      
+        <if test="${verbose}">      
 	  <echo message="Building ${subproject}"/>
   	</if>
 	<foreach item="File" property="currentproject">
 	  <in>
 	    <items>
-	      <includes name="${subproject}\*.csproj"/>
-	      <includes name="${subproject}\*.vbproj"/>
+	      <include name="${subproject}\*.csproj"/>
+	      <include name="${subproject}\*.vbproj"/>
 	    </items>
 	  </in>
 	  <do>
-	    <delete file="${nant.project.basedir}\${currentproject}\${currentproject}.build" failonerror="false"/>
+		<echo message="Converting ${currentproject}" />
+		<if >
+<uptodatefiles>
+                    <include name="${currentproject}.build" />
+                </uptodatefiles>
+                <comparefiles>
+                    <include name="${currentproject}" />
+                </comparefiles>
+                <delete file="${currentproject}.build" />
+	    </if>
 	    <!-- convert everything to nant format -->
             <style in="${currentproject}" 
-	       basedir="${nant.project.basedir}\${subproject}" 
 	       out="${currentproject}.build" 
-	       destdir="${nant.project.basedir}\${subproject}" 
+	       destdir="${subproject}" 
 	       extension="build" 
 	       style="${nant.project.basedir}\vsconvert.xsl" 
 	       verbose="true">
