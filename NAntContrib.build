@@ -58,6 +58,7 @@
       <copy todir="${build.dir}">
             <fileset basedir="bin">
                 <includes name="CollectionGen.dll"/>
+                <includes name="SourceSafe.Interop.dll"/>
             </fileset>
       </copy>
     </target>
