@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <project name="nantcontrib" default="nightly-self">
+    <!-- set build.date property to current date in format yyyyMMdd -->
+    <tstamp property="build.date" pattern="yyyyMMdd" />
     <!-- set base uri for linking to NAnt help -->
     <property name="nant.base.uri" value="http://nant.sourceforge.net/nightly/help/" />
-    <!-- set project.version to current date/time in yyyyMMdd format -->
-    <tstamp property="project.version" pattern="yyyyMMdd" />
     <!-- set name of sourceforge project server -->    
     <property name="sf.net.ssh.server" value="shell1.sf.net" />
     <property name="sf.net.web.path" value="/home/groups/n/na/nantcontrib/htdocs" />
@@ -31,6 +31,8 @@
     <!-- copy the zipped nighly build to sourceforge -->    
     <target name="deploy-zip-sf" depends="set-net-1.0-runtime-configuration, package" description="Updates SF.Net site with new release build of tasks">
         <regex input="${project.zip-path}" pattern="^(?'execpath'.*(\\|/)|(/|\\))(?'execfilename'.*)$" />
+        <!-- determine filename of distribution package on sf.net -->
+        <property name="deploy.zip.file" value="${project.name}-${project.version}-${build.date}.zip" />
         <!-- make sure the directory tree exists -->
         <exec program="ssh">
             <arg value="${sf.net.ssh.server}" />
@@ -39,18 +41,18 @@
         <!-- copy the build to sourceforge -->
         <exec workingdir="${execpath}" program="scp">
             <arg value="${execfilename}" />
-            <arg value="${serverpart}/nightly/builds/${execfilename}" />
+            <arg value="${serverpart}/nightly/builds/${deploy.zip.file}" />
         </exec>
         <echo message="Copied nightly build over to SF.Net" />
         <!-- make sure permissions are set right -->
         <exec program="ssh">
             <arg value="${sf.net.ssh.server}" />
-            <arg value="chmod 775 ${sf.net.web.path}/nightly/builds/${execfilename}" />
+            <arg value="chmod 775 ${sf.net.web.path}/nightly/builds/${deploy.zip.file}" />
         </exec>
         <!-- make sure group is set right -->
         <exec program="ssh">
             <arg value="${sf.net.ssh.server}" />
-            <arg value="chgrp nantcontrib ${sf.net.web.path}/nightly/builds/${execfilename}" />
+            <arg value="chgrp nantcontrib ${sf.net.web.path}/nightly/builds/${deploy.zip.file}" />
         </exec>
     </target>
     <!-- copy help to sourceforge -->    
