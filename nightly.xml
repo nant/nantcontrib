@@ -18,7 +18,7 @@
     <!-- do a release build -->
     <property name="debug" value="false"/>
     
-    <target name="nightly" depends="build userdoc doc" description="Perform a 'nightly' package, and updates the version of NAnt that is executing.">
+    <target name="nightly" depends="build doc" description="Perform a 'nightly' package, and updates the version of NAnt that is executing.">
         <property name="project.zip-path" value="${nant.project.basedir}/build/${project.name}-${project.version}.zip" />
 
         <zip zipfile="${project.zip-path}">
