@@ -107,6 +107,92 @@ namespace NAnt.Contrib.Util {
             }
         }
 
+		/// <summary>
+		/// Given an absolute directory and an absolute file name, returns a 
+		/// relative file name.
+		/// </summary>
+		/// <param name="basePath">An absolute directory.</param>
+		/// <param name="absolutePath">An absolute file name.</param>
+		/// <returns>
+		/// A relative file name for the given absolute file name.
+		/// </returns>
+		public static string GetRelativePath(string basePath, string absolutePath) {
+			string fullBasePath = Path.GetFullPath(basePath);
+			string fullAbsolutePath = Path.GetFullPath(absolutePath);
+
+			bool caseInsensitive = false;
+
+			// check if we're not on unix
+			if ((int) Environment.OSVersion.Platform != 128) {
+				// for simplicity, we'll consider all filesystems on windows
+				// to be case-insensitive
+				caseInsensitive = true;
+
+				// on windows, paths with different roots are located on different
+				// drives, so only absolute names will do
+				if (string.Compare(Path.GetPathRoot(fullBasePath), Path.GetPathRoot(fullAbsolutePath), caseInsensitive) != 0) {
+					return fullAbsolutePath;
+				}
+			}
+
+			int baseLen = fullBasePath.Length;
+			int absoluteLen = fullAbsolutePath.Length;
+
+			// they are on the same "volume", find out how much of the base path
+			// is in the absolute path
+			int i = 0;
+			while (i < absoluteLen && i < baseLen && string.Compare(fullBasePath[i].ToString(), fullAbsolutePath[i].ToString(), caseInsensitive) == 0) {
+				i++;
+			}
+			
+			if (i == baseLen && (fullAbsolutePath[i] == Path.DirectorySeparatorChar || fullAbsolutePath[i-1] == Path.DirectorySeparatorChar)) {
+				// the whole current directory name is in the file name,
+				// so we just trim off the current directory name to get the
+				// current file name.
+				if (fullAbsolutePath[i] == Path.DirectorySeparatorChar) {
+					// a directory name might have a trailing slash but a relative
+					// file name should not have a leading one...
+					i++;
+				}
+
+				return fullAbsolutePath.Substring(i);
+			}
+
+			// The file is not in a child directory of the current directory, so we
+			// need to step back the appropriate number of parent directories by
+			// using ".."s.  First find out how many levels deeper we are than the
+			// common directory
+
+			string commonPath = fullBasePath.Substring(0, i);
+
+			int levels = 0;
+			string parentPath = fullBasePath;
+
+			// remove trailing directory separator character
+			if (parentPath[parentPath.Length - 1] == Path.DirectorySeparatorChar) {
+				parentPath = parentPath.Substring(0, parentPath.Length - 1);
+			}
+
+			while (string.Compare(parentPath,commonPath, caseInsensitive) != 0) {
+				levels++;
+				DirectoryInfo parentDir = Directory.GetParent(parentPath);
+				if (parentDir != null) {
+					parentPath = parentDir.FullName;
+				} else {
+					parentPath = null;
+				}
+			}
+				
+			string relativePath = "";
+			
+			for (i = 0; i < levels; i++) {
+				relativePath += ".." + Path.DirectorySeparatorChar;
+			}
+
+			relativePath += fullAbsolutePath.Substring(commonPath.Length);
+			return relativePath;
+		}
+
         #endregion Public Static Methods
     }
 }
