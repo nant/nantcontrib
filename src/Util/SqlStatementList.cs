@@ -53,6 +53,7 @@ namespace NAnt.Contrib.Util
       private StringCollection _statements;
       private string _delimiter;
       private Regex _regex;
+      private PropertyDictionary _properties;
 
       /// <summary>
       /// Number of statements in the list
@@ -65,6 +66,14 @@ namespace NAnt.Contrib.Util
       /// </summary>
       public string this[int index] {
          get { return _statements[index].Trim(); }
+      }
+
+      /// <summary>
+      /// Project's properties for property expansion
+      /// </summary>
+      public PropertyDictionary Properties {
+         get { return _properties; }
+         set { _properties = value; }
       }
 
       /// <summary>
@@ -173,8 +182,9 @@ namespace NAnt.Contrib.Util
       /// <returns></returns>
       private string ExpandProps(string sql)
       {
-         // TODO: Add property expansion!
-         return sql;
+         if ( Properties == null )
+            return sql;
+         return Properties.ExpandProperties(sql);
       }
 
       

@@ -105,6 +105,25 @@ namespace NAnt.Contrib.Tests.Util
          Assertion.AssertEquals(STATEMENT_3, list[2]);
       }
 
+      public void TestPropertyExpansion()
+      {
+         const string table_name = "jobs";
+
+         string statement = "select * from ${table.name} where id=1";
+         string result = "select * from " + table_name + " where id=1";
+
+         PropertyDictionary props = new PropertyDictionary();
+         props.Add("table.name", table_name);
+
+         SqlStatementList list = new SqlStatementList(DELIMITER, DelimiterStyle.Normal);
+
+         list.Properties = props;
+         list.ParseSql(statement);
+         Assertion.AssertEquals(1, list.Count);
+         Assertion.AssertEquals(result, list[0]);
+
+      }
+
    } // class SqlStatementListTests
 
 } // namespace NAnt.Contrib.Tests.Util

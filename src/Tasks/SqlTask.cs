@@ -263,8 +263,10 @@ namespace NAnt.Contrib.Tasks
       /// <param name="writer"></param>
       private void ExecuteStatementsInBatch(SqlHelper sqlHelper, TextWriter writer)
       {
+         SqlStatementList list = 
+            new SqlStatementList(Delimiter, DelimiterStyle);
          SqlStatementAdapter adapter 
-            = new SqlStatementAdapter(Delimiter, DelimiterStyle);
+            = new SqlStatementAdapter(list);
          string sql = null;
          if ( Source == null ) {
             sql = adapter.AdaptSql(_statements);

@@ -42,11 +42,10 @@ namespace NAnt.Contrib.Util
       /// <summary>
       /// Creates a new instance
       /// </summary>
-      /// <param name="delimiter">String that separates statements from each other</param>
-      /// <param name="style">Style of the delimiter</param>
-      public SqlStatementAdapter(string delimiter, DelimiterStyle style)
+      /// 
+      public SqlStatementAdapter(SqlStatementList stmtList)
       {
-         _list = new SqlStatementList(delimiter, style);
+         _list = stmtList;
       }
 
       /// <summary>

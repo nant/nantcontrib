@@ -4,7 +4,7 @@
 <!--*                                                               *-->  
 <!--* Builds the NAntContrib Project                                *-->
 <!--*****************************************************************-->
-<project name="NAntContrib" default="build">
+<project name="NAntContrib" default="buildandtest">
 
     <tstamp/>
     <property name="debug" value="true"/>
@@ -166,7 +166,7 @@
             <references>
                 <includes name="${nant-bin.dir}/NUnitCore.dll"/>
                 <includes name="${nant-bin.dir}/NAnt.Core.dll"/>
-                <includes name="${nant-bin.dir}/NAnt.Tests.dll"/>
+                <includes name="${nant-bin.dir}/NAnt.Core.Tests.dll"/>
                 <includes name="${build.dir}/${project.FormalName}.Tasks.dll"/>
             </references>
             <arg value="/nowarn:1591"/>
