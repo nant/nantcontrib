@@ -2,32 +2,35 @@
 <project name="NAntContrib" default="build">
     <property name="project.name" value="nantcontrib"/>
     <property name="project.FormalName" value="NAnt.Contrib"/>
-    <property name="project.version" value="0.1.0.0" overwrite="false" />
+    <property name="project.version" value="0.8.4" overwrite="false" />
 
-    <property name="project.config" value="debug"/>
+    <!-- default configuration -->
+    <property name="project.config" value="debug" /> <!-- debug|release -->
+    <property name="build.defines" value="" />
 
     <property name="src.dir" value="src"/>
-    <property name="tests.dir" value="Tests"/>
+    <property name="tests.dir" value="tests"/>
 
     <!-- named project configurations (used by self-test and self-doc tasks) -->
     <target name="debug" description="Perform a 'debug' build">
         <property name="project.config" value="debug" />
-        <property name="debug" value="true" />
+        <property name="build.debug" value="true" />
         <property name="build.dir" value="${nant.project.basedir}/build/${project.name}-${project.version}-${project.config}" />
     </target>
 
     <target name="release" description="Perform a 'release' build">
         <property name="project.config" value="release" />
-        <property name="debug" value="false" />
+        <property name="build.debug" value="false" />
         <property name="build.dir" value="${nant.project.basedir}/build/${project.name}-${project.version}" />
     </target>
 
     <!-- build tasks -->
     <target name="init" description="Initializes build properties">
         <call target="${project.config}" />
+        <call target="set-runtime-configuration" />
         <ifnot propertyexists="nant.dir">
             <fail message="Please pass the folder containing the NAnt build on the commandline as a property." />
-        </ifnot>        
+        </ifnot>
         <available property="NAntReleaseExists" resource="${nant.dir}" type="Directory"/>
         <ifnot propertyexists="NAntReleaseExists" propertytrue="NAntReleaseExists">
             <fail message="The specified folder containing the NAnt build (${nant.dir}) does not exist." />
@@ -72,7 +75,7 @@
 
     <!-- Bootstrap the Xsd Task -->
     <target name="compile.schematask" depends="init" description="compiles the Xsd task">
-        <csc target="library" output="${build.dir}/bin/NAnt.Xsd.Tasks.dll">
+        <csc target="library" warnaserror="true" debug="${build.debug}" define="${current.build.defines}" output="${build.dir}/bin/NAnt.Xsd.Tasks.dll">
             <sources basedir="${src.dir}">
                 <includes name="Tasks/XsdTask.cs" />
             </sources>
@@ -80,7 +83,6 @@
                 <includes name="${nant.dir}/bin/NAnt.Core.dll" />
                 <includes name="${nant.dir}/bin/NAnt.DotNetTasks.dll" />
             </references>
-<!--            <arg value="/nowarn:1591" />-->
         </csc>
     </target>
 
@@ -101,19 +103,11 @@
             <mkdir dir="${build.dir}/schema/MSM" />
             <xsd schema="${src.dir}/Tasks/MSMTask.xsd" language="CS" namespace="NAnt.Contrib.Schemas.MSM" nologo="true" outputdir="${build.dir}/schema/MSM" uri="NAnt.Contrib.Tasks.MSMTask" />
         </if>
-<!--        
-        <csc target="library" output="${build.dir}/bin/NAnt.Contrib.Schemas.dll">
-            <sources basedir="${build.dir}/schema">
-                <includes name="**.cs"/>
-            </sources>
-            <arg value="/nowarn:1591,1595" />
-        </csc>
--->        
     </target>
 
     <!-- Build the NAnt.Contrib.Tasks.dll library -->
     <target name="build" depends="prepare, prepare.slingshot, compile.schemas" description="compiles the source code">
-        <csc target="library" debug="${debug}" output="${build.dir}/bin/${project.FormalName}.Tasks.dll" doc="${build.dir}/bin/${project.FormalName}.Tasks.xml">
+        <csc target="library" warnaserror="true" debug="${build.debug}" define="${current.build.defines}" output="${build.dir}/bin/${project.FormalName}.Tasks.dll" doc="${build.dir}/bin/${project.FormalName}.Tasks.xml">
             <sources>
                 <includes name="${src.dir}/**.cs" />
                 <includes name="${build.dir}/schema/**.cs" />
@@ -134,7 +128,7 @@
                 <includes name="${src.dir}/xsl/**" />
                 <includes name="${build.dir}/schema/**.resources" />
             </resources>
-            <arg value="/nowarn:1591,1595" />
+           <arg value="/nowarn:0618,1591" />
         </csc>
     </target>
 
@@ -157,7 +151,7 @@
                 <includes name="log4net.dll" />
             </fileset>
         </copy>
-        <csc target="library" output="${build.dir}/bin/${project.FormalName}.Tests.dll" debug="${debug}">
+        <csc target="library" warnaserror="true" debug="${build.debug}" define="${current.build.defines}" output="${build.dir}/bin/${project.FormalName}.Tests.dll">
             <sources basedir="${tests.dir}">
                 <includes name="**/*.cs" />
             </sources>
@@ -202,27 +196,29 @@
             <documenters>
                 <documenter name="NAntTask">
                     <property name="OutputDirectory" value="${build.dir}/doc/help/tasks" />
+                    <property name="LinkToSdkDocVersion" value="${link.sdkdoc.version}" />
                 </documenter>
                 <documenter name="MSDN">
                     <property name="OutputDirectory" value="${build.dir}/doc/sdk" />
                     <property name="HtmlHelpName" value="NAntContrib-SDK" />
+                    <property name="LinkToSdkDocVersion" value="${link.sdkdoc.version}" />
                     <property name="IncludeFavorites" value="False" />
                     <property name="Title" value="NAntContrib SDK Documentation - v.${project.version}" />
                     <property name="SplitTOCs" value="False" />
                     <property name="DefaulTOC" value="" />
                     <property name="ShowVisualBasic" value="True" />
-                    <property name="ShowMissingSummaries" value="True" />
-                    <property name="ShowMissingRemarks" value="True" />
-                    <property name="ShowMissingParams" value="True" />
-                    <property name="ShowMissingReturns" value="True" />
-                    <property name="ShowMissingValues" value="True" />
+                    <property name="ShowMissingSummaries" value="${build.debug}" />
+                    <property name="ShowMissingRemarks" value="${build.debug}" />
+                    <property name="ShowMissingParams" value="${build.debug}" />
+                    <property name="ShowMissingReturns" value="${build.debug}" />
+                    <property name="ShowMissingValues" value="${build.debug}" />
                     <property name="DocumentInternals" value="False" />
                     <property name="DocumentProtected" value="True" />
                     <property name="DocumentPrivates" value="False" />
                     <property name="DocumentEmptyNamespaces" value="False" />
                     <property name="IncludeAssemblyVersion" value="False" />
-                    <property name="CopyrightText" value="" />
-                    <property name="CopyrightHref" value="" />
+                    <property name="CopyrightText" value="Copyright (C) 2001-2003 Gerry Shaw" />
+                    <property name="CopyrightHref" value="http://nant.sourceforge.net" />
                  </documenter>
             </documenters>
         </ndoc>
@@ -235,7 +231,7 @@
         </delete>
         <!-- copy images and stylesheet so we can preview userdoc and have it look right -->
         <copy todir="${build.dir}/doc/help">
-            <fileset basedir="htdocs/help">
+            <fileset basedir="doc/help">
                 <includes name="**/*" />
             </fileset>
         </copy>
@@ -255,28 +251,31 @@
         <!-- copy project files -->
         <copy todir="${build.dir}">
             <fileset>
-                <includes name="src/**" />
-                <includes name="Tests/**" />
+                <includes name="${src.dir}/**" />
+                <includes name="${tests.dir}/**" />
                 <includes name="*" />
 
-                <!--Start "Exclude VS.Net stuff" -->
+                <!-- exclude nighlty build file -->
+                <excludes name="nightly.xml" />
+                <!-- exclude release build file -->
+                <excludes name="release.xml" />
+                <!--exclude VS.Net stuff -->
                 <excludes name="**/*.suo" />
                 <excludes name="**/*j.user" />
                 <excludes name="**/bin/**" />
                 <excludes name="**/obj/**" />
-                <!--End "Exclude VS.Net stuff"-->
             </fileset>
         </copy>
 
         <!-- copy website files -->
         <copy todir="${build.dir}/doc">
-            <fileset basedir="htdocs">
+            <fileset basedir="doc">
                 <includes name="*" />
             </fileset>
         </copy>
 
         <!-- create zip file -->
-        <property name="project.zip-path" value="${nant.project.basedir}/build/${project.name}-${project.version}.zip" />
+        <property name="project.zip-path" value="${nant.project.basedir}/build/${project.name}.Tasks-${project.version}.zip" />
         <zip zipfile="${project.zip-path}">
             <fileset basedir="${build.dir}">
                 <includes name="**/*" />
@@ -289,5 +288,118 @@
             </fileset>
         </zip>
         <echo message="Created a '${project.config}' package at file://${project.zip-path}" />
+    </target>
+    <!-- Framework support targets -->
+    <target name="set-runtime-configuration-flags">
+        <property name="current.runtime.config.net" value="false" />
+        <property name="current.runtime.config.netcf" value="false" />
+        <property name="current.runtime.config.mono" value="false" />
+        <property name="current.runtime.config.sscli" value="false" />
+        <property name="current.runtime.config.${current.runtime.config}" value="true" />
+        <property name="current.runtime.net-1.0" value="false" />
+        <property name="current.runtime.net-1.1" value="false" />
+        <property name="current.runtime.net-1.2" value="false" />
+        <property name="current.runtime.netcf-1.0" value="false" />
+        <property name="current.runtime.mono-1.0" value="false" />
+        <property name="current.runtime.sscli-1.0" value="false" />
+        <property name="current.runtime.${current.runtime.config}-${current.runtime.version}" value="true" />
+    </target>
+    <target name="set-runtime-configuration">
+        <ifnot propertyexists="current.runtime.config">
+            <ifnot propertyexists="nant.settings.currentframework">
+                <fail message="No runtime configuration was specified and the default NAnt runtime is not available." />
+            </ifnot>
+            <ifnot targetexists="set-${nant.settings.currentframework}-runtime-configuration">
+                <fail message="No runtime configuration was specified and the current runtime (${nant.settings.currentframework}) is not supported by NAnt." />
+            </ifnot>
+            <call target="set-${nant.settings.currentframework}-runtime-configuration" force="true" />
+        </ifnot>
+        <ifnot propertyexists="current.runtime.version">
+            <ifnot propertyexists="nant.settings.currentframework">
+                <fail message="No runtime configuration was specified and the default NAnt runtime is not available." />
+            </ifnot>
+            <ifnot targetexists="set-${nant.settings.currentframework}-runtime-configuration">
+                <fail message="No runtime configuration was specified and the current runtime (${nant.settings.currentframework}) is not supported by NAnt." />
+            </ifnot>
+            <call target="set-${nant.settings.currentframework}-runtime-configuration" force="true" />
+        </ifnot>
+        <ifnot targetexists="set-${current.runtime.config}-${current.runtime.version}-runtime-configuration">
+            <fail message="The ${current.runtime.config}-${current.runtime.version} runtime is not supported by NAntContrib." />
+        </ifnot>
+        <call target="set-${current.runtime.config}-${current.runtime.version}-runtime-configuration" force="true" />
+    </target>
+    <target name="set-net-1.0-runtime-configuration">
+        <property name="current.runtime.config" value="net" />
+        <property name="current.runtime.version" value="1.0" />
+        <property name="current.runtime.description" value="Microsoft .NET Framework 1.0" />
+        <property name="current.build.defines" value="${build.defines}NET,NET_1_0" />
+        <property name="link.sdkdoc.version" value="SDK_v1_0" />
+        <property name="lib.dir" value="lib/${current.runtime.config}/${current.runtime.version}" />
+        <property name="nant.settings.currentframework" value="${current.runtime.config}-${current.runtime.version}" />
+        <property name="sourceconfig" value="NAnt.Console.exe.config"/>
+        <property name="linux" value="false"/>
+        <call target="set-runtime-configuration-flags" force="true" />
+    </target>
+    <target name="set-net-1.1-runtime-configuration">
+        <property name="current.runtime.config" value="net" />
+        <property name="current.runtime.version" value="1.1" />
+        <property name="current.runtime.description" value="Microsoft .NET Framework 1.1" />
+        <property name="current.build.defines" value="${build.defines}NET,NET_1_1" />
+        <property name="link.sdkdoc.version" value="SDK_v1_1" />
+        <property name="nant.settings.currentframework" value="${current.runtime.config}-${current.runtime.version}" />
+        <property name="linux" value="false"/>
+        <call target="set-runtime-configuration-flags" force="true" />
+    </target>
+    <target name="set-net-1.2-runtime-configuration">
+        <property name="current.runtime.config" value="net" />
+        <property name="current.runtime.version" value="1.2" />
+        <property name="current.runtime.description" value="Microsoft .NET Framework 1.2" />
+        <property name="current.build.defines" value="${build.defines}NET,NET_1_2" />
+        <property name="link.sdkdoc.version" value="MsdnOnline" />
+        <property name="nant.settings.currentframework" value="${current.runtime.config}-${current.runtime.version}" />
+        <property name="linux" value="false"/>
+        <call target="set-runtime-configuration-flags" force="true" />
+    </target>
+    <target name="set-netcf-1.0-runtime-configuration">
+        <property name="current.runtime.config" value="netcf" />
+        <property name="current.runtime.version" value="1.0" />
+        <property name="current.runtime.description" value="Microsoft .NET Compact Framework 1.0" />
+        <property name="current.build.defines" value="${build.defines}NETCF,NETCF_1_0" />
+        <property name="link.sdkdoc.version" value="SDK_v1_1" />
+        <property name="nant.settings.currentframework" value="${current.runtime.config}-${current.runtime.version}" />
+        <property name="linux" value="false"/>
+        <call target="set-runtime-configuration-flags" force="true" />
+    </target>
+    <target name="set-mono-1.0-runtime-configuration">
+        <property name="current.runtime.config" value="mono" />
+        <property name="current.runtime.version" value="1.0" />
+        <property name="current.runtime.description" value="Mono 1.0" />
+        <property name="current.build.defines" value="${build.defines}MONO,MONO_1_0" />
+        <property name="link.sdkdoc.version" value="MsdnOnline" />
+        <ifnot propertyexists="linux" propertytrue="linux">
+            <property name="nant.settings.currentframework" value="${current.runtime.config}-${current.runtime.version}" />
+            <property name="linux" value="false"/>
+        </ifnot>
+        <call target="set-runtime-configuration-flags" force="true" />
+    </target>
+    <target name="set-mono-1.0-linux-runtime-configuration">
+        <property name="current.runtime.config" value="mono" />
+        <property name="current.runtime.version" value="1.0" />
+        <property name="current.runtime.description" value="Mono 1.0" />
+        <property name="current.build.defines" value="${build.defines}MONO,MONO_1_0" />
+        <property name="link.sdkdoc.version" value="MsdnOnline" />
+        <property name="nant.settings.currentframework" value="mono-1.0-linux" />
+        <property name="linux" value="true" />
+        <call target="set-runtime-configuration-flags" force="true" />
+    </target>
+    <target name="set-sscli-1.0-runtime-configuration">
+        <property name="current.runtime.config" value="sscli" />
+        <property name="current.runtime.version" value="1.0" />
+        <property name="current.runtime.description" value="Microsoft Shared Source CLI 1.0" />
+        <property name="current.build.defines" value="${build.defines}SSCLI,SSCLI_1_0" />
+        <property name="link.sdkdoc.version" value="MsdnOnline" />
+        <property name="nant.settings.currentframework" value="${current.runtime.config}-${current.runtime.version}" />
+        <property name="linux" value="false" />
+        <call target="set-runtime-configuration-flags" force="true" />
     </target>
 </project>
