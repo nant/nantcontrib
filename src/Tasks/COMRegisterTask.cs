@@ -89,10 +89,18 @@ namespace NAnt.Contrib.Tasks {
         //-----------------------------------------------------------------------------
         // Kernel 32 imports
         //-----------------------------------------------------------------------------
+        [DllImport("kernel32.dll", SetLastError=true)]
+        private static extern uint SetErrorMode(uint uMode);
+ 
         [DllImport("Kernel32.dll", EntryPoint = "LoadLibrary", CharSet=System.Runtime.InteropServices.CharSet.Unicode, SetLastError=true)]
         private static extern IntPtr LoadLibrary(string fullpath);
-       
-        [DllImport("Kernel32.dll",  SetLastError=true)]
+        
+        private const uint SEM_FAILCRITICALERRORS = 0x0001;
+        private const uint SEM_NOGPFAULTERRORBOX = 0x0002;
+        private const uint SEM_NOOPENFILEERRORBOX = 0x8000;
+        
+        
+        [DllImport("Kernel32.dll", SetLastError=true)]
         private static extern int FreeLibrary(IntPtr hModule);
         
         [DllImport("Kernel32.dll", SetLastError=true)]
@@ -199,13 +207,17 @@ namespace NAnt.Contrib.Tasks {
         /// <param name="path"></param>
         private void RegisterDllServer(string path){
             IntPtr handle = new IntPtr();
-
+            
+            // set the error mode to prevent failure message boxes from being displayed. 
+            uint oldErrorMode = SetErrorMode(SEM_NOOPENFILEERRORBOX | SEM_FAILCRITICALERRORS );
+            
             handle = LoadLibrary(path);
             int error = Marshal.GetLastWin32Error();
             if (handle.ToInt32() == 0 && error != 0){
                 throw new BuildException(string.Format(CultureInfo.InvariantCulture,
                     "Error loading dll '{0}'.", path), Location);
             }
+            
             string entryPoint = "DllRegisterServer";
             string action = "register";
             if (Unregister) {
@@ -216,9 +228,9 @@ namespace NAnt.Contrib.Tasks {
             error = Marshal.GetLastWin32Error();
             
             if (address.ToInt32() == 0 && error != 0){
-                string message = string.Format(CultureInfo.InvariantCulture, 
-                    "Error {0}ing dll. '{1}' has no {2} function.", action, 
-                    path, entryPoint); 
+                string message = string.Format(CultureInfo.InvariantCulture,
+                    "Error {0}ing dll. '{1}' has no {2} function.", action,
+                    path, entryPoint);
                 FreeLibrary(handle);
                 throw new BuildException(message, Location);
             }
@@ -236,6 +248,7 @@ namespace NAnt.Contrib.Tasks {
             }
             // unload the library
             FreeLibrary(handle);
+            SetErrorMode(oldErrorMode);
         }
         
 
