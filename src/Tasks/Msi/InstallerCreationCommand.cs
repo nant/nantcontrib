@@ -2109,7 +2109,11 @@ namespace NAnt.Contrib.Tasks.Msi {
                     string tmpDirPath = dirPath;
 
                     // Add intermediate directory records to the directory table
+                    // List of sub directory names.  
                     ArrayList subdirList = new ArrayList();
+                    if (basePath.EndsWith(Path.DirectorySeparatorChar.ToString()) || basePath.EndsWith(Path.AltDirectorySeparatorChar.ToString()))
+                        basePath = basePath.Substring(0, basePath.Length - 1);
+
                     while (tmpDirPath != basePath) {
                         subdirList.Insert(0, Path.GetFileName(tmpDirPath));
                         tmpDirPath = Path.GetDirectoryName(tmpDirPath);
@@ -2117,19 +2121,20 @@ namespace NAnt.Contrib.Tasks.Msi {
 
                     tmpDirPath = basePath;
                     string parentDir = Component.directory;
+                    string relativeDirId = Component.directory;
                     foreach (string folderName in subdirList) {
                         tmpDirPath = Path.Combine(tmpDirPath, folderName);
+                        relativeDirId += "_" + folderName.ToUpper();
 
                         if (!dirMap.ContainsKey(tmpDirPath)) {
                             // Add entry to directory table
-                            string id = "D_" + CreateIdentityGuid();
-                            dirMap[tmpDirPath] = id;
+                            dirMap[tmpDirPath] = relativeDirId;
 
                             string path = GetShortPath(tmpDirPath) + "|" + folderName;
                         
                             // Insert the directory record
-                            directoryTable.InsertRecord(id, parentDir, path);
-                            parentDir = id;
+                            directoryTable.InsertRecord(relativeDirId, parentDir, path);
+                            parentDir = relativeDirId;
                         } else {
                             parentDir = (string)dirMap[tmpDirPath];
                         }
