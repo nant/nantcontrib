@@ -262,7 +262,7 @@
     <echo message="*" />
     <echo message="**************************************************" />
     <property name="help.dir" value="NAntAddinDocs" />
-    <exec program="&quot;${helpsdk.dir}\hxcomp&quot;" commandline="-p ${help.dir}\NAntAddinDocs.HxC -o ${dest.dir}\NAntAddinDocs.HxS -r ${help.dir}" />
+    <hxcomp contents="${help.dir}\NAntAddinDocs.HxC" output="${dest.dir}\NAntAddinDocs.HxS" projectroot="${help.dir}" />
     <copy todir="${dest.dir}">
       <fileset basedir="${help.dir}\CollectionFiles">
         <includes name="NAntAddinDocs.HxC" />
@@ -282,7 +282,7 @@
     <echo message="* Registering Help in Shared Help Collection..." />
     <echo message="*" />
     <echo message="**************************************************" />
-    <exec program="&quot;${helpsdk.dir}\hxreg&quot;" commandline="-n ${product.name} -i ${product.name} -c ${dest.dir}\NAntAddinDocs.HxC -s ${dest.dir}\NAntAddinDocs.HxS " />
+    <hxreg namespace="${product.name}" title="${product.name}" collection="${dest.dir}\NAntAddinDocs.HxC" helpfile="${dest.dir}\NAntAddinDocs.HxS" />
   </target>
   <target name="assemblies.deploy" description="Copies Assemblies to the Build Directory" depends="vsdocs">
     <echo message="**************************************************" />
