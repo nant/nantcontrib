@@ -311,7 +311,7 @@ namespace NAnt.Contrib.Tasks {
             string fileLine = null;
             string projectName = null;
             string projectType = null;
-        
+
             //# Modified each regular expressioni to properly parse the project references in the vbp file #
             // Regexp that extracts INI-style "key=value" entries used in the VBP
             Regex keyValueRegEx = new Regex(@"(?<key>\w+)\s*=\s*(?<value>.*($^\.)*)\s*$");
@@ -320,8 +320,8 @@ namespace NAnt.Contrib.Tasks {
             Regex codeRegEx = new Regex(@"(Class|Module)\s*=\s*\w*;\s*(?<filename>.*($^\.)*)\s*$");
 
             // Regexp that extracts reference entries from the VBP (Reference=)
-            Regex referenceRegEx = new Regex(@"Reference\s*=\s*\*\\G{(?<tlbguid>[0-9\-A-Fa-f]*($^\.)*)}\#(?<majorver>[0-9\.0-9($^\.)*]*)\#(?<minorver>[0-9]($^\.)*)\#(?<tlbname>.*)\#");
-
+            Regex referenceRegEx = new Regex(@"(Object|Reference)\s*=\s*({|\*\\G{)(?<tlbguid>[0-9\-A-Fa-f]*($^\.)*)}\#(?<majorver>[0-9($^\.)*]*)\.(?<minorver>[0-9]($^\.)*)\#(?<lcid>[0-9]($^\.)*)(;|\#)(?<tlbname>.*)");
+            
             string key = String.Empty;
             string keyValue = String.Empty;
             
@@ -346,7 +346,7 @@ namespace NAnt.Contrib.Tasks {
                             // The entry is of the form "Form=Form1.frm"
                             sources.Includes.Add(keyValue);
                         }
-                        else if (key == "Reference") {
+                        else if (key == "Object" || key == "Reference") {
                             // This is a source file - extract the reference name and add it to the references fileset
                             match = referenceRegEx.Match(fileLine);
                             if (match.Success) {
@@ -370,7 +370,7 @@ namespace NAnt.Contrib.Tasks {
                                     temp = match.Groups["lcid"].Value;
                                     uint lcid = 0;
                                     
-                                    if (0 < temp.Length) {
+                                    if ( 0 < temp.Length) {
                                         lcid = (uint) double.Parse(temp, CultureInfo.InvariantCulture);
                                     }
                                     
@@ -378,6 +378,7 @@ namespace NAnt.Contrib.Tasks {
                                     Guid guid = new Guid(tlbGuid);
                                     try {
                                         QueryPathOfRegTypeLib(ref guid, majorVer, minorVer, lcid, out tlbName);
+                                        tlbName = tlbName.Trim('\0');
                                         if (File.Exists(tlbName)) {
                                             references.Includes.Add(tlbName);
                                         }
