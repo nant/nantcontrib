@@ -23,6 +23,7 @@
 #endregion
 
 using System;
+using System.IO;
 
 using SourceSafeTypeLib;
 
@@ -65,20 +66,20 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
     public sealed class CheckoutTask : BaseTask {
         #region Private Instance Fields
 
-        private string _localPath;
+        private DirectoryInfo _localPath;
         private bool _recursive = true;
         private bool _writable = true;
+        private FileTimestamp _fileTimestamp = FileTimestamp.Current;
 
         #endregion Private Instance Fields
 
         #region Public Instance Properties
 
         /// <summary>
-        /// The absolute path to the local working directory.
+        /// The path to the local working directory.
         /// </summary>
         [TaskAttribute("localpath", Required=true)]
-        [StringValidator(AllowEmpty=false)]
-        public string LocalPath {
+        public DirectoryInfo LocalPath {
             get { return _localPath; }
             set { _localPath = value; }
         }
@@ -105,6 +106,17 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
             set { _writable = value; }
         }
 
+
+        /// <summary>
+        /// Set the behavior for timestamps of local files. The default is
+        /// <see cref="F:FileTimestamp.Current" />.
+        /// </summary>
+        [TaskAttribute("filetimestamp")]
+        public FileTimestamp FileTimestamp {
+            get { return _fileTimestamp; }
+            set { _fileTimestamp = value; }
+        }
+
         #endregion Public Instance Properties
 
         #region Override implementation of Task
@@ -117,10 +129,11 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
              * FORCE, and CHKEXCLUSIVE
              */
             int flags = (Recursive ? Convert.ToInt32(RecursiveFlag) : 0) |
-                (Writable ? Convert.ToInt32(VSSFlags.VSSFLAG_USERRONO) : Convert.ToInt32(VSSFlags.VSSFLAG_USERROYES));
+                (Writable ? Convert.ToInt32(VSSFlags.VSSFLAG_USERRONO) : Convert.ToInt32(VSSFlags.VSSFLAG_USERROYES))
+                | GetFileTimestampFlags(FileTimestamp);
 
             try {
-                Item.Checkout("", LocalPath, flags);
+                Item.Checkout("", LocalPath.FullName, flags);
             } catch (Exception ex) {
                 throw new BuildException("The check-out operation failed.", 
                     Location, ex);

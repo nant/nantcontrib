@@ -86,23 +86,23 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
     public sealed class GetTask : BaseTask {
         #region Prviate Instance Fields
 
-        private string _localPath;
+        private DirectoryInfo _localPath;
         private bool _recursive = true;
         private bool _replace;
         private bool _writable;
         private bool _removeDeleted;
-        private bool _useModTime;
+        private long _deleteCount;
+        private FileTimestamp _fileTimestamp = FileTimestamp.Current;
 
         #endregion Prviate Instance Fields
 
-        private long _deleteCount = 0;
+        #region Public Instance Properties
 
         /// <summary>
-        /// The absolute path to the local working directory.
+        /// The path to the local working directory.
         /// </summary>
         [TaskAttribute("localpath", Required=true)]
-        [StringValidator(AllowEmpty=false)]
-        public string LocalPath {
+        public DirectoryInfo LocalPath {
             get { return _localPath; }
             set { _localPath = value; }
         }
@@ -159,10 +159,31 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         /// </summary>
         [TaskAttribute("usemodtime")]
         [BooleanValidator()]
+        [Obsolete("Use \"filetimestamp\" attribute instead.", false)]
         public bool UseModificationTime {
-            get { return _useModTime; }
-            set { _useModTime = value; }
+            get { return _fileTimestamp == FileTimestamp.Modified; }
+            set { 
+                if (value) {
+                    _fileTimestamp = FileTimestamp.Modified;
+                } else if (_fileTimestamp == FileTimestamp.Modified) {
+                    _fileTimestamp = FileTimestamp.Current;
+                }
+            }
         }
+
+        /// <summary>
+        /// Set the behavior for timestamps of local files. The default is
+        /// <see cref="F:FileTimestamp.Current" />.
+        /// </summary>
+        [TaskAttribute("filetimestamp")]
+        public FileTimestamp FileTimestamp {
+            get { return _fileTimestamp; }
+            set { _fileTimestamp = value; }
+        }
+
+        #endregion Public Instance Properties
+
+        #region Override implementation of Task
 
         protected override void ExecuteTask() {
             Open();
@@ -173,19 +194,25 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
             int flags = (Recursive ? Convert.ToInt32(RecursiveFlag) : 0) |
                 (Writable ? Convert.ToInt32(VSSFlags.VSSFLAG_USERRONO) : Convert.ToInt32(VSSFlags.VSSFLAG_USERROYES)) |
                 (Replace ? Convert.ToInt32(VSSFlags.VSSFLAG_REPREPLACE) : 0) |
-                (UseModificationTime ? Convert.ToInt32(VSSFlags.VSSFLAG_TIMEMOD) : 0);
+                GetFileTimestampFlags(FileTimestamp);
 
-            Log(Level.Info, "Getting '{0}' to '{1}'...", Path, LocalPath);
+            Log(Level.Info, "Getting '{0}' to '{1}'...", Path, LocalPath.FullName);
 
             // Get the version to the local path
             try {
-                Item.Get(ref _localPath, flags);
+                string localPath = LocalPath.FullName;
+                Item.Get(ref localPath, flags);
+                LocalPath = new DirectoryInfo(localPath);
             } catch (Exception ex) {
                 throw new BuildException("The get operation failed.", Location, ex);
             }
 
             RemoveDeletedFromLocalImage();
         }
+
+        #endregion Override implementation of Task
+
+        #region Public Instance Methods
 
         /// <summary>
         /// Checks to see if we should remove local copies of deleted files, and starts
@@ -194,7 +221,7 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         public void RemoveDeletedFromLocalImage() {
             if(RemoveDeleted) {
                 Log(Level.Info, "Removing deleted files from local image...");
-                RemoveDeletedFromLocalImage(Item, LocalPath);
+                RemoveDeletedFromLocalImage(Item, LocalPath.FullName);
                 Log(Level.Info, "Removed {0} deleted files from local image.", _deleteCount);
             }
         }
@@ -241,6 +268,10 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
             return result;
         }
 
+        #endregion Public Instance Methods
+
+        #region Private Instance Methods
+
         private bool IsTrulyDeleted(Hashtable deletedTable, IVSSItem item) {
             return (bool) deletedTable[item.Name];
         }
@@ -252,7 +283,7 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         private void SetToWriteable(string path) {
             File.SetAttributes(path, FileAttributes.Normal);
 
-            if(IsDirectory(path)) {
+            if (IsDirectory(path)) {
                 foreach(string entry in Directory.GetFileSystemEntries(path)) {
                     SetToWriteable(entry);
                 }
@@ -266,7 +297,7 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         private void Delete(string path) {
             _deleteCount++;
             Log(Level.Verbose, "Deleting '{0}'.", path);
-            if(IsDirectory(path)) {
+            if (IsDirectory(path)) {
                 Directory.Delete(path, true);
             } else {
                 File.Delete(path);
@@ -276,5 +307,7 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         private bool IsProject(IVSSItem item) {
             return item.Type == (int) VSSItemType.VSSITEM_PROJECT;
         }
+
+        #endregion Private Instance Methods
     }
 }

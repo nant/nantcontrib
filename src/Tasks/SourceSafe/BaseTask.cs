@@ -23,6 +23,7 @@
 #endregion
 
 using System;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 
@@ -33,7 +34,6 @@ using NAnt.Core.Attributes;
 using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks.SourceSafe {
-
     /// <summary>
     /// The base abstract class for all Visual Source Safe Tasks.  
     /// Provides the core attributes, and functionality for opening an item 
@@ -151,6 +151,52 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
             }
         }
 
+        /// <summary>
+        /// Gets the <see cref="VSSFlags" /> value corresponding with the 
+        /// specified <see cref="FileTimestamp" />.
+        /// </summary>
+        /// <param name="timestamp">A <see cref="FileTimestamp" />.</param>
+        /// <returns>
+        /// An <see cref="int" /> representing the <see cref="VSSFlags" /> value
+        /// for the <paramref name="timestamp" />.
+        /// </returns>
+        protected int GetFileTimestampFlags(FileTimestamp timestamp) {
+            switch (timestamp) {
+                case FileTimestamp.Current:
+                    return Convert.ToInt32(VSSFlags.VSSFLAG_TIMENOW);
+                case FileTimestamp.Modified:
+                    return Convert.ToInt32(VSSFlags.VSSFLAG_TIMEMOD);
+                case FileTimestamp.Updated:
+                    return Convert.ToInt32(VSSFlags.VSSFLAG_TIMEUPD);
+                default:
+                    throw new InvalidEnumArgumentException("timestamp",
+                        (int) timestamp, typeof(FileTimestamp));
+            }
+        }
+
         #endregion Protected Instance Methods
+    }
+
+    /// <summary>
+    /// Defines how the local timestamp of files retrieved from a SourceSafe
+    /// database should be set.
+    /// </summary>
+    public enum FileTimestamp {
+        /// <summary>
+        /// The timestamp of the local file is set to the current date and time.
+        /// </summary>
+        Current = 1,
+
+        /// <summary>
+        /// The timestamp of the local file is set to the file's last 
+        /// modification date and time. 
+        /// </summary>
+        Modified = 2,
+
+        /// <summary>
+        /// The timestamp of the local file is set to the date and time that 
+        /// the file was last checked in to the database.
+        /// </summary>
+        Updated = 3
     }
 }
