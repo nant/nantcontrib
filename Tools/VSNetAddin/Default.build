@@ -387,139 +387,57 @@
     <echo message="* Building MSI (Windows Installer) File..." />
     <echo message="*" />
     <echo message="**************************************************" />
-    <msi output="${build.dir}\NAntAddinSetup.msi" basedir="${build.dir}" productlogo="installlogo.bmp" productname="NAnt Addin" license="license.rtf" debug="true">
-		<properties>
-			<property name="ProductName" value="NAnt Addin"/>
-			<property name="ProductVersion" value="1.0.0.1"/>
-			<property name="Manufacturer" value="The NAntContrib Project"/>
-			<property name="ProductCode" value="{A14003F5-AFBF-444B-9CE1-F9842C6E7C2E}"/>
-			<property name="UpgradeCode" value="{15AE65D6-A43C-44E6-85B9-B4FF03910829}"/>
-		</properties>
-		<features>
-			<feature name="DefaultFeature" title="NAnt Addin" display="2" level="1">
-				<description>NAnt Addin for Visual Studio.NET</description>
-				<directory ref="ADDINFOLDER"/>
-			</feature>
-			<feature name="AddinFeature" title="Addin Runtime" parent="DefaultFeature" display="2" level="2">
-				<description>Files required for the Addin to Run</description>
-				<directory ref="ADDINFOLDER" />
-				<component ref="AddinFiles" />
-			</feature>
-			<feature name="AddinResourcesFeature" title="Addin Resources" parent="DefaultFeature" display="2" level="2">
-				<description>Resources required for the Addin to Run</description>
-				<directory ref="ADDINRESOURCESFOLDER" />
-				<component ref="AddinResourceFiles" />
-			</feature>
-		</features>
-		<components>
-			<component name="AddinFiles" id="{53064B03-10ED-45B8-A612-757B75217122}" attr="2">
-				<directory ref="ADDINFOLDER" />
-				<file ref="NAntAddinLibrary" />
-			</component>
-			<component name="AddinResourceFiles" id="{B72B91FE-3625-4B83-977E-BE3CA2EADBCE}" attr="2">
-				<directory ref="ADDINRESOURCESFOLDER" />
-				<file ref="NAntAddinResourcesLibrary" />
-			</component>
-		</components>
-		<files>
-			<file name="NAntAddinLibrary" file="NAntAddin.dll" order="1">
-				<component ref="AddinFiles" />
-			</file>
-			<file name="NAntAddinTypeLibrary" file="NAntAddin.tlb" order="1">
-				<component ref="AddinFiles" />
-			</file>
-			<file name="NAntAddinDocsHxA" file="NAntAddinDocs.HxA" order="1">
-				<component ref="AddinFiles" />
-			</file>
-			<file name="NAntAddinDocsHxC" file="NAntAddinDocs.HxC" order="1">
-				<component ref="AddinFiles" />
-			</file>
-			<file name="NAntAddinDocsHxS" file="NAntAddinDocs.HxS" order="1">
-				<component ref="AddinFiles" />
-			</file>
-			<file name="NAntAddinDocsHxT" file="NAntAddinDocs.HxT" order="1">
-				<component ref="AddinFiles" />
-			</file>
-			<file name="NAntAddinDocsAIndexHxK" file="NAntAddinDocsAIndex.HxK" order="1">
-				<component ref="AddinFiles" />
-			</file>
-			<file name="NAntAddinDocsKIndexHxK" file="NAntAddinDocsKIndex.HxK" order="1">
-				<component ref="AddinFiles" />
-			</file>
-			<file name="NAntAddinDocsFIndexHxK" file="NAntAddinDocsFIndex.HxK" order="1">
-				<component ref="AddinFiles" />
-			</file>
-			<file name="CollectionGenerator" file="CollectionGen.dll" order="1">
-				<component ref="AddinFiles" />
-			</file>
-			<file name="Extensibility" file="Extensibility.dll" order="1">
-				<component ref="AddinFiles" />
-			</file>
-			<file name="InstallLogo" file="InstallLogo.bmp" order="1">
-				<component ref="AddinFiles" />
-			</file>
-			<file name="TabIcon" file="NAntTabIcon.bmp" order="1">
-				<component ref="AddinFiles" />
-			</file>
-			<file name="TaskNodes" file="NAntTaskNodes.xml" order="1">
-				<component ref="AddinFiles" />
-			</file>
-			<file name="UserControlHostInterop" file="Interop.VSUserControlHostLib.dll" order="1">
-				<component ref="AddinFiles" />
-			</file>
-			<file name="MSVSDesignerInterfaces" file="Microsoft.VisualStudio.Designer.Interfaces.dll" order="1">
-				<component ref="AddinFiles" />
-			</file>
-			<file name="MSVS" file="Microsoft.VisualStudio.dll" order="1">
-				<component ref="AddinFiles" />
-			</file>
-			<file name="MSWizardFramework" file="Microsoft.VisualStudio.WizardFramework.dll" order="1">
-				<component ref="AddinFiles" />
-			</file>
-			<file name="MSVSDesigner" file="Microsoft.VSDesigner.dll" order="1">
-				<component ref="AddinFiles" />
-			</file>
-			<file name="MSDDSLMP" file="MSDDSLMP.dll" order="1">
-				<component ref="AddinFiles" />
-			</file>
-			<file name="MSDDSP" file="MSDDSP.dll" order="1">
-				<component ref="AddinFiles" />
-			</file>
-			<file name="NAntCore" file="NAnt.Core.dll" order="1">
-				<component ref="AddinFiles" />
-			</file>
-			<file name="NAntDocumenter" file="NAnt.Documenter.dll" order="1">
-				<component ref="AddinFiles" />
-			</file>
-			<file name="NAntAddinResourcesLibrary" file="NAntAddinResources.dll" order="1">
-				<component ref="AddinResourceFiles" />
-			</file>
-			<file name="NDocCore" file="NDoc.Core.dll" order="1">
-				<component ref="AddinFiles" />
-			</file>
-			<file name="NDocMSDNDocumenter" file="NDoc.Documenter.MSDN.dll" order="1">
-				<component ref="AddinFiles" />
-			</file>
-			<file name="NUnitCore" file="NUnitCore.dll" order="1">
-				<component ref="AddinFiles" />
-			</file>
-			<file name="NZipLibrary" file="NZipLib.dll" order="1">
-				<component ref="AddinFiles" />
-			</file>
-			<file name="VSLanguageProjects" file="VSLangProj.dll" order="1">
-				<component ref="AddinFiles" />
-			</file>
-			<file name="UserControlHostLibrary" file="VSUserControlHost.dll" order="1">
-				<component ref="AddinFiles" />
-			</file>
-		</files>
-		<directories>
-			<directory name="ADDINFOLDER" parent="ProgramFilesFolder" default="NAntAddin" />
-			<directory name="ADDINRESOURCESFOLDER" parent="ADDINFOLDER" default="1033" />
-		</directories>
-		<mergemodules>
-			<includes name="NAntAddinSetup\*.msm" />
-		</mergemodules>
-    </msi>
+    <msi output="${build.dir}\NAntAddinSetup.msi" sourcedir="${build.dir}" logo="installlogo.bmp" license="license.rtf" debug="true">
+      <properties>
+        <property name="ProductName" value="NAnt Addin"/>
+        <property name="ProductVersion" value="1.0.0.1"/>
+        <property name="Manufacturer" value="The NAntContrib Project"/>
+        <property name="ProductCode" value="{A14003F5-AFBF-444B-9CE1-F9842C6E7C2E}"/>
+        <property name="UpgradeCode" value="{15AE65D6-A43C-44E6-85B9-B4FF03910829}"/>
+      </properties>
+      <features>
+        <feature name="DefaultFeature" title="NAnt Addin" display="2">
+          <description>NAnt Addin for Visual Studio.NET</description>
+          <directory ref="AddinFolder"/>
+          <feature name="AddinFeature" title="Addin Runtime" display="2">
+            <description>Files required for the Addin to Run</description>
+            <directory ref="AddinFolder" />
+          </feature>
+          <feature name="AddinResourceFeature" title="Addin Resources" display="2">
+            <description>Resources required for the Addin to Run</description>
+            <directory ref="AddinResourceFolder" />	
+          </feature>
+          <feature name="AddinTaskImageFeature" title="Addin Task Images" display="2">
+            <description>Images displayed next to Task Nodes</description>
+            <directory ref="AddinTaskImageFolder" />	
+          </feature>
+        </feature>
+      </features>
+      <components>
+        <component name="AddinFiles" id="{53064B03-10ED-45B8-A612-757B75217122}" attr="2">
+          <directory ref="AddinFolder" />
+          <feature ref="AddinFeature" />
+          <key file="NAntAddin.dll" />
+        </component>
+        <component name="AddinResourceFiles" id="{B72B91FE-3625-4B83-977E-BE3CA2EADBCE}" attr="2">
+          <directory ref="AddinResourceFolder" />
+          <feature ref="AddinResourceFeature" />
+          <key file="NAntAddinResources.dll" />
+        </component>
+        <component name="AddinTaskImageFiles" id="{D0BE9760-37B1-4CB7-A3E6-A6FFAE0991A9}" attr="2">
+          <directory ref="AddinTaskImageFolder" />
+          <feature ref="AddinTaskImageFeature" />
+          <key file="altask.bmp" />
+        </component>
+        </components>
+        <directories>
+          <directory name="AddinFolder" parent="ProgramFilesFolder" default="NAntAddin" />
+          <directory name="AddinResourceFolder" parent="AddinFolder" default="1033" />
+          <directory name="AddinTaskImageFolder" parent="AddinFolder" default="TaskImages" />
+        </directories>
+        <mergemodules>
+          <includes name="NAntAddinSetup\*.msm" />
+        </mergemodules>
+      </msi>
   </target>
 </project>

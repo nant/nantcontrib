@@ -49,10 +49,9 @@ namespace NAnt.Contrib.Tasks
 	{
 		string _output;
 		string _debug;
-		string _productName;
 		string _productLogo;
 		string _license;
-		string _baseDir;
+		string _sourceDir;
 		XmlNodeList _featureNodes;
 		XmlNodeList _componentNodes;
 		XmlNodeList _fileNodes;
@@ -71,13 +70,13 @@ namespace NAnt.Contrib.Tasks
 		}
 
 		/// <summary>
-		/// Base Directory.
+		/// Root directory relative to installation folders of source files.
 		/// </summary>
-		[ TaskAttribute("basedir", Required=true) ]
-		public string BaseDirectory 
+		[ TaskAttribute("sourcedir", Required=true) ]
+		public string SourceDirectory 
 		{
-			get { return Project.ExpandProperties(_baseDir); }
-			set { _baseDir = value; }
+			get { return Project.ExpandProperties(_sourceDir); }
+			set { _sourceDir = value; }
 		}
 
 		/// <summary>
@@ -91,20 +90,10 @@ namespace NAnt.Contrib.Tasks
 		}
 
 		/// <summary>
-		/// Name of the Product being installed.
-		/// </summary>
-		[ TaskAttribute("productname", Required=true) ]
-		public string ProductName 
-		{
-			get { return Project.ExpandProperties(_productName); }
-			set { _productName = value; }
-		}
-
-		/// <summary>
 		/// Product Logo.
 		/// </summary>
-		[ TaskAttribute("productlogo", Required=false) ]
-		public string ProductLogo 
+		[ TaskAttribute("logo", Required=false) ]
+		public string Logo 
 		{
 			get { return Project.ExpandProperties(_productLogo); }
 			set { _productLogo = value; }
@@ -292,83 +281,17 @@ namespace NAnt.Contrib.Tasks
 				StringBuilder relativePath = new StringBuilder();
 				GetRelativePath(directories, name, parent, sDefault, relativePath);
 
-				string basePath = Path.Combine(Project.BaseDirectory, _baseDir);
+				string basePath = Path.Combine(Project.BaseDirectory, _sourceDir);
 				string fullPath = Path.Combine(basePath, relativePath.ToString());
 				string path = GetShortPath(fullPath) + "|" + sDefault;
 
-				Log.WriteLine(LogPrefix + "Directory: " + Path.Combine(Path.Combine(_baseDir, relativePath.ToString()), sDefault));
+				Log.WriteLine(LogPrefix + "Directory: " + Path.Combine(Path.Combine(_sourceDir, relativePath.ToString()), sDefault));
 				
 				recDir.set_StringData(3, path);
 				dirView.Modify(MsiViewModify.msiViewModifyInsert, recDir);
 			}
 
-			// Create the "Feature" Table
-			View featView = d.OpenView(
-				"CREATE TABLE `Feature` (" + 
-				"`Feature` CHAR(38) NOT NULL, " + 
-				"`Feature_Parent` CHAR(38), " + 
-				"`Title` CHAR(64) LOCALIZABLE, " + 
-				"`Description` CHAR(255) LOCALIZABLE, " + 
-				"`Display` SHORT, " + 
-				"`Level` SHORT NOT NULL, " + 
-				"`Directory_` CHAR(72), " + 
-				"`Attributes` SHORT NOT NULL " + 
-				"PRIMARY KEY `Feature`)");
-			featView.Execute(null);
-
-			Hashtable featureComponents = new Hashtable();
-
-			// Re-Open the "Feature" Table
-			featView = d.OpenView("SELECT * FROM `Feature`");
-
-			// Add features from Task definition
-			foreach (XmlNode featureNode in _featureNodes)
-			{
-				XmlElement featureElem = (XmlElement)featureNode;
-
-				string attr = featureElem.GetAttribute("attr");
-
-				string description = null;
-				XmlNode descNode = featureElem.SelectSingleNode("description/text()");
-				if (descNode != null)
-				{
-					description = descNode.Value;
-				}
-
-				string directory = null;
-				XmlNode dirNode = featureElem.SelectSingleNode("directory/@ref");
-				if (dirNode != null)
-				{
-					directory = dirNode.Value;
-				}
-
-				string name = Project.ExpandProperties(featureElem.GetAttribute("name"));
-
-				// Insert the Feature
-				Record recFeat = (Record)msiType.InvokeMember(
-					"CreateRecord", 
-					BindingFlags.InvokeMethod, 
-					null, obj, new object[] { 8 });
-				recFeat.set_StringData(1, name);
-				recFeat.set_StringData(2, Project.ExpandProperties(featureElem.GetAttribute("parent")));
-				recFeat.set_StringData(3, Project.ExpandProperties(featureElem.GetAttribute("title")));
-				recFeat.set_StringData(4, Project.ExpandProperties(description));
-				recFeat.set_StringData(5, Project.ExpandProperties(featureElem.GetAttribute("display")));
-				recFeat.set_StringData(6, Project.ExpandProperties(featureElem.GetAttribute("level")));
-				recFeat.set_StringData(7, Project.ExpandProperties(directory));
-				recFeat.set_StringData(8, (attr == null || attr == "") ? "0" : 
-					Int32.Parse(Project.ExpandProperties(attr)).ToString());
-				featView.Modify(MsiViewModify.msiViewModifyInsert, recFeat);
-
-				Log.WriteLine(LogPrefix + "Feature: " + name);
-
-				XmlNodeList featureComponentNodes = featureElem.SelectNodes("component");
-				foreach (XmlNode featureComponentNode in featureComponentNodes)
-				{
-					XmlElement featureComponentElem = (XmlElement)featureComponentNode;
-					featureComponents.Add(featureComponentElem.GetAttribute("ref"), name);
-				}
-			}
+			Hashtable features = CreateFeatures(msiType, obj, d);
 
 			Hashtable components = new Hashtable();
 
@@ -384,10 +307,30 @@ namespace NAnt.Contrib.Tasks
 				"PRIMARY KEY `Component`)");
 			compView.Execute(null);
 
+			Hashtable featureComponents = new Hashtable();
+
 			// Re-Open the "Component" Table
 			compView = d.OpenView("SELECT * FROM `Component`");
 
+			// Create the "File" Table
+			View fileView = d.OpenView(
+				"CREATE TABLE `File` (" + 
+				"`File` CHAR(72) NOT NULL, " + 
+				"`Component_` CHAR(72) NOT NULL, " + 
+				"`FileName` CHAR(255) NOT NULL LOCALIZABLE, " + 
+				"`FileSize` LONG NOT NULL, " + 
+				"`Version` CHAR(72), " + 
+				"`Language` CHAR(20), " + 
+				"`Attributes` SHORT, " + 
+				"`Sequence` SHORT NOT NULL " + 
+				"PRIMARY KEY `File`)");
+			fileView.Execute(null);
+
+			// Re-Open the "File" Table
+			fileView = d.OpenView("SELECT * FROM `File`");
+
 			// Add components from Task definition
+			int componentIndex = 1;
 			foreach (XmlNode compNode in _componentNodes)
 			{
 				XmlElement compElem = (XmlElement)compNode;
@@ -402,7 +345,7 @@ namespace NAnt.Contrib.Tasks
 				}
 
 				string keyFile = null;
-				XmlNode keyFileNode = compElem.SelectSingleNode("file/@ref");
+				XmlNode keyFileNode = compElem.SelectSingleNode("key/@file");
 				if (keyFileNode != null)
 				{
 					keyFile = keyFileNode.Value;
@@ -422,94 +365,38 @@ namespace NAnt.Contrib.Tasks
 				recComp.set_StringData(4, (attr == null || attr == "") ? "0" : 
 					Int32.Parse(Project.ExpandProperties(attr)).ToString());
 				recComp.set_StringData(5, Project.ExpandProperties(compElem.GetAttribute("condition")));
-				recComp.set_StringData(6, Project.ExpandProperties(keyFile));
+
 				compView.Modify(MsiViewModify.msiViewModifyInsert, recComp);
 
 				Log.WriteLine(LogPrefix + "Component: " + name);
 
 				components.Add(name, directory);
-			}
 
-			// Create the "File" Table
-			View fileView = d.OpenView(
-				"CREATE TABLE `File` (" + 
-				"`File` CHAR(72) NOT NULL, " + 
-				"`Component_` CHAR(72) NOT NULL, " + 
-				"`FileName` CHAR(255) NOT NULL LOCALIZABLE, " + 
-				"`FileSize` LONG NOT NULL, " + 
-				"`Version` CHAR(72), " + 
-				"`Language` CHAR(20), " + 
-				"`Attributes` SHORT, " + 
-				"`Sequence` SHORT NOT NULL " + 
-				"PRIMARY KEY `File`)");
-			fileView.Execute(null);
-
-			// Re-Open the "File" Table
-			fileView = d.OpenView("SELECT * FROM `File`");
-
-			// Add files from Task definition
-			foreach (XmlNode fileNode in _fileNodes)
-			{
-				XmlElement fileElem = (XmlElement)fileNode;
-
-				string attr = fileElem.GetAttribute("attr");
-
-				string component = null;
-				XmlNode compNode = fileElem.SelectSingleNode("component/@ref");
-				if (compNode != null)
+				Hashtable files = AddFiles(directories, fileView, msiType, obj, dir, name, componentIndex++);
+				if (files == null)
 				{
-					component = Project.ExpandProperties(compNode.Value);
-				}
-
-				string componentDir = (string)components[component];
-				object[] componentDirInfo = (object[])directories[componentDir];
-				StringBuilder relativePath = new StringBuilder();
-				GetRelativePath(directories, componentDir, (string)componentDirInfo[0], (string)componentDirInfo[1], relativePath);
-
-				string basePath = Path.Combine(Project.BaseDirectory, _baseDir);
-				string fullPath = Path.Combine(basePath, relativePath.ToString());
-
-				// Insert the File
-				Record recFile = (Record)msiType.InvokeMember(
-					"CreateRecord", 
-					BindingFlags.InvokeMethod, 
-					null, obj, new object[] { 8 });
-				recFile.set_StringData(1, Project.ExpandProperties(fileElem.GetAttribute("name")));
-				recFile.set_StringData(2, component);
-
-				string fileName = Project.ExpandProperties(fileElem.GetAttribute("file"));
-				string filePath = Path.Combine(fullPath, fileName);
-				
-				if (File.Exists(filePath))
-				{
-					recFile.set_StringData(3, GetShortFile(filePath) + "|" + fileName);
-
-					FileStream fileStream = null;
-					try
-					{
-						fileStream = File.OpenRead(filePath);
-						recFile.set_StringData(4, fileStream.Length.ToString());
-					}
-					catch (Exception)
-					{
-						Log.WriteLine(LogPrefix + "ERROR: Could not open file " + filePath);
-						return;
-					}
-				}
-				else
-				{
-					Log.WriteLine(LogPrefix + "ERROR: Could not open file " + filePath);
 					return;
 				}
 
-				Log.WriteLine(LogPrefix + "File: " + Path.Combine(Path.Combine(_baseDir, relativePath.ToString()), fileName));
+				if (files.Contains(keyFile))
+				{
+					recComp.set_StringData(6, (string)files[keyFile]);
+					compView.Modify(MsiViewModify.msiViewModifyUpdate, recComp);
+				}
+				else
+				{
+					Log.WriteLine(
+						LogPrefix + "Error: KeyFile \"" + keyFile + 
+						"\" not found in Component \"" + name + "\".");
+					return;
+				}
 
-				recFile.set_StringData(5, Project.ExpandProperties(fileElem.GetAttribute("version")));
-				recFile.set_StringData(6, Project.ExpandProperties(fileElem.GetAttribute("lang")));
-				recFile.set_StringData(7, (attr == null || attr == "") ? "0" : 
-					Int32.Parse(Project.ExpandProperties(attr)).ToString());
-				recFile.set_StringData(8, Project.ExpandProperties(fileElem.GetAttribute("order")));
-				fileView.Modify(MsiViewModify.msiViewModifyInsert, recFile);
+				XmlNodeList featureComponentNodes = compElem.SelectNodes("feature");
+				foreach (XmlNode featureComponentNode in featureComponentNodes)
+				{
+					XmlElement featureComponentElem = (XmlElement)featureComponentNode;
+					featureComponents.Add(name, featureComponentElem.GetAttribute("ref"));
+				}
 			}
 
 			// Create the "FeatureComponents" Table
@@ -676,6 +563,167 @@ namespace NAnt.Contrib.Tasks
 				object[] PathInfo = (object[])directories[Parent];
 				GetRelativePath(directories, Parent, (string)PathInfo[0], (string)PathInfo[1], Path);
 			}
+		}
+
+		private Hashtable CreateFeatures(Type msiType, Object obj, Database d)
+		{
+			Hashtable features = new Hashtable();
+
+			// Create the "Feature" Table
+			View featView = d.OpenView(
+				"CREATE TABLE `Feature` (" + 
+				"`Feature` CHAR(38) NOT NULL, " + 
+				"`Feature_Parent` CHAR(38), " + 
+				"`Title` CHAR(64) LOCALIZABLE, " + 
+				"`Description` CHAR(255) LOCALIZABLE, " + 
+				"`Display` SHORT, " + 
+				"`Level` SHORT NOT NULL, " + 
+				"`Directory_` CHAR(72), " + 
+				"`Attributes` SHORT NOT NULL " + 
+				"PRIMARY KEY `Feature`)");
+			featView.Execute(null);
+
+			// Re-Open the "Feature" Table
+			featView = d.OpenView("SELECT * FROM `Feature`");
+
+			// Add features from Task definition
+			int order = 1;
+			int depth = 1;
+			foreach (XmlNode featureNode in _featureNodes)
+			{
+				XmlElement featureElem = (XmlElement)featureNode;
+				AddFeature(features, featView, null, msiType, obj, featureElem, depth, order);
+
+				string name = Project.ExpandProperties(featureElem.GetAttribute("name"));
+
+				order++;
+			}
+
+			return features;
+		}
+
+		private void AddFeature(Hashtable Features, View view, string parent, Type msiType, Object obj, XmlElement featureElem, int depth, int order)
+		{
+			string attr = featureElem.GetAttribute("attr");
+
+			string description = null;
+			XmlNode descNode = featureElem.SelectSingleNode("description/text()");
+			if (descNode != null)
+			{
+				description = descNode.Value;
+			}
+
+			string directory = null;
+			XmlNode dirNode = featureElem.SelectSingleNode("directory/@ref");
+			if (dirNode != null)
+			{
+				directory = dirNode.Value;
+			}
+
+			string name = Project.ExpandProperties(featureElem.GetAttribute("name"));
+
+			// Insert the Feature
+			Record recFeat = (Record)msiType.InvokeMember(
+				"CreateRecord", 
+				BindingFlags.InvokeMethod, 
+				null, obj, new object[] { 8 });
+			recFeat.set_StringData(1, name);
+			recFeat.set_StringData(2, parent);
+			recFeat.set_StringData(3, Project.ExpandProperties(featureElem.GetAttribute("title")));
+			recFeat.set_StringData(4, Project.ExpandProperties(description));
+			recFeat.set_StringData(5, Project.ExpandProperties(featureElem.GetAttribute("display")));
+			recFeat.set_StringData(6, depth.ToString());
+			recFeat.set_StringData(7, Project.ExpandProperties(directory));
+			recFeat.set_StringData(8, (attr == null || attr == "") ? "0" : 
+				Int32.Parse(Project.ExpandProperties(attr)).ToString());
+
+			view.Modify(MsiViewModify.msiViewModifyInsert, recFeat);
+			Features.Add(name, recFeat);
+
+			Log.WriteLine(LogPrefix + "Feature: " + name);
+
+			XmlNodeList childNodes = featureElem.SelectNodes("feature");
+			if (childNodes != null)
+			{
+				int newDepth = depth + 1;
+				int newOrder = 1;
+
+				foreach (XmlNode childNode in childNodes)
+				{
+					AddFeature(Features, view, name, msiType, obj, (XmlElement)childNode, newDepth, order);
+					newOrder++;
+				}
+			}
+		}
+
+		private Hashtable AddFiles(Hashtable directories, View fileView, Type msiType, Object obj, string componentDir, string componentName, int componentCount)
+		{
+			Hashtable files = new Hashtable();
+
+			string attr = "2";
+
+			string component = componentName;
+
+			object[] componentDirInfo = (object[])directories[componentDir];
+			StringBuilder relativePath = new StringBuilder();
+			GetRelativePath(directories, componentDir, (string)componentDirInfo[0], (string)componentDirInfo[1], relativePath);
+
+			string basePath = Path.Combine(Project.BaseDirectory, _sourceDir);
+			string fullPath = Path.Combine(basePath, relativePath.ToString());
+
+			string[] dirFiles = Directory.GetFiles(fullPath);
+			for (int i = 0; i < dirFiles.Length; i++)
+			{
+				// Insert the File
+				Record recFile = (Record)msiType.InvokeMember(
+					"CreateRecord", 
+					BindingFlags.InvokeMethod, 
+					null, obj, new object[] { 8 });
+				recFile.set_StringData(2, component);
+
+				string fileName = Path.GetFileName(dirFiles[i]);
+				string filePath = Path.Combine(fullPath, fileName);
+
+				StringBuilder newCompName = new StringBuilder();
+				newCompName.Append(componentCount.ToString());
+				newCompName.Append(fileName);
+
+				recFile.set_StringData(1, newCompName.ToString());
+
+				files.Add(fileName, newCompName.ToString());
+			
+				if (File.Exists(filePath))
+				{
+					recFile.set_StringData(3, GetShortFile(filePath) + "|" + fileName);
+
+					FileStream fileStream = null;
+					try
+					{
+						fileStream = File.OpenRead(filePath);
+						recFile.set_StringData(4, fileStream.Length.ToString());
+					}
+					catch (Exception)
+					{
+						Log.WriteLine(LogPrefix + "ERROR: Could not open file " + filePath);
+						return null;
+					}
+				}
+				else
+				{
+					Log.WriteLine(LogPrefix + "ERROR: Could not open file " + filePath);
+					return null;
+				}
+
+				Log.WriteLine(LogPrefix + "File: " + Path.Combine(Path.Combine(_sourceDir, relativePath.ToString()), fileName));
+
+				recFile.set_StringData(5, null);	// Version
+				recFile.set_StringData(6, null);
+				recFile.set_StringData(7, "0");
+				recFile.set_StringData(8, "1");
+				fileView.Modify(MsiViewModify.msiViewModifyInsert, recFile);
+			}
+
+			return files;
 		}
 	}
 }
