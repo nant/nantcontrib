@@ -33,26 +33,23 @@ namespace NAnt.Contrib.Tasks.Msi {
     /// Base class for msi/msm installer tasks
     /// </summary>
     public abstract class InstallerTaskBase : SchemaValidatedTask {
-
-        #region XmlDoc Documenation Support
-
         #region Attributes
 
         /// <summary>
         /// The name of the file that will be generated when the task completes execution. (Eg. MyInstall.msi or MyMergeModule.msm)
         /// </summary>
-        [TaskAttribute("output", Required=true)]
-        protected string MsiOutput {
+        [TaskAttribute("output", Required=true, ProcessXml=false)]
+        public string MsiOutput {
             get { return null; }
-        }        
+        }
 
         /// <summary>
         /// A directory relative to the NAnt script in which the msi task resides from which to retrieve files 
         /// that will be installed by the msi database. All files that will be included in your installation need 
         /// to be located directly within or in subdirectories of this directory. 
         /// </summary>
-        [TaskAttribute("sourcedir", Required=true)]
-        protected string MsiSourceDir {
+        [TaskAttribute("sourcedir", Required=true, ProcessXml=false)]
+        public string MsiSourceDir {
             get { return null; }
         }        
 
@@ -61,8 +58,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// specified by the output parameter. Install templates are included with the install tasks, you only need to supply this value if you 
         /// want to override the default template. 
         /// </summary>
-        [TaskAttribute("template", Required=false)]
-        protected string MsiTemplate {
+        [TaskAttribute("template", Required=false, ProcessXml=false)]
+        public string MsiTemplate {
             get { return null; }
         }
 
@@ -71,8 +68,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// A .mst template is included with the msi task, you only need to supply this value if you want to override the default error 
         /// template and cannot perform something through the features of the msi task.
         /// </summary>
-        [TaskAttribute("errortemplate", Required=false)]
-        protected string MsiErrorTemplate {
+        [TaskAttribute("errortemplate", Required=false, ProcessXml=false)]
+        public string MsiErrorTemplate {
             get { return null; }
         }
 
@@ -80,14 +77,14 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// Causes the generated msi database file to contain debug messages for errors created by inconsistencies in creation of the 
         /// database. This makes the file slightly larger and should be avoided when generating a production release of your software.
         /// </summary>
-        [TaskAttribute("debug", Required=false)]
-        protected bool MsiDebug {
+        [TaskAttribute("debug", Required=false, ProcessXml=false)]
+        public bool MsiDebug {
             get { return false; }
         }
 
-        #endregion
+        #endregion Attributes
 
-        #region Sub-Elements
+        #region Nested build elements
 
         /// <summary>
         /// Name/value pairs which will be set in the PROPERTY table of the installer database.
@@ -135,8 +132,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElement("properties")]
-        protected SchemaElement[] InstallerPropertiesElement {
+        [BuildElement("properties", ProcessXml=false)]
+        public SchemaElement[] InstallerPropertiesElement {
             get { return null; }
             set {}
         }        
@@ -240,8 +237,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElement("search")]
-        protected SchemaElement[] InstallerSearchElement {
+        [BuildElement("search", ProcessXml=false)]
+        public SchemaElement[] InstallerSearchElement {
             get { return null; }
             set {}
         }
@@ -289,8 +286,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElement("launchconditions")]
-        protected SchemaElement[] InstallerLaunchConditionsElement {
+        [BuildElement("launchconditions", ProcessXml=false)]
+        public SchemaElement[] InstallerLaunchConditionsElement {
             get { return null; }
             set {}
         }
@@ -501,8 +498,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElement("tables")]
-        protected SchemaElement[] InstallerTablesElement {
+        [BuildElement("tables", ProcessXml=false)]
+        public SchemaElement[] InstallerTablesElement {
             get { return null; }
             set {}
         }
@@ -603,8 +600,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElement("directories")]
-        protected SchemaElement[] InstallerDirectoriesElement {
+        [BuildElement("directories", ProcessXml=false)]
+        public SchemaElement[] InstallerDirectoriesElement {
             get { return null; }
             set {}
         }
@@ -686,8 +683,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElement("environment")]
-        protected SchemaElement[] InstallerEnvironmentElement {
+        [BuildElement("environment", ProcessXml=false)]
+        public SchemaElement[] InstallerEnvironmentElement {
             get { return null; }
             set {}
         }
@@ -1069,8 +1066,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElement("components")]
-        protected SchemaElement[] InstallerComponentsElement {
+        [BuildElement("components", ProcessXml=false)]
+        public SchemaElement[] InstallerComponentsElement {
             get { return null; }
             set {}
         }
@@ -1226,8 +1223,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElement("dialogs")]
-        protected SchemaElement[] InstallerDialogsElement {
+        [BuildElement("dialogs", ProcessXml=false)]
+        public SchemaElement[] InstallerDialogsElement {
             get { return null; }
             set {}
         }
@@ -1477,8 +1474,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElement("controls")]
-        protected SchemaElement[] InstallerControlsElement {
+        [BuildElement("controls", ProcessXml=false)]
+        public SchemaElement[] InstallerControlsElement {
             get { return null; }
             set {}
         }
@@ -1568,8 +1565,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElement("controlconditions")]
-        protected SchemaElement[] InstallerControlConditionsElement {
+        [BuildElement("controlconditions", ProcessXml=false)]
+        public SchemaElement[] InstallerControlConditionsElement {
             get { return null; }
             set {}
         }
@@ -1682,8 +1679,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElement("controlevents")]
-        protected SchemaElement[] InstallerControlEventsElement {
+        [BuildElement("controlevents", ProcessXml=false)]
+        public SchemaElement[] InstallerControlEventsElement {
             get { return null; }
             set {}
         }
@@ -1862,8 +1859,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElement("registry")]
-        protected SchemaElement[] InstallerRegistryElement {
+        [BuildElement("registry", ProcessXml=false)]
+        public SchemaElement[] InstallerRegistryElement {
             get { return null; }
             set {}
         }
@@ -1901,8 +1898,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElement("icons")]
-        protected SchemaElement[] InstallerIconsElement {
+        [BuildElement("icons", ProcessXml=false)]
+        public SchemaElement[] InstallerIconsElement {
             get { return null; }
             set {}
         }
@@ -2022,8 +2019,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElement("shortcuts")]
-        protected SchemaElement[] InstallerShortcutsElement {
+        [BuildElement("shortcuts", ProcessXml=false)]
+        public SchemaElement[] InstallerShortcutsElement {
             get { return null; }
             set {}
         }
@@ -2061,8 +2058,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElement("binaries")]
-        protected SchemaElement[] InstallerBinariesElement {
+        [BuildElement("binaries", ProcessXml=false)]
+        public SchemaElement[] InstallerBinariesElement {
             get { return null; }
             set {}
         }
@@ -2156,8 +2153,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElement("customactions")]
-        protected SchemaElement[] InstallerCustomActionsElement {
+        [BuildElement("customactions", ProcessXml=false)]
+        public SchemaElement[] InstallerCustomActionsElement {
             get { return null; }
             set {}
         }
@@ -2260,8 +2257,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElement("sequences")]
-        protected SchemaElement[] InstallerSequencesElement {
+        [BuildElement("sequences", ProcessXml=false)]
+        public SchemaElement[] InstallerSequencesElement {
             get { return null; }
             set {}
         }
@@ -2334,8 +2331,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElement("actiontext")]
-        protected SchemaElement[] InstallerActionTextElement {
+        [BuildElement("actiontext", ProcessXml=false)]
+        public SchemaElement[] InstallerActionTextElement {
             get { return null; }
             set {}
         }
@@ -2386,8 +2383,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElement("appmappings")]
-        protected SchemaElement[] InstallerAppMappingsElement {
+        [BuildElement("appmappings", ProcessXml=false)]
+        public SchemaElement[] InstallerAppMappingsElement {
             get { return null; }
             set {}
         }
@@ -2426,8 +2423,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElement("urlproperties")]
-        protected SchemaElement[] InstallerUrlPropertiesElement {
+        [BuildElement("urlproperties", ProcessXml=false)]
+        public SchemaElement[] InstallerUrlPropertiesElement {
             get { return null; }
             set {}
         }
@@ -2472,8 +2469,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElement("vdirproperties")]
-        protected SchemaElement[] InstallerVDirPropertiesElement {
+        [BuildElement("vdirproperties", ProcessXml=false)]
+        public SchemaElement[] InstallerVDirPropertiesElement {
             get { return null; }
             set {}
         }
@@ -2518,8 +2515,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElement("approots")]
-        protected SchemaElement[] InstallerAppRootsElement {
+        [BuildElement("approots", ProcessXml=false)]
+        public SchemaElement[] InstallerAppRootsElement {
             get { return null; }
             set {}
         }
@@ -2649,14 +2646,12 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElement("iisproperties")]
-        protected SchemaElement[] InstallerIISPropertiesElement {
+        [BuildElement("iisproperties", ProcessXml=false)]
+        public SchemaElement[] InstallerIISPropertiesElement {
             get { return null; }
             set {}
         }
 
-        #endregion
-
-        #endregion
+        #endregion Nested build elements
     }
 }

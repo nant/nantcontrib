@@ -238,8 +238,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElement("features")]
-        protected SchemaElement[] MsiFeaturesElement {
+        [BuildElement("features", ProcessXml=false)]
+        public SchemaElement[] MsiFeaturesElement {
             get { return null; }
             set {}
         }
@@ -333,8 +333,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElement("mergemodules")]
-        protected SchemaElement[] MsiMergeModulesElement {
+        [BuildElement("mergemodules", ProcessXml=false)]
+        public SchemaElement[] MsiMergeModulesElement {
             get { return null; }
             set {}
         }

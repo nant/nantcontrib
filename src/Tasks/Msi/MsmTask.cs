@@ -45,14 +45,12 @@ namespace NAnt.Contrib.Tasks.Msi {
 
         #endregion Private Instance Fields
 
-        #region XmlDoc Documenation Support
-
         #region Attributes
 
         /// <summary>
         /// Stores a unique identifier for a merge module.  To be used as the merge module's ModuleSignature
         /// </summary>
-        [TaskAttribute("id", Required=true)]
+        [TaskAttribute("id", Required=true, ProcessXml=false)]
         public string MsmId {
             get { return ((msm)_taskCommand.MsiBase).id; }
         }
@@ -60,7 +58,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// <summary>
         /// Specifies the numeric language ID or IDs for a merge module.
         /// </summary>
-        [TaskAttribute("language", Required=false)]
+        [TaskAttribute("language", Required=false, ProcessXml=false)]
         public string MsmLanguage {
             get { return ((msm)_taskCommand.MsiBase).language; }
         }
@@ -68,14 +66,14 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// <summary>
         /// Stores the version number of a merge module.
         /// </summary>
-        [TaskAttribute("version", Required=false)]
+        [TaskAttribute("version", Required=false, ProcessXml=false)]
         public string MsmVersion {
             get { return ((msm)_taskCommand.MsiBase).version; }
         }
 
-        #endregion
+        #endregion Attributes
         
-        #region Sub-Elements
+        #region Nested build elements
 
         /// <summary>
         /// Lists other merge modules that are required for this merge module to operate properly.
@@ -120,8 +118,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElement("moduledependencies")]
-        protected SchemaElement[] MsmModuleDependenciesElement {
+        [BuildElement("moduledependencies", ProcessXml=false)]
+        public SchemaElement[] MsmModuleDependenciesElement {
             get { return null; }
             set {}
         }        
@@ -194,8 +192,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElement("moduleexclusions")]
-        protected SchemaElement[] MsmModuleExclusionsElement {
+        [BuildElement("moduleexclusions", ProcessXml=false)]
+        public SchemaElement[] MsmModuleExclusionsElement {
             get { return null; }
             set {}
         }  
@@ -271,8 +269,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </item>
         /// </list>
         /// </summary>
-        [BuildElement("modulesequences")]
-        protected SchemaElement[] MsmModuleSequencesElement {
+        [BuildElement("modulesequences", ProcessXml=false)]
+        public SchemaElement[] MsmModuleSequencesElement {
             get { return null; }
             set {}
         }  
@@ -309,8 +307,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </code>
         /// </example>
         /// </summary>
-        [BuildElement("moduleignoretables")]
-        protected SchemaElement[] MsmModuleIgnoreTablesElement {
+        [BuildElement("moduleignoretables", ProcessXml=false)]
+        public SchemaElement[] MsmModuleIgnoreTablesElement {
             get { return null; }
             set {}
         }
@@ -387,8 +385,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </item>
         /// </list>
         /// </summary>
-        [BuildElement("modulesubstitutions")]
-        protected SchemaElement[] MsmModuleSubstitutionsElement {
+        [BuildElement("modulesubstitutions", ProcessXml=false)]
+        public SchemaElement[] MsmModuleSubstitutionsElement {
             get { return null; }
             set {}
         }
@@ -490,13 +488,11 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     </item>
         /// </list>
         /// </summary>
-        [BuildElement("moduleconfigurations")]
-        protected SchemaElement[] MsmModuleConfigurationsElement {
+        [BuildElement("moduleconfigurations", ProcessXml=false)]
+        public SchemaElement[] MsmModuleConfigurationsElement {
             get { return null; }
             set {}
         }
-
-        #endregion
 
         #endregion
 
