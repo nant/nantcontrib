@@ -138,6 +138,7 @@ namespace NAnt.Contrib.Tasks
 		XmlNodeList _directoryNodes;
 		XmlNodeList _keyNodes;
         XmlNodeList _mergeModules;
+        XmlNodeList _envVariables;
 
 		Hashtable directories = new Hashtable();
 		Hashtable files = new Hashtable();
@@ -289,6 +290,9 @@ namespace NAnt.Contrib.Tasks
 
             _mergeModules = TaskNode.Clone().SelectNodes("mergemodules/merge");
             ExpandPropertiesInNodes(_mergeModules);
+
+            _envVariables = TaskNode.Clone().SelectNodes("environment/variable");
+            ExpandPropertiesInNodes(_envVariables);
 		}
 
 		/// <summary>
@@ -325,6 +329,13 @@ namespace NAnt.Contrib.Tasks
                 return;
             }
 
+            string tempPath = Path.Combine(Project.BaseDirectory, 
+                Path.Combine(SourceDirectory, @"Temp"));
+
+            string cabFile = Path.Combine(Project.BaseDirectory, 
+                Path.Combine(SourceDirectory, 
+                Path.GetFileNameWithoutExtension(Output) + @".cab"));
+
             // Open the Output Database.
             Database d = null;
             try
@@ -348,6 +359,8 @@ namespace NAnt.Contrib.Tasks
             catch (Exception e)
             {
                 Log.WriteLine(LogPrefix + "Error: " + e.Message);
+                CleanOutput(cabFile, tempPath);
+
                 return;
             }
 
@@ -356,30 +369,35 @@ namespace NAnt.Contrib.Tasks
             // Load the Banner Image
             if (!LoadBanner(d))
             {
+                CleanOutput(cabFile, tempPath);
                 return;
             }
 
             // Load the Background Image
             if (!LoadBackground(d))
             {
+                CleanOutput(cabFile, tempPath);
                 return;
             }
 
             // Load the License File
             if (!LoadLicense(d))
             {
+                CleanOutput(cabFile, tempPath);
                 return;
             }
 
             // Load Properties
             if (!LoadProperties(d, msiType, obj))
             {
+                CleanOutput(cabFile, tempPath);
                 return;
             }
 
             // Load Directories
             if (!LoadDirectories(d, msiType, obj))
             {
+                CleanOutput(cabFile, tempPath);
                 return;
             }
 
@@ -389,6 +407,7 @@ namespace NAnt.Contrib.Tasks
             if (!LoadAssemblies(d, msiType, obj, out asmView, 
                 out asmNameView, out classView, out progIdView))
             {
+                CleanOutput(cabFile, tempPath);
                 return;
             }
 
@@ -398,12 +417,14 @@ namespace NAnt.Contrib.Tasks
             if (!LoadComponents(d, msiType, obj, ref lastSequence, 
                 asmView, asmNameView, classView, progIdView))
             {
+                CleanOutput(cabFile, tempPath);
                 return;
             }
 
             // Load Features
             if (!LoadFeatures(d, msiType, obj))
             {
+                CleanOutput(cabFile, tempPath);
                 return;
             }
 
@@ -412,18 +433,28 @@ namespace NAnt.Contrib.Tasks
             // Load the Registry
             if (!LoadRegistry(d, msiType, obj, out registryView))
             {
+                CleanOutput(cabFile, tempPath);
                 return;
             }
 
             // Load TypeLibs
             if (!LoadTypeLibs(d, msiType, obj, registryView))
             {
+                CleanOutput(cabFile, tempPath);
                 return;
             }
 
             // Load Summary Information
             if (!LoadSummaryInfo(d))
             {
+                CleanOutput(cabFile, tempPath);
+                return;
+            }
+
+            // Load Environment Variables
+            if (!LoadEnvironment(d, msiType, obj))
+            {
+                CleanOutput(cabFile, tempPath);
                 return;
             }
 
@@ -451,15 +482,14 @@ namespace NAnt.Contrib.Tasks
             catch (Exception e)
             {
                 Log.WriteLine(LogPrefix + "Error: " + e.Message);
+                CleanOutput(cabFile, tempPath);
                 return;
             }
-
-            string tempPath = Path.Combine(Project.BaseDirectory, 
-                Path.Combine(SourceDirectory, @"Temp"));
 
             // Load Merge Modules
             if (!LoadMergeModules(dest, tempPath))
             {
+                CleanOutput(cabFile, tempPath);
                 return;
             }
 
@@ -478,36 +508,33 @@ namespace NAnt.Contrib.Tasks
             catch (Exception e)
             {
                 Log.WriteLine(LogPrefix + "Error: " + e.Message);
+                CleanOutput(cabFile, tempPath);
                 return;
             }
 
             // Reorder Files
             if (!ReorderFiles(d, ref lastSequence))
             {
+                CleanOutput(cabFile, tempPath);
                 return;
             }
 
             // Load Media
             if (!LoadMedia(d, msiType, obj, lastSequence))
             {
+                CleanOutput(cabFile, tempPath);
                 return;
             }
 
             // Compress Files
             if (!CreateCabFile(d, msiType, obj))
             {
+                CleanOutput(cabFile, tempPath);
                 return;
             }
 
             Log.Write(LogPrefix + "Deleting Temporary Files...");
-
-            string cabFile = Path.Combine(Project.BaseDirectory, 
-                Path.Combine(SourceDirectory, 
-                Path.GetFileNameWithoutExtension(Output) + @".cab"));
-    		
-            File.Delete(cabFile);
-            Directory.Delete(tempPath, true);
-
+            CleanOutput(cabFile, tempPath);
             Log.WriteLine("Done.");
 
             try
@@ -524,6 +551,17 @@ namespace NAnt.Contrib.Tasks
             }
             Log.WriteLine("Done.");
 		}
+
+        /// <summary>
+        /// Cleans the output directory after a build.
+        /// </summary>
+        /// <param name="cabFile">The path to the cabinet file.</param>
+        /// <param name="tempPath">The path to temporary files.</param>
+        private void CleanOutput(string cabFile, string tempPath)
+        {
+            File.Delete(cabFile);
+            Directory.Delete(tempPath, true);
+        }
 
 		/// <summary>
 		/// Loads the banner iamge.
@@ -1140,6 +1178,60 @@ namespace NAnt.Contrib.Tasks
 			return true;
 		}
 
+        /// <summary>
+        /// Loads environment variables for the Environment table.
+        /// </summary>
+        /// <param name="Database">The MSI database.</param>
+        /// <param name="InstallerType">The MSI Installer type.</param>
+        /// <param name="InstallerObject">The MSI Installer object.</param>
+        /// <returns>True if successful.</returns>
+        private bool LoadEnvironment(Database Database, Type InstallerType, Object InstallerObject)
+        {
+            // Open the "Environment" Table
+            View envView = Database.OpenView("SELECT * FROM `Environment`");
+
+            foreach (XmlNode varNode in _envVariables)
+            {
+                XmlElement varElem = (XmlElement)varNode;
+
+                string varName = varElem.GetAttribute("name");
+
+                XmlElement compElem = (XmlElement)varElem.SelectSingleNode("component");
+                if (compElem == null)
+                {
+                    Log.WriteLine(LogPrefix + 
+                        "ERROR: Environment variable " + 
+                        varName + " must specify a component");
+                    return false;
+                }
+
+                string varComp = compElem.GetAttribute("ref");
+
+                // Insert the Varible
+                Record recVar = (Record)InstallerType.InvokeMember(
+                    "CreateRecord", 
+                    BindingFlags.InvokeMethod, 
+                    null, InstallerObject, 
+                    new object[] { 4 });
+
+                recVar.set_StringData(1, "_" + Guid.NewGuid().ToString().ToUpper().Replace("-", null));
+                recVar.set_StringData(2, varName);
+
+                string appendStr = varElem.GetAttribute("append");
+                if (appendStr != null && appendStr != "")
+                {
+                    recVar.set_StringData(3, "[~];" + appendStr);
+                }
+
+                recVar.set_StringData(4, varComp);
+
+                envView.Modify(MsiViewModify.msiViewModifyInsert, recVar);
+            }
+            envView.Close();
+
+            return true;
+        }
+
 		/// <summary>
 		/// Loads records for the Features table.
 		/// </summary>
@@ -1251,7 +1343,17 @@ namespace NAnt.Contrib.Tasks
 			recFeat.set_StringData(3, FeatureElement.GetAttribute("title"));
 			recFeat.set_StringData(4, Project.ExpandProperties(description));
 			recFeat.set_StringData(5, FeatureElement.GetAttribute("display"));
-			recFeat.set_StringData(6, Depth.ToString());
+
+            string typical = FeatureElement.GetAttribute("typical");
+            if (typical == "false")
+            {
+                recFeat.set_StringData(6, "4");
+            }
+            else
+            {
+                recFeat.set_StringData(6, "3");
+            }
+			
 			recFeat.set_StringData(7, Project.ExpandProperties(directory));
 			recFeat.set_StringData(8, (attr == null || attr == "") ? "0" : 
 				Int32.Parse(Project.ExpandProperties(attr)).ToString());
@@ -1319,6 +1421,17 @@ namespace NAnt.Contrib.Tasks
 		{
 			string component = ComponentName;
 
+            XmlElement fileSetElem = (XmlElement)ComponentElem.SelectSingleNode("fileset");
+            if (fileSetElem == null)
+            {
+                Log.WriteLine(LogPrefix + "component is missing a fileset child element.");
+                return false;
+            }
+
+            FileSet componentFiles = new FileSet();
+            componentFiles.Project = Project;
+            componentFiles.Initialize(fileSetElem);
+
 			object[] componentDirInfo = (object[])directories[ComponentDirectory];
 			
 			StringBuilder relativePath = new StringBuilder();
@@ -1330,9 +1443,8 @@ namespace NAnt.Contrib.Tasks
 			string basePath = Path.Combine(Project.BaseDirectory, _sourceDir);
 			string fullPath = Path.Combine(basePath, relativePath.ToString());
 
-			string[] dirFiles = Directory.GetFiles(fullPath);
-			for (int i = 0; i < dirFiles.Length; i++)
-			{
+            for (int i = 0; i < componentFiles.FileNames.Count; i++)
+            {
 				// Insert the File
 				Record recFile = (Record)InstallerType.InvokeMember(
 					"CreateRecord", 
@@ -1340,7 +1452,7 @@ namespace NAnt.Contrib.Tasks
 					null, InstallerObject, 
 					new object[] { 8 });
 
-				string fileName = Path.GetFileName(dirFiles[i]);
+				string fileName = Path.GetFileName(componentFiles.FileNames[i]);
 				string filePath = Path.Combine(fullPath, fileName);
 				
                 XmlElement overrideElem = (XmlElement)ComponentElem.SelectSingleNode(
@@ -1351,7 +1463,6 @@ namespace NAnt.Contrib.Tasks
                     overrideElem.GetAttribute("id");
 
 				files.Add(fileName, fileId);
-
 				recFile.set_StringData(1, fileId);
 			
 				if (File.Exists(filePath))
@@ -1401,40 +1512,44 @@ namespace NAnt.Contrib.Tasks
 				{
 					string feature = (string)featureComponents[ComponentName];
 			
-					string asmCompName = "C_" + fileId;
-					string newCompId = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
+                    string asmCompName = ComponentName;
+
+                    if (componentFiles.FileNames.Count > 1)
+                    {
+                        asmCompName = "C_" + fileId;
+                        string newCompId = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
+
+                        recFile.set_StringData(2, asmCompName);
 					
-					recFile.set_StringData(2, asmCompName);
-					
-					// Add a record for a new Component
-					Record recComp = (Record)InstallerType.InvokeMember(
-						"CreateRecord", 
-						BindingFlags.InvokeMethod, 
-						null, InstallerObject, 
-						new object[] { 6 });
+                        // Add a record for a new Component
+                        Record recComp = (Record)InstallerType.InvokeMember(
+                            "CreateRecord", 
+                            BindingFlags.InvokeMethod, 
+                            null, InstallerObject, 
+                            new object[] { 6 });
 
-					recComp.set_StringData(1, asmCompName);
-					recComp.set_StringData(2, newCompId);
-					recComp.set_StringData(3, ComponentDirectory);
-					recComp.set_StringData(4, "2");
-					recComp.set_StringData(5, null);
-					recComp.set_StringData(6, fileId);
-					ComponentView.Modify(MsiViewModify.msiViewModifyInsert, recComp);
+                        recComp.set_StringData(1, asmCompName);
+                        recComp.set_StringData(2, newCompId);
+                        recComp.set_StringData(3, ComponentDirectory);
+                        recComp.set_StringData(4, "2");
+                        recComp.set_StringData(5, null);
+                        recComp.set_StringData(6, fileId);
+                        ComponentView.Modify(MsiViewModify.msiViewModifyInsert, recComp);
 
-					// Map the new Component to the existing one's Feature
-					Record featComp = (Record)InstallerType.InvokeMember(
-						"CreateRecord", 
-						BindingFlags.InvokeMethod, 
-						null, InstallerObject, 
-						new object[] { 2 });
+                        // Map the new Component to the existing one's Feature
+                        Record featComp = (Record)InstallerType.InvokeMember(
+                            "CreateRecord", 
+                            BindingFlags.InvokeMethod, 
+                            null, InstallerObject, 
+                            new object[] { 2 });
 
-					featComp.set_StringData(1, (string)featureComponents[ComponentName]);
-					featComp.set_StringData(2, asmCompName);
-					FeatureComponentView.Modify(MsiViewModify.msiViewModifyInsert, featComp);
+                        featComp.set_StringData(1, (string)featureComponents[ComponentName]);
+                        featComp.set_StringData(2, asmCompName);
+                        FeatureComponentView.Modify(MsiViewModify.msiViewModifyInsert, featComp);
+                    }
 
 					if (isAssembly)
 					{
-
 						// Add a record for a new MsiAssembly
 						Record recAsm = (Record)InstallerType.InvokeMember(
 							"CreateRecord", 
@@ -1541,8 +1656,11 @@ namespace NAnt.Contrib.Tasks
 						}
 
 						// File cant be a member of both components
-						files.Remove(fileName);
-						files.Add(fileName, "KeyIsDotNetAssembly");
+                        if (componentFiles.FileNames.Count > 1)
+                        {
+                            files.Remove(fileName);
+                            files.Add(fileName, "KeyIsDotNetAssembly");
+                        }
 					}
 					else if (filePath.EndsWith(".tlb"))
 					{
@@ -1597,7 +1715,8 @@ namespace NAnt.Contrib.Tasks
 					File.Copy(filePath, cabPath, true);
 				}
 
-				if (!isAssembly && !filePath.EndsWith(".tlb"))
+				if (!isAssembly && !filePath.EndsWith(".tlb") 
+                    || componentFiles.FileNames.Count == 1)
 				{
 					recFile.set_StringData(2, component);
 				}
@@ -1763,78 +1882,41 @@ namespace NAnt.Contrib.Tasks
 			string curPath = Path.Combine(Project.BaseDirectory, SourceDirectory);
 			string curTempPath = Path.Combine(curPath, "Temp");
 
-			string[] curDirFileNames = Directory.GetFiles(curTempPath, "_*.*");
 			string[] curFileNames = Directory.GetFiles(curTempPath, "*.*");
 
 			LastSequence = 1;
-			foreach (string curDirFileName in curDirFileNames)
-			{
-				View curFileView = Database.OpenView(
-					"SELECT * FROM `File` WHERE `File`='" + 
-					Path.GetFileName(curDirFileName) + "'");
-
-				if (curFileView != null)
-				{
-					curFileView.Execute(null);
-					Record recCurFile = curFileView.Fetch();
-
-					if (recCurFile != null)
-					{
-						recCurFile.set_StringData(8, LastSequence.ToString());
-						curFileView.Modify(MsiViewModify.msiViewModifyUpdate, recCurFile);
-						curFileView.Close();
-
-						LastSequence++;
-					}
-					else
-					{
-						Log.WriteLine(LogPrefix + "File " + 
-							Path.GetFileName(curDirFileName) + 
-							" not found during reordering.");
-
-                        curFileView.Close();
-
-						return false;
-					}
-				}
-
-                curFileView.Close();
-			}
 
             foreach (string curDirFileName in curFileNames)
             {
-                if (!Path.GetFileName(curDirFileName).StartsWith("_"))
+                View curFileView = Database.OpenView(
+                    "SELECT * FROM `File` WHERE `File`='" + 
+                    Path.GetFileName(curDirFileName) + "'");
+
+                if (curFileView != null)
                 {
-                    View curFileView = Database.OpenView(
-                        "SELECT * FROM `File` WHERE `File`='" + 
-                        Path.GetFileName(curDirFileName) + "'");
+                    curFileView.Execute(null);
+                    Record recCurFile = curFileView.Fetch();
 
-                    if (curFileView != null)
+                    if (recCurFile != null)
                     {
-                        curFileView.Execute(null);
-                        Record recCurFile = curFileView.Fetch();
+                        recCurFile.set_StringData(8, LastSequence.ToString());
+                        curFileView.Modify(MsiViewModify.msiViewModifyUpdate, recCurFile);
+                        curFileView.Close();
 
-                        if (recCurFile != null)
-                        {
-                            recCurFile.set_StringData(8, LastSequence.ToString());
-                            curFileView.Modify(MsiViewModify.msiViewModifyUpdate, recCurFile);
-                            curFileView.Close();
-
-                            LastSequence++;
-                        }
-                        else
-                        {
-                            Log.WriteLine(LogPrefix + "File " + 
-                                Path.GetFileName(curDirFileName) + 
-                                " not found during reordering.");
-
-                            curFileView.Close();
-
-                            return false;
-                        }
+                        LastSequence++;
                     }
-                    curFileView.Close();
+                    else
+                    {
+                        Log.WriteLine(LogPrefix + "File " + 
+                            Path.GetFileName(curDirFileName) + 
+                            " not found during reordering.");
+
+                        curFileView.Close();
+
+                        return false;
+                    }
                 }
+                curFileView.Close();
             }
 
 			return true;
