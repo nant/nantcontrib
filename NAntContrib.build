@@ -63,7 +63,7 @@
                 <import name="System.Reflection" />
             </imports>
             <attributes>
-                <attribute type="AssemblyConfigurationAttribute" value="${framework::get-target-framework()}.${platform::get-name()}; ${project.release.type}" />
+                <attribute type="AssemblyConfigurationAttribute" value="${project.release.type}" />
                 <attribute type="AssemblyCompanyAttribute" value="http://nantcontrib.sourceforge.net" />
                 <attribute type="AssemblyProductAttribute" value="NAntContrib" />
                 <attribute type="AssemblyCopyrightAttribute" value="Copyright (C) 2001-${datetime::get-year(datetime::now())} Gerry Shaw" />
