@@ -23,6 +23,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 using WindowsInstaller;
 
@@ -42,8 +43,17 @@ namespace NAnt.Contrib.Tasks.Msi {
 
         public InstallerDatabase(string path) {
             _archivePath = path;
+           _installer = typeof(Installer);
+           //
+           // 2004-07-11: tomasr@mvps.org
+           // Minor change to avoid 
+           // "cannot create an instance of an interface" error.
+           //
+           _installerInstance = new Installer();
+/*
             _installer = Type.GetTypeFromProgID("WindowsInstaller.Installer");
             _installerInstance = Activator.CreateInstance(_installer);
+*/            
         }
 
         public void Open() {
@@ -213,4 +223,17 @@ namespace NAnt.Contrib.Tasks.Msi {
             }
         }
     }
+
+
+
+   /// <remarks>
+   /// Helper class used to avoid errors when instantiating
+   /// WindowsInstaller.Installer. 
+   /// </remarks>
+   [ 
+      ComImport(),
+      Guid("000C1090-0000-0000-C000-000000000046")
+   ]
+   class Installer {}
+
 }
