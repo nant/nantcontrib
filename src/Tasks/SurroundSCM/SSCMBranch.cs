@@ -27,14 +27,15 @@ using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks.SurroundSCM {
     /// <summary>
-    /// Surround SCM branch task for creating new branches.
+    /// Creates new branches for <see href="http://www.seapine.com/surroundscm.html">Surround SCM</see>.
     /// </summary>
     /// <example>
-    /// <para>
-    /// Create a new Baseline branch 'Widget 1.0' from branch 'Mainline', repository 'Mainline/Widget' 
-    /// with the given comments. All files are branched at the tip version.
-    /// </para>
-    /// <code>
+    ///   <para>
+    ///   Create a new Baseline branch 'Widget 1.0' from branch 'Mainline', 
+    ///   repository 'Mainline/Widget' with the given comments. All files 
+    ///   are branched at the tip version.
+    ///   </para>
+    ///   <code>
     /// &lt;sscmbranch
     ///     serverconnect=&quot;localhost:4900&quot;
     ///     serverlogin=&quot;administrator:&quot;
@@ -44,12 +45,15 @@ namespace NAnt.Contrib.Tasks.SurroundSCM {
     ///     comment=&quot;Branch for continuing Widget 1.0 development&quot;
     ///     type=&quot;baseline&quot;
     /// /&gt;
-    /// </code>
-    /// <para>
-    /// Create a new Workspace branch 'MyWidgetDevelopment' from branch 'Widget 1.0', repository 
-    /// 'Mainline/Widget'. All files are branched at the tip version.
-    /// </para>
-    /// <code>
+    ///   </code>
+    /// </example>
+    /// <example>
+    ///   <para>
+    ///   Create a new Workspace branch 'MyWidgetDevelopment' from branch 
+    ///   'Widget 1.0', repository 'Mainline/Widget'. All files are branched 
+    ///   at the tip version.
+    ///   </para>
+    ///   <code>
     /// &lt;sscmbranch
     ///     serverconnect=&quot;localhost:4900&quot;
     ///     serverlogin=&quot;administrator:&quot;
@@ -57,13 +61,15 @@ namespace NAnt.Contrib.Tasks.SurroundSCM {
     ///     repository=&quot;Mainline/Widget&quot;
     ///     parent=&quot;Widget 1.0&quot;
     /// /&gt;
-    /// </code>
-    /// <para>
-    /// Create a new Snapshot branch 'Build as of 12-1-03' from branch 'Widget 1.0', repository 
-    /// 'Mainline/Widget' with the given comments. All files are branched at their version as of 
-    /// 12-01-03.
-    /// </para>
-    /// <code>
+    ///   </code>
+    /// </example>
+    /// <example>
+    ///   <para>
+    ///   Create a new Snapshot branch 'Build as of 12-1-03' from branch 
+    ///   'Widget 1.0', repository 'Mainline/Widget' with the given comments. 
+    ///   All files are branched at their version as of 12-01-03.
+    ///   </para>
+    ///   <code>
     /// &lt;sscmbranch
     ///     serverconnect=&quot;localhost:4900&quot;
     ///     serverlogin=&quot;administrator:&quot;
@@ -74,7 +80,7 @@ namespace NAnt.Contrib.Tasks.SurroundSCM {
     ///     timestamp=&quot;2003120300:00:00&quot;
     ///     type=&quot;snapshot&quot;
     /// /&gt;
-    /// </code>
+    ///   </code>
     /// </example>
     [TaskName("sscmbranch")]
     public class SSCMBranch : SSCMTask {

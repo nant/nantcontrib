@@ -29,7 +29,8 @@ using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks.SurroundSCM {
     /// <summary>
-    /// Surround SCM abstract task base.
+    /// <see href="http://www.seapine.com/surroundscm.html">Surround SCM</see>
+    /// abstract task base.
     /// </summary>
     public abstract class SSCMTask : ExternalProgramBase {
         #region Private Instance Fields

@@ -27,24 +27,23 @@ using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks.SurroundSCM {
     /// <summary>
-    /// Surround SCM unfreeze task for unfreezing branches.
-    /// <p></p>
-    /// Unlock a frozen branch.
+    /// Unlocks frozen branches for a <see href="http://www.seapine.com/surroundscm.html">Surround SCM</see>
+    /// repository.
     /// </summary>
     /// <example>
-    /// <para>
-    /// Unfreeze the 'Widget 1.0' branch off of the mainline 'Mainline' on the 
-    /// server at localhost, port 4900 with username 'administrator' and a 
-    /// blank password.
-    /// </para>
-    /// <code>
+    ///   <para>
+    ///   Unfreeze the 'Widget 1.0' branch off of the mainline 'Mainline' on the 
+    ///   server at localhost, port 4900 with username 'administrator' and a 
+    ///   blank password.
+    ///   </para>
+    ///   <code>
     /// &lt;sscmunfreeze
     ///     serverconnect=&quot;localhost:4900&quot;
     ///     serverlogin=&quot;administrator:&quot;
     ///     mainline=&quot;Mainline&quot;
     ///     branch=&quot;Widget 1.0&quot;
     /// /&gt;
-    /// </code>
+    ///   </code>
     /// </example>
     [TaskName("sscmunfreeze")]
     public class SSCMUnFreeze : SSCMTask {

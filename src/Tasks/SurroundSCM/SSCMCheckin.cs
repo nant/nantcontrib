@@ -26,22 +26,22 @@ using NAnt.Core.Attributes;
 using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks.SurroundSCM {
-
     /// <summary>
-    /// Surround SCM check in task for checking in files.
-    /// <p></p>
-    /// Check in updates Surround SCM files with changes, removes the lock on 
-    /// the files, and makes changes available to other users.
+    /// Checks in files in <see href="http://www.seapine.com/surroundscm.html">Surround SCM</see>
+    /// repository.
     /// </summary>
+    /// <remarks>
+    /// Check in updated Surround SCM files with changes, removes the lock on 
+    /// the files, and makes changes available to other users.
+    /// </remarks>
     /// <example>
-    /// <para>
-    /// Check In all files and repositories from repository 'Mainline/Widget' 
-    /// recursively from the 'Widget 1.0' branch to the working directory setup 
-    /// for user 'administrator'. This call outputs the progress of the Check In 
-    /// to the console.
-    /// messages.
-    /// </para>
-    /// <code>
+    ///   <para>
+    ///   Check In all files and repositories from repository 'Mainline/Widget' 
+    ///   recursively from the 'Widget 1.0' branch to the working directory setup 
+    ///   for user 'administrator'. This call outputs the progress of the Check In 
+    ///   to the console.
+    ///   </para>
+    ///   <code>
     /// &lt;sscmcheckin
     ///     serverconnect=&quot;localhost:4900&quot;
     ///     serverlogin=&quot;administrator:&quot;
@@ -51,14 +51,17 @@ namespace NAnt.Contrib.Tasks.SurroundSCM {
     ///     recursive=&quot;true&quot;
     ///     comment=&quot;I made some changes&quot;
     /// /&gt;
-    /// </code>
-    /// <para>
-    /// Check In file 'Mainline/Widget/Widget.java' from the 'Widget 1.0' branch 
-    /// from the working directory setup for user 'administrator' with comment 
-    /// 'I made some changes'. Set the 'Release 1.1.1 label to this new version, 
-    /// even if the label already exists on an earlier version.
-    /// </para>
-    /// <code>
+    ///   </code>
+    /// </example>
+    /// <example>
+    ///   <para>
+    ///   Check in file 'Mainline/Widget/Widget.java' from the 'Widget 1.0' 
+    ///   branch from the working directory setup for user 'administrator' 
+    ///   with comment 'I made some changes'. Set the 'Release 1.1.1' label 
+    ///   to this new version, even if the label already exists on an earlier 
+    ///   version.
+    ///   </para>
+    ///   <code>
     /// &lt;sscmcheckin
     ///     serverconnect=&quot;localhost:4900&quot;
     ///     serverlogin=&quot;administrator:&quot;
@@ -69,7 +72,7 @@ namespace NAnt.Contrib.Tasks.SurroundSCM {
     ///     label=&quot;Release 1.1.1&quot;
     ///     overwritelabel=&quot;true&quot;
     /// /&gt;
-    /// </code>
+    ///   </code>
     /// </example>
     [TaskName("sscmcheckin")]
     public class SSCMCheckin : SSCMTask { 

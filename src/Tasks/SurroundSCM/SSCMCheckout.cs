@@ -2,7 +2,6 @@
 // NAntContrib
 // Copyright (C) 2001-2004
 //
-//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
@@ -27,21 +26,23 @@ using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks.SurroundSCM {
     /// <summary>
-    /// Surround SCM check out task for checking out files.
-    /// <p></p>
-    /// Check out files when you need to make changes. You can check out single 
-    /// files, multiple files, or a repository. Surround SCM creates a read-write 
-    /// copy of the file in the working directory.
+    /// Checks out files from a <see href="http://www.seapine.com/surroundscm.html">Surround SCM</see>
+    /// repository.
     /// </summary>
+    /// <remarks>
+    /// You can check out single files, multiple files, or a full repository. 
+    /// Surround SCM creates a read-write copy of the files in the working 
+    /// directory.
+    /// </remarks>
     /// <example>
-    /// <para>
-    /// Check Out all files and repositories from repository 'Mainline/Widget' 
-    /// recursively from the 'Widget 1.0' branch to the working directory setup 
-    /// for user 'administrator'. This call forces the file retrieval from the 
-    /// server even if the local file is current and overwrites any writable
-    /// local files with the server copy.
-    /// </para>
-    /// <code>
+    ///   <para>
+    ///   Check Out all files and repositories from repository 'Mainline/Widget' 
+    ///   recursively from the 'Widget 1.0' branch to the working directory setup 
+    ///   for user 'administrator'. This call forces the file retrieval from the 
+    ///   server even if the local file is current and overwrites any writable
+    ///   local files with the server copy.
+    ///   </para>
+    ///   <code>
     /// &lt;sscmcheckout
     ///     serverconnect=&quot;localhost:4900&quot;
     ///     serverlogin=&quot;administrator:&quot;
@@ -52,14 +53,16 @@ namespace NAnt.Contrib.Tasks.SurroundSCM {
     ///     force=&quot;true&quot;
     ///     comment=&quot;This is my Check Out comment&quot;
     /// /&gt;
-    /// </code>
-    /// <para>
-    /// Check Out version 1 of the file 'Mainline/Widget/Widget.java' exclusively 
-    /// from the 'Widget 1.0' branch to the working directory setup for user 
-    /// 'administrator'. Writable local files are not overwritten, even if they 
-    /// are out of date.
-    /// </para>
-    /// <code>
+    ///   </code>
+    /// </example>
+    /// <example>
+    ///   <para>
+    ///   Check Out version 1 of the file 'Mainline/Widget/Widget.java' exclusively 
+    ///   from the 'Widget 1.0' branch to the working directory setup for user 
+    ///   'administrator'. Writable local files are not overwritten, even if they 
+    ///   are out of date.
+    ///   </para>
+    ///   <code>
     /// &lt;sscmcheckout
     ///     serverconnect=&quot;localhost:4900&quot;
     ///     serverlogin=&quot;administrator:&quot;
@@ -72,7 +75,7 @@ namespace NAnt.Contrib.Tasks.SurroundSCM {
     ///     version=&quot;1&quot;
     ///     exclusive=&quot;true&quot;
     /// /&gt;
-    /// </code>
+    ///   </code>
     /// </example>
     [TaskName("sscmcheckout")]
     public class SSCMCheckout : SSCMTask {

@@ -28,39 +28,42 @@ using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks.SurroundSCM {
     /// <summary>
-    /// Surround SCM batch task for processing batch files.
-    /// <p></p>
+    /// Processes <see href="http://www.seapine.com/surroundscm.html">Surround SCM</see> batch files.
+    /// </summary>
+    /// <remarks>
     /// Processes the batch commands found in the input file. Each line in the 
     /// input file should contain a single Surround SCM command including proper 
     /// command line options. The sscm command, Surround SCM server address, 
     /// port number, username and password are not required for each command line.
-    /// </summary>
+    /// </remarks>
     /// <example>
-    /// <para>
-    /// Run the batch file <c>${src}/sscm.batch</c> on the server at localhost, 
-    /// port 4900 with username 'administrator' and a blank password. All script 
-    /// output is directed to the console.
-    /// </para>
-    /// <code>
+    ///   <para>
+    ///   Run the batch file <c>${src}/sscm.batch</c> on the server at localhost,
+    ///   port 4900 with username 'administrator' and a blank password. All script
+    ///   output is directed to the console.
+    ///   </para>
+    ///   <code>
     /// &lt;sscmbatch
     ///     serverconnect=&quot;localhost:4900&quot;
     ///     serverlogin=&quot;administrator:&quot;
     ///     input=&quot;${src}/sscm.batch&quot;
     /// /&gt;
-    /// </code>
-    /// <para>
-    /// Run the batch file <c>${src}/sscm.batch</c> on the server at localhost, 
-    /// port 4900 with username 'administrator' and a blank password. All script 
-    /// output is redirected to <c>${dist}/sscm.batch.out</c>.
-    /// </para>
-    /// <code>
+    ///   </code>
+    /// </example>
+    /// <example>
+    ///   <para>
+    ///   Run the batch file <c>${src}/sscm.batch</c> on the server at localhost, 
+    ///   port 4900 with username 'administrator' and a blank password. All script 
+    ///   output is redirected to <c>${dist}/sscm.batch.out</c>.
+    ///   </para>
+    ///   <code>
     /// &lt;sscmbatch
     ///     serverconnect=&quot;localhost:4900&quot;
     ///     serverconnect=&quot;administrator:&quot;
     ///     input=&quot;${src}/sscm.batch&quot;
     ///     output=&quot;${dist}/sscm.batch.out&quot;
     /// /&gt;
-    /// </code>
+    ///   </code>
     /// </example>
     [TaskName("sscmbatch")]
     public class SSCMBatch : SSCMTask {

@@ -28,21 +28,22 @@ using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks.SurroundSCM {
     /// <summary>
-    /// Surround SCM get task for getting files.
-    /// <p></p>
-    /// Get files when you want to view a file but do not need to make any 
-    /// changes. You can get a single file, multiple files, or a repository. 
-    /// A read-only copy of the file is created in the specified directory.
+    /// Gets files from a <see href="http://www.seapine.com/surroundscm.html">Surround SCM</see>
+    /// repository.
     /// </summary>
+    /// <remarks>
+    /// You can get a single file, multiple files, or a repository. A read-only 
+    /// copy of the file is created in the specified directory.
+    /// </remarks>
     /// <example>
-    /// <para>
-    /// Get all files and repositories from repository 'Mainline/Widget' 
-    /// recursively from the 'Widget 1.0' branch to the working directory setup 
-    /// for user 'administrator'. This call forces the file retrieval from the 
-    /// server even if the local file is current and overwrites any local files 
-    /// that are writable with the server copy.
-    /// </para>
-    /// <code>
+    ///   <para>
+    ///   Get all files and repositories from repository 'Mainline/Widget' 
+    ///   recursively from the 'Widget 1.0' branch to the working directory 
+    ///   setup for user 'administrator'. This call forces the file retrieval 
+    ///   from the server even if the local file is current and overwrites any 
+    ///   local files that are writable with the server copy.
+    ///   </para>
+    ///   <code>
     /// &lt;sscmget
     ///     serverconnect=&quot;localhost:4900&quot;
     ///     serverlogin=&quot;administrator:&quot;
@@ -53,13 +54,15 @@ namespace NAnt.Contrib.Tasks.SurroundSCM {
     ///     force=&quot;true&quot;
     ///     overwrite=&quot;true&quot;
     /// /&gt;
-    /// </code>
-    /// <para>
-    /// Get version 1 of the file 'Mainline/Widget/Widget.java' from the 
-    /// 'Widget 1.0' branch to the working directory setup for user 'administrator'.
-    /// Writable local files are not overwritten, even if they are out of date.
-    /// </para>
-    /// <code>
+    ///   </code>
+    /// </example>
+    /// <example>
+    ///   <para>
+    ///   Get version 1 of the file 'Mainline/Widget/Widget.java' from the 
+    ///   'Widget 1.0' branch to the working directory setup for user 'administrator'.
+    ///   Writable local files are not overwritten, even if they are out of date.
+    ///   </para>
+    ///   <code>
     /// &lt;sscmget
     ///     serverconnect=&quot;localhost:4900&quot;
     ///     serverlogin=&quot;administrator:&quot;
@@ -71,14 +74,16 @@ namespace NAnt.Contrib.Tasks.SurroundSCM {
     ///     writable=&quot;true&quot;
     ///     version=&quot;1&quot;
     /// /&gt;
-    /// </code>
-    /// <para>
-    /// Get all files and repositories labeled with 'Release 1.0.0' (even those 
-    /// removed from Surround) from repository 'Mainline/Widget' recursively 
-    /// from the 'Widget 1.0' branch to the '${build}/src' directory. Writable 
-    /// local files are overwritten with the server copy.
-    /// </para>
-    /// <code>
+    ///   </code>
+    /// </example>
+    /// <example>
+    ///   <para>
+    ///   Get all files and repositories labeled with 'Release 1.0.0' (even those 
+    ///   removed from Surround) from repository 'Mainline/Widget' recursively 
+    ///   from the 'Widget 1.0' branch to the '${build}/src' directory. Writable 
+    ///   local files are overwritten with the server copy.
+    ///   </para>
+    ///   <code>
     /// &lt;sscmget
     ///     serverconnect=&quot;localhost:4900&quot;
     ///     serverlogin=&quot;administrator:&quot;
@@ -91,7 +96,7 @@ namespace NAnt.Contrib.Tasks.SurroundSCM {
     ///     destdir=&quot;${build}/src&quot;
     ///     overwrite=&quot;true&quot;
     /// /&gt;
-    /// </code>
+    ///   </code>
     /// </example>
     [TaskName("sscmget")]
     public class SSCMGet : SSCMTask { 

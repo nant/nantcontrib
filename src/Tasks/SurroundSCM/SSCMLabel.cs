@@ -27,20 +27,22 @@ using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks.SurroundSCM {
     /// <summary>
-    /// Surround SCM label task for creating file or repository labels.
-    /// <p></p>
+    /// Creates file or repository labels for a <see href="http://www.seapine.com/surroundscm.html">Surround SCM</see>
+    /// repository.
+    /// </summary>
+    /// <remarks>
     /// Labels provide a way to mark a specific version of a file or repository. 
     /// You can create labels for single files, multiple files, or all files in 
     /// a repository. When you create a label, a new entry is created in the history.
     /// The file, and the version number, do not change. Existing 'Release 1.0.1' 
     /// labels on a file will be moved to the tip version of the file.
-    /// </summary>
+    /// </remarks>
     /// <example>
-    /// <para>
-    /// Label all files under the 'Mainline/Widget' repository recursively in 
-    /// the 'Widget 1.0' branch with 'Release 1.0.1' and the given comment.
-    /// </para>
-    /// <code>
+    ///   <para>
+    ///   Label all files under the 'Mainline/Widget' repository recursively in 
+    ///   the 'Widget 1.0' branch with 'Release 1.0.1' and the given comment.
+    ///   </para>
+    ///   <code>
     /// &lt;sscmlabel
     ///     serverconnect=&quot;localhost:4900&quot;
     ///     serverlogin=&quot;administrator:&quot;
@@ -52,12 +54,14 @@ namespace NAnt.Contrib.Tasks.SurroundSCM {
     ///     overwritelabel=&quot;false&quot;
     ///     comment=&quot;This labels the final build for the release of Widget 1.0.1.&quot;
     /// /&gt;
-    /// </code>
-    /// Label all files under the 'Mainline/Widget' repository recursively in 
-    /// the 'Widget 1.0' branch with 'Release 1.0.1' and no comments.
-    /// <para>
-    /// </para>
-    /// <code>
+    ///   </code>
+    /// </example>
+    /// <example>
+    ///   <para>
+    ///   Label all files under the 'Mainline/Widget' repository recursively in 
+    ///   the 'Widget 1.0' branch with 'Release 1.0.1' and no comments.
+    ///   </para>
+    ///   <code>
     /// &lt;sscmlabel
     ///     serverconnect=&quot;localhost:4900&quot;
     ///     serverlogin=&quot;administrator:&quot;
@@ -67,14 +71,16 @@ namespace NAnt.Contrib.Tasks.SurroundSCM {
     ///     recursive=&quot;true&quot;
     ///     label=&quot;Release 1.0.1&quot;
     /// /&gt;
-    /// </code>
-    /// <para>
-    /// Label version 4 of the file 'Mainline/Widget/Widget.java' in the 
-    /// 'Widget 1.0' branch with 'Release 1.0.1' and the given comment. An 
-    /// existing 'Release 1.0.1' label on this file to be moved to version 4 
-    /// of the file.
-    /// </para>
-    /// <code>
+    ///   </code>
+    /// </example>
+    /// <example>
+    ///   <para>
+    ///   Label version 4 of the file 'Mainline/Widget/Widget.java' in the 
+    ///   'Widget 1.0' branch with 'Release 1.0.1' and the given comment. An 
+    ///   existing 'Release 1.0.1' label on this file to be moved to version 4 
+    ///   of the file.
+    ///   </para>
+    ///   <code>
     /// &lt;sscmlabel
     ///     serverconnect=&quot;localhost:4900&quot;
     ///     serverlogin=&quot;administrator:&quot;
@@ -86,7 +92,7 @@ namespace NAnt.Contrib.Tasks.SurroundSCM {
     ///     comment=&quot; This labels the final build for the release of Widget 1.0.1.&quot; 
     ///     version=&quot; 4&quot; 
     /// /&gt;
-    /// </code>
+    ///   </code>
     /// </example>
     [TaskName("sscmlabel")]
     public class SSCMLabel : SSCMTask {

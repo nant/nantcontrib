@@ -28,24 +28,28 @@ using NAnt.Core.Util;
 namespace NAnt.Contrib.Tasks.SurroundSCM {
 
     /// <summary>
-    /// Surround SCM freeze task for freezing branches.
-    /// <p></p>
-    /// Freezing a branch prevents any code changes being made to files in the branch. When a branch is frozen,
-    /// it is locked and no changes can be made to it.
+    /// Freezes branches in a <see href="http://www.seapine.com/surroundscm.html">Surround SCM</see>
+    /// repository.
     /// </summary>
+    /// <remarks>
+    /// Freezing a branch prevents any code changes being made to files in the 
+    /// branch. When a branch is frozen, it is locked and no changes can be 
+    /// made to it.
+    /// </remarks>
     /// <example>
-    /// <para>
-    /// Freeze the 'Widget 1.0' branch off of the mainline 'Mainline' on the server at localhost,
-    /// port 4900 with username 'administrator' and a blank password. 
-    /// </para>
-    /// <code>
+    ///   <para>
+    ///   Freeze the 'Widget 1.0' branch off of the mainline 'Mainline' on the 
+    ///   server at localhost, port 4900 with username 'administrator' and a 
+    ///   blank password. 
+    ///   </para>
+    ///   <code>
     /// &lt;sscmfreeze
     /// serverconnect=&quot;localhost:4900&quot;
     /// serverlogin=&quot;administrator:&quot;
     /// mainline=&quot;Mainline&quot;
     /// branch=&quot;Widget 1.0&quot;
     /// /&gt;
-    /// </code>
+    ///   </code>
     /// </example>
     [TaskName("sscmfreeze")]
     public class SSCMFreeze : SSCMTask {
