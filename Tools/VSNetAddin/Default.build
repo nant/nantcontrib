@@ -1,0 +1,281 @@
+<?xml version="1.0"?>
+<!--
+//
+// NAntContrib - NAntAddin
+// Copyright (C) 2002 Jayme C. Edwards (jedwards@wi.rr.com)
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+//
+-->
+<project name="NAntAddin" basedir="." default="build" verbose="false">
+  <description>Builds the NAnt Addin for Visual Studio.NET</description>
+  <!--*******************************************************************-->
+  <!--
+  IMPORTANT: If you are having problems building, before anything else, 
+  make sure you have set the below 3 properties to where you have the 
+  Microsoft.NET Primary Interop Assemblies, Microsoft Visual Studio.NET, 
+  and Microsoft Help 2.0 SDK installed to.
+  -->
+  <property name="dotnet.dir" value="C:\Program Files\Microsoft.NET" />
+  <property name="vsnet.dir" value="C:\Development\Microsoft Visual Studio .NET" />
+  <property name="helpsdk.dir" value="C:\Program Files\Microsoft Help 2.0 SDK" />
+  <!--*******************************************************************-->
+  <property name="nant.dir" value="..\..\..\NAnt" />
+  <property name="nantbuild.dir" value="${nant.dir}\build" />
+  <property name="build.dir" value="build" />
+  <property name="bin.src.dir" value="bin" />
+  <property name="dest.dir" value="${build.dir}\NAntAddin" />
+  <property name="vside.dir" value="${vsnet.dir}\Common7\IDE" />
+  <property name="vslibs.dir" value="${vsnet.dir}\Common7\IDE\PublicAssemblies" />
+  <property name="vstools.dir" value="${vsnet.dir}\Common7\Tools" />
+  <property name="dotnetlibs.dir" value="${dotnet.dir}\Primary Interop Assemblies" />
+  <property name="buildlibs.arg" value="&quot;/lib:${vslibs.dir};${dotnetlibs.dir}&quot;" />
+  <property name="resources.dir" value="NAntAddinResources" />
+  <property name="resources.dest.dir" value="${dest.dir}\1033" />
+  <property name="help.dir" value="NAntAddinDocs" />
+  <target name="prepare" description="Prepares the Build Directory">
+    <mkdir dir="${build.dir}" />
+    <mkdir dir="${dest.dir}" />
+    <copy file="${bin.src.dir}\Interop.VSUserControlHostLib.dll" todir="${dest.dir}" />
+    <echo message="**********************************************************************************"/>
+    <echo message="*"/>
+    <echo message="* Building NAnt Addin for Visual Studio.NET..."/>
+    <echo message="*"/>
+    <echo message="* PLEASE VERIFY YOUR BUILD ENVIRONMENT:"/>
+    <echo message="*"/>
+    <echo message="* Microsoft.NET Primary Interop Assemblies:"/>
+    <echo message="*"/>
+    <echo message="*   ${dotnet.dir}"/>
+    <echo message="*"/>
+    <echo message="* Visual Studio.NET Installed To:"/>
+    <echo message="*"/>
+    <echo message="*   ${vsnet.dir}"/>
+    <echo message="*"/>
+    <echo message="* Microsoft Help 2.0 SDK Installed To:"/>
+    <echo message="*"/>
+    <echo message="*   ${helpsdk.dir}"/>
+    <echo message="*"/>
+    <echo message="*"/>
+    <echo message="**********************************************************************************"/>
+    <sysinfo />
+  </target>
+  <target name="addin.compile" description="Compiles the Addin">
+	<echo message="**************************************************"/>
+	<echo message="*"/>
+    <echo message="* Compiling C# Addin Class Library"/>
+    <echo message="*"/>
+	<echo message="**************************************************"/>
+    <csc target="library" output="${dest.dir}/NAntAddin.dll">
+      <sources baseDir=".">
+        <includes name="**.cs" />
+        <excludes name="SampleTaskNode/**" />
+      </sources>
+      <arg value="${buildlibs.arg}" />
+      <references>
+        <includes name="stdole.dll" asis="true" />
+        <includes name="office.dll" asis="true" />
+        <includes name="EnvDTE.dll" asis="true" />
+        <includes name="${dest.dir}\NAnt.Core.dll" asis="true" />
+        <includes name="${dest.dir}\Interop.VSUserControlHostLib.dll" asis="true" />
+        <includes name="Extensibility.dll" asis="true" />
+      </references>
+    </csc>
+  </target>
+  <target name="resources.compile" description="Compiles Addin Resources">
+	<echo message="**************************************************"/>
+	<echo message="*"/>
+    <echo message="* Compiling C++ Resource Library Source"/>
+    <echo message="*"/>
+	<echo message="**************************************************"/>
+    <mkdir dir="${resources.dest.dir}" />
+    <cl outputdir="${resources.dest.dir}">
+      <includedirs>
+        <includes name="${sys.env.INCLUDE}" asis="true" />
+        <includes name="${resources.dir}" />
+      </includedirs>
+      <arg value="/Od" />
+      <arg value="/D &quot;WIN32&quot;" />
+      <arg value="/D &quot;_DEBUG&quot;" />
+      <arg value="/D &quot;_WINDOWS&quot;" />
+      <arg value="/D &quot;_USRDLL&quot;" />
+      <arg value="/D &quot;NANTADDINRESOURCES_EXPORTS&quot;" />
+      <arg value="/D &quot;_MBCS&quot;" />
+      <arg value="/D &quot;_WINDLL&quot;" />
+      <arg value="/Gm" />
+      <arg value="/EHsc" />
+      <arg value="/RTC1" />
+      <arg value="/MTd" />
+      <arg value="/Yc&quot;stdafx.h&quot;" />
+      <arg value="/Fp&quot;${resources.dest.dir}\NAntAddinResources.pch&quot;" />
+      <arg value="/Fd&quot;${resources.dest.dir}\vc70.pdb&quot;" />
+      <arg value="/W3" />
+      <arg value="/nologo" />
+      <arg value="/c" />
+      <arg value="/Wp64" />
+      <arg value="/ZI" />
+      <arg value="/TP" />
+      <arg value="&quot;${resources.dir}\stdafx.cpp&quot;" />
+      <arg value="&quot;${resources.dir}\NAntAddinResources.cpp&quot;" />
+    </cl>
+    <exec program="${vstools.dir}\bin\rc" basedir="${resources.dir}" commandline="/fo&quot;..\${resources.dest.dir}\NAntAddinResources.res&quot; &quot;NAntAddinResources.rc&quot;" />
+    <echo message="**************************************************"/>
+	<echo message="*"/>
+    <echo message="* Linking C++ Resource Library"/>
+    <echo message="*"/>
+	<echo message="**************************************************"/>
+    <link output="${resources.dest.dir}\NAntAddinResources.dll">
+      <libdirs>
+        <includes name="${sys.env.LIB}" asis="true" />
+      </libdirs>
+      <arg value="/INCREMENTAL" />
+      <arg value="/NOLOGO" />
+      <arg value="/DLL" />
+      <arg value="/DEBUG" />
+      <arg value="/PDB:&quot;${resources.dest.dir}\NAntAddinResources.pdb&quot;" />
+      <arg value="/SUBSYSTEM:WINDOWS" />
+      <arg value="/IMPLIB:&quot;${resources.dest.dir}\NAntAddinResources.lib&quot;" />
+      <arg value="/MACHINE:IX86" />
+      <arg value="kernel32.lib" />
+      <arg value="user32.lib" />
+      <arg value="gdi32.lib" />
+      <arg value="winspool.lib" />
+      <arg value="comdlg32.lib" />
+      <arg value="advapi32.lib" />
+      <arg value="shell32.lib" />
+      <arg value="ole32.lib" />
+      <arg value="oleaut32.lib" />
+      <arg value="uuid.lib" />
+      <arg value="&quot;${resources.dest.dir}\stdafx.obj&quot;" />
+      <arg value="&quot;${resources.dest.dir}\NAntAddinResources.obj&quot;" />
+      <arg value="&quot;${resources.dest.dir}\NAntAddinResources.res&quot;" />
+    </link>
+    <delete>
+      <fileset>
+        <includes name="${resources.dest.dir}\*.ilk" />
+        <includes name="${resources.dest.dir}\*.obj" />
+        <includes name="${resources.dest.dir}\*.pch" />
+        <includes name="${resources.dest.dir}\*.pdb" />
+        <includes name="${resources.dest.dir}\*.res" />
+        <includes name="${resources.dest.dir}\*.idb" />
+      </fileset>
+    </delete>
+  </target>
+  <target name="build" description="Builds the NAnt Addin" depends="prepare,build.nant,addin.compile,resources.compile,content.deploy,vsdocs,assemblies.deploy" />
+  <target name="build.nant" description="Compiles NAnt">
+	<echo message="**************************************************"/>
+	<echo message="*"/>
+    <echo message="* Building NAnt..."/>
+    <echo message="*"/>
+	<echo message="**************************************************"/>
+    <nant buildfile="${nant.dir}\NAnt.build" target="build" basedir="${nant.dir}" />
+    <copy file="${nantbuild.dir}\CollectionGen.dll" todir="${dest.dir}" />
+    <copy file="${nantbuild.dir}\NAnt.Core.dll" todir="${dest.dir}" />
+    <copy file="${nantbuild.dir}\NAnt.Documenter.dll" todir="${dest.dir}" />
+    <copy file="${nantbuild.dir}\NDoc.Core.dll" todir="${dest.dir}" />
+    <copy file="${nantbuild.dir}\NDoc.Documenter.Msdn.dll" todir="${dest.dir}" />
+    <copy file="${nantbuild.dir}\NUnitCore.dll" todir="${dest.dir}" />
+    <copy file="${nantbuild.dir}\NZipLib.dll" todir="${dest.dir}" />
+  </target>
+  <target name="clean" description="Deletes Build Output">
+    <delete dir="${dest.dir}" failonerror="false" />
+  </target>
+  <target name="rebuild" description="Cleans and Builds the Addin" depends="clean,build" />
+  <target name="content.deploy" description="Copies Static Content to the Build Directory">
+	<echo message="**************************************************"/>
+	<echo message="*"/>
+    <echo message="* Deploying Static Files..."/>
+    <echo message="*"/>
+	<echo message="**************************************************"/>
+    <copy todir="${dest.dir}">
+      <fileset>
+        <includes name="*.bmp" />
+        <includes name="license.txt" />
+        <includes name="license.rtf" />
+        <includes name="NAntTaskNodes.xml" />
+        <includes name="VSUserControlHost.dll" />
+      </fileset>
+    </copy>
+    <mkdir dir="${dest.dir}\TaskImages" />
+    <copy todir="${dest.dir}">
+      <fileset>
+        <includes name="TaskImages\*.bmp" />
+      </fileset>
+    </copy>
+  </target>
+  <target name="vsdocs" description="Builds the User Documentation">
+	<echo message="**************************************************"/>
+	<echo message="*"/>
+    <echo message="* Compiling HTML Help..."/>
+    <echo message="*"/>
+	<echo message="**************************************************"/>
+    <exec program="&quot;${helpsdk.dir}\hxcomp&quot;" commandline="-p ${help.dir}\NAntAddinDocs.HxC -o ${dest.dir}\NAntAddinDocs.HxS -r ${help.dir}" />
+    <copy todir="${dest.dir}">
+      <fileset basedir="${help.dir}\CollectionFiles">
+        <includes name="NAntAddinDocs.HxC" />
+        <includes name="NAntAddinDocs.HxT" />
+        <includes name="NAntAddinDocsAIndex.HxK" />
+        <includes name="NAntAddinDocsFIndex.HxK" />
+        <includes name="NAntAddinDocsKIndex.HxK" />
+      </fileset>
+    </copy>
+    <copy todir="${dest.dir}">
+      <fileset basedir="${help.dir}">
+        <includes name="NAntAddinDocs.HxA" />
+      </fileset>
+    </copy>
+    <echo message="**************************************************"/>
+	<echo message="*"/>
+    <echo message="* Registering Help in Shared Help Collection..."/>
+    <echo message="*"/>
+	<echo message="**************************************************"/>
+	<exec program="&quot;${helpsdk.dir}\hxreg&quot;" commandline="-n NAntAddin -i NAntAddin -c ${dest.dir}\NAntAddinDocs.HxC -s ${dest.dir}\NAntAddinDocs.HxS " />
+  </target>
+  <target name="assemblies.deploy" description="Copies Assemblies to the Build Directory">
+	<echo message="**************************************************"/>
+	<echo message="*"/>
+    <echo message="* Deploying Shared Assemblies..."/>
+    <echo message="*"/>
+	<echo message="**************************************************"/>
+    <copy todir="${dest.dir}">
+      <fileset basedir="${vslibs.dir}">
+        <includes name="extensibility.dll" />
+        <includes name="Extensibility.dll" />
+        <includes name="VSLangProj.dll" />
+      </fileset>
+    </copy>
+    <copy todir="${dest.dir}">
+      <fileset basedir="${vside.dir}">
+        <includes name="microsoft.visualstudio.designer.interfaces.dll" />
+        <includes name="Microsoft.VisualStudio.WizardFramework.Dll" />
+        <includes name="Microsoft.VisualStudio.dll" />
+        <includes name="Microsoft.VSDesigner.dll" />
+      </fileset>
+    </copy>
+    <copy todir="${dest.dir}">
+      <fileset basedir="${dotnetlibs.dir}">
+        <includes name="msddsp.dll" />
+        <includes name="msddslmp.dll" />
+      </fileset>
+    </copy>
+    <echo message="**************************************************"/>
+	<echo message="*"/>
+    <echo message="* Registering Addin TypeLibrary..."/>
+    <echo message="*"/>
+	<echo message="**************************************************"/>
+    <exec program="regasm" commandline="${dest.dir}\NAntAddin.dll /tlb:${dest.dir}\NAntAddin.tlb" />
+	<echo message="${nant.project.name}"/>
+    <exec program="RegisterAddin.bat" commandline="${nant.project.basedir}"/>
+  </target>
+</project>
