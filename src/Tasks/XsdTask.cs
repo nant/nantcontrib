@@ -20,278 +20,363 @@
 // Jayme C. Edwards (jedwards@wi.rr.com)
 
 using System;
-using System.IO;
-using System.Xml;
-using System.Text;
-using System.Resources;
 using System.Collections.Specialized;
+using System.Data;
+using System.Globalization;
+using System.IO;
+using System.Resources;
+using System.Text;
+using System.Xml;
 
 using NAnt.Core;
-using NAnt.Core.Tasks;
-using NAnt.DotNet.Tasks;
 using NAnt.Core.Attributes;
+using NAnt.Core.Tasks;
+using NAnt.Core.Types;
+using NAnt.Core.Util;
 
-namespace NAnt.Contrib.Tasks
-{
-    /// <summary>Compiles an XML Schema into a Microsoft.NET Assembly
-    /// containing types that can marshal back and forth from XML elements
-    /// and the objects that represent them. Also can create a W3C XML
-    /// schema from an existing Microsoft.NET Assembly, XML document,
-    /// or an old XDR format schema.</summary>
+using NAnt.DotNet.Tasks;
+
+namespace NAnt.Contrib.Tasks {
+    /// <summary>
+    /// <para>
+    /// The <see cref="XsdTask" /> can perform the following operations :
+    /// </para>
+    /// <list type="table">
+    ///     <listheader>
+    ///         <term>Operation</term>
+    ///         <description>Description</description>
+    ///     </listheader>
+    ///     <item>
+    ///         <term>XDR to XSD</term>
+    ///         <description>
+    ///             Generates an XML schema from an XML-Data-Reduced schema file. 
+    ///             XDR is an early XML-based schema format. 
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <term>XML to XSD</term>
+    ///         <description>
+    ///             Generates an XML schema from an XML file.
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <term>XSD to DataSet</term>
+    ///         <description>
+    ///             Generates common language runtime <see cref="DataSet" /> 
+    ///             classes from an XSD schema file. The generated classes 
+    ///             provide a rich object model for regular XML data. 
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <term>XSD to Classes</term>
+    ///         <description>
+    ///             Generates runtime classes from an XSD schema file. The 
+    ///             generated classes can be used in conjunction with 
+    ///             <see cref="System.Xml.Serialization.XmlSerializer" /> to 
+    ///             read and write XML code that follows the schema. 
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <term>Classes to XSD</term>
+    ///         <description>
+    ///             Generates an XML schema from a type or types in a runtime 
+    ///             assembly file. The generated schema defines the XML format 
+    ///             used by <see cref="System.Xml.Serialization.XmlSerializer" />. 
+    ///         </description>
+    ///     </item>
+    /// </list>
+    /// </summary>
     /// <example>
-    ///   <para>Compile a schema.</para>
-    ///   <code><![CDATA[<xsd schema="MySchema.xsd" element="MyRootElement"
-    ///     language="CS" namespace="MyCompany.MySchema" outputdir="build\bin"
-    ///     uri="http://MySchema'sTargetNamespace" />]]></code>
-    ///   <para>Generate a schema from an Assembly.</para>
-    ///   <code><![CDATA[<xsd assembly="MyAssembly.dll" outputdir="build\Schemas" />]]></code>
-    ///   <para>Generate a schema from an XML doc.</para>
-    ///   <code><![CDATA[<xsd xmldoc="MyDoc.xml" outputdir="build\Schemas" />]]></code>
-    ///   <para>Generate a schema from an XDR schema.</para>
-    ///   <code><![CDATA[<xsd xdr="MyOldSchema.xdr" outputdir="build\Schemas" />]]></code>
+    ///   <para>Compile a XML Schema.</para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <xsd 
+    ///     schema="MySchema.xsd" 
+    ///     element="MyRootElement" 
+    ///     language="CS" 
+    ///     namespace="MyCompany.MySchema" 
+    ///     outputdir="build\bin"
+    ///     uri="http://MySchema'sTargetNamespace" 
+    /// />
+    ///     ]]>
+    ///   </code>
+    /// </example>
+    /// <example>
+    ///   <para>Generate an XML Schema from an assembly.</para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <xsd assembly="MyAssembly.dll" outputdir="build\Schemas" />
+    ///     ]]>
+    ///   </code>
+    /// </example>
+    /// <example>
+    ///   <para>Generate an XML Schema from an XML document.</para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <xsd xmldoc="MyDoc.xml" outputdir="build\Schemas" />
+    ///     ]]>
+    ///   </code>
+    /// </example>
+    /// <example>
+    ///   <para>Generate an XML Schema from an XDR Schema.</para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <xsd xdr="MyOldSchema.xdr" outputdir="build\Schemas" />
+    ///     ]]>
+    ///   </code>
     /// </example>
     [TaskName("xsd")]
     [ProgramLocation(LocationType.FrameworkSdkDir)]
-    public class XsdTask : ExternalProgramBase  {
-        private string _args;
-        string _schema = null;
-        string _target = null;
-        string _element = null;
-        string _language = null;
-        string _namespace = null;
-        bool _nologo = false;
-        string _outputdir = null;
-        string _types = null;
-        string _uri = null;
-        string _assembly = null;
-        string _xmldoc = null;
-        string _xdr = null;
+    public class XsdTask : ExternalProgramBase {
+        #region Private Instance Fields
 
-        /// <summary>XML Schema (.xsd) filename.</summary>
+        private FileInfo _schema;
+        private string _target;
+        private string _element;
+        private string _language;
+        private string _namespace;
+        private DirectoryInfo _outputdir = null;
+        private string _types = null;
+        private string _uri = null;
+        private FileInfo _assembly = null;
+        private FileInfo _xmldoc = null;
+        private FileInfo _xdr = null;
+
+        #endregion Private Instance Fields
+
+        #region Public Instance Properties
+
+        /// <summary>
+        /// XML Schema (.xsd) filename.
+        /// </summary>
         [TaskAttribute("schema")]
-        public string Schema {
+        public FileInfo Schema {
             get { return _schema; }
             set { _schema = value; }
         }
 
-        /// <summary>Target of XML Schema compilation. Can be "classes" or "dataset".</summary>
+        /// <summary>
+        /// Target of XML Schema compilation - either <c>classes</c> or 
+        /// <c>dataset</c>. The default is <c>classes</c>.
+        /// </summary>
         [TaskAttribute("target")]
-        public string Target
-        {
+        public string Target {
             get { return (_target == "dataset" ? _target : "classes"); }
             set { _target = (value == "dataset" ? value : "classes"); }
         }
 
-        /// <summary>XML element in the Schema to process.</summary>
+        /// <summary>
+        /// XML element in the Schema to process.
+        /// </summary>
+        /// <remarks>
+        /// TO-DO : turn this into collection of elements !
+        /// </remarks>
         [TaskAttribute("element")]
         public string Element {
             get { return _element; }
-            set { _element = value; }
+            set { _element = StringUtils.ConvertEmptyToNull(value); }
         }
 
-        /// <summary>Language of generated code. 'CS', 'VB', 'JS',
-        /// or the fully-qualified name of a class implementing
-        /// System.CodeDom.Compiler.CodeDomCompiler. </summary>
+        /// <summary>
+        /// The language to use for the generated code - either <c>CS</c>, 
+        /// <c>VB</c>, <c>JS</c>, <c>VJC</c> or the fully-qualified name of a 
+        /// class implementing <see cref="System.CodeDom.Compiler.CodeDomProvider" />.
+        /// </summary>
         [TaskAttribute("language")]
         public string Language {
             get { return _language; }
-            set { _language = value; }
+            set { _language = StringUtils.ConvertEmptyToNull(value); }
         }
 
-        /// <summary>Microsoft.NET namespace of generated classes.</summary>
+        /// <summary>
+        /// Specifies the runtime namespace for the generated types. The default 
+        /// namespace is <c>Schemas</c>.
+        /// </summary>
         [TaskAttribute("namespace")]
-        public string Namespace
-        {
+        public string Namespace {
             get { return _namespace; }
-            set { _namespace = value; }
+            set { _namespace = StringUtils.ConvertEmptyToNull(value); }
         }
 
-        /// <summary>Suppresses the banner.</summary>
-        [TaskAttribute("nologo")]
-        [BooleanValidator()]
-        public bool NoLogo
-        {
-            get { return _nologo; }
-            set { _nologo = value; }
-        }
-
-        /// <summary>Output directory in which to place generated files.</summary>
+        /// <summary>
+        /// The output directory in which to place generated files.
+        /// </summary>
         [TaskAttribute("outputdir")]
-        public string OutputDir
-        {
+        public DirectoryInfo OutputDir {
             get { return _outputdir; }
             set { _outputdir = value; }
         }
 
-        /// <summary>Assembly (.dll or .exe) to generate a W3C XML Schema for.</summary>
+        /// <summary>
+        /// Assembly (.dll or .exe) to generate an XML Schema for.
+        /// </summary>
         [TaskAttribute("assembly")]
-        public string Assembly
-        {
+        public FileInfo Assembly {
             get { return _assembly; }
             set { _assembly = value; }
         }
 
-        /// <summary>Types in the assembly for which an XML schema is being created.
-        /// If you don't specify this, all types in the assembly will be included.</summary>
+        /// <summary>
+        /// Types in the assembly for which an XML schema is being created.
+        /// By default all types in the assembly will be included.
+        /// </summary>
+        /// <remarks>
+        /// TO-DO : turn this into collection of types !
+        /// </remarks>
         [TaskAttribute("types")]
-        public string Types
-        {
+        public string Types {
             get { return _types; }
             set { _types = value; }
         }
 
-        /// <summary>Uri of elements from the Schema to process.</summary>
+        /// <summary>
+        /// Specifies the URI for the elements in the <see cref="Schema" /> to 
+        /// generate code for. 
+        /// </summary>
         [TaskAttribute("uri")]
-        public string Uri
-        {
+        public string Uri {
             get { return _uri; }
             set { _uri = value; }
         }
 
-        /// <summary>XML document to generate a W3C XML Schema for.</summary>
+        /// <summary>
+        /// XML document to generate an XML Schema for.
+        /// </summary>
         [TaskAttribute("xmldoc")]
-        public string XmlDoc
-        {
+        public FileInfo XmlDoc {
             get { return _xmldoc; }
             set { _xmldoc = value; }
         }
 
-        /// <summary>XDR schema to generate a W3C XML Schema for.</summary>
+        /// <summary>
+        /// XDR Schema to generate an XML Schema for.
+        /// </summary>
         [TaskAttribute("xdr")]
-        public string Xdr
-        {
+        public FileInfo Xdr {
             get { return _xdr; }
             set { _xdr = value; }
         }
 
+        #endregion Public Instance Properties
+
+        #region Override implementation of Task
+
         /// <summary>
-        /// Arguments of program to execute
+        /// Validates the <see cref="Task" />.
         /// </summary>
-        public override string ProgramArguments
-        {
-            get
-            {
-                return _args;
+        /// <param name="taskNode">The <see cref="XmlNode" /> used to initialize the <see cref="Task" />.</param>
+        protected override void InitializeTask(XmlNode taskNode) {
+            if (Xdr == null && XmlDoc == null && Assembly == null && Schema == null) {
+                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                    "Either the 'xdr', 'xmldoc', 'assembly' or 'schema' attribute"
+                    + " of <{0} ... /> should be specified.", this.Name), Location);
             }
         }
 
-        ///<summary>
-        ///Initializes task and ensures the supplied attributes are valid.
-        ///</summary>
-        ///<param name="taskNode">Xml node used to define this task instance.</param>
-        protected override void InitializeTask(System.Xml.XmlNode taskNode)
-        {
+        #endregion Override implementation of Task
+
+        #region Override implementation of ExternalProgramBase
+
+        /// <summary>
+        /// Gets the command-line arguments for the external program.
+        /// </summary>
+        /// <value>
+        /// The command-line arguments for the external program.
+        /// </value>
+        public override string ProgramArguments { 
+            get { return string.Empty; }
         }
 
-        protected override void ExecuteTask()
-        {
-            StringBuilder arguments = new StringBuilder();
+        protected override void ExecuteTask() {
+            if (Xdr != null) {
+                Log(Level.Info, LogPrefix + "Generation XML Schema from XDR Schema '{0}'.", Xdr.FullName);
 
-            if (NoLogo)
-            {
-                arguments.Append("/nologo ");
-            }
+                Arguments.Add(new Argument(Xdr.FullName));
 
-            if (Xdr != null)
-            {
-                Log(Level.Info, LogPrefix + "Converting {0} to W3C Schema", Xdr);
-
-                arguments.Append(Xdr);
-
-                if (OutputDir != null)
-                {
-                    arguments.Append(" /o:");
-                    arguments.Append(OutputDir);
+                if (OutputDir != null) {
+                    Arguments.Add(new Argument(string.Format(
+                        CultureInfo.InvariantCulture, "/o:\"{0}\"", 
+                        OutputDir.FullName)));
                 }
-            }
-            else if (XmlDoc != null)
-            {
-                Log(Level.Info, LogPrefix + "Generating W3C Schema for XML Document {0}", XmlDoc);
+            } else if (XmlDoc != null) {
+                Log(Level.Info, LogPrefix + "Generating XML Schema for XML document '{0}'.", XmlDoc.FullName);
 
-                arguments.Append(XmlDoc);
+                Arguments.Add(new Argument(XmlDoc.FullName));
 
-                if (OutputDir != null)
-                {
-                    arguments.Append(" /o:");
-                    arguments.Append(OutputDir);
+                if (OutputDir != null) {
+                    Arguments.Add(new Argument(string.Format(
+                        CultureInfo.InvariantCulture, "/o:\"{0}\"", 
+                        OutputDir.FullName)));
                 }
-            }
-            else if (Assembly != null)
-            {
-                Log(Level.Info, LogPrefix + "Generating W3C Schema for Assembly {0}", Assembly);
+            } else if (Assembly != null) {
+                Log(Level.Info, LogPrefix + "Generating XML Schema for assembly '{0}'.", Assembly.FullName);
 
-                arguments.Append(Assembly);
+                Arguments.Add(new Argument(Assembly.FullName));
 
-                if (OutputDir != null)
-                {
-                    arguments.Append(" /o:");
-                    arguments.Append(OutputDir);
+                if (OutputDir != null) {
+                    Arguments.Add(new Argument(string.Format(
+                        CultureInfo.InvariantCulture, "/o:\"{0}\"", 
+                        OutputDir.FullName)));
                 }
 
-                if (Types != null)
-                {
-                    arguments.Append(" /t:");
-                    arguments.Append(Types);
+                if (Types != null) {
+                    Arguments.Add(new Argument(string.Format(
+                        CultureInfo.InvariantCulture, "/t:\"{0}\"", 
+                        Types)));
                 }
-            }
-            else if (Schema != null)
-            {
-                Log(Level.Info, LogPrefix + "Compiling Schema {0} into Microsoft.NET {1}", Schema, Target);
+            } else if (Schema != null) {
+                Log(Level.Info, LogPrefix + "Compiling XML Schema '{0}' into Microsoft.NET {1}.", Schema.FullName, Target);
 
-                arguments.Append(Schema);
-                arguments.Append(" /");
-                arguments.Append(Target);
+                Arguments.Add(new Argument(Schema.FullName));
 
-                if (Element != null)
-                {
-                    arguments.Append(" /e:");
-                    arguments.Append(Element);
-                }
-                if (Language != null)
-                {
-                    arguments.Append(" /l:");
-                    arguments.Append(Language);
-                }
-                if (Namespace != null)
-                {
-                    arguments.Append(" /n:");
-                    arguments.Append(Namespace);
-                }
+                // set target (classes or dataset)
+                Arguments.Add(new Argument("/" + Target));
 
-                if (OutputDir != null)
-                {
-                    arguments.Append(" /o:");
-                    arguments.Append("\""+ OutputDir +"\"");
+                if (Element != null) {
+                    Arguments.Add(new Argument(string.Format(
+                        CultureInfo.InvariantCulture, "/e:\"{0}\"", 
+                        Element)));
+                }
+                if (Language != null) {
+                    Arguments.Add(new Argument(string.Format(
+                        CultureInfo.InvariantCulture, "/l:\"{0}\"", 
+                        Language)));
+                }
+                if (Namespace != null) {
+                    Arguments.Add(new Argument(string.Format(
+                        CultureInfo.InvariantCulture, "/n:\"{0}\"", 
+                        Namespace)));
                 }
 
-                if (Uri != null)
-                {
-                    arguments.Append(" /u:");
-                    arguments.Append(Uri);
+                if (OutputDir != null) {
+                    Arguments.Add(new Argument(string.Format(
+                        CultureInfo.InvariantCulture, "/o:\"{0}\"", 
+                        OutputDir.FullName)));
+                }
+
+                if (Uri != null) {
+                    Arguments.Add(new Argument(string.Format(
+                        CultureInfo.InvariantCulture, "/u:\"{0}\"", 
+                        Uri)));
                 }
             }
 
-            try
-            {
-                _args = arguments.ToString();
+            // suppress logo-banner
+            Arguments.Add(new Argument("/nologo"));
 
+            try {
                 base.ExecuteTask();
-            }
-            catch (Exception e)
-            {
-                throw new BuildException(LogPrefix + "ERROR: " + e);
-            }
-
-            if (Schema != null)
-            {
-                XmlDocument schemaDoc = new XmlDocument();
-                schemaDoc.Load(Schema);
-
-                ResourceWriter schemaWriter = new ResourceWriter(
-                    Path.Combine(OutputDir, Namespace + ".resources"));
-                schemaWriter.AddResource("schema", schemaDoc.DocumentElement.OuterXml);
-                schemaWriter.Close();
+            } catch (Exception ex) {
+                if (Xdr != null || XmlDoc != null || Assembly != null) {
+                    throw new BuildException("Error generating XML Schema.", 
+                        Location, ex);
+                } else {
+                    throw new BuildException("Error compiling XML Schema.", 
+                        Location, ex);
+                }
             }
         }
+
+        #endregion Override implementation of ExternalProgramBase
     }
 }
