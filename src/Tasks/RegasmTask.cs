@@ -36,9 +36,9 @@ namespace NAnt.Contrib.Tasks {
     /// </remarks>
     /// <example>
     ///   <para>Register a single assembly.</para>
-    ///   <code><![CDATA[<regasm file="myAssembly.dll"/>]]></code>
+    ///   <code><![CDATA[<regasm assembly="myAssembly.dll"/>]]></code>
     ///   <para>Register an assembly while exporting a typelibrary </para>
-    ///   <code><![CDATA[<regasm file="myAssembly.dll" typelib="myAssembly.tlb"/>]]></code>
+    ///   <code><![CDATA[<regasm assembly="myAssembly.dll" typelib="myAssembly.tlb"/>]]></code>
     ///   <para>Register a set of assemblies at once.</para>
     ///   <code>
     /// <![CDATA[
