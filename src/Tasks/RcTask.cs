@@ -36,6 +36,8 @@ namespace NAnt.Contrib.Tasks {
     /// <example>
     ///   <para>Compile <c>text.rc</c> using the default options.</para>
     ///   <code><![CDATA[<rc rcfile="text.rc"/>]]></code>
+    ///   <para>Compile <c>text.rc</c>, passing an additional option.</para>
+    ///   <code><![CDATA[<rc rcfile="text.rc" options="/r"/>]]></code>
     /// </example>
     [TaskName("rc")]
     public class RcTask : ExternalProgramBase {
@@ -73,6 +75,10 @@ namespace NAnt.Contrib.Tasks {
 
                 if (_output != null) {
                     str += String.Format("/fo\"{0}\" ", Output);
+                }
+
+                if (_options != null) {
+                    str += String.Format("{0} ", _options);
                 }
 
                 str += _rcfile;
