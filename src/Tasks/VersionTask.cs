@@ -21,6 +21,7 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using SourceForge.NAnt;
 using SourceForge.NAnt.Attributes;
 
 namespace NAnt.Contrib.Tasks {

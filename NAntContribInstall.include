@@ -20,7 +20,7 @@
         <call target="build" />
         <call target="userdoc" />
 
-        <taskdef assembly="${build.dir}\NAnt.Contrib.Tasks.dll" />
+        <loadtasks assembly="${build.dir}\NAnt.Contrib.Tasks.dll" />
         
         <delete dir="${installsource.dir}\NAnt" failonerror="false" />
         <delete dir="${installsource.dir}\Temp" failonerror="false" />
@@ -292,7 +292,7 @@
         <call target="build" />
         <call target="userdoc" />
 
-        <taskdef assembly="${build.dir}\NAnt.Contrib.Tasks.dll" />
+        <loadtasks assembly="${build.dir}\NAnt.Contrib.Tasks.dll" />
 
         <mkdir dir="${installsource.dir}\NAnt\Tasks" failonerror="false" />
         <mkdir dir="${installsource.dir}\NAnt\Docs\Help\NAnt_Tasks" failonerror="false" />

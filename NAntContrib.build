@@ -4,7 +4,7 @@
 <!--*                                                               *-->  
 <!--* Builds the NAntContrib Project                                *-->
 <!--*****************************************************************-->
-<project name="NAntContrib" default="build" xmlns-no="http://nant.sourceforge.net/schema/nant-current.xsd">
+<project name="NAntContrib" default="build">
 
     <tstamp/>
     <property name="debug" value="true"/>
@@ -22,7 +22,32 @@
     
     <property name="dist.dir" value="dist"/>
     
+    <!-- this target must be defined before that call below it! -->
+    <target name="UpdateNAntReleaseFiles">
+		<available property="NAntReleaseExists" resource="${nant.dir}" type="Directory"/>
+		<ifnot propertyexists="NAntReleaseExists" propertytrue="NAntReleaseExists">
+			<echo>
+				Missing '${nant.dir}' Folder!
+				Creating folder and getting file from NAnt Nightly Build (${nant.releasebuild.name})!
+			</echo>
+			<mkdir dir="${nant.dir}"/>
+			<get dest="${nant.releasebuild.name}.zip" src="http://nant.sourceforge.net/builds/${nant.releasebuild.name}.zip"/>
+			<unzip zipfile="${nant.releasebuild.name}.zip"/>
+			<move todir="${nant.dir}">
+				<fileset basedir="${nant.releasebuild.name}">
+					<includes name="**"/>
+				</fileset>
+			</move>
+			<delete dir="nant-20030417" failonerror="false"/>
+			<delete file="nant-20030417.zip" failonerror="false"/>
+		</ifnot>
+    </target>
+    
+    <!-- Used to build against. This directory must exist or it will be created. -->
     <property name="nant.dir" value="NAntRelease" />
+    <property name="nant.releasebuild.name" value="nant-20030417"/>
+    <call target="UpdateNAntReleaseFiles"/>
+    
     <property name="nant-bin.dir" value="${nant.dir}/bin"/>
     <property name="nant-doc.dir" value="${nant.dir}/doc" />
     <property name="nant.extra-tasks.dir" value="${nant-bin.dir}" />
@@ -32,6 +57,8 @@
 
     <include buildfile="NAntContribInstall.include" />
     <include buildfile="Tools/SLiNgshoT/SLiNgshoTInstall.include" />
+    
+
 
     <!--*****************************************************************-->
     <!--* Clean the outputs                                             *-->
@@ -111,17 +138,30 @@
     <!--*****************************************************************-->
     <target name="compile.schemas" depends="compile.schematask" description="compiles Task XML Schemas into assemblies">
 		
-		<taskdef assembly="${build.dir}\NAnt.Xsd.Tasks.dll" />
-		
-		<mkdir dir="${build.dir}\Schemas\MSI" />
-		<xsd schema="${src.dir}\Tasks\MSITask.xsd" 
-			language="CS" namespace="NAnt.Contrib.Schemas.MSI" nologo="true" 
-			outputdir="${build.dir}\Schemas\MSI" uri="NAnt.Contrib.Tasks.MSITask" />	
-		<mkdir dir="${build.dir}\Schemas\MSM" />
-		<xsd schema="${src.dir}\Tasks\MSMTask.xsd" 
-			language="CS" namespace="NAnt.Contrib.Schemas.MSM" nologo="true" 
-			outputdir="${build.dir}\Schemas\MSM" uri="NAnt.Contrib.Tasks.MSMTask" />	
+		<loadtasks assembly="${build.dir}\NAnt.Xsd.Tasks.dll"/>
+
+		<if uptodate="${src.dir}\Tasks\MSITask.xsd">
+			<comparefiles basedir="${build.dir}\Schemas\MSI">
+				<includes name="*"/>
+			</comparefiles>
 			
+			<mkdir dir="${build.dir}\Schemas\MSI" />
+			<xsd schema="${src.dir}\Tasks\MSITask.xsd" 
+				language="CS" namespace="NAnt.Contrib.Schemas.MSI" nologo="true" 
+				outputdir="${build.dir}\Schemas\MSI" uri="NAnt.Contrib.Tasks.MSITask" />	
+		</if>
+
+		<if uptodate="${src.dir}\Tasks\MSMTask.xsd">
+			<comparefiles basedir="${build.dir}\Schemas\MSM">
+				<includes name="*"/>
+			</comparefiles>
+			
+			<mkdir dir="${build.dir}\Schemas\MSM" />
+			<xsd schema="${src.dir}\Tasks\MSMTask.xsd" 
+				language="CS" namespace="NAnt.Contrib.Schemas.MSM" nologo="true" 
+				outputdir="${build.dir}\Schemas\MSM" uri="NAnt.Contrib.Tasks.MSMTask" />	
+		</if>
+		
 		<csc target="library" output="${build.dir}\NAnt.Contrib.Schemas.dll">
             <sources basedir="${build.dir}\Schemas">
                 <includes name="**.cs"/>
@@ -133,7 +173,7 @@
     <!--*****************************************************************-->
     <!--* Build the NAnt.Contrib.Tasks.dll library                      *-->
     <!--*****************************************************************-->
-    <target name="build" depends="use, prepare, prepare.slingshot, compile.schemas" description="compiles the source code">
+    <target name="build" depends="prepare, prepare.slingshot, compile.schemas" description="compiles the source code">
     
         <csc target="library" debug="${debug}" 
             output="${build.dir}\${project.FormalName}.Tasks.dll" 
@@ -141,7 +181,6 @@
             <sources>
                 <includes name="${src.dir}\**.cs"/>
                 <includes name="${build.dir}\Schemas\**.cs" />
-                <excludes name="${src.dir}\Tasks\TaskDefTask.cs"/>
             </sources>
             <references>
                 <includes name="${nant-bin.dir}\NAnt.Core.dll"/>
@@ -161,8 +200,10 @@
             </resources>
             <arg value="/nowarn:1591,1595"/>
         </csc>
+        <!--
         <delete dir="${build.dir}\Schemas" />
         <delete file="${build.dir}\NAnt.Contrib.Schemas.dll" />
+        -->
     </target>
 
     <!--*****************************************************************-->
@@ -224,33 +265,6 @@
                 <includes name="**"/>
             </fileset>
         </zip>
-    </target>
-    
-    <!--*****************************************************************-->
-    <!--* Build the taskdef.Tasks.dll library                           *-->
-    <!--*****************************************************************-->
-    <target name="taskdef.build" description="build taskdef assembly">
-
-        <mkdir dir="${build.dir}" />
-        <property name="taskDefAssembly" value="${build.dir}\taskdef.Tasks.dll" />
-        <csc target="library" output="${taskDefAssembly}" doc="${build.dir}\taskdef.Tasks.xml" debug="${debug}">
-            <sources basedir="${src.dir}">
-                <includes name="Tasks/TaskDefTask.cs"/>
-            </sources>
-            <references>
-                <includes name="${nant-bin.dir}\NAnt.Core.dll"/>
-            </references>
-            <arg value="/nowarn:1591"/>
-        </csc>
-    </target>
-    
-    <!--*****************************************************************-->
-    <!--* Deploy the taskdef.Tasks.dll to the executing copy of NAnt    *-->
-    <!--*****************************************************************-->
-    <target name="use" depends="taskdef.build" description="Copies taskdef assemblies to nant-bin/tasks folder.">
-
-        <mkdir dir="${nant.extra-tasks.dir}"/>
-        <copy file="${taskDefAssembly}" todir="${nant.extra-tasks.dir}" failonerror="false" />
     </target>
 
     <!--*****************************************************************-->
