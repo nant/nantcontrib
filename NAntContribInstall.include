@@ -16,7 +16,7 @@
 
         <property name="nantbuild.dir" value="${nant.dir}\bin" />
         <call target="build" />
-        <call target="userdoc" />
+        <call target="doc" />
 
         <loadtasks assembly="${build.dir}\NAnt.Contrib.Tasks.dll" />
         
@@ -301,13 +301,13 @@
     <!--*****************************************************************-->
     <!--* Create the .msm Windows Installer Merge Module of NAnt        *-->
     <!--*****************************************************************-->
-    <target name="nant.msm" depends="build,userdoc" description="Build MSM Merge Module of NAnt">
+    <target name="nant.msm" depends="build,doc" description="Build MSM Merge Module of NAnt">
         <property name="NAnt.id" value="2D2FB50C_DADF_4813_8932_8EF1E8CB8E80" />
           
         <property name="installsource.dir" value="install" />
 
         <call target="build" />
-        <call target="userdoc" />
+        <call target="doc" />
 
         <loadtasks assembly="${build.dir}\NAnt.Contrib.Tasks.dll" />
 
@@ -495,7 +495,7 @@
     <!--*****************************************************************-->
     <!--* Create the .msm Windows Installer Merge Module of NAntContrib *-->
     <!--*****************************************************************-->
-    <target name="NAntContrib.msm" depends="build,userdoc" description="Build MSM Merge Module of NAntContrib">
+    <target name="NAntContrib.msm" depends="build,doc" description="Build MSM Merge Module of NAntContrib">
         <property name="NAntContrib.id" value="21E9BAFF_1E50_4382_BE80_E44EA59FD8B9" />
           
         <call target="getNAntContribVersion" />
