@@ -1,18 +1,18 @@
 <?xml version="1.0"?>
 <project name="NAntContrib" default="test">
-	<include buildfile="../properties.xml" failonerror="false"/>
-	
-    <property name="project.name" value="nantcontrib"/>
-    <property name="project.FormalName" value="NAnt.Contrib"/>
+    <include buildfile="../properties.xml" failonerror="false" />
+
+    <property name="project.name" value="nantcontrib" />
+    <property name="project.FormalName" value="NAnt.Contrib" />
     <property name="project.version" value="0.8.4" overwrite="false" />
 
     <!-- default configuration -->
     <property name="project.config" value="debug" /> <!-- debug|release -->
     <property name="build.defines" value="" />
 
-    <property name="src.dir" value="src"/>
-    <property name="tests.dir" value="tests"/>
-    <property name="tools.dir" value="Tools"/>
+    <property name="src.dir" value="src" />
+    <property name="tests.dir" value="tests" />
+    <property name="tools.dir" value="Tools" />
 
     <!-- named project configurations (used by self-test and self-doc tasks) -->
     <target name="debug" description="Perform a 'debug' build">
@@ -160,17 +160,37 @@
                 <includes name="**/*.cs" />
             </sources>
             <references>
-                <includes name="${build.dir}/bin/*.dll"/>
+                 <includes name="${nant.dir}/bin/nunit.framework.dll" />
+                 <includes name="${nant.dir}/bin/NAnt.Core.dll" />
+                 <includes name="${nant.dir}/bin/NAnt.Core.Tests.dll" />
+                 <includes name="${build.dir}/bin/${project.FormalName}.Tasks.dll" />
+                 <includes name="${build.dir}/bin/SourceSafe.Interop.dll" />
             </references>
         </csc>
     </target>
 
     <!-- Perform unit tests. -->
     <target name="test" depends="buildtests init" description="run unit tests">
+        <!-- make copy of NAnt configuration file -->    
+        <copy file="${nant.location}nant.exe.config" tofile="${nant.location}nant.tests.config" />
+        
+        <!-- make sure the config file is writable -->
+        <attrib file="${nant.location}nant.tests.config" readonly="false" />
+        
+        <!-- ensure the tests target the current framework -->
+        <xmlpoke filename="${nant.location}nant.tests.config"
+                 xpath="//configuration/nant/frameworks/platform[@name='${nant.platform.name}']/@default"
+                 value="${nant.settings.currentframework}"/>
+
+        <!-- output the config file that will be used to run the tests -->
+        <echo message="testing with config '${nant.location}nant.tests.config'"/>
+
+        <!-- execute the unit tests -->
         <nunit2>
             <formatter type="Plain" />
-            <test assemblyname="${build.dir}/bin/${project.FormalName}.Tests.dll" />
+            <test assemblyname="${build.dir}/bin/${project.FormalName}.Tests.dll" appconfig="${nant.location}nant.tests.config" />
         </nunit2>
+        
         <!-- remove NAnt assemblies that were needed for the tests to run -->
         <delete>
             <fileset basedir="${build.dir}/bin">
