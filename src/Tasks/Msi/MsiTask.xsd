@@ -809,12 +809,22 @@
             <xsd:element name="include" type="msi:NAntFileSetPattern" minOccurs="0" maxOccurs="unbounded" />
             <xsd:element name="exclude" type="msi:NAntFileSetPattern" minOccurs="0" maxOccurs="unbounded" />
             <xsd:element name="includesfile" type="msi:NAntFileSetPattern" minOccurs="0" maxOccurs="unbounded" />
-            <xsd:element name="excludesfile" type="msi:NAntFileSetPattern" minOccurs="0" maxOccurs="unbounded" />
+            <xsd:element name="excludesfile" minOccurs="0" maxOccurs="unbounded">
+                <xsd:complexType>
+                    <xsd:attribute name="name" type="xsd:string" use="required" />
+                    <xsd:attribute name="if" type="xsd:string" use="optional" />
+                    <xsd:attribute name="unless" type="xsd:string" use="optional" />
+                </xsd:complexType>
+            </xsd:element>            
             
+            <!-- deprecated -->
             <xsd:element name="includes" type="msi:NAntFileSetPattern" minOccurs="0" maxOccurs="unbounded" />
             <xsd:element name="excludes" type="msi:NAntFileSetPattern" minOccurs="0" maxOccurs="unbounded" />
         </xsd:sequence>
         <xsd:attribute name="basedir" type="xsd:string" use="optional" />
+        <xsd:attribute name="defaultexcludes" type="xsd:string" use="optional" />
+        <xsd:attribute name="failonempty" type="xsd:string" use="optional" />
+        <xsd:attribute name="refid" type="xsd:string" use="optional" />
     </xsd:complexType>
     <xsd:complexType name="NAntFileSetPattern">
         <xsd:attribute name="name" type="xsd:string" use="required" />

@@ -2091,14 +2091,14 @@ namespace NAnt.Contrib.Tasks.Msi {
             XmlElement fileSetElem = (XmlElement)((XmlElement)_xmlNode).SelectSingleNode(
                 "nant:components/nant:component[@id='" + Component.id + "']/nant:fileset", NamespaceManager);
 
-            FileSet componentFiles = new FileSet();
-            componentFiles.Project = Project;
-            componentFiles.NamespaceManager = NamespaceManager;
-            componentFiles.Parent = this;
-            componentFiles.Initialize(fileSetElem);
+            FileSet componentFiles = (FileSet) Element.InitializeBuildElement(
+                task, fileSetElem, new FileSet(), typeof(FileSet));
 
-            if (componentFiles.BaseDirectory == null)
+            /*
+            if (componentFiles.BaseDirectory == null) {
                 componentFiles.BaseDirectory = new DirectoryInfo(Project.BaseDirectory);
+            }
+            */
 
             string basePath = componentFiles.BaseDirectory.FullName;
             Hashtable dirMap = new Hashtable();
