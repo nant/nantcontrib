@@ -108,7 +108,7 @@
 
     <!-- Build the NAnt.Contrib.Tasks.dll library -->
     <target name="build" depends="prepare, prepare.slingshot, compile.schemas" description="compiles the source code">
-        <csc target="library" warnaserror="true" debug="${build.debug}" define="${current.build.defines}" output="${build.dir}/bin/${project.FormalName}.Tasks.dll" doc="${build.dir}/bin/${project.FormalName}.Tasks.xml">
+        <csc target="library" warnaserror="true" nowarn="0618,1591" debug="${build.debug}" define="${current.build.defines}" output="${build.dir}/bin/${project.FormalName}.Tasks.dll" doc="${build.dir}/bin/${project.FormalName}.Tasks.xml">
             <sources>
                 <includes name="${src.dir}/**.cs" />
                 <includes name="${build.dir}/schema/**.cs" />
@@ -129,7 +129,6 @@
                 <includes name="${src.dir}/xsl/**" />
                 <includes name="${build.dir}/schema/**.resources" />
             </resources>
-           <arg value="/nowarn:0618,1591" />
         </csc>
     </target>
 
@@ -152,7 +151,7 @@
                 <includes name="log4net.dll" />
             </fileset>
         </copy>
-        <csc target="library" warnaserror="true" debug="${build.debug}" define="${current.build.defines}" output="${build.dir}/bin/${project.FormalName}.Tests.dll">
+        <csc target="library" warnaserror="true" nowarn="1591" debug="${build.debug}" define="${current.build.defines}" output="${build.dir}/bin/${project.FormalName}.Tests.dll">
             <sources basedir="${tests.dir}">
                 <includes name="**/*.cs" />
             </sources>
@@ -162,7 +161,6 @@
                 <includes name="${nant.dir}/bin/NAnt.Core.Tests.dll"/>
                 <includes name="${build.dir}/bin/${project.FormalName}.Tasks.dll"/>
             </references>
-            <arg value="/nowarn:1591" />
         </csc>
     </target>
 
@@ -338,10 +336,7 @@
         <property name="current.runtime.description" value="Microsoft .NET Framework 1.0" />
         <property name="current.build.defines" value="${build.defines}NET,NET_1_0" />
         <property name="link.sdkdoc.version" value="SDK_v1_0" />
-        <property name="lib.dir" value="lib/${current.runtime.config}/${current.runtime.version}" />
         <property name="nant.settings.currentframework" value="${current.runtime.config}-${current.runtime.version}" />
-        <property name="sourceconfig" value="NAnt.Console.exe.config"/>
-        <property name="linux" value="false"/>
         <call target="set-runtime-configuration-flags" />
     </target>
     <target name="set-net-1.1-runtime-configuration">
@@ -351,7 +346,6 @@
         <property name="current.build.defines" value="${build.defines}NET,NET_1_1" />
         <property name="link.sdkdoc.version" value="SDK_v1_1" />
         <property name="nant.settings.currentframework" value="${current.runtime.config}-${current.runtime.version}" />
-        <property name="linux" value="false"/>
         <call target="set-runtime-configuration-flags" />
     </target>
     <target name="set-net-1.2-runtime-configuration">
@@ -361,7 +355,6 @@
         <property name="current.build.defines" value="${build.defines}NET,NET_1_2" />
         <property name="link.sdkdoc.version" value="MsdnOnline" />
         <property name="nant.settings.currentframework" value="${current.runtime.config}-${current.runtime.version}" />
-        <property name="linux" value="false"/>
         <call target="set-runtime-configuration-flags" />
     </target>
     <target name="set-netcf-1.0-runtime-configuration">
@@ -371,7 +364,6 @@
         <property name="current.build.defines" value="${build.defines}NETCF,NETCF_1_0" />
         <property name="link.sdkdoc.version" value="SDK_v1_1" />
         <property name="nant.settings.currentframework" value="${current.runtime.config}-${current.runtime.version}" />
-        <property name="linux" value="false"/>
         <call target="set-runtime-configuration-flags" />
     </target>
     <target name="set-mono-1.0-runtime-configuration">
@@ -380,20 +372,7 @@
         <property name="current.runtime.description" value="Mono 1.0" />
         <property name="current.build.defines" value="${build.defines}MONO,MONO_1_0" />
         <property name="link.sdkdoc.version" value="MsdnOnline" />
-        <ifnot propertyexists="linux" propertytrue="linux">
-            <property name="nant.settings.currentframework" value="${current.runtime.config}-${current.runtime.version}" />
-            <property name="linux" value="false"/>
-        </ifnot>
-        <call target="set-runtime-configuration-flags" />
-    </target>
-    <target name="set-mono-1.0-linux-runtime-configuration">
-        <property name="current.runtime.config" value="mono" />
-        <property name="current.runtime.version" value="1.0" />
-        <property name="current.runtime.description" value="Mono 1.0" />
-        <property name="current.build.defines" value="${build.defines}MONO,MONO_1_0" />
-        <property name="link.sdkdoc.version" value="MsdnOnline" />
-        <property name="nant.settings.currentframework" value="mono-1.0-linux" />
-        <property name="linux" value="true" />
+        <property name="nant.settings.currentframework" value="${current.runtime.config}-${current.runtime.version}" />
         <call target="set-runtime-configuration-flags" />
     </target>
     <target name="set-sscli-1.0-runtime-configuration">
@@ -403,7 +382,6 @@
         <property name="current.build.defines" value="${build.defines}SSCLI,SSCLI_1_0" />
         <property name="link.sdkdoc.version" value="MsdnOnline" />
         <property name="nant.settings.currentframework" value="${current.runtime.config}-${current.runtime.version}" />
-        <property name="linux" value="false" />
         <call target="set-runtime-configuration-flags" />
     </target>
 </project>
