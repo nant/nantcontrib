@@ -35,6 +35,7 @@ using Microsoft.Win32;
 using WindowsInstaller;
 
 using NAnt.Core;
+using NAnt.Core.Tasks;
 using NAnt.Core.Types;
 
 using NAnt.Contrib.Schemas.Msi;
@@ -1942,9 +1943,6 @@ namespace NAnt.Contrib.Tasks.Msi {
         private void CreateCabFile(InstallerDatabase database) {
             Log(Level.Info, "Compressing Files...");
 
-            // Create the CabFile
-            ProcessStartInfo processInfo = new ProcessStartInfo();
-
             string shortCabDir = GetShortDir(Path.Combine(Project.BaseDirectory, msi.sourcedir));
             string cabFilePath = shortCabDir + @"\" + CabFileName;
             string tempDir = Path.Combine(msi.sourcedir, "Temp");
@@ -1952,54 +1950,62 @@ namespace NAnt.Contrib.Tasks.Msi {
                 tempDir = tempDir.Substring(Project.BaseDirectory.Length+1);
             }
 
-            processInfo.Arguments = "-r -P " + tempDir + @"\ N " + cabFilePath + " " + tempDir + @"\*";
+            // holds output buffer
+            MemoryStream ms = new MemoryStream();
 
-            processInfo.CreateNoWindow = false;
-            processInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            processInfo.WorkingDirectory = Project.BaseDirectory;
-            processInfo.FileName = "cabarc";
+            // create task for creating cab file
+            ExecTask cabarcTask = new ExecTask();
+            cabarcTask.Project = Project;
+            cabarcTask.Parent = task;
+            cabarcTask.Verbose = Verbose;
+            // write output to (Memory)Stream
+            cabarcTask.ErrorWriter = cabarcTask.OutputWriter = new StreamWriter(ms);
+            // set command line arguments
+            cabarcTask.CommandLineArguments = "-r -P " + tempDir + @"\ N " 
+                + cabFilePath + " " + tempDir + @"\*";
 
-            Process process = new Process();
-            process.StartInfo = processInfo;
-            process.EnableRaisingEvents = true;
+            // set tool to execute
+            cabarcTask.FileName = "cabarc";
+            cabarcTask.WorkingDirectory = new DirectoryInfo(Project.BaseDirectory);
 
             try {
-                process.Start();
-            }
-            catch (Exception e) {
-                throw new BuildException("cabarc.exe failed.", Location, e);
-            }
+                // increment indentation level
+                cabarcTask.Project.Indent();
 
-            try {
-                process.WaitForExit();
-            }
-            catch (Exception e) {
-                throw new BuildException("Error creating cab file.", Location, e);
-            }
+                // execute task
+                cabarcTask.Execute();
+            } catch (Exception ex) {
+                // read output of cabarc
+                ms.Position = 0;
+                StreamReader sr = new StreamReader(ms);
+                string output = sr.ReadToEnd();
+                sr.Close();
 
-            if (process.ExitCode != 0) {
-                throw new BuildException("Error creating cab file, application returned error " + process.ExitCode, Location);
-            }
+                // if anything was output, log it as warning
+                if (output.Length != 0) {
+                    cabarcTask.Log(Level.Warning, output);
+                }
+                
+                // signal error
+                throw new BuildException("Error creating cab file.", Location, ex);
+            } finally {
+                // restore indentation level
+                cabarcTask.Project.Unindent();
 
-            if (!process.HasExited) {
-                Log(Level.Info,"" );
-                Log(Level.Info, "Killing the cabarc process.");
-                process.Kill();
+                // close MemoryStream
+                ms.Close();
             }
-            process = null;
-            processInfo = null;
-
-            Log(Level.Info, "Done.");
 
             if (File.Exists(cabFilePath)) {
                 Log(Level.Verbose, "Storing Cabinet in MSI Database...");
 
                 using (InstallerTable cabTable = database.OpenTable("_Streams")) {
-                    cabTable.InsertRecord(Path.GetFileName(cabFilePath), new InstallerStream(cabFilePath));
+                    cabTable.InsertRecord(Path.GetFileName(cabFilePath), 
+                        new InstallerStream(cabFilePath));
                 }
-            }
-            else {
-                throw new BuildException("Unable to open Cabinet file:\n\t" + cabFilePath, Location);
+            } else {
+                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                    "Cabinet file '{0}' does not exist.", cabFilePath), Location);
             }
         }
 
