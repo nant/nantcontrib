@@ -5,6 +5,7 @@
     <property name="project.FormalName" value="NAnt.Contrib"/>
 
     <property name="src.dir" value="src"/>
+    <property name="tests.dir" value="Tests"/>
     <property name="build.dir" value="build"/>
     <property name="dist.dir" value="dist"/>
     
@@ -28,7 +29,7 @@
         Performan full and clean rebuild 
     -->
     <target name="all" description="make a full, clean rebuild">
-      <call target="clean"/>
+<!--       <call target="clean"/> -->
       <call target="build"/>
       <call target="buildtests"/>
       <call target="test"/>
@@ -50,7 +51,7 @@
     -->
     <target name="build" depends="prepare" description="compiles the source code">
 
-        <!-- compile NAntContrib.dll -->
+        <!-- compile NAnt.Contrib.dll -->
         <csc target="library" output="${build.dir}\${project.FormalName}.dll" debug="${debug}" doc="${build.dir}\${project.FormalName}.xml">
             <sources basedir="${src.dir}">
                 <includes name="**/*.cs"/>
@@ -74,11 +75,12 @@
     <target name="buildtests" depends="build" description="Compiles the NUnit Tests">
         <!-- compile NAntContrib.Tests.dll -->
         <csc target="library" output="${build.dir}\${project.FormalName}.Tests.dll" debug="${debug}">
-            <sources basedir="${src.dir}\Tests">
+            <sources basedir="${tests.dir}">
                 <includes name="**/*.cs"/>
             </sources>
             <references>
-                <includes name="${build.dir}/NUnitCore.dll"/>
+                <includes name="${nant-bin.dir}/NUnitCore.dll"/>
+                <includes name="${nant-bin.dir}/NAnt.Core.dll"/>
                 <includes name="${build.dir}/${project.FormalName}.dll"/>
             </references>
         </csc>
@@ -90,10 +92,10 @@
         load external data files wihtout having to worry about complicated paths.
     -->
     <target name="test" depends="buildtests" description="run unit tests">
-        <nunit basedir="${src.dir}\Tests" verbose="false" haltonerror="true" haltonfailure="true">
+        <nunit basedir="${tests.dir}" verbose="false" haltonerror="true" haltonfailure="true">
             <formatter type="Xml"/>
             <formatter type="Plain"/>
-            <test class="NAnt.Contrib.AllTests" assembly="${build.dir}\${project.FormalName}.Tests.dll" outfile="${build.dir}\${project.FormalName}.Tests.Results" />
+            <test class="NAnt.Contrib.Tests.AllTests" assembly="${build.dir}\${project.FormalName}.Tests.dll" outfile="${build.dir}\${project.FormalName}.Tests.Results" />
         </nunit>
     </target>
 
