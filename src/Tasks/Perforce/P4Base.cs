@@ -25,13 +25,11 @@ using NAnt.Core.Util;
 using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks.Perforce {
-
-    /// <summary>Base class for Perforce (P4) NAnt tasks. See individual task for example usage.
+    /// <summary>
+    /// Base class for Perforce (P4) NAnt tasks. See individual task for example usage.
     /// </summary>
-    /// <seealso cref="P4Sync">P4Sync
-    /// </seealso>    
+    /// <seealso cref="P4Sync">P4Sync</seealso>    
     public abstract class P4Base: ExternalProgramBase {
-        
         #region Private Instance Fields
         
         string _arguments = null;
@@ -45,10 +43,8 @@ namespace NAnt.Contrib.Tasks.Perforce {
 
         #region Public Instance Properties
         
-        //private string _perforceCommandOptions = "";
-        
-        /// <summary> The p4d server and port to connect to;
-        /// optional, default "perforce:1666"
+        /// <summary>
+        /// The p4d server and port to connect to; optional, default "perforce:1666".
         /// </summary>
         [TaskAttribute("port",Required=false)]
         public string Port {
@@ -56,8 +52,9 @@ namespace NAnt.Contrib.Tasks.Perforce {
             set {_perforcePort = StringUtils.ConvertEmptyToNull(value); }
 
         }
-        /// <summary> The p4 client spec to use;
-        /// optional, defaults to the current user
+
+        /// <summary>
+        /// The p4 client spec to use; optional, defaults to the current user.
         /// </summary>
         [TaskAttribute("client",Required=false)]
         public string Client {
@@ -70,8 +67,9 @@ namespace NAnt.Contrib.Tasks.Perforce {
             set { _perforceClient = StringUtils.ConvertEmptyToNull(value); }
 
         }
-        /// <summary> The p4 username;
-        /// optional, defaults to the current user
+
+        /// <summary>
+        /// The p4 username; optional, defaults to the current user.
         /// </summary>
         [TaskAttribute("user",Required=false)]
         public string User {
@@ -84,8 +82,9 @@ namespace NAnt.Contrib.Tasks.Perforce {
             set { _perforceUser = StringUtils.ConvertEmptyToNull(value); }
 
         }
-        /// <summary> The client, branch or label view to operate upon;
-        /// optional default "//..."
+
+        /// <summary>
+        /// The client, branch or label view to operate upon; optional default "//...".
         /// </summary>
         [TaskAttribute("view",Required=false)]
         virtual public string View {
@@ -106,15 +105,6 @@ namespace NAnt.Contrib.Tasks.Perforce {
             set { _scriptOutput = value; }
         }
 
-        ///// <summary> Set extra command options; only used on some
-        ///// of the Perforce tasks.
-        ///// </summary>
-        //[TaskAttribute("options")]
-        //virtual public string CommandOptions {
-        //    get { return _perforceCommandOptions; }
-        //    set { _perforceCommandOptions = StringUtils.ConvertEmptyToNull(value); }
-        //}
-
         /// <summary>
         /// Gets the command line arguments for the external program.
         /// </summary>
@@ -129,7 +119,7 @@ namespace NAnt.Contrib.Tasks.Perforce {
         /// Override the ExeName paramater for p4.exe
         /// </summary>
         public override string ExeName {
-            get { return "p4"; }
+            get { return "p4.exe"; }
         }
             
         #endregion Public Instance Properties
