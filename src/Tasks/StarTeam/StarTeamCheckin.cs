@@ -271,7 +271,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		{
 			try
 			{
-				foreach(string fileName in localFiles)
+				foreach(string fileName in localFiles.Keys)
 				{
 					FileInfo file = new FileInfo(fileName);
 					add(folder, file);

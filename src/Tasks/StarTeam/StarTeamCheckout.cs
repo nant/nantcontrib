@@ -67,7 +67,7 @@ namespace NAnt.Contrib.Tasks.StarTeam
 		}
 
 		/// <summary> 
-		/// Default : false - Should all local files <b>NOT</b> in StarTeam be deleted?
+		/// <b>Not fully tested CAREFUL</b> Default : false - Should all local files <b>NOT</b> in StarTeam be deleted?
 		/// </summary>
 		[TaskAttribute("deleteuncontrolled", Required=false)]
 		[BooleanValidator]         

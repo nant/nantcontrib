@@ -35,6 +35,9 @@ namespace NAnt.Contrib.Tasks.StarTeam
 	/// <para>If this file is not present. It is created and checked into StarTeam. The Default Version number is 1.0.0. 
 	/// By default the build number is incremented. Properties are present to allow setting and incrementing of Major, Minor, and Build versions.
 	/// </para>
+	/// <para>When label is created properties are set to expose version information and the new label.
+	/// <list type="Bullet"><listheader>Properties Set</listheader><item>label</item><item>Version.text</item><item>Version.major</item><item>Version.minor</item><item>Version.build</item></list>
+	/// </para>
 	/// <para><i>Note:</i> Incrementing or setting Major or Minor versions does NOT reset the build version.</para>
 	/// </remarks>
 	/// <example>
@@ -196,6 +199,10 @@ namespace NAnt.Contrib.Tasks.StarTeam
 			stFile.checkin("version updated via stautolabel", starTeamLockTypeStatics.UNLOCKED,true, true, true);
 			this.Label = string.Format("{0}{1}.{2}.{3}",this.Label,_versionMajor,_versionMinor,_versionBuild);
 			this.Properties["label"] = this.Label;
+			this.Properties["Version.text"] = string.Format("{1}.{2}.{3}",_versionMajor,_versionMinor,_versionBuild);
+			this.Properties["Version.major"] = _versionMajor.ToString();
+			this.Properties["Version.minor"] = _versionMinor.ToString();
+			this.Properties["Version.build"] = _versionBuild.ToString();
 	
 			createLabel(snapshot);
 
