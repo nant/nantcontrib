@@ -31,21 +31,21 @@ using SourceForge.NAnt.Attributes;
 namespace NAnt.Contrib.Tasks {
 
 
-	/// <summary>Manipulates the contents of the global assembly cache.</summary>
-	/// <remarks>
-	///   <para>This tasks provides some of the same functionality as the gacutil tool provided in the .NET SDK.</para>
-	///   <para>Specifically, the gac task allows you to install assemblies into the cache and remove them from the cache.</para>
-	///   <para>Refer to the <a href="ms-help://MS.NETFrameworkSDK/cptools/html/cpgrfglobalassemblycacheutilitygacutilexe.htm">Global Assembly Cache Tool (Gacutil.exe)</a> for more information.</para>
-	/// </remarks>
-	/// <example>
-	///   <para>Inserts the file mydll.dll into the global assembly cache.</para>
-	///   <code>&lt;gac assembly=mydll.dll"/&gt;</code>
-	///   <para>Removes the assembly hello from the global assembly cache and the native image cache.</para>
-	///   <code>&lt;gac assembly="hello" uninstall="true"/&gt;</code>
-	///   <para>Note that the previous command might remove more than one assembly from the assembly cache because the assembly name is not fully specified. For example, if both version 1.0.0.0 and 3.2.2.1 of hello are installed in the cache, the command gacutil /u hello removes both of the assemblies.</para>
-	///   <para>Use the following example to avoid removing more than one assembly. This command removes only the hello assembly that matches the fully specified version number, culture, and public key.</para>
-	///   <code>&lt;gac assembly='hello,Version=1.0.0.1,Culture="de",PublicKeyToken=45e343aae32233ca' uninstall="true"/&gt;</code>
-	/// </example>
+    /// <summary>Manipulates the contents of the global assembly cache.</summary>
+    /// <remarks>
+    ///   <para>This tasks provides some of the same functionality as the gacutil tool provided in the .NET SDK.</para>
+    ///   <para>Specifically, the gac task allows you to install assemblies into the cache and remove them from the cache.</para>
+    ///   <para>Refer to the <a href="ms-help://MS.NETFrameworkSDK/cptools/html/cpgrfglobalassemblycacheutilitygacutilexe.htm">Global Assembly Cache Tool (Gacutil.exe)</a> for more information.</para>
+    /// </remarks>
+    /// <example>
+    ///   <para>Inserts the file mydll.dll into the global assembly cache.</para>
+    ///   <code>&lt;gac assembly=mydll.dll"/&gt;</code>
+    ///   <para>Removes the assembly hello from the global assembly cache and the native image cache.</para>
+    ///   <code>&lt;gac assembly="hello" uninstall="true"/&gt;</code>
+    ///   <para>Note that the previous command might remove more than one assembly from the assembly cache because the assembly name is not fully specified. For example, if both version 1.0.0.0 and 3.2.2.1 of hello are installed in the cache, the command gacutil /u hello removes both of the assemblies.</para>
+    ///   <para>Use the following example to avoid removing more than one assembly. This command removes only the hello assembly that matches the fully specified version number, culture, and public key.</para>
+    ///   <code>&lt;gac assembly='hello,Version=1.0.0.1,Culture="de",PublicKeyToken=45e343aae32233ca' uninstall="true"/&gt;</code>
+    /// </example>
     [TaskName("gac")]
     public class GacTask : ExternalProgramBase {
         public enum ActionTypes {
@@ -104,7 +104,7 @@ namespace NAnt.Contrib.Tasks {
                         return String.Format("{0} /if {1}", prefix, AssemblyName);
                     case ActionTypes.uninstall:
                         // uninstalling does not work with a filename, but with an assemblyname
-                        string assembly = null;
+                        string assembly = AssemblyName;
                         FileInfo fi = new FileInfo(AssemblyName);
                         if (fi.Exists) {
                             // strip of the path and extension
