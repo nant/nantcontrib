@@ -214,12 +214,15 @@
                 <includes name="${nant.dir}/bin/NAnt.Core.dll" />
             </assemblies>
             <documenters>
-                <documenter name="NAntTask">
+                <documenter name="NAnt">
                     <property name="OutputDirectory" value="${build.dir}/doc/help" />
                     <property name="LinkToSdkDocVersion" value="${link.sdkdoc.version}" />
+                    <!-- set base uri used for linking to NAnt docs -->
                     <property name="NAntBaseUri" value="${nant.base.uri}" />
                     <!-- only document classes in NAnt.Contrib namespace -->
                     <property name="NamespaceFilter" value="NAnt.Contrib" />
+                    <!-- set the name of the application for which docs are generated -->
+                    <property name="ApplicationName" value="NAntContrib" />
                     <property name="DocumentAttributes" value="True" />
                     <property name="IncludeAssemblyVersion" value="True" />
                     <property name="ShowMissingParams" value="True" />
