@@ -5,7 +5,6 @@
 <!--* Builds the NAntContrib Project                                *-->
 <!--*****************************************************************-->
 <project name="NAntContrib" default="build">
-
     <property name="project.name" value="nantcontrib"/>
     <property name="project.FormalName" value="NAnt.Contrib"/>
     <property name="project.version" value="0.1.0.0" overwrite="false" />
@@ -140,7 +139,6 @@
     <!--* Build the NAnt.Contrib.Tasks.dll library                      *-->
     <!--*****************************************************************-->
     <target name="build" depends="prepare, prepare.slingshot, compile.schemas" description="compiles the source code">
-
         <csc target="library" debug="${debug}"
             output="${build.dir}\${project.FormalName}.Tasks.dll"
             doc="${build.dir}\${project.FormalName}.Tasks.xml">
@@ -219,22 +217,15 @@
     <!--*****************************************************************-->
     <target name="test" depends="buildtests init" description="run unit tests">
         <nunit2>
+            <formatter type="Plain"/>        
             <test assemblyname="${build.dir}\${project.FormalName}.Tests.dll" />
         </nunit2>
-<!--
-        <nunit basedir="${tests.dir}" verbose="false" haltonerror="true" haltonfailure="true">
-            <formatter type="Xml"/>
-            <formatter type="Plain"/>
-            <test class="NAnt.Contrib.Tests.AllTests" assembly="${build.dir}\${project.FormalName}.Tests.dll" outfile="${build.dir}\${project.FormalName}.Tests.Results" />
-        </nunit>
--->
     </target>
 
     <!--*****************************************************************-->
     <!--* Build NDoc documentation                                      *-->
     <!--*****************************************************************-->
     <target name="doc" depends="build" description="build documentation">
-
         <copy file="htdocs/style.css" todir="${build.dir}/doc" />
         <copy file="htdocs/arrow.gif" todir="${build.dir}/doc" />
         <available property="NantDocumenterExists" resource="${nant.dir}\bin\NDoc.Documenter.NAnt.dll" type="File"/>
@@ -242,10 +233,7 @@
         <ifnot propertytrue="NantDocumenterExists">
             <fail message=" NDoc.Documenter.NAnt.dll not found. Run the 'userdoc' target in your NAnt source tree " />
         </ifnot>
-
-
-        <echo message="Requires HtmlHelp compiler (hhc.exe) to be in the system path"/>
-        <ndoc failonerror="false">
+        <ndoc>
             <assemblies basedir="${build.dir}" failonempty="true">
                 <includes name="*Tasks.dll"/>
             </assemblies>
@@ -256,7 +244,6 @@
                 <documenter name="MSDN">
                     <property name="OutputDirectory" value="${build.dir}/doc/MSDN" />
                     <property name="HtmlHelpName" value="NAntContrib-SDK" />
-                    <property name="HtmlHelpCompilerFilename" value="hhc.exe" />
                     <property name="IncludeFavorites" value="False" />
                     <property name="Title" value="NAntContrib SDK Documentation - v.${project.version}" />
                     <property name="SplitTOCs" value="False" />
