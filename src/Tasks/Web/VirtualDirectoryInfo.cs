@@ -56,10 +56,17 @@ namespace NAnt.Contrib.Tasks.Web {
                 folderRoot.RefreshCache();
                 DirectoryEntry newVirDir = folderRoot.Children.Find(this.VirtualDirectory,folderRoot.SchemaClassName);
 
+                bool supportsPropertyEnumeration;
+
+                try {
+                    supportsPropertyEnumeration = newVirDir.Properties.PropertyNames.Count >= 0;
+                } catch {
+                    supportsPropertyEnumeration = false;
+                }
+
                 // the IIS ADSI provider only supports enumeration of properties
                 // on IIS6 (and Windows XP SP2, but well ...) or higher
-                if (this.Version == IISVersion.Six) {
-                    // output all properties of virtual directory
+                if (supportsPropertyEnumeration) {
                     foreach (string propertyName in newVirDir.Properties.PropertyNames) {
                         object propertyValue = newVirDir.Properties[propertyName].Value;
 
