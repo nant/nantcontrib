@@ -19,6 +19,7 @@
 		<property name="nant.tests.dir" value="${nant.dir}/tests/" overwrite="false" />
 		
 		<!-- NAnt specific properties -->
+		<property name="nant.keyfile" value="NAnt.build" />
 		<property name="nant.bin.keyfile" value="NAnt.exe.config" />
 		<property name="nant.bin.lib.dir" value="${nant.bin.dir}/lib/" />
 		<property name="nant.bin.lib.keyfile" value="NUnitCore.dll" />
@@ -359,7 +360,13 @@
 				<variable name="PATH" append="'[D__NANT_BIN]'" component="C__NAnt_Bin" />
 			</environment>
             
-            <components>
+            <components>				
+				<component name="C__NAnt" id="{43D9E722-FF93-4a50-A6A8-D81EE66D2B0D}" attr="2" directory="D__NANT" feature="F__Source_NAnt_src">
+					<key file="${nant.keyfile}" />
+					<fileset basedir="${nant.dir}">
+						<includes name="*.*" />
+					</fileset>
+				</component>
 				<component name="C__NAnt_Bin" id="{692BAFB3-49F3-4d41-9AAB-177D672886E0}" attr="2" directory="D__NANT_BIN" feature="F__Bin_NAnt">
 					<key file="${nant.bin.keyfile}" />
 					<fileset basedir="${nant.bin.dir}">
@@ -848,42 +855,42 @@
     		<features>
 				<feature name="F__Bin" title="Assemblies and Executables" display="1" typical="true" directory="D__NANT_BIN">
 					<description>The core assemblies and executables.</description>
-                    <feature name="F__Bin_NAnt" display="1" typical="true" >
+                    <feature name="F__Bin_NAnt" title="NAnt Assemblies and Executables" display="1" typical="true" >
 						<description>The core NAnt assemblies and executables.</description>
                     </feature>
 				</feature>
 				<feature name="F__Doc" title="Documentation" display="1" typical="true" directory="D__NANT_DOC">
 					<description>Documentation</description>
-                    <feature name="F__Doc_NAnt" display="1" typical="true" >
+                    <feature name="F__Doc_NAnt" title="NAnt Documentation" display="1" typical="true" >
 						<description>NAnt Documentation</description>
-						<feature name="F__Doc_NAnt_Help" display="1" typical="true" >
+						<feature name="F__Doc_NAnt_Help" title="NAnt Help Documentation" display="1" typical="true" >
 							<description>NAnt Help Documentation</description>
 						</feature>
-						<feature name="F__Doc_NAnt_Sdk" display="1" typical="true" >
+						<feature name="F__Doc_NAnt_Sdk" title="NAnt SDK Documentation" display="1" typical="true" >
 							<description>NAnt SDK Documentation</description>
 						</feature>
                     </feature>
 				</feature>
 				<feature name="F__Examples" title="Examples" display="1" typical="true" directory="D__NANT_EXAMPLES">
 					<description>Example build files and projects.</description>
-                    <feature name="F__Examples_NAnt" display="1" typical="true" >
+                    <feature name="F__Examples_NAnt" title="NAnt Examples" display="1" typical="true" >
 						<description>NAnt Examples</description>
 					</feature>
 				</feature>
 				<feature name="F__Schema" title="Schema(s)" display="1" typical="true" directory="D__NANT_SCHEMA">
 					<description>Xml schema for tasks</description>
-                    <feature name="F__Schema_NAnt" display="1" typical="true" >
+                    <feature name="F__Schema_NAnt" title="NAnt Schema" display="1" typical="true" >
 						<description>Xml schema for NAnt tasks</description>
                     </feature>
 				</feature>
 				<feature name="F__Source" title="Source and Tests" display="1" typical="true" directory="D__NANT_SRC">
 					<description>Source code and unit tests</description>
-                    <feature name="F__Source_NAnt" display="1" typical="true" directory="D__NANT_SRC">
+                    <feature name="F__Source_NAnt" title="NAnt Source and Tests" display="1" typical="true" directory="D__NANT_SRC">
 						<description>NAnt source code and unit tests</description>
-						<feature name="F__Source_NAnt_src" display="1" typical="true" >
+						<feature name="F__Source_NAnt_src" title="NAnt Source Code" display="1" typical="true" >
 							<description>NAnt source code</description>
 						</feature>
-						<feature name="F__Source_NAnt_tests" display="1" typical="true" >
+						<feature name="F__Source_NAnt_tests" title="NAnt Unit Tests" display="1" typical="true" >
 							<description>NAnt unit tests</description>
 						</feature>
 					</feature>
