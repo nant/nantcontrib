@@ -4,110 +4,66 @@
     <tstamp property="project.version" pattern="yyyyMMdd" />
     <property name="sf.net.ssh.server" value="shell1.sf.net" />
     <property name="sf.net.web.path" value="/home/groups/n/na/nantcontrib/htdocs" />
+    <!-- include master build file -->
+    <include buildfile="nantcontrib.build" />
     <!-- retrieve system information and environment variables -->
     <sysinfo />
     <!-- setup property that holds partial path to be used by scp -->
     <property name="serverpart" value="${sys.env.USERNAME}@${sf.net.ssh.server}:${sf.net.web.path}" />
-    <!-- all our builds are release builds -->
-    <property name="debug" value="false" readonly="true" />
-    <include buildfile="nantcontrib.build" />
-    <target name="nightly">
+    <target name="nightly" depends="set-net-1.0-runtime-configuration">
         <property name="NAntReleaseEXE" value="${nant.dir}/bin/nant.exe" />
         <available property="NAntReleaseEXEExists" resource="${NAntReleaseEXE}" type="File" />
+        <ifnot propertyexists="NAntReleaseEXEExists" propertytrue="NAntReleaseEXEExists">
+            <fail message="Please pass a valid NAnt installation directory on the commandline using a nant.dir property." />
+        </ifnot>
         <exec program="${NAntReleaseEXE}">
             <arg value="-buildfile:nightly.xml" />
             <arg value="-D:nant.dir=${nant.dir}" />
+            <arg value="-k:${nant.settings.currentframework}" />
         </exec>
     </target>
-    <target name="nightly-self" depends="nightly-tasks, nightly-help, nightly-web" />
-    <target name="nightly-tasks" depends="package" description="Updates SF.Net site with new release build of tasks">
-        <regex input="${project.zip-path}" pattern="^(?'execpath'.*(\\|/)|(/|\\))(?'execfilename'.*)$" />    
+    <target name="nightly-self" depends="set-net-1.0-runtime-configuration, deploy-tasks, deploy-help" />
+    <target name="deploy-tasks" depends="set-net-1.0-runtime-configuration, package" description="Updates SF.Net site with new release build of tasks">
+        <regex input="${project.zip-path}" pattern="^(?'execpath'.*(\\|/)|(/|\\))(?'execfilename'.*)$" />
         <!-- make sure the directory tree exists -->
         <exec program="ssh">
             <arg value="${sf.net.ssh.server}" />
-            <arg value="mkdir --mode=755 --parents ${sf.net.web.path}/builds" />
+            <arg value="mkdir --mode=755 --parents ${sf.net.web.path}/nightly/builds" />
         </exec>
         <!-- copy the build to sourceforge -->
         <exec workingdir="${execpath}" program="scp">
             <arg value="${execfilename}" />
-            <arg value="${serverpart}/builds/${execfilename}" />
+            <arg value="${serverpart}/nightly/builds/${execfilename}" />
         </exec>
         <echo message="Copied nightly build over to SF.Net" />
         <!-- make sure permissions are set right -->
         <exec program="ssh">
             <arg value="${sf.net.ssh.server}" />
-            <arg value="chmod 755 ${sf.net.web.path}/builds/${execfilename}" />
+            <arg value="chmod 755 ${sf.net.web.path}/nightly/builds/${execfilename}" />
         </exec>
     </target>
-    <target name="nightly-help" depends="package">
+    <target name="deploy-help" depends="set-net-1.0-runtime-configuration, package">
         <!-- make sure the directory tree exists -->
         <exec program="ssh">
             <arg value="${sf.net.ssh.server}" />
-            <arg value="mkdir --mode=755 --parents ${sf.net.web.path}/help" />
+            <arg value="mkdir --mode=755 --parents ${sf.net.web.path}/nightly/help" />
         </exec>
         <!-- try to remove existing files and directories -->
         <exec program="ssh" failonerror="false">
             <arg value="${sf.net.ssh.server}" />
-            <arg value="rm -R --force ${sf.net.web.path}/help/*" />
+            <arg value="rm -R --force ${sf.net.web.path}/nightly/help/*" />
         </exec>
         <!-- copy the help to sourceforge (using compression) -->
         <exec workingdir="${build.dir}/doc/help" program="scp">
             <arg value="-r" />
             <arg value="-C" />
             <arg value="*" />
-            <arg value="${serverpart}/help" />
+            <arg value="${serverpart}/nightly/help" />
         </exec>
         <!-- make sure permissions are set right -->
         <exec program="ssh" failonerror="false">
             <arg value="${sf.net.ssh.server}" />
-            <arg value="chmod -R 755 ${sf.net.web.path}/help" />
-        </exec>
-    </target>
-    <target name="nightly-web" depends="package">
-        <!-- make sure the directory tree exists -->
-        <exec program="ssh">
-            <arg value="${sf.net.ssh.server}" />
-            <arg value="mkdir --mode=755 --parents ${sf.net.web.path}" />
-        </exec>
-        <!-- try to remove existing files -->
-        <exec program="ssh" failonerror="false">
-            <arg value="${sf.net.ssh.server}" />
-            <arg value="find ${sf.net.web.path} -maxdepth 1 -type f -exec rm --force {} \;" />
-        </exec>
-        <!-- copy stylesheet to sourceforge (using compression) -->
-        <exec workingdir="${build.dir}/doc" program="scp">
-            <arg value="-C" />
-            <arg value="style.css" />
-            <arg value="${serverpart}" />
-        </exec>
-        <!-- copy arrow.gif to sourceforge (using compression) -->
-        <exec workingdir="${build.dir}/doc" program="scp">
-            <arg value="-C" />
-            <arg value="arrow.gif" />
-            <arg value="${serverpart}" />
-        </exec>
-        <!-- copy bullet.gif to sourceforge (using compression) -->
-        <exec workingdir="${build.dir}/doc" program="scp">
-            <arg value="-C" />
-            <arg value="bullet.gif" />
-            <arg value="${serverpart}" />
-        </exec>
-        <!-- copy index.html to sourceforge (using compression) -->
-        <exec workingdir="${build.dir}/doc" program="scp">
-            <arg value="-C" />
-            <arg value="index.html" />
-            <arg value="${serverpart}" />
-        </exec>
-        <!-- copy index.html to sourceforge (using compression) -->
-        <exec workingdir="${build.dir}/doc" program="scp">
-            <arg value="-C" />
-            <arg value="license.html" />
-            <arg value="${serverpart}" />
-        </exec>
-        <!-- make sure permissions are set right -->
-        <exec program="ssh" failonerror="false">
-            <arg value="${sf.net.ssh.server}" />
-            <arg value="chmod 755 ${sf.net.web.path}/*" />
+            <arg value="chmod -R 755 ${sf.net.web.path}/nightly/help" />
         </exec>
     </target>
 </project>
