@@ -1764,7 +1764,7 @@ namespace NAnt.Contrib.Tasks
         /// 1.1.1
         /// 1.1.1.1
         /// </summary>
-        /// <param name="fileVersion">The version string to verify.</param>
+        /// <param name="Version">The version string to verify.</param>
         /// <returns></returns>
         private bool IsVersion(ref string Version)
         {
