@@ -17,233 +17,150 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 
-
-using System;
-using System.Collections;
-using System.IO;
-using System.Reflection;
-using System.Text;
+using System.Globalization;
 using System.Xml;
 using System.Xml.Schema;
 
+using NAnt.Core;
 using NAnt.Core.Attributes;
 using NAnt.Core.Types;
-using NAnt.Core;
 
-using NAnt.Contrib.Util;
+using NAnt.Contrib.Types;
 
-namespace NAnt.Contrib.Tasks 
-{ 
+namespace NAnt.Contrib.Tasks { 
+    /// <summary>
+    /// Validates a set of XML files based on a set of XML Schemas (XSD).
+    /// </summary>
+    /// <example>
+    ///   <code>
+    ///     <![CDATA[
+    /// <validatexml>
+    ///     <schemas>
+    ///         <schema source="rcf-schema.xsd" />
+    ///         <schema namespace="urn:schemas-company-com:base" source="base-schema.xsd" />
+    ///     </schemas>
+    ///     <files>
+    ///         <includes name="*.xml" />
+    ///     </files>
+    /// </validatexml>
+    ///     ]]>
+    ///   </code>
+    /// </example>
+    [TaskName("validatexml")]
+    public class ValidateXmlTask : Task {
+        #region Private Instance Fields
 
-   /// <summary>
-   /// A task that Validates a set of XML files based on a
-   /// set of Schemas (XSD)
-   /// </summary>
-   /// <remarks>
-   /// This task takes a set of input xml files in a fileset
-   /// and a set of schemas into an OptionSet, and validates
-   /// them. Right now, there's no way to specify more than one
-   /// schema to use the targetNamespace property (soon to come).
-   /// 
-   /// Note that if the name attribite of a schema is an empty
-   /// string, then the system will use the targetNamespace attribute
-   /// of the underlying schema to associate it with a namespace.
-   /// 
-   /// You can use the failonerror attribute of the task to control
-   /// whether a validation failure will stop the build or not.
-   /// </remarks>
-   /// <example>
-   ///   <code><![CDATA[
-   ///      <validatexml>
-   ///         <schemas>
-   ///            <schemaref source="rcf-schema.xsd"/>
-   ///            <schemaref namespace="urn:schemas-company-com:base" source="base-schema.xsd"/>
-   ///          </schemas>
-   ///         <files>
-   ///            <includes name="*.xml"/>
-   ///         </files>
-   ///      </validatexml>
-   ///   ]]></code>
-   /// </example>
-   [TaskName("validatexml")]
-   public class ValidateXmlTask : Task
-   {
-      private FileSet _xmlFiles = new FileSet();
-      private int _numErrors = 0;
-      private SchemaSet _schemas = new SchemaSet();
+        private FileSet _xmlFiles = new FileSet();
+        private int _numErrors = 0;
+        private XmlSchemaReferenceCollection _schemas = new XmlSchemaReferenceCollection();
 
-      /// <summary>
-      /// Set of XML files to use as input.
-      /// </summary>
-      [BuildElement("files", Required=true)]
-      public FileSet XmlFiles {
-         get { return _xmlFiles; }
-         set { _xmlFiles = value; }
-      }
+        #endregion Private Instance Fields
 
-      [SchemaSetAttribute("schemas", Required=true)]
-      public SchemaSet Schemas {
-         get { return _schemas; }
-      }
+        #region Public Instance Properties
 
+        /// <summary>
+        /// The XML files that must be validated.
+        /// </summary>
+        [BuildElement("files", Required=true)]
+        public FileSet XmlFiles {
+            get { return _xmlFiles; }
+            set { _xmlFiles = value; }
+        }
 
+        /// <summary>
+        /// The XML Schemas (XSD) to use for validation.
+        /// </summary>
+        [BuildElementCollection("schemas", "schema")]
+        public XmlSchemaReferenceCollection Schemas {
+            get { return _schemas; }
+        }
 
-      ///<summary>
-      ///Initializes task and ensures the supplied attributes are valid.
-      ///</summary>
-      ///<param name="taskNode">Xml node used to define this task instance.</param>
-      protected override void InitializeTask(System.Xml.XmlNode taskNode) 
-      {
-         if (XmlFiles.FileNames.Count == 0) {
-            throw new BuildException("ValidateXml fileset cannot be empty!", Location);
-         }
+        #endregion Public Instance Properties
 
-         if ( _schemas.Schemas.Count == 0 ) {
-            throw new BuildException("ValidateXml at least one schema must be specified", Location);
-         }
+        #region Override implementation of Task
 
-      }
+        /// <summary>
+        /// This is where the work is done.
+        /// </summary>
+        protected override void ExecuteTask() {
+            XmlSchemaCollection schemaCollection = new XmlSchemaCollection();
 
-      /// <summary>
-      /// This is where the work is done
-      /// </summary>
-      protected override void ExecuteTask() 
-      {
-         foreach ( string file in XmlFiles.FileNames ) {
-            Log(Level.Info, LogPrefix + "Validating " + file);
-            //Log(Indent();
-            try {
-               ValidateFile(file);
-            } catch ( XmlException ex ) {
-               throw new BuildException("Invalid XML file: " + ex.Message, Location);
+            foreach (XmlSchemaReference schema in Schemas) {
+                try {
+                    schemaCollection.Add(schema.Namespace, schema.Source);
+                } catch (XmlSchemaException ex) {
+                    throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                        "Invalid XSD schema '{0}.", schema.Source), Location, ex);
+                }
             }
-            //Log.Unindent();
 
-            if ( _numErrors == 0 ) {
-               Log(Level.Info, LogPrefix + "Document is valid");
-            } else {
-               if ( !FailOnError ) {
-                  Log(Level.Info, LogPrefix + _numErrors + " Errors in document");
-               } else  {
-                  string msg = string.Format("Invalid XML Document '{0}'", file);
-                  throw new BuildException(msg, Location);
-               }
+            foreach (string file in XmlFiles.FileNames) {
+                // initialize error counter
+                _numErrors = 0;
+
+                // output name of xml file that will be validated
+                Log(Level.Info, LogPrefix + "Validating '{0}'.", file);
+
+                try {
+                    ValidateFile(file, schemaCollection);
+                } catch (XmlException ex) {
+                    throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                        "Invalid XML file '{0}'.", file), Location, ex);
+                }
+
+                if (_numErrors == 0) {
+                    Log(Level.Info, LogPrefix + "Document is valid.");
+                } else {
+                    if (!FailOnError) {
+                        Log(Level.Info, LogPrefix + "{0} validation errors in document.", _numErrors);
+                    } else  {
+                        throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                            "XML validation failed for document '{0}'.", file), Location);
+                    }
+                }
             }
-         }
-      }
+        }
 
-      private void ValidateFile(string file)
-      {
-         XmlReader xmlReader = new XmlTextReader(file);
-         XmlValidatingReader valReader = new XmlValidatingReader(xmlReader);
+        #endregion Override implementation of Task
 
-         valReader.Schemas.Add(_schemas.Schemas);
+        #region Private Instance Methods
 
-         valReader.ValidationEventHandler += 
-            new ValidationEventHandler(OnValidationError);
+        private void ValidateFile(string file, XmlSchemaCollection schemas) {
+            // load xml file
+            XmlReader xmlReader = new XmlTextReader(file);
 
-         while ( valReader.Read() ) 
-         { 
-         }
+            // create validating reader
+            XmlValidatingReader valReader = new XmlValidatingReader(xmlReader);
 
-         valReader.Close();
-      }
+            // add user-specified schemas to validating reader
+            valReader.Schemas.Add(schemas);
 
-      private void OnValidationError(object sender, ValidationEventArgs args)
-      {
-         _numErrors++;
-         Log(Level.Info, LogPrefix + "Validation Error: {0}", args.Message);
-      }
+            // link validation event handler
+            valReader.ValidationEventHandler += new ValidationEventHandler(OnValidationError);
 
+            // read xml file
+            while (valReader.Read()) {
+            }
 
-   } // class ValidateXmlTask
+            // close reader
+            valReader.Close();
+        }
 
+        private void OnValidationError(object sender, ValidationEventArgs args) {
+            switch (args.Severity) {
+                case XmlSeverityType.Error:
+                    // increment error count
+                    _numErrors++;
+                    // output error message
+                    Log(Level.Info, LogPrefix + "Validation error: {0}", args.Message);
+                    break;
+                case XmlSeverityType.Warning:
+                    // output error message
+                    Log(Level.Info, LogPrefix + "Validation warning: {0}", args.Message);
+                    break;
+            }
+        }
 
-
-    /// <summary>Indicates that field should be treated as a xml schema set for the task.</summary>
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, Inherited=true)]
-    public class SchemaSetAttribute : BuildElementAttribute 
-    {     
-
-        public SchemaSetAttribute(string name) : base(name) 
-        {        
-        }      
+        #endregion Private Instance Methods
     }
-
-   /// <summary>
-   /// Represents the schema collection element
-   /// </summary>
-   public class SchemaSet : Element
-   {
-      private XmlSchemaCollection _schemas = null;
-      
-      /// <summary>
-      /// Schemas in this element
-      /// </summary>
-      public XmlSchemaCollection Schemas {
-         get { return _schemas; }
-      }
-
-      /// <summary>
-      /// Initialize this element node
-      /// </summary>
-      /// <param name="elementNode"></param>
-      protected override void InitializeElement(XmlNode elementNode)  
-      {
-         try
-         {
-            //
-            // Check out whatever <schemaref> elements there are
-            //
-            _schemas = new XmlSchemaCollection();
-            foreach ( XmlNode node in elementNode ) 
-            {
-               if ( node.Name.Equals("schemaref") ) {
-                  SchemaRefElement v = new SchemaRefElement();
-                  v.Project = Project;
-                  v.Initialize(node);
-                  _schemas.Add(v.Namespace, v.Source);
-               }
-            }
-         } catch ( XmlSchemaException xse ) {
-            throw new BuildException("Invalid Schema: " + xse.Message, Location);
-         } 
-      }
-
-   } // class SchemaSet
-
-
-   /// <summary>
-   /// Allows the specification of a namespace/schema location pair
-   /// </summary>
-   [ElementName("schemaref")]
-   public class SchemaRefElement : Element
-   {
-      private string _namespace = null;
-      private string _source = null;
-
-      /// <summary>
-      /// Namespace URI associated with this schema. 
-      /// If not present, it is assumed that the 
-      /// schema's targetNamespace value is to be used.
-      /// </summary>
-      [TaskAttribute("namespace")]
-      public string Namespace {
-         get { return _namespace; }
-         set { _namespace = value; }
-      }
-
-      /// <summary>
-      /// Location of this schema. Could be a 
-      /// local file path or an http URL.
-      /// </summary>
-      [TaskAttribute("source", Required=true)]
-      public string Source {
-         get { return _source; }
-         set { _source = value; }
-      }
-
-   } // class SchemaRefElement
-
-
-} // namespace NAnt.Contrib.Tasks
+}
