@@ -286,10 +286,23 @@ namespace SLiNgshoT.Core
 					{
 						if (reference != null)
 						{
-							if (reference.Type == "AssemblyName")
-								writer.WriteReference(reference.Value + ".dll", false);
-							else
-								writer.WriteReference(reference.Value + ".dll", true);
+              // assume it's another project in sln and/or copy-local
+              string path = reference.Value + ".dll";
+              bool inBuildPath = true;
+              if ( !reference.CopyLocal && (reference.Type == "AssemblyName") )
+              {
+                inBuildPath = false;
+                if ( reference.SourcePath != string.Empty ) 
+                {
+                  path = reference.SourcePath;
+                }
+                if ( ! Path.IsPathRooted( path ) ) 
+                {
+                  path = Path.GetFullPath( solution.SolutionDirectory + "\\" 
+                    + project.RelativePath + "\\" + path );
+                }
+              }
+              writer.WriteReference( path , inBuildPath );
 						}
 					}
 
