@@ -81,6 +81,10 @@ namespace NAnt.Contrib.Tasks.Msi {
             get { return task.Project; }
         }
 
+		protected XmlNamespaceManager NamespaceManager {
+			get { return task.NamespaceManager; }
+		}
+
         protected NAnt.Core.Location Location {
             get { return location; }
         }
@@ -2065,6 +2069,7 @@ namespace NAnt.Contrib.Tasks.Msi {
 
             FileSet componentFiles = new FileSet();
             componentFiles.Project = Project;
+			componentFiles.NamespaceManager = NamespaceManager;
             componentFiles.Parent = this;
             componentFiles.Initialize(fileSetElem);
 

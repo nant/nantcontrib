@@ -350,9 +350,11 @@ namespace NAnt.Contrib.Tasks.Msi {
                     FileSet mergeSet = new FileSet();
                     mergeSet.Parent = this;
                     mergeSet.Project = Project;
+					mergeSet.NamespaceManager = NamespaceManager;
 
                     XmlElement modulesElem = (XmlElement)((XmlElement)_xmlNode).SelectSingleNode(
-                        "mergemodules/merge[@feature='" + merge.feature + "']/modules");
+                        "nant:mergemodules/nant:merge[@feature='" + merge.feature + "']/nant:modules", 
+						NamespaceManager);
 
                     mergeSet.Initialize(modulesElem);
 
