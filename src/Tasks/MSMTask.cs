@@ -3203,7 +3203,7 @@ namespace NAnt.Contrib.Tasks {
             string shortCabDir = GetShortDir(Path.Combine(Project.BaseDirectory, msm.sourcedir));
             string cabFile = shortCabDir + @"\MergeModule.CABinet";
             string tempDir = Path.Combine(msm.sourcedir, "Temp");
-            if (tempDir.StartsWith(Project.BaseDirectory)) {
+            if (tempDir.ToLower().StartsWith(Project.BaseDirectory.ToLower())) {
                 tempDir = tempDir.Substring(Project.BaseDirectory.Length+1);
             }
 

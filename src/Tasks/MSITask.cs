@@ -2984,7 +2984,7 @@ namespace NAnt.Contrib.Tasks
             string shortCabDir = GetShortDir(Path.Combine(Project.BaseDirectory, msi.sourcedir));
             string cabFile = shortCabDir + @"\" + Path.GetFileNameWithoutExtension(msi.output) + ".cab";
             string tempDir = Path.Combine(msi.sourcedir, "Temp");
-            if (tempDir.StartsWith(Project.BaseDirectory)) {
+            if (tempDir.ToLower().StartsWith(Project.BaseDirectory.ToLower())) {
                 tempDir = tempDir.Substring(Project.BaseDirectory.Length+1);
             }
             processInfo.Arguments = "-p -r -P " + tempDir + @"\ N " + cabFile + " " + tempDir + @"\*";
