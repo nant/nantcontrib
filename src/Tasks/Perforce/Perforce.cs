@@ -18,6 +18,7 @@
 
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 
 using NAnt.Core;
 
@@ -29,11 +30,29 @@ namespace NAnt.Contrib.Tasks.Perforce {
         public static string GetUserName() {
             return GetP4Info("User name:");
         }
-
+        /// <summary>
+        /// ask p4 for the client name
+        /// </summary>
+        /// <returns></returns>
         public static string GetClient() {
             return GetP4Info("Client name:");
         }
 
+        public static void SetVariable(string Name, string Value) {
+           string output = null;
+           int exitcode = RunProcess("p4", string.Format("set {0}={1}", Name, Value ), null, ref output);
+           if (exitcode != 0) {
+              throw new BuildException( string.Format( "Unexpected P4 output = {0}", output));
+           }
+        }
+        /// <summary>
+        /// Get a changelist number based on on its name
+        /// </summary>
+        /// <param name="User"></param>
+        /// <param name="Client"></param>
+        /// <param name="Changelist"></param>
+        /// <param name="CreateIfMissing"></param>
+        /// <returns></returns>
         public static string GetChangelistNumber(string User, string Client, string Changelist, bool CreateIfMissing) {
             string result = GetChangelistNumber(User,Client,Changelist);
             if ( result == null && CreateIfMissing) {
@@ -41,6 +60,13 @@ namespace NAnt.Contrib.Tasks.Perforce {
             }
             return result;
         }
+        /// <summary>
+        /// Get a changelist number based on on its name
+        /// </summary>
+        /// <param name="User"></param>
+        /// <param name="Client"></param>
+        /// <param name="ChangeList"></param>
+        /// <returns></returns>
         public static string GetChangelistNumber(string User, string Client, string ChangeList) {
             string result = null;
             string CurrentChangelists = getProcessOutput("p4", string.Format("-u {0} -c {1} changes -s pending -u {0}", User, Client ), null );
@@ -54,6 +80,48 @@ namespace NAnt.Contrib.Tasks.Perforce {
             }
             return result;
         }
+
+      public static void CreateLabel(string User, string Labelname, string View){
+         // create/edit label
+         string output = null;
+         string labelFileDef = string.Concat(
+            "Label: " + Labelname + "\n",
+            "Owner: " + User + "\n", 
+            "Description:\n Created by " + User + ".\n",
+            "Options: unlocked\n",
+            "View: " + View + "\n\n" );
+
+         int exitcode = RunProcess( "p4", string.Format("-u {0} label -i", User) , labelFileDef, ref output );
+         if (exitcode != 0) {
+            throw new BuildException( string.Format( "Unexpected P4 output = {0}", output));
+         }
+      }
+
+        public static void CreateClient(string User, string Clientname, string Root, string View) {
+           // create/edit client
+           string output = null;
+           string clientFileDef = string.Concat(
+              "Client: " + Clientname + "\n",
+              "Owner: " + User + "\n",
+              "Description:\n Created by " + User + ".\n",
+              "Root: " + Root + "\n",
+              "Options: noallwrite noclobber nocompress unlocked nomodtime normdir\n",
+              "LineEnd: local\n",
+              "View:\n " + View + " " + Regex.Replace(View, @"//\w+/", "//" + Clientname + "/") + "\n\n" );   //p4root/... //clientname/...
+  
+           int exitcode = RunProcess( "p4", string.Format("-u {0} client -i", User), clientFileDef, ref output );
+           if (exitcode != 0) {
+              throw new BuildException( string.Format( "Unexpected P4 output = {0}", output));
+           }
+        }
+        
+        /// <summary>
+        /// Create a new changelist
+        /// </summary>
+        /// <param name="User"></param>
+        /// <param name="Client"></param>
+        /// <param name="ChangeList"></param>
+        /// <returns></returns>
         private static string CreateChangelist(string User, string Client, string ChangeList) {
             // create new changelist
             string changeListDef = string.Concat(
@@ -72,7 +140,12 @@ namespace NAnt.Contrib.Tasks.Perforce {
                 throw new BuildException( string.Format( "Unexpected P4 output = {0}", output));
             }
         }
-
+        
+        /// <summary>
+        /// call the p4 process to 
+        /// </summary>
+        /// <param name="SearchPattern"></param>
+        /// <returns></returns>
         private static string GetP4Info(string SearchPattern) {
             string result = null;
             string output = getProcessOutput("p4","info",null);    
@@ -88,12 +161,52 @@ namespace NAnt.Contrib.Tasks.Perforce {
             }
             return result;
         }
-
+        /// <summary>
+        /// call the p4 process to 
+        /// </summary>
+        /// <param name="SearchPatterns"></param>
+        /// <returns></returns>
+          public static string[] GetP4Info(string[] SearchPatterns) {
+             string[] results = new string[SearchPatterns.Length];
+             if (SearchPatterns.Length > 0){
+                string output = getProcessOutput("p4","info",null);    
+                string[] lines = output.Split('\n' );
+                for (int i = 0;i < SearchPatterns.Length;i++){
+                   if (SearchPatterns[i].ToString() != ""){
+                      foreach( string line in lines ) {
+                         if ( line.IndexOf( SearchPatterns[i].ToString() ) > -1 ) {
+                            string[] s2 = line.Split( ' ' );   // poor manz regex
+                            if(s2.Length > 2) {
+                               results[i] = s2[2].Trim('\r');
+                            }
+                         }
+                      }
+                   }
+                }
+             }
+             return results;
+          }
+         /// <summary>
+        /// Execute a process and return its ourput
+        /// </summary>
+        /// <param name="exe"></param>
+        /// <param name="prms"></param>
+        /// <param name="input"></param>
+        /// <returns></returns>
         public static string getProcessOutput( string exe, string prms, string input ) {
             string output = null;
             int exitCode = RunProcess( exe, prms, input, ref output );
             return output;
         }
+        
+        /// <summary>
+        /// Execute a process and return its ourput
+        /// </summary>
+        /// <param name="exe"></param>
+        /// <param name="prms"></param>
+        /// <param name="input"></param>
+        /// <param name="output"></param>
+        /// <returns></returns>
         public static int RunProcess( string exe, string prms, string input, ref string output ) {
             System.Diagnostics.Process p = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo si = new System.Diagnostics.ProcessStartInfo( exe, prms );
@@ -102,8 +215,7 @@ namespace NAnt.Contrib.Tasks.Perforce {
             si.RedirectStandardInput = ( input != null );
             p.StartInfo = si;
             p.Start();
-            if ( input != null ) 
-            {
+            if ( input != null ) {
                 StreamWriter sw = p.StandardInput;
                 sw.Write( input );
                 sw.Close();
@@ -112,6 +224,14 @@ namespace NAnt.Contrib.Tasks.Perforce {
             p.WaitForExit();
             return p.ExitCode;
         }
+        
+        /// <summary>
+        /// Execute a process by name
+        /// </summary>
+        /// <param name="exe"></param>
+        /// <param name="prms"></param>
+        /// <param name="input"></param>
+        /// <returns></returns>
         public static int RunProcess( string exe, string prms, string input ) {
             System.Diagnostics.Process p = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo si = new System.Diagnostics.ProcessStartInfo( exe, prms );
@@ -120,8 +240,7 @@ namespace NAnt.Contrib.Tasks.Perforce {
             si.RedirectStandardInput = ( input != null );
             p.StartInfo = si;
             p.Start();
-            if ( input != null ) 
-            {
+            if ( input != null ) {
                 StreamWriter sw = p.StandardInput;
                 sw.Write( input );
                 sw.Close();

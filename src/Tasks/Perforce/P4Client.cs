@@ -24,50 +24,71 @@ using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks.Perforce {
-    /// <summary>Create or edit a label specification and its view.
+    /// <summary>Add/Modify/Delete a client spec in perforce.
     /// <example>
-    /// <para>Create a new label called "SDK_V1.2"</para>
+    /// <para>Add a client (Modify if already present and have sufficient rights)</para>
     /// <code>
     ///        <![CDATA[
-    ///    <p4label labelname="SDK_V1.2" />
+    ///        <p4client clientname="myClient" view="//root/test/..." />
     ///        ]]>
     /// </code>
-    /// <para>Delete the previously created label.</para>
+    /// <para>Delete a client</para>
     /// <code>
-    ///        <![CDATA[
-    ///    <p4label labelname="SDK_V1.2" delete="true" />
+    ///     <![CDATA[
+    ///        <p4client delete="true" clientname="myClient" />
     ///        ]]>
     /// </code>
     /// </example>
     /// </summary>
-    [TaskName("p4label")]
-    public class P4Label : P4Base {
+    [TaskName("p4client")]
+    public class P4Client : P4Base {
         #region Private Instance Fields
 
-        private string _labelname = null;
+        private string _clientname = null;
+        private string _root = null;
         private bool _delete = false;
+        private bool _force = false;
 
         #endregion
 
         #region Public Instance Fields
 
         /// <summary>
-        /// Name of label to create/delete. required.
+        /// Name of client to create/delete. required.
         /// </summary>
-        [TaskAttribute("labelname",Required=true)]
-        public string Labelname  {
-            get { return _labelname; }
-            set { _labelname = StringUtils.ConvertEmptyToNull(value); }
+        [TaskAttribute("clientname",Required=true)]
+        public string Clientname  {
+            get { return _clientname; }
+            set { _clientname = StringUtils.ConvertEmptyToNull(value); }
         }
 
         /// <summary>
-        /// Delete the named label. default is false. optional.
+        /// Root path for client spec.
+        /// </summary>
+        [TaskAttribute("root",Required=false)]
+        public string Root {
+            get { return _root; }
+            set { _root = StringUtils.ConvertEmptyToNull(value); }
+        }
+
+        /// <summary>
+        /// Delete the named client. default is false. optional.
         /// </summary>
         [TaskAttribute("delete",Required=false)]
         [BooleanValidator()]
         virtual public bool Delete {
             get { return _delete; }
             set { _delete = value; }
+        }
+
+        /// <summary>
+        /// Force a delete even if files open. default is false. optional.
+        /// </summary>
+        [TaskAttribute("force",Required=false)]
+        [BooleanValidator()]
+        virtual public bool Force {
+            get { return _force; }
+            set { _force = value; }
         }
 
         #endregion
@@ -87,23 +108,29 @@ namespace NAnt.Contrib.Tasks.Perforce {
         /// <returns></returns>
         protected string getSpecificCommandArguments( ) {
             StringBuilder arguments = new StringBuilder();
-            arguments.Append("label ");
+            arguments.Append("client ");
 
-            if ( Labelname == null) {
-                throw new BuildException("A \"labelname\" is required for p4label");
+            if ( Clientname == null) {
+                throw new BuildException("A \"clientname\" is required for p4client");
             }
             if ( !Delete && View == null ) {
-                throw new BuildException("p4label requires either a \"view\" to create, or delete=true to delete a label.");
+                throw new BuildException("p4client requires either a \"view\" to create, or delete=true to delete a client.");
             }
 
             if ( Delete ) {
                 arguments.Append("-d ");
+                if ( Force ) {
+                    arguments.Append("-f ");
+                }
             } else {
-                // this creates or edits the label, then the -o outputs to standard out
-                Perforce.CreateLabel(User,Labelname,View);
+                if ( ( View == null ) || ( Root == null ) ) {
+                    throw new BuildException("A \"view\" and \"root\" are required for creating/editing with p4client.");
+                }
+                // this creates or edits the client, then the -o outputs to standard out
+                Perforce.CreateClient(User,Clientname,Root,View);
                 arguments.Append("-o ");
             }
-            arguments.Append( Labelname );
+            arguments.Append( Clientname );
 
             return arguments.ToString();
         }

@@ -24,65 +24,61 @@ using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks.Perforce {
-    /// <summary>Open file(s) in a client workspace for deletion from the depot.
+    /// <summary>Set registry variables that perforce uses.
     /// <example>
-    /// <para>Mark all cs files under the give view for deletion and place them in the "Deleting" changelist</para>
+    /// <para>Modify any of the three variables (at least one required).
+    /// <br/>Note: this sets the environment variables that p4 uses, but does
+    /// not validate them.</para>
     /// <code>
-    ///        <![CDATA[
-    ///    <p4delete view="//Root/ProjectX/Test/...*.cs" changelist="Deleting" />
-    ///        ]]>
+    ///  <![CDATA[
+    ///  <p4set client="myClient" user="jonb" port="server:1666" />
+    ///  ]]>
     /// </code>
     /// </example>
     /// </summary>
-    [TaskName("p4delete")]
-    public class P4Delete : P4Base {
+    [TaskName("p4set")]
+        public class P4Set : P4Base {
+
         #region Private Instance Fields
-
-        private string _changelist = null;
-
         #endregion
-
         #region Public Instance Fields
-
-        /// <summary>
-        /// Changelist to place the marked for deletion item into. optional.
-        /// </summary>
-        [TaskAttribute("changelist",Required=false)]
-        public string Changelist {
-            get { return _changelist; }
-            set { _changelist = StringUtils.ConvertEmptyToNull(value); }
-        }
-
         #endregion
 
         /// <summary>
         /// This is an override used by the base class to get command specific args.
         /// </summary>
-        protected override string CommandSpecificArguments {
+        protected override string CommandSpecificArguments  {
             get { return getSpecificCommandArguments(); }
         }
-        
+
         #region Override implementation of Task
-        
+
         /// <summary>
         /// local method to build the command string for this particular command
         /// </summary>
         /// <returns></returns>
         protected string getSpecificCommandArguments( ) {
             StringBuilder arguments = new StringBuilder();
-            arguments.Append("delete ");
+            arguments.Append("info ");
 
-            if ( View == null) {
-                throw new BuildException("A \"view\" attribute is required for p4add");
+            if ( User == null && Client == null && Port == null ) {
+                throw new BuildException("At least one of the following: \"client\", \"user\", or \"port\" is required for p4set");
             }
-            if ( Changelist != null ) {
-                arguments.Append( string.Format("-c {0} ", Perforce.GetChangelistNumber( User, Client, Changelist, true )));
+
+            if ( User != null ) {
+                Perforce.SetVariable("P4USER", User);
             }
-            arguments.Append( View );
+            if ( Client != null ) {
+                Perforce.SetVariable("P4CLIENT", Client);
+            }
+            if ( Port != null ) {
+                Perforce.SetVariable("P4PORT", Port);
+            }
 
             return arguments.ToString();
         }
-        
+
         #endregion Override implementation of Task
+
     }
 }
