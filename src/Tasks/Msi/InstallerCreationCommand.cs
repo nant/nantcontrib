@@ -260,100 +260,6 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
 
         /// <summary>
-        /// Loads the banner image.
-        /// </summary>
-        /// <param name="database">The MSI database.</param>
-        private void LoadBannerImage(InstallerDatabase database) {
-            // Try to open the Banner
-            if (msi.banner != null) {
-                string bannerFile = Path.Combine(Project.BaseDirectory, msi.banner);
-                if (File.Exists(bannerFile)) {
-                    Log(Level.Verbose, LogPrefix + "Storing Banner:\n\t" + bannerFile);
-
-                    using (InstallerRecordReader reader = database.FindRecords("Binary",
-                               new InstallerSearchClause("Name", Comparison.Equals, "bannrbmp"))) {
-                        if (reader.Read()) {
-                            // Write the Banner file to the MSI database
-                            reader.SetValue(1, new InstallerStream(bannerFile));
-                            reader.Commit();
-                        } else {
-                            throw new BuildException("Banner Binary record not found in template database.");
-                        }
-                    }
-                }
-                else {
-                    throw new BuildException(String.Format(CultureInfo.InvariantCulture, "Unable to open Banner Image:\n\t{0}", bannerFile), Location);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Loads the background image.
-        /// </summary>
-        /// <param name="database">The MSI database.</param>
-        private void LoadBackgroundImage(InstallerDatabase database) {
-            // Try to open the Background
-            if (msi.background != null) {
-                string bgFile = Path.Combine(Project.BaseDirectory, msi.background);
-                if (File.Exists(bgFile)) {
-                    Log(Level.Info, LogPrefix + "Storing Background:\n\t" + bgFile);
-
-                    using (InstallerRecordReader reader = database.FindRecords("Binary",
-                               new InstallerSearchClause("Name", Comparison.Equals, "dlgbmp"))) {
-                        if (reader.Read()) {
-                            // Write the Background file to the MSI database
-                            reader.SetValue(1, new InstallerStream(bgFile));
-                            reader.Commit();
-                        } else {
-                            throw new BuildException("Background Binary record not found in template database.");
-                        }
-                    }
-                }
-                else {
-                    throw new BuildException(String.Format(CultureInfo.InvariantCulture, "Unable to open Background Image:\n\t{0}", bgFile), Location);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Loads the license file.
-        /// </summary>
-        /// <param name="database">The MSI database.</param>
-        private void LoadLicense(InstallerDatabase database) {
-
-            // Find the License control
-            using (InstallerRecordReader recordReader = database.FindRecords("Control",
-                       new InstallerSearchClause("Control", Comparison.Equals, "AgreementText"))) {
-
-                if (recordReader.Read()) {
-                    if (msi.license != null) {
-                        string licFile = Path.Combine(Project.BaseDirectory, msi.license);
-                        Log(Level.Info, LogPrefix + "Storing license '{0}'.", licFile);
-                        StreamReader licenseFileReader = null;
-                        try {
-                            licenseFileReader = File.OpenText(licFile);
-                        } catch (IOException ex) {
-                            throw new BuildException(String.Format(CultureInfo.InvariantCulture,
-                                "Unable to open License File:\n\t{0}", licFile), Location, ex);
-                        }
-
-                        try {
-                            recordReader.SetValue(9, licenseFileReader.ReadToEnd());
-                            recordReader.Commit();
-                        } finally {
-                            licenseFileReader.Close();
-                        }
-                    } else {
-                        // Delete the license control
-                        recordReader.DeleteCurrentRecord();
-                    }
-                } else {
-                    throw new BuildException("Couldn't find AgreementText Control in template database.", Location);
-                }
-            }
-        }
-
-        /// <summary>
         /// Loads records for the Properties table.
         /// </summary>
         /// <param name="database">The MSI database.</param>
@@ -362,11 +268,26 @@ namespace NAnt.Contrib.Tasks.Msi {
             using (InstallerTable propertyTable = database.OpenTable("Property")) {
                 Log(Level.Verbose, LogPrefix + "Adding Properties:");
 
+                property productName = null;
+                property productCode = null;
+                property productVersion = null;
+                property manufacturer = null;
+
                 // Add properties from Task definition
                 foreach (property property in msi.properties) {
                     // Insert the Property
                     string name = property.name;
                     string sValue = property.value;
+
+                    if (name == "ProductName") {
+                        productName = property;
+                    } else if (name == "ProductCode") {
+                        productCode = property;
+                    } else if (name == "ProductVersion") {
+                        productVersion = property;
+                    } else if (name == "Manufacturer") {
+                        manufacturer = property;
+                    }
 
                     if (name == null || name == "") {
                         throw new BuildException("Property with no name attribute detected.", Location);
@@ -380,6 +301,15 @@ namespace NAnt.Contrib.Tasks.Msi {
 
                     Log(Level.Verbose, "\t" + name);
                 }
+
+                if ((productName == null) && (this is MsiCreationCommand))
+                    throw new BuildException("ProductName property must be specified.  For more information please visit: http://msdn.microsoft.com/library/en-us/msi/setup/productname_property.asp");
+                if ((productCode == null) && (this is MsiCreationCommand))
+                    throw new BuildException("ProductCode property must be specified.  For more information please visit: http://msdn.microsoft.com/library/en-us/msi/setup/productcode_property.asp");
+                if ((productVersion == null) && (this is MsiCreationCommand))
+                    throw new BuildException("ProductVersion property must be specified.  For more information please visit: http://msdn.microsoft.com/library/en-us/msi/setup/productversion_property.asp");
+                if ((manufacturer == null) && (this is MsiCreationCommand))
+                    throw new BuildException("Manufacturer property must be specified.  For more information please visit: http://msdn.microsoft.com/library/en-us/msi/setup/manufacturer_property.asp");
             }
         }
 
@@ -999,6 +929,9 @@ namespace NAnt.Contrib.Tasks.Msi {
                         }
 
                         foreach (MSIRegistryKeyValue value in key.value) {
+                            if ((value.name == null || value.name == String.Empty) && (value.value == null || value.value == String.Empty))
+                                throw new BuildException("Registry value must have a name and/or value specified.");
+
                             // Insert the Value
                             Log(Level.Verbose, "\t" + GetDisplayablePath(key.path) + @"#" + value.name);
 
@@ -1957,9 +1890,13 @@ namespace NAnt.Contrib.Tasks.Msi {
             }
 
             SummaryInfo summaryInfo = database.GetSummaryInformation();
-            summaryInfo.set_Property(2, productName.value);
-            summaryInfo.set_Property(3, productName.value);
-            summaryInfo.set_Property(4, manufacturer.value);
+            if (productName != null) {
+                summaryInfo.set_Property(2, productName.value);
+                summaryInfo.set_Property(3, productName.value);
+            }
+            if (manufacturer != null) {
+                summaryInfo.set_Property(4, manufacturer.value);
+            }
 
             if (keywords != null) {
                 summaryInfo.set_Property(5, keywords.value);
@@ -2329,7 +2266,14 @@ namespace NAnt.Contrib.Tasks.Msi {
                     Directory.CreateDirectory(TempFolderPath);
                 }
 
-                File.Copy(sourceFilePath, Path.Combine(TempFolderPath, fileId), true);
+                string newFilePath = Path.Combine(TempFolderPath, fileId);
+                File.Copy(sourceFilePath, newFilePath, true);
+                // Remove ReadOnly attribute if it exists
+                FileAttributes attrs = File.GetAttributes(newFilePath);
+                if ((attrs & FileAttributes.ReadOnly) == FileAttributes.ReadOnly) {
+                    attrs = attrs ^ FileAttributes.ReadOnly;
+                    File.SetAttributes(newFilePath, attrs);
+                }
             }
         }
 
@@ -2386,8 +2330,8 @@ namespace NAnt.Contrib.Tasks.Msi {
                         int componentIndex = 0;
 
                         foreach (MSIComponent component in msi.components) {
-                            // TODO: This should only be done for MSI archives
-                            featureComponents.Add(component.name, component.feature);
+                            if (this is MsiCreationCommand)
+                                featureComponents.Add(component.name, component.feature);
 
                             AddModuleComponentVirtual(database, modComponentTable, component.name);
 
@@ -2507,9 +2451,6 @@ namespace NAnt.Contrib.Tasks.Msi {
         }
 
         private void LoadCommonDataFromTask(InstallerDatabase database, ref int fileSequenceNumber) {
-            LoadBannerImage(database);
-            LoadBackgroundImage(database);
-            LoadLicense(database);
             LoadProperties(database);
             LoadRegistryLocators(database);
             LoadApplicationSearch(database);

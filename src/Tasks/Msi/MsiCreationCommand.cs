@@ -21,6 +21,7 @@
 using System;
 using System.Collections;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Xml;
 
@@ -86,6 +87,103 @@ namespace NAnt.Contrib.Tasks.Msi {
 
             ReorderFiles(database, ref lastSequence);
             LoadMedia(database, lastSequence);
+            LoadBannerImage(database);
+            LoadBackgroundImage(database);
+            LoadLicense(database);
+        }
+
+        /// <summary>
+        /// Loads the banner image.
+        /// </summary>
+        /// <param name="database">The MSI database.</param>
+        private void LoadBannerImage(InstallerDatabase database) {
+            // Try to open the Banner
+            if (msi.banner != null) {
+                string bannerFile = Path.Combine(Project.BaseDirectory, msi.banner);
+                if (File.Exists(bannerFile)) {
+                    Log(Level.Verbose, LogPrefix + "Storing Banner:\n\t" + bannerFile);
+
+                    using (InstallerRecordReader reader = database.FindRecords("Binary",
+                               new InstallerSearchClause("Name", Comparison.Equals, "bannrbmp"))) {
+                        if (reader.Read()) {
+                            // Write the Banner file to the MSI database
+                            reader.SetValue(1, new InstallerStream(bannerFile));
+                            reader.Commit();
+                        } else {
+                            throw new BuildException("Banner Binary record not found in template database.");
+                        }
+                    }
+                }
+                else {
+                    throw new BuildException(String.Format(CultureInfo.InvariantCulture, "Unable to open Banner Image:\n\t{0}", bannerFile), Location);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Loads the background image.
+        /// </summary>
+        /// <param name="database">The MSI database.</param>
+        private void LoadBackgroundImage(InstallerDatabase database) {
+            // Try to open the Background
+            if (msi.background != null) {
+                string bgFile = Path.Combine(Project.BaseDirectory, msi.background);
+                if (File.Exists(bgFile)) {
+                    Log(Level.Info, LogPrefix + "Storing Background:\n\t" + bgFile);
+
+                    using (InstallerRecordReader reader = database.FindRecords("Binary",
+                               new InstallerSearchClause("Name", Comparison.Equals, "dlgbmp"))) {
+                        if (reader.Read()) {
+                            // Write the Background file to the MSI database
+                            reader.SetValue(1, new InstallerStream(bgFile));
+                            reader.Commit();
+                        } else {
+                            throw new BuildException("Background Binary record not found in template database.");
+                        }
+                    }
+                }
+                else {
+                    throw new BuildException(String.Format(CultureInfo.InvariantCulture, "Unable to open Background Image:\n\t{0}", bgFile), Location);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Loads the license file.
+        /// </summary>
+        /// <param name="database">The MSI database.</param>
+        private void LoadLicense(InstallerDatabase database) {
+
+            // Find the License control
+            using (InstallerRecordReader recordReader = database.FindRecords("Control",
+                       new InstallerSearchClause("Control", Comparison.Equals, "AgreementText"))) {
+
+                if (recordReader.Read()) {
+                    if (msi.license != null) {
+                        string licFile = Path.Combine(Project.BaseDirectory, msi.license);
+                        Log(Level.Info, LogPrefix + "Storing license '{0}'.", licFile);
+                        StreamReader licenseFileReader = null;
+                        try {
+                            licenseFileReader = File.OpenText(licFile);
+                        } catch (IOException ex) {
+                            throw new BuildException(String.Format(CultureInfo.InvariantCulture,
+                                "Unable to open License File:\n\t{0}", licFile), Location, ex);
+                        }
+
+                        try {
+                            recordReader.SetValue(9, licenseFileReader.ReadToEnd());
+                            recordReader.Commit();
+                        } finally {
+                            licenseFileReader.Close();
+                        }
+                    } else {
+                        // Delete the license control
+                        recordReader.DeleteCurrentRecord();
+                    }
+                } else {
+                    throw new BuildException("Couldn't find AgreementText Control in template database.", Location);
+                }
+            }
         }
 
         /// <summary>

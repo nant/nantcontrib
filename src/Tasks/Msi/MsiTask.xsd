@@ -47,9 +47,6 @@
         </xsd:sequence>
         <xsd:attribute name="output" type="xsd:string" use="required" />
         <xsd:attribute name="sourcedir" type="xsd:string" use="required" />
-        <xsd:attribute name="license" type="xsd:string" use="optional" />
-        <xsd:attribute name="banner" type="xsd:string" use="optional" />
-        <xsd:attribute name="background" type="xsd:string" use="optional" />
         <!-- Used to override the msi template file used (.msi) -->
         <xsd:attribute name="template" type="xsd:string" use="optional" />
         <!-- Used to override the error template file used (.mst) -->
@@ -68,6 +65,9 @@
                         <xsd:element ref="msi:features" minOccurs="0" maxOccurs="1" />
                         <xsd:element ref="msi:mergemodules" minOccurs="0" maxOccurs="1" />
                     </xsd:sequence>
+                    <xsd:attribute name="license" type="xsd:string" use="optional" />
+                    <xsd:attribute name="banner" type="xsd:string" use="optional" />
+                    <xsd:attribute name="background" type="xsd:string" use="optional" />
                 </xsd:extension>
             </xsd:complexContent>
         </xsd:complexType>
@@ -156,7 +156,7 @@
                         <xsd:sequence>
                             <xsd:element name="value" minOccurs="1" maxOccurs="unbounded">
                                 <xsd:complexType>
-                                    <xsd:attribute name="name" type="xsd:string" use="required" />
+                                    <xsd:attribute name="name" type="xsd:string" use="optional" />
                                     <xsd:attribute name="setproperty" type="xsd:string" use="required" />
                                 </xsd:complexType>
                             </xsd:element>
@@ -531,7 +531,7 @@
     <xsd:complexType name="MSIRegistryKeyValue">
         <xsd:simpleContent>
             <xsd:extension base="xsd:string">
-                <xsd:attribute name="name" type="xsd:string" use="required" />
+                <xsd:attribute name="name" type="xsd:string" use="optional" />
                 <xsd:attribute name="value" type="xsd:string" use="optional" />
                 <xsd:attribute name="dword" type="xsd:string" use="optional" />
                 <xsd:attribute name="id" type="xsd:string" use="optional" />
@@ -639,18 +639,18 @@
             <xsd:sequence>
                 <xsd:element name="vdirproperty" type="msi:MSIVDirProperty" minOccurs="1" maxOccurs="unbounded">
                     <!--
-					<xsd:keyref name="vdirpropertyRefs" refer="msi:propertyKey">
-						<xsd:selector xpath="." />
-						<xsd:field xpath="@name" />
-					</xsd:keyref>
-					<xsd:keyref name="vdirportpropertyRefs" refer="msi:propertyKey">
-						<xsd:selector xpath="." />
-						<xsd:field xpath="@portproperty" />
-					</xsd:keyref>
-					<xsd:keyref name="vdirURLPropertyRefs" refer="msi:urlpropertyKey">
-						<xsd:selector xpath="." />
-						<xsd:field xpath="@urlproperty" />
-					</xsd:keyref>
+                    <xsd:keyref name="vdirpropertyRefs" refer="msi:propertyKey">
+                        <xsd:selector xpath="." />
+                        <xsd:field xpath="@name" />
+                    </xsd:keyref>
+                    <xsd:keyref name="vdirportpropertyRefs" refer="msi:propertyKey">
+                        <xsd:selector xpath="." />
+                        <xsd:field xpath="@portproperty" />
+                    </xsd:keyref>
+                    <xsd:keyref name="vdirURLPropertyRefs" refer="msi:urlpropertyKey">
+                        <xsd:selector xpath="." />
+                        <xsd:field xpath="@urlproperty" />
+                    </xsd:keyref>
 --></xsd:element>
             </xsd:sequence>
         </xsd:complexType>
@@ -667,14 +667,14 @@
             <xsd:sequence>
                 <xsd:element name="approot" type="msi:MSIAppRoot" minOccurs="1" maxOccurs="unbounded">
                     <!--
-					<xsd:keyref name="approotComponentRefs" refer="msi:componentKey">
-						<xsd:selector xpath="." />
-						<xsd:field xpath="@component" />
-					</xsd:keyref>
-					<xsd:keyref name="approotURLPropertyRefs" refer="msi:urlpropertyKey">
-						<xsd:selector xpath="." />
-						<xsd:field xpath="@urlproperty" />
-					</xsd:keyref>
+                    <xsd:keyref name="approotComponentRefs" refer="msi:componentKey">
+                        <xsd:selector xpath="." />
+                        <xsd:field xpath="@component" />
+                    </xsd:keyref>
+                    <xsd:keyref name="approotURLPropertyRefs" refer="msi:urlpropertyKey">
+                        <xsd:selector xpath="." />
+                        <xsd:field xpath="@urlproperty" />
+                    </xsd:keyref>
 --></xsd:element>
             </xsd:sequence>
         </xsd:complexType>
@@ -725,18 +725,18 @@
             <xsd:sequence>
                 <xsd:element name="shortcut" type="msi:MSIShortcut" minOccurs="1" maxOccurs="unbounded">
                     <!--
-					<xsd:keyref name="shortcutComponentRefs" refer="msi:componentKey">
-						<xsd:selector xpath="." />
-						<xsd:field xpath="@component" />
-					</xsd:keyref>
-					<xsd:keyref name="shortcutIconRefs" refer="msi:iconKey">
-						<xsd:selector xpath="." />
-						<xsd:field xpath="@icon" />
-					</xsd:keyref>
-					<xsd:keyref name="shortcutPropertyRefs" refer="msi:propertyKey">
-						<xsd:selector xpath="." />
-						<xsd:field xpath="@wkdir" />
-					</xsd:keyref>
+                    <xsd:keyref name="shortcutComponentRefs" refer="msi:componentKey">
+                        <xsd:selector xpath="." />
+                        <xsd:field xpath="@component" />
+                    </xsd:keyref>
+                    <xsd:keyref name="shortcutIconRefs" refer="msi:iconKey">
+                        <xsd:selector xpath="." />
+                        <xsd:field xpath="@icon" />
+                    </xsd:keyref>
+                    <xsd:keyref name="shortcutPropertyRefs" refer="msi:propertyKey">
+                        <xsd:selector xpath="." />
+                        <xsd:field xpath="@wkdir" />
+                    </xsd:keyref>
 --></xsd:element>
             </xsd:sequence>
         </xsd:complexType>

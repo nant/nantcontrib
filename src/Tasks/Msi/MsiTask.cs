@@ -72,7 +72,7 @@ namespace NAnt.Contrib.Tasks.Msi {
 //        [TaskAttribute("license", Required=true)]
         public string MsiLicense
         {
-            get { return _taskCommand.MsiBase.license; }
+            get { return ((msi)_taskCommand.MsiBase).license; }
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace NAnt.Contrib.Tasks.Msi {
 //        [TaskAttribute("banner", Required=false)]
         public string MsiBanner
         {
-            get { return _taskCommand.MsiBase.banner; }
+            get { return ((msi)_taskCommand.MsiBase).banner; }
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace NAnt.Contrib.Tasks.Msi {
 //        [TaskAttribute("background", Required=false)]
         public string MsiBackground
         {
-            get { return _taskCommand.MsiBase.background; }
+            get { return ((msi)_taskCommand.MsiBase).background; }
         }
 
         /// <summary>
@@ -259,6 +259,17 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///     &lt;/key&gt;
         ///     &lt;key type="registry" path="SYSTEM\CurrentControlSet\Services\W3SVC\Parameters" root="machine" &gt;
         ///             &lt;value name="MajorVersion" setproperty="IISVERSION" /&gt;
+        ///     &lt;/key&gt;
+        /// &lt;/search&gt; 
+        ///     </code>
+        /// </example>
+        /// <example>
+        ///     <para>Shows two ways to get the default key value for the specified key.  Create new properties in the Msi file with those values.</para>
+        ///     <code>
+        /// &lt;search&gt;
+        ///     &lt;key type="registry" path="Software\Microsoft\MessengerService" root="machine" &gt;
+        ///         &lt;value setproperty="MSGSRVNAME" /&gt;
+        ///         &lt;value name="" setproperty="MSGSRVNAME2" /&gt;
         ///     &lt;/key&gt;
         /// &lt;/search&gt; 
         ///     </code>
@@ -1995,6 +2006,26 @@ namespace NAnt.Contrib.Tasks.Msi {
         ///         &lt;value name="ProductVersion" value="1.0.0" /&gt;
         ///         &lt;value name="ProductDir" value="[TARGETDIR]" /&gt;
         ///         &lt;value name="VirtualDir" value="[TARGETVDIR]" /&gt;
+        ///     &lt;/key&gt;
+        /// &lt;/registry&gt;
+        ///     </code>
+        /// </example>
+        /// <example>
+        ///     <para>Add a default key value to the specified registry key path</para>
+        ///     <code>
+        /// &lt;registry&gt;
+        ///     &lt;key component="C__MainFiles" root="machine" path="SOFTWARE\ACME\My Product\" &gt;
+        ///         &lt;value value="1.0.0" /&gt;
+        ///     &lt;/key&gt;
+        /// &lt;/registry&gt;
+        ///     </code>
+        /// </example>
+        /// <example>
+        ///     <para>Another way to add a default key value to the specified registry key path</para>
+        ///     <code>
+        /// &lt;registry&gt;
+        ///     &lt;key component="C__MainFiles" root="machine" path="SOFTWARE\ACME\My Product\" &gt;
+        ///         &lt;value name="" value="1.0.0" /&gt;
         ///     &lt;/key&gt;
         /// &lt;/registry&gt;
         ///     </code>
