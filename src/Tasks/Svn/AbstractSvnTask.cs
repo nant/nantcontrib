@@ -167,7 +167,7 @@ namespace NAnt.Contrib.Tasks.Svn {
         /// The pasword to use to login to svn.
         /// </summary>
         [TaskAttribute("password", Required=false)]
-        public override string Password {
+        public new string Password {
             get {return ((Option)this.CommandOptions["password"]).Value;}
             set {this.SetCommandOption("password", String.Format("password={0}", value), true);}
         }
