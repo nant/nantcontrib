@@ -749,7 +749,6 @@
         <xsd:attribute name="name" type="xsd:string" use="required" />
         <xsd:attribute name="directory" type="xsd:string" use="required" />
         <xsd:attribute name="filename" type="xsd:string" use="required" />
-        <xsd:attribute name="displayname" type="xsd:string" use="optional" />
         <xsd:attribute name="component" type="xsd:string" use="required" />
         <xsd:attribute name="target" type="xsd:string" use="required" />
         <xsd:attribute name="arguments" type="xsd:string" use="optional" />
