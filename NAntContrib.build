@@ -422,8 +422,21 @@
         <zip zipfile="${project.zip-path.src}">
             <fileset basedir="${build.dir}" prefix="${project.zip.prefix}">
                 <include name="license.txt" />
+                <!-- build files -->
                 <include name="NAntContrib.build" />
                 <include name="NAntContribInstall.include" />
+                <!-- referenced assemblies -->
+                <include name="bin/CollectionGen.dll" />
+                <include name="bin/Interop.MsmMergeTypeLib.dll" />
+                <include name="bin/Interop.StarTeam.dll" />
+                <include name="bin/Interop.WindowsInstaller.dll" />
+                <include name="bin/SourceSafe.Interop.dll" />
+                <!-- msi/msm dependencies -->
+                <include name="bin/MSITaskErrors.mst" />
+                <include name="bin/MSITaskTemplate.msi" />
+                <include name="bin/MSMTaskErrors.mst" />
+                <include name="bin/MSMTaskTemplate.msm" />
+                <!-- sources and docs -->
                 <include name="doc/**/*" />
                 <include name="src/**/*" />
                 <include name="tests/**/*" />
