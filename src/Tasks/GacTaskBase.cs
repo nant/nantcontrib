@@ -25,6 +25,7 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 using System.Text;
+
 using NAnt.Core;
 using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
@@ -88,45 +89,38 @@ namespace NAnt.Contrib.Tasks {
 		}
 
 		/// <summary>
-		/// The scheme type to use when working with GAC references. The default is <c>None</c>, which means that references will not be used by
-		/// the GAC task. The default is <c>None</c>.
+		/// The scheme type to use when working with GAC references. The default 
+		/// is <see cref="F:SchemeType.None" />, which means that references will 
+		/// not be used by the GAC task.
 		/// </summary>
-		[TaskAttribute("scheme-type", Required = false)]
+		[TaskAttribute("scheme-type", Required=false)]
 		public SchemeType SchemeType {
-			get {
-				return _schemeType;
-			}
-			set {
-				_schemeType = value;
-			}
+			get { return _schemeType; }
+			set { _schemeType = value; }
 		}
 
 		/// <summary>
-		/// The scheme ID to use when working with GAC references. This is only relevant if a scheme type other than <c>None</c> is specified.
+		/// The scheme ID to use when working with GAC references. This is only 
+		/// relevant if a scheme type other than <see cref="F:SchemeType.None" />
+		/// is specified.
 		/// </summary>
-		[TaskAttribute("scheme-id", Required = false)]
+		[TaskAttribute("scheme-id", Required=false)]
 		[StringValidator(AllowEmpty = false)]
 		public string SchemeId {
-			get {
-				return _schemeId;
-			}
-			set {
-				_schemeId = value;
-			}
+			get { return _schemeId; }
+			set { _schemeId = value; }
 		}
 
 		/// <summary>
-		/// The scheme description to use when working with GAC references. This is only relevant if a scheme type other than <c>None</c> is specified.
+		/// The scheme description to use when working with GAC references. This 
+		/// is only relevant if a scheme type other than <see cref="F:SchemeType.None" />
+		/// is specified.
 		/// </summary>
 		[TaskAttribute("scheme-description", Required = false)]
 		[StringValidator(AllowEmpty = false)]
 		public string SchemeDescription {
-			get {
-				return _schemeDescription;
-			}
-			set {
-				_schemeDescription = value;
-			}
+			get { return _schemeDescription; }
+			set { _schemeDescription = value; }
 		}
 
 		/// <summary>
@@ -141,27 +135,21 @@ namespace NAnt.Contrib.Tasks {
 		/// Gets the executable name for the <c>gacutil</c> command-line tool.
 		/// </summary>
 		public sealed override string ExeName {
-			get {
-				return "gacutil";
-			}
+			get { return "gacutil"; }
 		}
 
 		/// <summary>
 		/// Specifies whether a reference was specified for the GAC task.
 		/// </summary>
 		protected bool ReferenceSpecified {
-			get {
-				return (SchemeType != SchemeType.None);
-			}
+			get { return (SchemeType != SchemeType.None); }
 		}
 
 		/// <summary>
 		/// Gets the current assembly being operated against.
 		/// </summary>
 		protected string CurrentAssembly {
-			get {
-				return _currentAssembly;
-			}
+			get { return _currentAssembly; }
 		}
 
 		#endregion

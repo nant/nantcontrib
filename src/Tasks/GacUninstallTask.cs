@@ -24,6 +24,7 @@
 using System;
 using System.Collections;
 using System.Text;
+
 using NAnt.Core;
 using NAnt.Core.Attributes;
 using NAnt.DotNet.Types;
@@ -44,67 +45,79 @@ namespace NAnt.Contrib.Tasks {
 	/// </para>
 	/// </remarks>
 	/// <example>
-	/// Uninstalls <c>Shared.dll</c> from the GAC.
-	/// <code>
-	/// <![CDATA[
+	///   <para>Uninstalls <c>Shared</c> assembly from the GAC.</para>
+	///   <code>
+	///     <![CDATA[
 	/// <gac-uninstall>
 	///		<assemblies>
-	///			<assembly name="Shared.dll"/>
+	///			<assembly name="Shared" />
 	///		</assemblies>
 	/// </gac-uninstall>
-	/// ]]>
+	///     ]]>
 	/// </code>
 	/// </example>
 	/// <example>
-	/// Uninstalls <c>Shared.dll</c> and <c>myDll.dll</c> from the GAC.
-	/// <code>
-	/// <![CDATA[
+	///   <para>
+	///   Uninstalls <c>Shared</c> and <c>MyWeb</c> from the GAC.
+	///   </para>
+	///   <code>
+	///     <![CDATA[
 	/// <gac-uninstall>
 	///		<assemblies>
-	///			<assembly name="Shared.dll"/>
-	///			<assembly name="myDLL.dll"/>
+	///			<assembly name="Shared" />
+	///			<assembly name="MyWeb" />
 	///		</assemblies>
 	/// </gac-uninstall>
-	/// ]]>
-	/// </code>
+	///     ]]>
+	///   </code>
 	/// </example>
 	/// <example>
-	/// Decrements references to <c>Shared.dll</c> in the GAC and uninstalls if the reference count reaches zero.
-	/// <code>
-	/// <![CDATA[
+	///   <para>
+	///   Decrements references to <c>Shared</c> in the GAC and uninstalls if 
+	///   the reference count reaches zero.
+	///   </para>
+	///   <code>
+	///     <![CDATA[
 	/// <gac-uninstall scheme-type="Opaque" scheme-id="MyID" scheme-description="My description">
 	///		<assemblies>
-	///			<assembly name="Shared.dll"/>
+	///			<assembly name="Shared" />
 	///		</assemblies>
 	/// </gac-uninstall>
-	/// ]]>
-	/// </code>
+	///     ]]>
+	///   </code>
 	/// </example>
 	/// <example>
-	/// Uninstalls version <c>2.1.7.9201</c> of <c>Shared.dll</c> plus the Australian-cultured <c>myDll.dll</c> from the GAC.
-	/// <code>
-	/// <![CDATA[
+	///   <para>
+	///   Uninstalls version <c>2.1.7.9201</c> of <c>Shared</c> plus the 
+	///   Australian-cultured <c>MyWeb</c> from the GAC.
+	///   </para>
+	///   <code>
+	///     <![CDATA[
 	/// <gac-uninstall>
 	///		<assemblies>
-	///			<assembly name="Shared.dll" version="2.1.7.9201"/>
-	///			<assembly name="myDLL.dll" culture="en-AU"/>
+	///			<assembly name="Shared" version="2.1.7.9201" />
+	///			<assembly name="MyWeb" culture="en-AU" />
 	///		</assemblies>
 	/// </gac-uninstall>
-	/// ]]>
-	/// </code>
+	///     ]]>
+	///   </code>
 	/// </example>
 	/// <example>
-	/// Uninstalls the neutrally-cultured, version <c>1.0.5000.0</c> of <c>System.Xml.dll</c> from the native image cache. The DLL
-	/// must also have a public key token of <c>b77a5c561934e08a</c> to be uninstalled.
-	/// <code>
-	/// <![CDATA[
+	///   <para>
+	///   Uninstalls the neutrally-cultured, version <c>1.0.5000.0</c> of 
+	///   <c>System.Xml</c> from the native image cache. The assembly must
+	///   also have a public key token of <c>b77a5c561934e08a</c> to be 
+	///   uninstalled.
+	///   </para>
+	///   <code>
+	///     <![CDATA[
 	/// <gac-uninstall native="true">
 	///		<assemblies>
-	///			<assembly name="System.Xml.dll" version="1.0.5000.0" public-key-token="b77a5c561934e08a" culture="Neutral"/>
+	///			<assembly name="System.Xml" version="1.0.5000.0" public-key-token="b77a5c561934e08a" culture="Neutral" />
 	///		</assemblies>
 	/// </gac-uninstall>
-	/// ]]>
-	/// </code>
+	///     ]]>
+	///   </code>
 	/// </example>
 	[ProgramLocation(LocationType.FrameworkSdkDir)]
 	[TaskName("gac-uninstall")]
@@ -112,12 +125,12 @@ namespace NAnt.Contrib.Tasks {
 		#region Fields
 
 		/// <summary>
-		/// See <see cref="Native"/>.
+		/// See <see cref="Native" />.
 		/// </summary>
 		private bool _native;
 
 		/// <summary>
-		/// See <see cref="Assemblies"/>.
+		/// See <see cref="Assemblies" />.
 		/// </summary>
 		private AssemblySet _assemblies;
 
@@ -126,55 +139,46 @@ namespace NAnt.Contrib.Tasks {
 		#region Properties
 
 		/// <summary>
-		/// If <c>true</c>, specifies that the assemblies should be uninstalled from the native image cache. The default is <c>false</c>.
+		/// If <see langword="true" />, specifies that the assemblies should be 
+		/// uninstalled from the native image cache. The default is <see langword="false" />.
 		/// </summary>
 		[TaskAttribute("native", Required = false)]
 		[BooleanValidator]
 		public bool Native {
-			get {
-				return _native;
-			}
-			set {
-				_native = value;
-			}
+			get { return _native; }
+			set { _native = value; }
 		}
 
 		/// <summary>
 		/// Specifies the assemblies to uninstall.
 		/// </summary>
-		[BuildElement("assemblies", Required = true)]
+		[BuildElement("assemblies", Required=true)]
 		public AssemblySet Assemblies {
-			get {
-				return _assemblies;
-			}
-			set {
-				_assemblies = value;
-			}
+            get { return _assemblies; }
+			set { _assemblies = value; }
 		}
 
 		/// <summary>
 		/// Gets the assembly list to uninstall.
 		/// </summary>
 		protected override ICollection AssemblyList {
-			get {
-				return _assemblies.AssemblyCollection;
-			}
+			get { return _assemblies.AssemblyCollection; }
 		}
 
 		/// <summary>
-		/// If <c>true</c>, the specified assemblies will be forcibly removed from the GAC. All references to the specified assemblies will
-		/// be removed from the GAC prior to removing the assemblies themselves. The default is <c>false</c>.
+		/// If <see langword="true" />, the specified assemblies will be forcibly 
+		/// removed from the GAC. All references to the specified assemblies will
+		/// be removed from the GAC prior to removing the assemblies themselves. 
+		/// The default is <see langword="false" />.
 		/// </summary>
 		/// <remarks>
 		/// You cannot use this option to remove an assembly that was installed using Microsoft Windows Installer.
 		/// </remarks>
+        [TaskAttribute("force", Required=false)]
+        [BooleanValidator]
 		public override bool Force {
-			get {
-				return base.Force;
-			}
-			set {
-				base.Force = value;
-			}
+			get { return base.Force; }
+			set { base.Force = value; }
 		}
 
 		#endregion

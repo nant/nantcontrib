@@ -24,6 +24,7 @@
 using System;
 using System.Collections;
 using System.Text;
+
 using NAnt.Core;
 using NAnt.Core.Attributes;
 using NAnt.DotNet.Types;
@@ -39,42 +40,47 @@ namespace NAnt.Contrib.Tasks {
 	/// </para>
 	/// </remarks>
 	/// <example>
-	/// Installs <c>Shared.dll</c> into the GAC.
-	/// <code>
-	/// <![CDATA[
+	///   <para>Installs <c>Shared.dll</c> into the GAC.</para>
+	///   <code>
+	///     <![CDATA[
 	/// <gac-install>
 	///		<assemblies>
-	///			<include name="Shared.dll"/>
+	///			<include name="Shared.dll" />
 	///		</assemblies>
 	/// </gac-install>
-	/// ]]>
-	/// </code>
+	///     ]]>
+	///   </code>
 	/// </example>
 	/// <example>
-	/// Installs <c>Shared.dll</c> and <c>myDll.dll</c> into the GAC.
-	/// <code>
-	/// <![CDATA[
+	///   <para>
+	///   Installs <c>Shared.dll</c> and <c>MyWeb.dll</c> into the GAC.
+	///   </para>
+	///   <code>
+	///     <![CDATA[
 	/// <gac-install>
 	///		<assemblies>
-	///			<include name="Shared.dll"/>
-	///			<include name="myDLL.dll"/>
+	///			<include name="Shared.dll" />
+	///			<include name="MyWeb.dll" />
 	///		</assemblies>
 	/// </gac-install>
-	/// ]]>
-	/// </code>
+	///     ]]>
+	///   </code>
 	/// </example>
 	/// <example>
-	/// Installs <c>Shared.dll</c> into the GAC and specifies reference information.
-	/// <code>
-	/// <![CDATA[
+	///   <para>
+	///   Installs <c>Shared.dll</c> and <c>MyWeb.dll</c> into the GAC and 
+	///   specifies reference information.
+	///   </para>
+	///   <code>
+	///     <![CDATA[
 	/// <gac-install scheme-type="Opaque" scheme-id="MyID" scheme-description="My description">
 	///		<assemblies>
-	///			<include name="Shared.dll"/>
-	///			<include name="myDLL.dll"/>
+	///			<include name="Shared.dll" />
+	///			<include name="MyWeb.dll" />
 	///		</assemblies>
 	/// </gacinstall>
-	/// ]]>
-	/// </code>
+	///     ]]>
+	///   </code>
 	/// </example>
 	[ProgramLocation(LocationType.FrameworkSdkDir)]
 	[TaskName("gac-install")]
@@ -82,7 +88,7 @@ namespace NAnt.Contrib.Tasks {
 		#region Fields
 
 		/// <summary>
-		/// See <see cref="Assemblies"/>.
+		/// See <see cref="Assemblies" />.
 		/// </summary>
 		private AssemblyFileSet _assemblies;
 
@@ -93,36 +99,29 @@ namespace NAnt.Contrib.Tasks {
 		/// <summary>
 		/// Specifies the assemblies to install.
 		/// </summary>
-		[BuildElement("assemblies", Required = true)]
+		[BuildElement("assemblies", Required=true)]
 		public AssemblyFileSet Assemblies {
-			get {
-				return _assemblies;
-			}
-			set {
-				_assemblies = value;
-			}
+			get { return _assemblies; }
+			set { _assemblies = value; }
 		}
 
 		/// <summary>
 		/// Gets the assembly list to install.
 		/// </summary>
 		protected override ICollection AssemblyList {
-			get {
-				return _assemblies.Includes;
-			}
+			get { return _assemblies.Includes; }
 		}
 
 		/// <summary>
-		/// If <c>true</c>, the specified assemblies will be forcibly installed. Any existing duplicate assemblies in the GAC will
-		/// be overwritten. The default is <c>false</c>.
+		/// If <see langword="true" />, the specified assemblies will be forcibly 
+		/// installed. Any existing duplicate assemblies in the GAC will be 
+		/// overwritten. The default is <see langword="false" />.
 		/// </summary>
+        [TaskAttribute("force", Required=false)]
+        [BooleanValidator]
 		public override bool Force {
-			get {
-				return base.Force;
-			}
-			set {
-				base.Force = value;
-			}
+			get { return base.Force; }
+			set { base.Force = value; }
 		}
 
 		#endregion
