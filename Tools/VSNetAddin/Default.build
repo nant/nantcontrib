@@ -195,10 +195,10 @@
     <copy file="${nantbuild.dir}\NUnitCore.dll" todir="${dest.dir}" />
     <copy file="${nantbuild.dir}\SharpZipLib.dll" todir="${dest.dir}" />
   </target>
-  <target name="build.nantcontrib" description="Compiles NAntContrib" unless="${fromcontrib}">
+  <target name="build.nantcontrib" description="Compiles NAntContrib">
     <property name="nantcontrib.dir" value="..\..\..\NAntContrib" />
-    <nant buildfile="${nantcontrib.dir}\NAntContrib.build" target="build" basedir="${nantcontrib.dir}" />
-    <nant buildfile="${nantcontrib.dir}\NAntContrib.build" target="use" basedir="${nantcontrib.dir}" />
+    <nant buildfile="${nantcontrib.dir}\NAntContrib.build" target="build" basedir="${nantcontrib.dir}" if="${fromcontrib}" />
+    <nant buildfile="${nantcontrib.dir}\NAntContrib.build" target="use" basedir="${nantcontrib.dir}" if="${fromcontrib}" />
     <taskdef assembly="${nantcontrib.dir}\build\NAnt.Contrib.Tasks.dll"/>
   </target>
   <target name="clean" description="Deletes Build Output" depends="prepare">
