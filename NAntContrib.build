@@ -10,7 +10,7 @@
     <property name="debug" value="true"/>
     <property name="project.name" value="nantcontrib"/>
     <property name="project.FormalName" value="NAnt.Contrib"/>
-    <property name="project.version" value="0.0.1.*"/>
+    <property name="project.version" value="0.0.1.0"/>
 
     <property name="src.dir" value="src"/>
     <property name="tests.dir" value="Tests"/>
