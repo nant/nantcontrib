@@ -69,13 +69,13 @@ namespace NAnt.Contrib.Tasks {
         /// </summary>
         /// <param name="TaskNode">Node that contains the XML fragment used to define this task instance.</param>
         protected override void InitializeTask(XmlNode TaskNode) {
-            XmlNode taskNode = TaskNode.Clone();
+            XmlElement taskXml = (XmlElement) TaskNode.Clone();
 
             // Expand all properties in the task and its child elements
-            if (taskNode.ChildNodes != null) {
-                ExpandPropertiesInNodes(taskNode.ChildNodes);
-                if (taskNode.Attributes != null) {
-                    foreach (XmlAttribute attr in taskNode.Attributes) {
+            if (taskXml.ChildNodes != null) {
+                ExpandPropertiesInNodes(taskXml.ChildNodes);
+                if (taskXml.Attributes != null) {
+                    foreach (XmlAttribute attr in taskXml.Attributes) {
                         attr.Value = Properties.ExpandProperties(attr.Value, Location);
                     }
                 }
@@ -115,14 +115,14 @@ namespace NAnt.Contrib.Tasks {
                 // Create a namespace manager with the schema's namespace
                 NameTable nt = new NameTable();
                 XmlNamespaceManager nsmgr = new XmlNamespaceManager(nt);
-                nsmgr.AddNamespace(String.Empty, xmlNamespace);
+                nsmgr.AddNamespace(string.Empty, xmlNamespace);
 
                 // Create a textreader containing just the Task's Node
                 XmlParserContext ctx = new XmlParserContext(
                     null, nsmgr, null, XmlSpace.None);
-                ((XmlElement)TaskNode).SetAttribute("xmlns", xmlNamespace);
-                XmlTextReader textReader = new XmlTextReader(
-                    ((XmlElement)TaskNode).OuterXml, XmlNodeType.Element, ctx);
+                taskXml.SetAttribute("xmlns", xmlNamespace);
+                XmlTextReader textReader = new XmlTextReader(taskXml.OuterXml, 
+                    XmlNodeType.Element, ctx);
 
                 // Copy the node from the TextReader and indent it (for error
                 // reporting, since NAnt does not retain formatting during a load)
@@ -163,13 +163,13 @@ namespace NAnt.Contrib.Tasks {
             
                 NameTable taskNameTable = new NameTable();
                 XmlNamespaceManager taskNSMgr = new XmlNamespaceManager(taskNameTable);
-                taskNSMgr.AddNamespace("", xmlNamespace);
+                taskNSMgr.AddNamespace(string.Empty, xmlNamespace);
 
                 XmlParserContext context = new XmlParserContext(
                     null, taskNSMgr, null, XmlSpace.None);
 
                 XmlTextReader taskSchemaReader = new XmlTextReader(
-                    taskNode.OuterXml, XmlNodeType.Element, context);
+                    taskXml.OuterXml, XmlNodeType.Element, context);
 
                 // Deserialize from the Task's XML to the schema wrapper object
                 _schemaObject = taskSerializer.Deserialize(taskSchemaReader);
