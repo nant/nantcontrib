@@ -18,189 +18,197 @@
         </table>
         <h1>
             <span class="N">N</span><span class="Ant">Ant</span>Contrib Release Notes</h1>
-        <h3>0.85-rc2 (TBD)</h3>
-        <h4>Bug fixes</h4>
-        
-        <h5><a class="heading" href="help/tasks/vb6.html">&lt;vb6&gt;</a></h5>
-        <ul>
-            <li>
-                Fixed issue with scanning references to determine if a project needs compiling (bug <a href="https://sourceforge.net/tracker/?func=detail&atid=474851&aid=1082302&group_id=54790">#1082302</a>).
-            </li>
-        </ul>                
-        <h5><a class="heading" href="help/tasks/msi.html">&lt;msi&gt;</a> / <a class="heading" href="help/tasks/msm.html">
-                &lt;msm&gt;</a></h5>
-        <ul>
-            <li>
-                Fixed issue that caused error when invoking the same <code><a href="help/tasks/msi.html">
-                    &lt;msi&gt;</a></code> task multiple times (bug <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=1040963&group_id=54790&atid=474851">#1040963</a>).
-            </li>
-            <li>
-                Allow schema-generated tasks to work in build files with namespace (bug <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=1077447&group_id=54790&atid=474851">#1077447</a>).
-            </li>
-        </ul>
-        <h5><a class="heading" href="help/tasks/p4sync.html">&lt;p4sync&gt;</a></h5>
-        <ul>
-            <li>
-                Invalid command-line is generated when &quot;force&quot; is <b>true</b> (bug <a href="https://sourceforge.net/tracker/?func=detail&atid=474851&aid=1081430&group_id=54790">#1081430</a>).
-            </li>
-        </ul>
-        <h5><a class="heading" href="help/tasks/sql.html">&lt;sql&gt;</a></h5>
-        <ul>
-            <li>
-                Avoid outputting separator line for empty rows.
-            </li>
-        </ul>
-        <h5><a class="heading" href="help/tasks/svn-checkout.html">&lt;svn-checkout&gt;</a></h5>
-        <ul>
-            <li>
-                Added '.' operator during checkout to fix issue with incorrect destination directory (bug <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=1078255&group_id=54790&atid=474851">#1078255</a>).
-            </li>
-        </ul>
-        <h5><a class="heading" href="help/tasks/vsscheckout.html">&lt;vsscheckout&gt;</a></h5>
-        <ul>
-            <li>
-                Checking out single file causes error.
-            </li>
-        </ul>
-        <h5><a class="heading" href="help/tasks/vssget.html">&lt;vssget&gt;</a></h5>
-        <ul>
-            <li>
-                Getting single file causes error (bug <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=1019972&group_id=54790&atid=474851">#1019972</a>).
-            </li>
-        </ul>
-        <h4>New Tasks</h4>
-        <h5><a class="heading" href="help/tasks/vsshistory.html">&lt;vsshistory&gt;</a></h5>
-        <ul>
-            <li>
-                Generates an XML file showing all changes made to a Visual SourceSafe
-                project/file between specified labels or dates (by a given user).
-            </li>
-        </ul>
-        <h4>Task changes</h4>
-        <h5><a class="heading" href="help/tasks/vssadd.html">&lt;vssadd&gt;</a></h5>
-        <ul>
-            <li>
-                The &quot;user&quot; attribute is deprecated, and has been superceded
-                by a &quot;username&quot; attribute.
-            </li>
-            <li>
-                The &quot;user&quot;/&quot;username&quot; attribute is no longer 
-                required. When no username is specified and &quot;Use network
-                name for automatic user log in&quot; is enabled for the Visual 
-                SourceSafe database, then the current Windows username will be 
-                used to log in.
-            </li>
-        </ul>
-        <h5><a class="heading" href="help/tasks/vsscheckin.html">&lt;vsscheckin&gt;</a></h5>
-        <ul>
-            <li>
-                The &quot;user&quot; attribute is deprecated, and has been superceded
-                by a &quot;username&quot; attribute.
-            </li>
-            <li>
-                The &quot;user&quot;/&quot;username&quot; attribute is no longer 
-                required. When no username is specified and &quot;Use network
-                name for automatic user log in&quot; is enabled for the Visual 
-                SourceSafe database, then the current Windows username will be 
-                used to log in.
-            </li>
-            <li>
-                If &quot;localpath&quot; is not an absolute path, it will now be
-                considered as a path relative to the project base directory.
-            </li>
-        </ul>
-        <h5><a class="heading" href="help/tasks/vsscheckout.html">&lt;vsscheckout&gt;</a></h5>
-        <ul>
-            <li>
-                The &quot;user&quot; attribute is deprecated, and has been superceded
-                by a &quot;username&quot; attribute.
-            </li>
-            <li>
-                The &quot;user&quot;/&quot;username&quot; attribute is no longer 
-                required. When no username is specified and &quot;Use network
-                name for automatic user log in&quot; is enabled for the Visual 
-                SourceSafe database, then the current Windows username will be 
-                used to log in.
-            </li>
-            <li>
-                Added &quot;filetimestamp&quot; attribute that allows the behavior
-                for timestamps of local files to be set.
-            </li>
-            <li>
-                If &quot;localpath&quot; is not an absolute path, it will now be
-                considered as a path relative to the project base directory.
-            </li>
-        </ul>
-        <h5><a class="heading" href="help/tasks/vssdiff.html">&lt;vssdiff&gt;</a></h5>
-        <ul>
-            <li>
-                The &quot;user&quot; attribute is deprecated, and has been superceded
-                by a &quot;username&quot; attribute.
-            </li>
-            <li>
-                The &quot;user&quot;/&quot;username&quot; attribute is no longer 
-                required. When no username is specified and &quot;Use network
-                name for automatic user log in&quot; is enabled for the Visual 
-                SourceSafe database, then the current Windows username will be 
-                used to log in.
-            </li>
-        </ul>
-        <h5><a class="heading" href="help/tasks/vssget.html">&lt;vssget&gt;</a></h5>
-        <ul>
-            <li>
-                The &quot;user&quot; attribute is deprecated, and has been superceded
-                by a &quot;username&quot; attribute.
-            </li>
-            <li>
-                The &quot;user&quot;/&quot;username&quot; attribute is no longer 
-                required. When no username is specified and &quot;Use network
-                name for automatic user log in&quot; is enabled for the Visual 
-                SourceSafe database, then the current Windows username will be 
-                used to log in.
-            </li>
-            <li>
-                Added &quot;filetimestamp&quot; attribute that allows the behavior
-                for timestamps of local files to be set.
-            </li>
-            <li>
-                If &quot;localpath&quot; is not an absolute path, it will now be
-                considered as a path relative to the project base directory.
-            </li>
-        </ul>
-        <h5><a class="heading" href="help/tasks/vsslabel.html">&lt;vsslabel&gt;</a></h5>
-        <ul>
-            <li>
-                The &quot;user&quot; attribute is deprecated, and has been superceded
-                by a &quot;username&quot; attribute.
-            </li>
-            <li>
-                The &quot;user&quot;/&quot;username&quot; attribute is no longer 
-                required. When no username is specified and &quot;Use network
-                name for automatic user log in&quot; is enabled for the Visual 
-                SourceSafe database, then the current Windows username will be 
-                used to log in.
-            </li>
-        </ul>
-        <h5><a class="heading" href="help/tasks/vssundocheckout.html">&lt;vssundocheckout&gt;</a></h5>
-        <ul>
-            <li>
-                The &quot;user&quot; attribute is deprecated, and has been superceded
-                by a &quot;username&quot; attribute.
-            </li>
-            <li>
-                The &quot;user&quot;/&quot;username&quot; attribute is no longer 
-                required. When no username is specified and &quot;Use network
-                name for automatic user log in&quot; is enabled for the Visual 
-                SourceSafe database, then the current Windows username will be 
-                used to log in.
-            </li>
-            <li>
-                If &quot;localpath&quot; is not an absolute path, it will now be
-                considered as a path relative to the project base directory.
-            </li>
-        </ul>
-        <h3>0.85-rc1 (November 28, 2004)</h3>
-        <h4>New tasks</h4>
+        <h2>0.85-rc2 (TBD)</h2>
+        <h3>Bug fixes</h3>
+        <h4>Tasks</h4>
+        <div style="margin-left: 20px;">
+            <h5><a class="heading" href="help/tasks/vb6.html">&lt;vb6&gt;</a></h5>
+            <ul>
+                <li>
+                    Fixed issue with scanning references to determine if a project needs compiling (bug <a href="https://sourceforge.net/tracker/?func=detail&atid=474851&aid=1082302&group_id=54790">#1082302</a>).
+                </li>
+            </ul>                
+            <h5><a class="heading" href="help/tasks/msi.html">&lt;msi&gt;</a> / <a class="heading" href="help/tasks/msm.html">
+                    &lt;msm&gt;</a></h5>
+            <ul>
+                <li>
+                    Fixed issue that caused error when invoking the same <code><a href="help/tasks/msi.html">
+                        &lt;msi&gt;</a></code> task multiple times (bug <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=1040963&group_id=54790&atid=474851">#1040963</a>).
+                </li>
+                <li>
+                    Allow schema-generated tasks to work in build files with namespace (bug <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=1077447&group_id=54790&atid=474851">#1077447</a>).
+                </li>
+            </ul>
+            <h5><a class="heading" href="help/tasks/p4sync.html">&lt;p4sync&gt;</a></h5>
+            <ul>
+                <li>
+                    Invalid command-line is generated when &quot;force&quot; is <b>true</b> (bug <a href="https://sourceforge.net/tracker/?func=detail&atid=474851&aid=1081430&group_id=54790">#1081430</a>).
+                </li>
+            </ul>
+            <h5><a class="heading" href="help/tasks/sql.html">&lt;sql&gt;</a></h5>
+            <ul>
+                <li>
+                    Avoid outputting separator line for empty rows.
+                </li>
+            </ul>
+            <h5><a class="heading" href="help/tasks/svn-checkout.html">&lt;svn-checkout&gt;</a></h5>
+            <ul>
+                <li>
+                    Added '.' operator during checkout to fix issue with incorrect destination directory (bug <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=1078255&group_id=54790&atid=474851">#1078255</a>).
+                </li>
+            </ul>
+            <h5><a class="heading" href="help/tasks/vsscheckout.html">&lt;vsscheckout&gt;</a></h5>
+            <ul>
+                <li>
+                    Checking out single file causes error.
+                </li>
+            </ul>
+            <h5><a class="heading" href="help/tasks/vssget.html">&lt;vssget&gt;</a></h5>
+            <ul>
+                <li>
+                    Getting single file causes error (bug <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=1019972&group_id=54790&atid=474851">#1019972</a>).
+                </li>
+            </ul>
+        </div>
+        <h3>Additions</h3>
+        <h4>Tasks</h4>
+        <div style="margin-left: 20px;">
+            <h5><a class="heading" href="help/tasks/vsshistory.html">&lt;vsshistory&gt;</a></h5>
+            <ul>
+                <li>
+                    Generates an XML file showing all changes made to a Visual SourceSafe
+                    project/file between specified labels or dates (by a given user).
+                </li>
+            </ul>
+        </div>
+        <h3>Changes</h3>
+        <h4>Tasks</h4>
+        <div style="margin-left: 20px;">
+            <h5><a class="heading" href="help/tasks/vssadd.html">&lt;vssadd&gt;</a></h5>
+            <ul>
+                <li>
+                    The &quot;user&quot; attribute is deprecated, and has been superceded
+                    by a &quot;username&quot; attribute.
+                </li>
+                <li>
+                    The &quot;user&quot;/&quot;username&quot; attribute is no longer 
+                    required. When no username is specified and &quot;Use network
+                    name for automatic user log in&quot; is enabled for the Visual 
+                    SourceSafe database, then the current Windows username will be 
+                    used to log in.
+                </li>
+            </ul>
+            <h5><a class="heading" href="help/tasks/vsscheckin.html">&lt;vsscheckin&gt;</a></h5>
+            <ul>
+                <li>
+                    The &quot;user&quot; attribute is deprecated, and has been superceded
+                    by a &quot;username&quot; attribute.
+                </li>
+                <li>
+                    The &quot;user&quot;/&quot;username&quot; attribute is no longer 
+                    required. When no username is specified and &quot;Use network
+                    name for automatic user log in&quot; is enabled for the Visual 
+                    SourceSafe database, then the current Windows username will be 
+                    used to log in.
+                </li>
+                <li>
+                    If &quot;localpath&quot; is not an absolute path, it will now be
+                    considered as a path relative to the project base directory.
+                </li>
+            </ul>
+            <h5><a class="heading" href="help/tasks/vsscheckout.html">&lt;vsscheckout&gt;</a></h5>
+            <ul>
+                <li>
+                    The &quot;user&quot; attribute is deprecated, and has been superceded
+                    by a &quot;username&quot; attribute.
+                </li>
+                <li>
+                    The &quot;user&quot;/&quot;username&quot; attribute is no longer 
+                    required. When no username is specified and &quot;Use network
+                    name for automatic user log in&quot; is enabled for the Visual 
+                    SourceSafe database, then the current Windows username will be 
+                    used to log in.
+                </li>
+                <li>
+                    Added &quot;filetimestamp&quot; attribute that allows the behavior
+                    for timestamps of local files to be set.
+                </li>
+                <li>
+                    If &quot;localpath&quot; is not an absolute path, it will now be
+                    considered as a path relative to the project base directory.
+                </li>
+            </ul>
+            <h5><a class="heading" href="help/tasks/vssdiff.html">&lt;vssdiff&gt;</a></h5>
+            <ul>
+                <li>
+                    The &quot;user&quot; attribute is deprecated, and has been superceded
+                    by a &quot;username&quot; attribute.
+                </li>
+                <li>
+                    The &quot;user&quot;/&quot;username&quot; attribute is no longer 
+                    required. When no username is specified and &quot;Use network
+                    name for automatic user log in&quot; is enabled for the Visual 
+                    SourceSafe database, then the current Windows username will be 
+                    used to log in.
+                </li>
+            </ul>
+            <h5><a class="heading" href="help/tasks/vssget.html">&lt;vssget&gt;</a></h5>
+            <ul>
+                <li>
+                    The &quot;user&quot; attribute is deprecated, and has been superceded
+                    by a &quot;username&quot; attribute.
+                </li>
+                <li>
+                    The &quot;user&quot;/&quot;username&quot; attribute is no longer 
+                    required. When no username is specified and &quot;Use network
+                    name for automatic user log in&quot; is enabled for the Visual 
+                    SourceSafe database, then the current Windows username will be 
+                    used to log in.
+                </li>
+                <li>
+                    Added &quot;filetimestamp&quot; attribute that allows the behavior
+                    for timestamps of local files to be set.
+                </li>
+                <li>
+                    If &quot;localpath&quot; is not an absolute path, it will now be
+                    considered as a path relative to the project base directory.
+                </li>
+            </ul>
+            <h5><a class="heading" href="help/tasks/vsslabel.html">&lt;vsslabel&gt;</a></h5>
+            <ul>
+                <li>
+                    The &quot;user&quot; attribute is deprecated, and has been superceded
+                    by a &quot;username&quot; attribute.
+                </li>
+                <li>
+                    The &quot;user&quot;/&quot;username&quot; attribute is no longer 
+                    required. When no username is specified and &quot;Use network
+                    name for automatic user log in&quot; is enabled for the Visual 
+                    SourceSafe database, then the current Windows username will be 
+                    used to log in.
+                </li>
+            </ul>
+            <h5><a class="heading" href="help/tasks/vssundocheckout.html">&lt;vssundocheckout&gt;</a></h5>
+            <ul>
+                <li>
+                    The &quot;user&quot; attribute is deprecated, and has been superceded
+                    by a &quot;username&quot; attribute.
+                </li>
+                <li>
+                    The &quot;user&quot;/&quot;username&quot; attribute is no longer 
+                    required. When no username is specified and &quot;Use network
+                    name for automatic user log in&quot; is enabled for the Visual 
+                    SourceSafe database, then the current Windows username will be 
+                    used to log in.
+                </li>
+                <li>
+                    If &quot;localpath&quot; is not an absolute path, it will now be
+                    considered as a path relative to the project base directory.
+                </li>
+            </ul>
+        </div>
+        <h2>0.85-rc1 (November 28, 2004)</h2>
+        <h3>New tasks</h3>
         <h5><a class="heading" href="help/tasks/depends.html">&lt;depends&gt;</a></h5>
         <ul>
             <li>
@@ -242,7 +250,7 @@
                 has been added.
             </li>
         </ul>
-        <h4>Task changes</h4>
+        <h3>Task changes</h3>
         <h5><a class="heading" href="help/tasks/aximp.html">&lt;aximp&gt;</a></h5>
         <ul>
             <li>
@@ -350,8 +358,8 @@
                 Several issues have been fixed.
             </li>
         </ul>
-        <h3>0.84 (December 26, 2003)</h3>
-        <h4>Task changes</h4>
+        <h2>0.84 (December 26, 2003)</h2>
+        <h3>Task changes</h3>
         <h5>&lt;regasm&gt;</h5>
         <ul>
             <li>
@@ -359,17 +367,17 @@
                     regfile</code> attribute.
             </li>
         </ul>
-        <h3>0.84-rc 2 (December 21, 2003)</h3>
+        <h2>0.84-rc 2 (December 21, 2003)</h2>
         <p>No changes</p>
-        <h3>0.84-rc 1 (December 6, 2003)</h3>
-        <h4>New tasks</h4>
+        <h2>0.84-rc 1 (December 6, 2003)</h2>
+        <h3>New tasks</h3>
         <h5>&lt;vssdif&gt;</h5>
         <ul>
             <li>
                 Shows all changes to a Visual SourceSafe project after a specified label.
             </li>
         </ul>
-        <h4>Task changes</h4>
+        <h3>Task changes</h3>
         <h5>&lt;msi&gt; and &lt;msm&gt;</h5>
         <ul>
             <li>
@@ -424,7 +432,7 @@
                 Added unit tests.
             </li>
         </ul>
-        <h4>Removed Tasks</h4>
+        <h3>Removed Tasks</h3>
         <h5>&lt;tlbimp&gt;</h5>
         <ul>
             <li>
