@@ -315,14 +315,27 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         }
 
         private void LogChange(IVSSVersion version) {
-            XmlElement node = _outputDoc.CreateElement("Entry");
-            XmlAttribute attrib = _outputDoc.CreateAttribute("Name");
-            attrib.Value = version.VSSItem.Name;
-            node.Attributes.Append(attrib);
+            const int FILE_OR_PROJECT_DOES_NOT_EXIST = -2147166577;
 
-            attrib = _outputDoc.CreateAttribute("Path");
-            attrib.Value = version.VSSItem.Spec;
-            node.Attributes.Append(attrib);
+            XmlElement node;
+            XmlAttribute attrib;
+
+            try {
+                node = _outputDoc.CreateElement("Entry");
+                attrib = _outputDoc.CreateAttribute("Name");
+                attrib.Value = version.VSSItem.Name;
+                node.Attributes.Append(attrib);
+
+                attrib = _outputDoc.CreateAttribute("Path");
+                attrib.Value = version.VSSItem.Spec;
+                node.Attributes.Append(attrib);
+            } catch (System.Runtime.InteropServices.COMException ex) {
+                if (ex.ErrorCode != FILE_OR_PROJECT_DOES_NOT_EXIST) {
+                    throw ex;
+                }
+
+                return;
+            }
 
             attrib = _outputDoc.CreateAttribute("Action");
             attrib.Value = version.Action;
