@@ -2543,15 +2543,14 @@ namespace NAnt.Contrib.Tasks.Msi {
 //                            files.Remove(ComponentDirectory + "|" + fileName);
 //                            files.Add(ComponentDirectory + "|" + fileName, "KeyIsDotNetAssembly");
 //                        }
-                    }
-                    else if (filePath.EndsWith(".tlb")) {
+                    } else if (filePath.EndsWith(".tlb")) {
                         typeLibComponents.Add(
                             Path.GetFileName(filePath),
                             asmCompName);
                     }
                 }
 
-                if (filePath.EndsWith(".dll")) {
+                if (filePath.EndsWith(".dll") || filePath.EndsWith(".ocx")) {
                     int hmod = LoadLibrary(filePath);
                     if (hmod != 0) {
                         int regSvr = GetProcAddress(hmod, "DllRegisterServer");
