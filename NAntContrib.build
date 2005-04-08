@@ -527,6 +527,9 @@
                 <include name="doc/help/**" />
                 <!-- SDK (in HTML Help format) -->
                 <include name="doc/sdk/NAnt-SDK.chm" />
+
+                <!-- do not include NAnt.Xsd.Tasks assembly -->
+                <exclude name="bin/NAnt.Xsd.Tasks.*" />
             </fileset>
         </zip>
         <echo message="Created a '${project.config}' binary package at file://${project.zip-path.bin}" />
