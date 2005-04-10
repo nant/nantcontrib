@@ -111,7 +111,7 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         /// </summary>
         [TaskAttribute("user", Required=false)]
         [Obsolete("Use \"username\" attribute instead.", false)]
-        public string Login { 
+        public virtual string Login { 
             get { return UserName; } 
             set { UserName = value; }
         }

@@ -178,6 +178,16 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         /// Override to avoid exposing the corresponding attribute to build 
         /// authors.
         /// </summary>
+        [Obsolete("Use \"username\" attribute instead.", false)]
+        public override string Login { 
+            get { return base.Login; }
+            set { base.Login = value; }
+        }
+
+        /// <summary>
+        /// Override to avoid exposing the corresponding attribute to build 
+        /// authors.
+        /// </summary>
         public override string Version {
             get { return base.Version; }
             set { base.Version = value; }
