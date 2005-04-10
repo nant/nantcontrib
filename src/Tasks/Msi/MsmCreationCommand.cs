@@ -182,7 +182,7 @@ namespace NAnt.Contrib.Tasks.Msi {
                         }
 
                         if (currentTable != null) {
-                            installExecuteTable.InsertRecord(sequence.action, Convert.ToInt32(sequence.sequence), 
+                            currentTable.InsertRecord(sequence.action, Convert.ToInt32(sequence.sequence), 
                                 sequence.baseaction, Convert.ToInt32(sequence.after), sequence.condition);
                         }
                     }

@@ -2405,7 +2405,7 @@ namespace NAnt.Contrib.Tasks.Msi {
 
                         // The null GUID is authored into any field of a msm database that references a feature.  It gets replaced
                         // with the guid of the feature assigned to the merge module.
-                        string feature = "00000000-0000-0000-0000-000000000000";
+                        string feature = "{00000000-0000-0000-0000-000000000000}";
                         if (featureComponents[ComponentName] != null) {
                             feature = (string)featureComponents[ComponentName];
                         }
@@ -2491,7 +2491,7 @@ namespace NAnt.Contrib.Tasks.Msi {
                 if (isAssembly || filePath.EndsWith(".tlb")) {
                     // The null GUID is authored into any field of a msm database that references a feature.  It gets replaced
                     // with the guid of the feature assigned to the merge module.
-                    string feature = "00000000-0000-0000-0000-000000000000";
+                    string feature = "{00000000-0000-0000-0000-000000000000}";
                     if (featureComponents[ComponentName] != null)
                         feature = (string)featureComponents[ComponentName];
 
