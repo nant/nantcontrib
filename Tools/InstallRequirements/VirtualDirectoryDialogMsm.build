@@ -1,0 +1,158 @@
+<?xml version="1.0"?>
+<project name="VirtualDirectoryDlgMsm" default="msm" >
+	<property name="output.dir" value="${build.dir}/bin" />
+	<target name="msm">
+		<mkdir dir="${output.dir}" failonerror="false" />
+		
+		<property name="defaultVirtualDirName" value="[ProductName]" />
+		<property name="defaultVirtualDirPort" value="80" />
+		
+        <msm
+			id="VirtualDirectoryDlg.93DF40DA_3DB6_4DA2_A6CA_612B61986DD7"
+            sourcedir="."
+            output="${output.dir}/VirtualDirectoryDlg.msm"
+            debug="true"
+            verbose="true"
+        >
+ 			<summaryinformation>
+				<title>VirtualDirectoryDlg Merge Module</title>
+				<subject>Dialog to create a virtual directory.</subject>
+				<author>NAntContrib</author>
+				<keywords>MSI, database, NAnt, Installer</keywords>
+				<comments>Visual Studio .Net compatible</comments>
+				<creatingapplication>NAntContrib - http://nantcontrib.sf.net </creatingapplication>
+			</summaryinformation>
+			<properties>
+				<property name="ProductName" value="VirtualDirectoryDlg Merge Module" />
+				<property name="ProductCode" value="{93DF40DA-3DB6-4DA2-A6CA-612B61986DD7}" />
+				<property name="ProductVersion" value="1.0.0" />
+				<property name="ProductLanguage" value="1033" />
+				<property name="Manufacturer" value="NAntContrib" />
+				<property name="IISVERSION" value="4" />
+				<property name="IISWWWROOT" value="C:\" />
+				<property name="MSG_ERR_IISVERSION" value="This setup requires Internet information Server 5.0 or higher and Windows 2000, Windows XP, or Windows .NET Server.  This setup cannot be installed on Windows 95, Windows 98, Windows ME, or Windows NT.  Please install Internet Information Server and run this setup again." />
+			</properties>
+			<search>
+				<registry type="registry" path="Software\Microsoft\InetStp" root="machine">
+					<value name="PathWWWRoot" setproperty="IISWWWROOT" />
+				</registry>	
+				<registry type="registry" path="SYSTEM\CurrentControlSet\Services\W3SVC\Parameters" root="machine">
+					<value name="MajorVersion" setproperty="IISVERSION" />
+				</registry>					
+			</search>
+			<dialogs>
+				<dialog name="VirtualDirectoryDlg" hcenter="50" vcenter="50" width="370" height="270" attr="39" title="[ProductName] [Setup]" firstcontrol="Next" defaultcontrol="Next" cancelcontrol="Cancel" />
+			</dialogs>			
+			<controls>
+				<control dialog="LicenseAgreementDlg" name="AgreementText" type="ScrollableText" x="20" y="60" width="330" height="120" attr="7" remove="true" />
+				
+                <control dialog="VirtualDirectoryDlg" name="BannerBitmap" type="Bitmap" x="0" y="0" width="374" height="44" attr="1" text="[BannerBitmap]" nextcontrol="VDirLabel" />
+                <control dialog="VirtualDirectoryDlg" name="Title" type="Text" x="15" y="6" width="200" height="15" attr="196611" text="[DlgTitleFont]Virtual Directory Information" />
+                <control dialog="VirtualDirectoryDlg" name="Description" type="Text" x="25" y="23" width="280" height="15" attr="196611" text="Please enter your virtual directory and port information." />
+                <control dialog="VirtualDirectoryDlg" name="BannerLine" type="Line" x="0" y="44" width="374" height="0" attr="1" />
+                <control dialog="VirtualDirectoryDlg" name="VDirLabel" type="Text" x="18" y="73" width="348" height="15" attr="3" text="&amp;Virtual directory:" nextcontrol="Edit_VDir" />
+                <control dialog="VirtualDirectoryDlg" name="Edit_VDir" type="Edit" x="18" y="85" width="252" height="18" attr="7" property="TARGETVDIR" text="[TARGETVDIR]" nextcontrol="PortLabel" />
+                <control dialog="VirtualDirectoryDlg" name="PortLabel" type="Text" x="18" y="110" width="348" height="15" attr="3" text="&amp;Port:" nextcontrol="Edit_Port" />
+                <control dialog="VirtualDirectoryDlg" name="Edit_Port" type="Edit" x="18" y="122" width="48" height="18" attr="7" property="TARGETPORT" text="[TARGETPORT]" nextcontrol="Back" />
+                <control dialog="VirtualDirectoryDlg" name="BottomLine" type="Line" x="0" y="234" width="374" height="0" attr="1" />
+                <control dialog="VirtualDirectoryDlg" name="Back" type="PushButton" x="180" y="243" width="56" height="17" attr="3" text="[ButtonText_Back]" nextcontrol="Next" />
+                <control dialog="VirtualDirectoryDlg" name="Next" type="PushButton" x="236" y="243" width="56" height="17" attr="3" text="[ButtonText_Next]" nextcontrol="Cancel" />
+                <control dialog="VirtualDirectoryDlg" name="Cancel" type="PushButton" x="304" y="243" width="56" height="17" attr="3" text="[ButtonText_Cancel]" nextcontrol="BannerBitmap" />				
+			</controls>
+			<controlconditions>
+				<controlcondition dialog="VirtualDirectoryDlg" control="Back" action="Disable" condition="VirtualDirectoryDlgPreviousDialogName=&quot;&quot;" />
+				<controlcondition dialog="VirtualDirectoryDlg" control="Back" action="Enable" condition="VirtualDirectoryDlgPreviousDialogName&lt;&gt;&quot;&quot;" />
+			</controlconditions>
+            <controlevents>
+                <controlevent dialog="VirtualDirectoryDlg" control="Cancel" name="SpawnDialog" argument="CancelDlg" order="0" />
+                <controlevent dialog="VirtualDirectoryDlg" control="Back" name="NewDialog" argument="[VirtualDirectoryDlgPreviousDialogName]" condition="VirtualDirectoryDlgPreviousDialogName &lt;&gt; &quot;&quot;" />
+                <controlevent dialog="VirtualDirectoryDlg" control="Next" name="DoAction" argument="WEBCA_CreateURLs" condition="1" order="0" />
+                <controlevent dialog="VirtualDirectoryDlg" control="Next" name="DoAction" argument="WEBCA_EvaluateURLsMB" condition="1" order="1" />
+                <controlevent dialog="VirtualDirectoryDlg" control="Next" name="SetTargetPath" argument="TARGETDIR" condition="1" order="2" />
+                <controlevent dialog="VirtualDirectoryDlg" control="Next" name="EndDialog" argument="Return" condition="VirtualDirectoryDlgNextDialogName = &quot;&quot;" order="3" />
+                <controlevent dialog="VirtualDirectoryDlg" control="Next" name="NewDialog" argument="[VirtualDirectoryDlgNextDialogName]" condition="VirtualDirectoryDlgNextDialogName &lt;&gt; &quot;&quot;" order="4" />
+            </controlevents>			
+			<binaries>
+				<binary name="MSVBDPCADLL" value="MSVBDPCA.DLL" />
+			</binaries>
+			<customactions>
+				<customaction action="ERRCA_IISVERSION" type="19" target="[MSG_ERR_IISVERSION]" />
+				
+                <customaction action="WEBCA_GatherWebFolderProperties" type="1" source="MSVBDPCADLL" target="GatherWebFolderProperties" />
+                <customaction action="WEBCA_ApplyWebFolderProperties" type="1537" source="MSVBDPCADLL" target="ApplyWebFolderProperties" />
+                <customaction action="WEBCA_RollbackApplyWebFolderProperties" type="1281" source="MSVBDPCADLL" target="RollbackApplyWebFolderProperties" />
+                <customaction action="WEBCA_CreateURLs" type="1" source="MSVBDPCADLL" target="CreateURLs" />
+                <customaction action="WEBCA_EvaluateURLs" type="1" source="MSVBDPCADLL" target="EvaluateURLs" />
+                <customaction action="WEBCA_EvaluateURLsNoFail" type="1" source="MSVBDPCADLL" target="EvaluateURLsNoFail" />
+                <customaction action="WEBCA_EvaluateURLsMB" type="1" source="MSVBDPCADLL" target="EvaluateURLsMB" />
+                <customaction action="WEBCA_CreateAppRoots" type="1" source="MSVBDPCADLL" target="CreateAppRoots" />
+                <customaction action="WEBCA_TARGETVDIR" type="307" source="TARGETVDIR" target="${defaultVirtualDirName}" />
+                <customaction action="WEBCA_TARGETPORT" type="307" source="TARGETPORT" target="${defaultVirtualDirPort}" />
+			</customactions>
+            <!-- Represents URL properties as a property -->
+            <urlproperties>
+                <urlproperty name="TARGETURL" property="TARGETDIR" />
+            </urlproperties>
+
+            <!-- Represents VDir properties as a URL -->
+            <vdirproperties>
+                <vdirproperty name="TARGETVDIR" portproperty="TARGETPORT" urlproperty="TARGETURL" />
+            </vdirproperties>
+
+            <!-- Set the directory properties for IIS -->
+            <iisproperties>
+                <iisproperty directory="TARGETDIR" attr="626" defaultdoc="Default.aspx" />
+            </iisproperties>			
+			<modulesequences>
+				<sequence type="installexecute" action="ERRCA_IISVERSION" sequence="401" condition="(NOT Installed) AND NOT ((IISVERSION = &quot;#5&quot;) OR (IISVERSION = &quot;#6&quot;))" />
+				<sequence type="installui" action="ERRCA_IISVERSION" sequence="401" condition="(NOT Installed) AND NOT ((IISVERSION = &quot;#5&quot;) OR (IISVERSION = &quot;#6&quot;))" />
+				
+                <sequence type="installexecute" action="WEBCA_TARGETVDIR" sequence="750" condition="TARGETVDIR=&quot;&quot;" />
+                <sequence type="installexecute" action="WEBCA_TARGETPORT" sequence="750" condition="TARGETPORT=&quot;&quot;" />
+                <sequence type="installexecute" action="WEBCA_CreateURLs" sequence="752" condition="NOT Installed" />
+                <sequence type="installexecute" action="WEBCA_EvaluateURLs" sequence="753" condition="NOT Installed" />
+                <sequence type="installexecute" action="WEBCA_GatherWebFolderProperties" sequence="3701" condition="NOT Installed" />
+                <sequence type="installexecute" action="WEBCA_ApplyWebFolderProperties" sequence="3701" condition="NOT Installed" />
+                <sequence type="installexecute" action="WEBCA_RollbackApplyWebFolderProperties" sequence="3701" condition="NOT Installed" />
+                <sequence type="installexecute" action="WEBCA_CreateAppRoots" sequence="3701" condition="NOT Installed" />
+
+                <sequence type="installui" action="WEBCA_TARGETVDIR" sequence="750" condition="TARGETVDIR=&quot;&quot;" />
+                <sequence type="installui" action="WEBCA_TARGETPORT" sequence="750" condition="TARGETPORT=&quot;&quot;" />
+                <sequence type="installui" action="WEBCA_CreateURLs" sequence="752" condition="NOT Installed" />
+                <sequence type="installui" action="WEBCA_EvaluateURLsNoFail" sequence="753" condition="NOT Installed" />
+
+                <sequence type="adminexecute" action="WEBCA_TARGETVDIR" sequence="750" condition="TARGETVDIR=&quot;&quot;" />
+                <sequence type="adminexecute" action="WEBCA_TARGETPORT" sequence="750" condition="TARGETPORT=&quot;&quot;" />
+                <sequence type="adminexecute" action="WEBCA_CreateURLs" sequence="752" condition="NOT Installed" />
+                <sequence type="adminexecute" action="WEBCA_EvaluateURLs" sequence="753" condition="NOT Installed" />
+
+                <sequence type="adminui" action="WEBCA_TARGETVDIR" sequence="750" condition="TARGETVDIR=&quot;&quot;" />
+                <sequence type="adminui" action="WEBCA_TARGETPORT" sequence="750" condition="TARGETPORT=&quot;&quot;" />
+                <sequence type="adminui" action="WEBCA_CreateURLs" sequence="752" condition="NOT Installed" />
+                <sequence type="adminui" action="WEBCA_EvaluateURLsNoFail" sequence="753" condition="NOT Installed" />
+			</modulesequences>
+			<modulesubstitutions>
+				<substitution table="Property" row="VirtualDirectoryDlgPreviousDialogName" column="Property" value="[=PreviousDialogPropertyName]" />
+				<substitution table="Property" row="VirtualDirectoryDlgPreviousDialogName" column="Value" value="[=PreviousDialogPropertyValue]" />
+				<substitution table="Property" row="VirtualDirectoryDlgNextDialogName" column="Property" value="[=NextDialogPropertyName]" />
+				<substitution table="Property" row="VirtualDirectoryDlgNextDialogName" column="Value" value="[=NextDialogPropertyValue]" />
+
+				<substitution table="Property" row="TARGETVDIR" column="Property" value="[=TargetVDirPropertyName]" />
+				<substitution table="Property" row="TARGETVDIR" column="Value" value="[=TargetVDirPropertyValue]" />
+				<substitution table="Property" row="TARGETPORT" column="Property" value="[=TargetPortPropertyName]" />
+				<substitution table="Property" row="TARGETPORT" column="Value" value="[=TargetPortPropertyValue]" />
+			</modulesubstitutions>
+			<moduleconfigurations>
+				<configuration name="PreviousDialogPropertyName" format="key" type="Property" contextdata="Public" defaultvalue="VirtualDirectoryDlgPreviousDialogName" attr="2" description="Property used to specify the previous dialog name." />
+				<configuration name="PreviousDialogPropertyValue" format="text" displayname="Previous Dialog Name" description="Property value used to specify the previous dialog name." />
+				<configuration name="NextDialogPropertyName" format="key" type="Property" contextdata="Public" defaultvalue="VirtualDirectoryDlgNextDialogName" attr="2" description="Property used to specify the next dialog name." />				
+				<configuration name="NextDialogPropertyValue" format="text" displayname="Next Dialog Name" description="Property value used to specify the previous dialog name." />
+				
+				<configuration name="TargetVDirPropertyName" format="key" type="Property" contextdata="Public" defaultvalue="TARGETVDIR" attr="2" description="Property used to specify the the default virtual directory name." />
+				<configuration name="TargetVDirPropertyValue" format="text" displayname="Default Virtual Directory Name" description="Property value used as the default virtual directory name." />
+				<configuration name="TargetPortPropertyName" format="key" type="Property" contextdata="Public" defaultvalue="TARGETPORT" attr="2" description="Property used to specify the the default virtual directory port." />
+				<configuration name="TargetPortPropertyValue" format="text" displayname="Default Virtual Directory Port" description="Property value used as the default virtual directory port." />				
+			</moduleconfigurations>
+        </msm>		
+	</target>
+</project>

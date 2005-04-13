@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<project name="NetFxCheckMsm" default="msm" >
+	<property name="output.dir" value="${build.dir}/bin" />
+	<target name="msm">
+		<mkdir dir="${output.dir}" failonerror="false" />
+        <msm
+			id="NetFxCheckMsm.4B946009_0589_465E_B57C_EF756249B586"
+            sourcedir="."
+            output="${output.dir}/NetFxCheck.msm"
+            debug="true"
+            verbose="true"
+        >
+ 			<summaryinformation>
+				<title>NetFxCheck Merge Module</title>
+				<subject>Detects if the .Net Framework is installed.</subject>
+				<author>NAntContrib</author>
+				<keywords>MSI, database, NAnt, Installer</keywords>
+				<comments>Visual Studio .Net compatible</comments>
+				<creatingapplication>NAntContrib - http://nantcontrib.sf.net </creatingapplication>
+			</summaryinformation>
+			<properties>
+				<property name="ProductName" value="NetFxCheck Merge Module" />
+				<property name="ProductCode" value="{4B946009-0589-465E-B57C-EF756249B586}" />
+				<property name="ProductVersion" value="1.0.0" />
+				<property name="ProductLanguage" value="1033" />
+				<property name="Manufacturer" value="NAntContrib" />
+				<property name="MSG_ERR_NETFXVERSION" value="This setup requires the .NET 1.x Framework.  Please install the .NET 1.x Framework and run this setup again.  The latest .NET framework can be found at: http://msdn.microsoft.com/netframework/downloads/" />
+			</properties>
+			<controls>
+				<control dialog="LicenseAgreementDlg" name="AgreementText" type="ScrollableText" x="20" y="60" width="330" height="120" attr="7" remove="true" />
+			</controls>
+			<customactions>
+				<customaction action="ERRCA_NETFXVERSION" type="19" target="[MSG_ERR_NETFXVERSION]" />
+			</customactions>
+			<modulesequences>
+				<sequence type="installexecute" action="ERRCA_NETFXVERSION" sequence="1" condition="(NOT Installed) AND NOT ((MsiNetAssemblySupport = &quot;1.0.3705&quot;) OR (MsiNetAssemblySupport = &quot;1.1.4322.573&quot;))" />
+				<sequence type="installui" action="ERRCA_NETFXVERSION" sequence="1" condition="(NOT Installed) AND NOT ((MsiNetAssemblySupport = &quot;1.0.3705&quot;) OR (MsiNetAssemblySupport = &quot;1.1.4322.573&quot;))" />
+			</modulesequences>
+			
+        </msm>		
+	</target>
+</project>
