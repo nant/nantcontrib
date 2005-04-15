@@ -28,64 +28,64 @@ using NAnt.Core.Types;
 using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks.PVCS {
-	/// <summary>
-	/// Deletes folder, projects, versioned items and workspaces in a PVCS repository.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This task uses the <c>delete</c> PCLI command to delete the items.
-	/// </para>
-	/// </remarks>
-	/// <example>
-	/// <para>
-	/// Deletes the versioned file called <c>App.ico</c> from the project database specified by the
-	/// <c>project-database</c> property.
-	/// </para>
-	/// <code>
-	/// <![CDATA[
-	/// <pvcsdelete projectdatabase="${project-database}">
-	///		<entities>
-	///			<entity name="/App.ico"/>
-	///		</entities>
-	/// </pvcsdelete>
-	/// ]]>
-	/// </code>
-	/// </example>
-	/// <example>
-	/// <para>
-	/// Deletes the files called <c>file1.txt</c> and <c>file2.txt</c> from the project called <c>folder</c> in the
-	/// project database specified by the <c>project-database</c> property.
-	/// </para>
-	/// <code>
-	/// <![CDATA[
-	/// <pvcsdelete projectdatabase="${project-database}" projectpath="/folder">
-	///		<entities>
-	///			<entity name="file1.txt"/>
-	///			<entity name="file2.txt"/>
-	///		</entities>
-	/// </pvcsdelete>
-	/// ]]>
-	/// </code>
-	/// </example>
-	[TaskName("pvcsdelete")]
-	public sealed class PVCSDeleteTask : PVCSMultipleEntityTask {
-		#region Fields
+    /// <summary>
+    /// Deletes folder, projects, versioned items and workspaces in a PVCS repository.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This task uses the <c>delete</c> PCLI command to delete the items.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <para>
+    ///   Deletes the versioned file called <c>App.ico</c> from the project database specified by the
+    ///   <c>project-database</c> property.
+    ///   </para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <pvcsdelete projectdatabase="${project-database}">
+    ///     <entities>
+    ///         <entity name="/App.ico"/>
+    ///     </entities>
+    /// </pvcsdelete>
+    ///     ]]>
+    ///   </code>
+    /// </example>
+    /// <example>
+    ///   <para>
+    ///   Deletes the files called <c>file1.txt</c> and <c>file2.txt</c> from the project called <c>folder</c> in the
+    ///   project database specified by the <c>project-database</c> property.
+    ///   </para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <pvcsdelete projectdatabase="${project-database}" projectpath="/folder">
+    ///     <entities>
+    ///         <entity name="file1.txt"/>
+    ///         <entity name="file2.txt"/>
+    ///     </entities>
+    /// </pvcsdelete>
+    ///     ]]>
+    ///   </code>
+    /// </example>
+    [TaskName("pvcsdelete")]
+    public sealed class PVCSDeleteTask : PVCSMultipleEntityTask {
+        #region Fields
 
-		#endregion
+        #endregion
 
-		#region Properties
+        #region Properties
 
-		/// <see cref="PVCSProjectDatabaseTask.SupportsIncludeSubprojects"/>
-		public override bool SupportsIncludeSubprojects {
-			get {
-				return false;
-			}
-		}
+        /// <see cref="PVCSProjectDatabaseTask.SupportsIncludeSubprojects"/>
+        public override bool SupportsIncludeSubprojects {
+            get {
+                return false;
+            }
+        }
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		#endregion
-	}
+        #endregion
+    }
 }

@@ -28,52 +28,52 @@ using NAnt.Core.Util;
 using NAnt.Contrib.Types.PVCS;
 
 namespace NAnt.Contrib.Tasks.PVCS {
-	/// <summary>
-	/// Base class for all PVCS project database tasks that operate against one or more entities.
-	/// </summary>
-	public abstract class PVCSMultipleEntityTask : PVCSProjectDatabaseTask {
-		#region Fields
+    /// <summary>
+    /// Base class for all PVCS project database tasks that operate against one or more entities.
+    /// </summary>
+    public abstract class PVCSMultipleEntityTask : PVCSProjectDatabaseTask {
+        #region Fields
 
-		/// <see cref="Entities"/>
-		private EntitySet _entities;
+        /// <see cref="Entities"/>
+        private EntitySet _entities;
 
-		#endregion
+        #endregion
 
-		#region Properties
+        #region Properties
 
-		/// <summary>
-		/// Gets or sets the entities involved in the operation.
-		/// </summary>
-		[BuildElement("entities", Required = true)]
-		public EntitySet Entities {
-			get {
-				return _entities;
-			}
-			set {
-				_entities = value;
-			}
-		}
+        /// <summary>
+        /// Gets or sets the entities involved in the operation.
+        /// </summary>
+        [BuildElement("entities", Required = true)]
+        public EntitySet Entities {
+            get {
+                return _entities;
+            }
+            set {
+                _entities = value;
+            }
+        }
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		/// <summary>
-		/// Constructs and initializes an instance of <c>PVCSMultipleEntityTask</c>.
-		/// </summary>
-		public PVCSMultipleEntityTask() {
-			_entities = new EntitySet();
-		}
+        /// <summary>
+        /// Constructs and initializes an instance of <c>PVCSMultipleEntityTask</c>.
+        /// </summary>
+        public PVCSMultipleEntityTask() {
+            _entities = new EntitySet();
+        }
 
-		/// <see cref="PVCSTask.AddCommandLineArguments"/>
-		protected override void AddCommandLineArguments(PVCSCommandArgumentCollection arguments) {
-			base.AddCommandLineArguments(arguments);
+        /// <see cref="PVCSTask.AddCommandLineArguments"/>
+        protected override void AddCommandLineArguments(PVCSCommandArgumentCollection arguments) {
+            base.AddCommandLineArguments(arguments);
 
-			foreach (string entityPath in Entities.EntityPaths) {
-				arguments.Add(entityPath, null, PVCSCommandArgumentPosition.End);
-			}
-		}
+            foreach (string entityPath in Entities.EntityPaths) {
+                arguments.Add(entityPath, null, PVCSCommandArgumentPosition.End);
+            }
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

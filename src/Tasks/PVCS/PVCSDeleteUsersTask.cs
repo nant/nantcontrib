@@ -28,57 +28,57 @@ using NAnt.Core.Types;
 using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks.PVCS {
-	/// <summary>
-	/// Deletes the specified users from the PVCS access control database.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This task uses the <c>deleteuser</c> PCLI command to delete the users.
-	/// </para>
-	/// </remarks>
-	/// <example>
-	/// <para>
-	/// Deletes the users called <c>kb</c>, <c>kv</c> and <c>tb</c> from the project database specified by the
-	/// <c>project-database</c> property.
-	/// </para>
-	/// <code>
-	/// <![CDATA[
-	/// <pvcsdeleteusers projectdatabase="${project-database}">
-	///		<entities>
-	///			<entity name="kb"/>
-	///			<entity name="kv"/>
-	///			<entity name="tb"/>
-	///		</entities>
-	///	</pvcsdeleteusers>
-	/// ]]>
-	/// </code>
-	/// </example>
-	[TaskName("pvcsdeleteusers")]
-	public sealed class PVCSDeleteUsersTask : PVCSMultipleEntityTask {
-		#region Fields
+    /// <summary>
+    /// Deletes the specified users from the PVCS access control database.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This task uses the <c>deleteuser</c> PCLI command to delete the users.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    ///   <para>
+    ///   Deletes the users called <c>kb</c>, <c>kv</c> and <c>tb</c> from the project database specified by the
+    ///   <c>project-database</c> property.
+    ///   </para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <pvcsdeleteusers projectdatabase="${project-database}">
+    ///     <entities>
+    ///         <entity name="kb"/>
+    ///         <entity name="kv"/>
+    ///         <entity name="tb"/>
+    ///     </entities>
+    /// </pvcsdeleteusers>
+    ///     ]]>
+    ///   </code>
+    /// </example>
+    [TaskName("pvcsdeleteusers")]
+    public sealed class PVCSDeleteUsersTask : PVCSMultipleEntityTask {
+        #region Fields
 
-		#endregion
+        #endregion
 
-		#region Properties
+        #region Properties
 
-		/// <see cref="PVCSProjectDatabaseTask.SupportsIncludeSubprojects"/>
-		public override bool SupportsIncludeSubprojects {
-			get {
-				return false;
-			}
-		}
+        /// <see cref="PVCSProjectDatabaseTask.SupportsIncludeSubprojects"/>
+        public override bool SupportsIncludeSubprojects {
+            get {
+                return false;
+            }
+        }
 
-		/// <see cref="PVCSTask.PCLICommandName"/>
-		protected override string PCLICommandName {
-			get {
-				return "deleteuser";
-			}
-		}
+        /// <see cref="PVCSTask.PCLICommandName"/>
+        protected override string PCLICommandName {
+            get {
+                return "deleteuser";
+            }
+        }
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		#endregion
-	}
+        #endregion
+    }
 }

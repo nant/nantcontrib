@@ -28,75 +28,75 @@ using NAnt.Core.Types;
 using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks.PVCS {
-	/// <summary>
-	/// Creates a project in a PVCS repository.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This task uses the <c>createproject</c> PCLI command to create the project in the PVCS repository.
-	/// </para>
-	/// </remarks>
-	/// <example>
-	/// <para>
-	/// Creates a project called <c>Songs</c> in the project database specified by the <c>project-database</c>
-	/// property. The workfile location for the project is set to <c>C:\Work\Songs</c>.
-	/// </para>
-	/// <code>
-	/// <![CDATA[
-	/// <pvcscreateproject projectdatabase="${project-database}" workfilelocation="C:\Work\Songs" entity="/Songs"/>
-	/// ]]>
-	/// </code>
-	/// </example>
-	[TaskName("pvcscreateproject")]
-	public sealed class PVCSCreateProjectTask : PVCSSingleEntityTask {
-		#region Fields
+    /// <summary>
+    /// Creates a project in a PVCS repository.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This task uses the <c>createproject</c> PCLI command to create the project in the PVCS repository.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    ///   <para>
+    ///   Creates a project called <c>Songs</c> in the project database specified by the <c>project-database</c>
+    ///   property. The workfile location for the project is set to <c>C:\Work\Songs</c>.
+    ///   </para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <pvcscreateproject projectdatabase="${project-database}" workfilelocation="C:\Work\Songs" entity="/Songs"/>
+    ///     ]]>
+    ///   </code>
+    /// </example>
+    [TaskName("pvcscreateproject")]
+    public sealed class PVCSCreateProjectTask : PVCSSingleEntityTask {
+        #region Fields
 
-		/// <see cref="WorkfileLocation"/>
-		private string _workfileLocation;
+        /// <see cref="WorkfileLocation"/>
+        private string _workfileLocation;
 
-		#endregion
+        #endregion
 
-		#region Properties
+        #region Properties
 
-		/// <summary>
-		/// Gets or sets the workfile location for the created project.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This is equivalent to the <c>-w</c> parameter to the <c>pcli createproject</c> command.
-		/// </para>
-		/// </remarks>
-		[TaskAttribute("workfilelocation", Required = false)]
-		[StringValidator(AllowEmpty = false)]
-		public string WorkfileLocation {
-			get {
-				return _workfileLocation;
-			}
-			set {
-				_workfileLocation = value;
-			}
-		}
+        /// <summary>
+        /// Gets or sets the workfile location for the created project.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This is equivalent to the <c>-w</c> parameter to the <c>pcli createproject</c> command.
+        /// </para>
+        /// </remarks>
+        [TaskAttribute("workfilelocation", Required = false)]
+        [StringValidator(AllowEmpty = false)]
+        public string WorkfileLocation {
+            get {
+                return _workfileLocation;
+            }
+            set {
+                _workfileLocation = value;
+            }
+        }
 
-		/// <see cref="PVCSProjectDatabaseTask.SupportsIncludeSubprojects"/>
-		public override bool SupportsIncludeSubprojects {
-			get {
-				return false;
-			}
-		}
+        /// <see cref="PVCSProjectDatabaseTask.SupportsIncludeSubprojects"/>
+        public override bool SupportsIncludeSubprojects {
+            get {
+                return false;
+            }
+        }
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		/// <see cref="PVCSTask.AddCommandLineArguments"/>
-		protected override void AddCommandLineArguments(PVCSCommandArgumentCollection arguments) {
-			base.AddCommandLineArguments(arguments);
+        /// <see cref="PVCSTask.AddCommandLineArguments"/>
+        protected override void AddCommandLineArguments(PVCSCommandArgumentCollection arguments) {
+            base.AddCommandLineArguments(arguments);
 
-			if (WorkfileLocation != null) {
-				arguments.Add("-w", WorkfileLocation);
-			}
-		}
+            if (WorkfileLocation != null) {
+                arguments.Add("-w", WorkfileLocation);
+            }
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

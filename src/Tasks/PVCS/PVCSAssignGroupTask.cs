@@ -28,177 +28,177 @@ using NAnt.Core.Types;
 using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks.PVCS {
-	/// <summary>
-	/// Assigns a promotion group to versioned files.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This task uses the <c>assigngroup</c> PCLI command to assign the group to versioned files.
-	/// </para>
-	/// </remarks>
-	/// <example>
-	/// <para>
-	/// Assigns the <c>SYSTEST</c> promotion group to all entities with the <c>DEV</c> promotion group in the
-	/// <c>folder</c> project.
-	/// </para>
-	/// <code>
-	/// <![CDATA[
-	/// <pvcsassigngroup projectdatabase="${project-database}" entity="/folder" assignpromotiongroup="SYSTEST" promotiongroup="DEV"/>
-	/// ]]>
-	/// </code>
-	/// </example>
-	/// <example>
-	/// <para>
-	/// Assigns the <c>SYSTEST</c> promotion group to revision <c>1.2</c> of all entities.
-	/// </para>
-	/// <code>
-	/// <![CDATA[
-	/// <pvcsassigngroup projectdatabase="${project-database}" entity="/" includesubprojects="true" assignpromotiongroup="SYSTEST" revision="1.2"/>
-	/// ]]>
-	/// </code>
-	/// </example>
-	[TaskName("pvcsassigngroup")]
-	public sealed class PVCSAssignGroupTask : PVCSSingleEntityTask {
-		#region Fields
+    /// <summary>
+    /// Assigns a promotion group to versioned files.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This task uses the <c>assigngroup</c> PCLI command to assign the group to versioned files.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    ///   <para>
+    ///   Assigns the <c>SYSTEST</c> promotion group to all entities with the <c>DEV</c> promotion group in the
+    ///   <c>folder</c> project.
+    ///   </para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <pvcsassigngroup projectdatabase="${project-database}" entity="/folder" assignpromotiongroup="SYSTEST" promotiongroup="DEV"/>
+    ///     ]]>
+    ///   </code>
+    /// </example>
+    /// <example>
+    ///   <para>
+    ///   Assigns the <c>SYSTEST</c> promotion group to revision <c>1.2</c> of all entities.
+    ///   </para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <pvcsassigngroup projectdatabase="${project-database}" entity="/" includesubprojects="true" assignpromotiongroup="SYSTEST" revision="1.2"/>
+    ///     ]]>
+    ///   </code>
+    /// </example>
+    [TaskName("pvcsassigngroup")]
+    public sealed class PVCSAssignGroupTask : PVCSSingleEntityTask {
+        #region Fields
 
-		/// <see cref="AssignPromotionGroup"/>
-		private string _assignPromotionGroup;
+        /// <see cref="AssignPromotionGroup"/>
+        private string _assignPromotionGroup;
 
-		/// <see cref="PromotionGroup"/>
-		private string _promotionGroup;
+        /// <see cref="PromotionGroup"/>
+        private string _promotionGroup;
 
-		/// <see cref="Revision"/>
-		private double _revision;
+        /// <see cref="Revision"/>
+        private double _revision;
 
-		/// <see cref="VersionLabel"/>
-		private string _versionLabel;
+        /// <see cref="VersionLabel"/>
+        private string _versionLabel;
 
-		#endregion
+        #endregion
 
-		#region Properties
+        #region Properties
 
-		/// <summary>
-		/// Gets or sets the promotion group to assign to the versioned files.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This is equivalent to the <c>-g</c> parameter to the <c>pcli assigngroup</c> command.
-		/// </para>
-		/// </remarks>
-		[TaskAttribute("assignpromotiongroup", Required = true)]
-		[StringValidator(AllowEmpty = false)]
-		public string AssignPromotionGroup {
-			get {
-				return _assignPromotionGroup;
-			}
-			set {
-				_assignPromotionGroup = value;
-			}
-		}
+        /// <summary>
+        /// Gets or sets the promotion group to assign to the versioned files.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This is equivalent to the <c>-g</c> parameter to the <c>pcli assigngroup</c> command.
+        /// </para>
+        /// </remarks>
+        [TaskAttribute("assignpromotiongroup", Required = true)]
+        [StringValidator(AllowEmpty = false)]
+        public string AssignPromotionGroup {
+            get {
+                return _assignPromotionGroup;
+            }
+            set {
+                _assignPromotionGroup = value;
+            }
+        }
 
-		/// <summary>
-		/// Gets or sets the promotion group for the versioned files to be assigned the promotion group.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This is equivalent to the <c>-r</c> parameter to the <c>pcli assigngroup</c> command.
-		/// </para>
-		/// </remarks>
-		[TaskAttribute("promotiongroup", Required = false)]
-		[StringValidator(AllowEmpty = false)]
-		public string PromotionGroup {
-			get {
-				return _promotionGroup;
-			}
-			set {
-				_promotionGroup = value;
-			}
-		}
-		
-		/// <summary>
-		/// Gets or sets the revision for the versioned files to be assigned the promotion group.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This is equivalent to the <c>-r</c> parameter to the <c>pcli assigngroup</c> command.
-		/// </para>
-		/// <para>
-		/// If this property has not yet been set, it will return <c>Double.MaxValue</c>.
-		/// </para>
-		/// </remarks>
-		[TaskAttribute("revision", Required = false)]
-		public double Revision {
-			get {
-				return _revision;
-			}
-			set {
-				_revision = value;
-			}
-		}
+        /// <summary>
+        /// Gets or sets the promotion group for the versioned files to be assigned the promotion group.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This is equivalent to the <c>-r</c> parameter to the <c>pcli assigngroup</c> command.
+        /// </para>
+        /// </remarks>
+        [TaskAttribute("promotiongroup", Required = false)]
+        [StringValidator(AllowEmpty = false)]
+        public string PromotionGroup {
+            get {
+                return _promotionGroup;
+            }
+            set {
+                _promotionGroup = value;
+            }
+        }
 
-		/// <summary>
-		/// Gets or sets the version label for the versioned files to be assigned the promotion group.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This is equivalent to the <c>-r</c> parameter to the <c>pcli assigngroup</c> command.
-		/// </para>
-		/// </remarks>
-		[TaskAttribute("versionlabel", Required = false)]
-		[StringValidator(AllowEmpty = false)]
-		public string VersionLabel {
-			get {
-				return _versionLabel;
-			}
-			set {
-				_versionLabel = value;
-			}
-		}
+        /// <summary>
+        /// Gets or sets the revision for the versioned files to be assigned the promotion group.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This is equivalent to the <c>-r</c> parameter to the <c>pcli assigngroup</c> command.
+        /// </para>
+        /// <para>
+        /// If this property has not yet been set, it will return <c>Double.MaxValue</c>.
+        /// </para>
+        /// </remarks>
+        [TaskAttribute("revision", Required = false)]
+        public double Revision {
+            get {
+                return _revision;
+            }
+            set {
+                _revision = value;
+            }
+        }
 
-		#endregion
+        /// <summary>
+        /// Gets or sets the version label for the versioned files to be assigned the promotion group.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This is equivalent to the <c>-r</c> parameter to the <c>pcli assigngroup</c> command.
+        /// </para>
+        /// </remarks>
+        [TaskAttribute("versionlabel", Required = false)]
+        [StringValidator(AllowEmpty = false)]
+        public string VersionLabel {
+            get {
+                return _versionLabel;
+            }
+            set {
+                _versionLabel = value;
+            }
+        }
 
-		#region Methods
+        #endregion
 
-		/// <summary>
-		/// Constructs and initializes an instance of <c>PVCSAssignGroupTask</c>.
-		/// </summary>
-		public PVCSAssignGroupTask() {
-			_revision = Double.MaxValue;
-		}
+        #region Methods
 
-		/// <see cref="PVCSTask.AddCommandLineArguments"/>
-		protected override void AddCommandLineArguments(PVCSCommandArgumentCollection arguments) {
-			base.AddCommandLineArguments(arguments);
+        /// <summary>
+        /// Constructs and initializes an instance of <c>PVCSAssignGroupTask</c>.
+        /// </summary>
+        public PVCSAssignGroupTask() {
+            _revision = Double.MaxValue;
+        }
 
-			object revisionArgument = null;
-			bool promotionGroupSpecified = (PromotionGroup != null);
-			bool revisionSpecified = (Revision != Double.MaxValue);
-			bool versionLabelSpecified = (VersionLabel != null);
-			int count = 0;
+        /// <see cref="PVCSTask.AddCommandLineArguments"/>
+        protected override void AddCommandLineArguments(PVCSCommandArgumentCollection arguments) {
+            base.AddCommandLineArguments(arguments);
 
-			if (promotionGroupSpecified) {
-				++count;
-				revisionArgument = PromotionGroup;
-			}
+            object revisionArgument = null;
+            bool promotionGroupSpecified = (PromotionGroup != null);
+            bool revisionSpecified = (Revision != Double.MaxValue);
+            bool versionLabelSpecified = (VersionLabel != null);
+            int count = 0;
 
-			if (revisionSpecified) {
-				++count;
-				revisionArgument = Revision;
-			}
+            if (promotionGroupSpecified) {
+                ++count;
+                revisionArgument = PromotionGroup;
+            }
 
-			if (versionLabelSpecified) {
-				++count;
-				revisionArgument = VersionLabel;
-			}
+            if (revisionSpecified) {
+                ++count;
+                revisionArgument = Revision;
+            }
 
-			if (count != 1) {
-				throw new BuildException("Must specify one of promotiongroup, revision or versionlabel for the pvcsassigngroup task.");
-			}
+            if (versionLabelSpecified) {
+                ++count;
+                revisionArgument = VersionLabel;
+            }
 
-			arguments.Add("-g", AssignPromotionGroup);
-			arguments.Add("-r", revisionArgument);
-		}
+            if (count != 1) {
+                throw new BuildException("Must specify one of promotiongroup, revision or versionlabel for the pvcsassigngroup task.");
+            }
 
-		#endregion
-	}
+            arguments.Add("-g", AssignPromotionGroup);
+            arguments.Add("-r", revisionArgument);
+        }
+
+        #endregion
+    }
 }

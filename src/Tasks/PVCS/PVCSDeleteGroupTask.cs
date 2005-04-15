@@ -28,76 +28,76 @@ using NAnt.Core.Types;
 using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks.PVCS {
-	/// <summary>
-	/// Removes a specified promotion group from versioned files.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This task uses the <c>deletegroup</c> PCLI command to remove the promotion group from the versioned files.
-	/// </para>
-	/// </remarks>
-	/// <example>
-	/// <para>
-	/// Removes the <c>DEV</c> promotion group from <c>App.ico</c> in the project database specified by the
-	/// <c>project-database</c> property.
-	/// </para>
-	/// <code>
-	/// <![CDATA[
-	/// <pvcsdeletegroup projectdatabase="${project-database}" promotiongroup="DEV" entity="/App.ico"/>
-	/// ]]>
-	/// </code>
-	/// </example>
-	/// <example>
-	/// <para>
-	/// Removes the <c>DEV</c> promotion group all files in the project database specified by the
-	/// <c>project-database</c> property.
-	/// </para>
-	/// <code>
-	/// <![CDATA[
-	/// <pvcsdeletegroup projectdatabase="${project-database}" promotiongroup="DEV" entity="/" includesubprojects="true"/>
-	/// ]]>
-	/// </code>
-	/// </example>
-	[TaskName("pvcsdeletegroup")]
-	public sealed class PVCSDeleteGroupTask : PVCSSingleEntityTask {
-		#region Fields
+    /// <summary>
+    /// Removes a specified promotion group from versioned files.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This task uses the <c>deletegroup</c> PCLI command to remove the promotion group from the versioned files.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    ///   <para>
+    ///   Removes the <c>DEV</c> promotion group from <c>App.ico</c> in the project database specified by the
+    ///   <c>project-database</c> property.
+    ///   </para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <pvcsdeletegroup projectdatabase="${project-database}" promotiongroup="DEV" entity="/App.ico"/>
+    ///     ]]>
+    ///   </code>
+    /// </example>
+    /// <example>
+    ///   <para>
+    ///   Removes the <c>DEV</c> promotion group all files in the project database specified by the
+    ///   <c>project-database</c> property.
+    ///   </para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <pvcsdeletegroup projectdatabase="${project-database}" promotiongroup="DEV" entity="/" includesubprojects="true"/>
+    ///     ]]>
+    ///   </code>
+    /// </example>
+    [TaskName("pvcsdeletegroup")]
+    public sealed class PVCSDeleteGroupTask : PVCSSingleEntityTask {
+        #region Fields
 
-		/// <see cref="PromotionGroup"/>
-		private string _promotionGroup;
+        /// <see cref="PromotionGroup"/>
+        private string _promotionGroup;
 
-		#endregion
+        #endregion
 
-		#region Properties
+        #region Properties
 
-		/// <summary>
-		/// Gets or sets the promotion group to delete.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This is equivalent to the <c>-g</c> parameter to the <c>pcli deletegroup</c> command.
-		/// </para>
-		/// </remarks>
-		[TaskAttribute("promotiongroup", Required = true)]
-		[StringValidator(AllowEmpty = false)]
-		public string PromotionGroup {
-			get {
-				return _promotionGroup;
-			}
-			set {
-				_promotionGroup = value;
-			}
-		}
+        /// <summary>
+        /// Gets or sets the promotion group to delete.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This is equivalent to the <c>-g</c> parameter to the <c>pcli deletegroup</c> command.
+        /// </para>
+        /// </remarks>
+        [TaskAttribute("promotiongroup", Required = true)]
+        [StringValidator(AllowEmpty = false)]
+        public string PromotionGroup {
+            get {
+                return _promotionGroup;
+            }
+            set {
+                _promotionGroup = value;
+            }
+        }
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		/// <see cref="PVCSTask.AddCommandLineArguments"/>
-		protected override void AddCommandLineArguments(PVCSCommandArgumentCollection arguments) {
-			base.AddCommandLineArguments(arguments);
-			arguments.Add("-g", PromotionGroup);
-		}
+        /// <see cref="PVCSTask.AddCommandLineArguments"/>
+        protected override void AddCommandLineArguments(PVCSCommandArgumentCollection arguments) {
+            base.AddCommandLineArguments(arguments);
+            arguments.Add("-g", PromotionGroup);
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

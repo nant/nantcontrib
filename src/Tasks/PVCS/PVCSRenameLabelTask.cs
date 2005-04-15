@@ -28,107 +28,107 @@ using NAnt.Core.Types;
 using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks.PVCS {
-	/// <summary>
-	/// Renames a label in a PVCS repository.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This task uses the <c>renamelabel</c> PCLI command to rename the label.
-	/// </para>
-	/// </remarks>
-	/// <example>
-	/// <para>
-	/// Renames the label on <c>App.ico</c> from <c>Beater</c> to <c>Beta</c> in the project database specified by
-	/// the <c>project-database</c> property.
-	/// </para>
-	/// <code>
-	/// <![CDATA[
-	/// <pvcsrenamelabel projectdatabase="${project-database}" from="Beater" to="Beta">
-	///		<entities>
-	///			<entity name="App.ico"/>
-	///		</entities>
-	///	</pvcsrenamelabel>
-	/// ]]>
-	/// </code>
-	/// </example>
-	/// <example>
-	/// <para>
-	/// Renames the label on all files from <c>Alfa</c> to <c>Alpha</c> in the project database specified by the
-	/// <c>project-database</c> property.
-	/// </para>
-	/// <code>
-	/// <![CDATA[
-	/// <pvcsrenamelabel projectdatabase="${project-database}" from="Alfa" to="Alpha" includesubprojects="true">
-	///		<entities>
-	///			<entity name="/"/>
-	///		</entities>
-	///	</pvcsrenamelabel>
-	/// ]]>
-	/// </code>
-	/// </example>
-	[TaskName("pvcsrenamelabel")]
-	public sealed class PVCSRenameLabelTask : PVCSMultipleEntityTask {
-		#region Fields
+    /// <summary>
+    /// Renames a label in a PVCS repository.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This task uses the <c>renamelabel</c> PCLI command to rename the label.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    ///   <para>
+    ///   Renames the label on <c>App.ico</c> from <c>Beater</c> to <c>Beta</c> in the project database specified by
+    ///   the <c>project-database</c> property.
+    ///   </para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <pvcsrenamelabel projectdatabase="${project-database}" from="Beater" to="Beta">
+    ///     <entities>
+    ///         <entity name="App.ico"/>
+    ///     </entities>
+    /// </pvcsrenamelabel>
+    ///     ]]>
+    ///   </code>
+    /// </example>
+    /// <example>
+    ///   <para>
+    ///   Renames the label on all files from <c>Alfa</c> to <c>Alpha</c> in the project database specified by the
+    ///   <c>project-database</c> property.
+    ///   </para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <pvcsrenamelabel projectdatabase="${project-database}" from="Alfa" to="Alpha" includesubprojects="true">
+    ///     <entities>
+    ///         <entity name="/"/>
+    ///     </entities>
+    /// </pvcsrenamelabel>
+    ///     ]]>
+    ///   </code>
+    /// </example>
+    [TaskName("pvcsrenamelabel")]
+    public sealed class PVCSRenameLabelTask : PVCSMultipleEntityTask {
+        #region Fields
 
-		/// <see cref="From"/>
-		private string _from;
+        /// <see cref="From"/>
+        private string _from;
 
-		/// <see cref="To"/>
-		private string _to;
+        /// <see cref="To"/>
+        private string _to;
 
-		#endregion
+        #endregion
 
-		#region Properties
+        #region Properties
 
-		/// <summary>
-		/// Gets or sets the existing label.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This is equivalent to the <c>-vf</c> parameter to the <c>pcli renamelabel</c> command.
-		/// </para>
-		/// </remarks>
-		[TaskAttribute("from", Required = true)]
-		[StringValidator(AllowEmpty = false)]
-		public string From {
-			get {
-				return _from;
-			}
-			set {
-				_from = value;
-			}
-		}
+        /// <summary>
+        /// Gets or sets the existing label.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This is equivalent to the <c>-vf</c> parameter to the <c>pcli renamelabel</c> command.
+        /// </para>
+        /// </remarks>
+        [TaskAttribute("from", Required = true)]
+        [StringValidator(AllowEmpty = false)]
+        public string From {
+            get {
+                return _from;
+            }
+            set {
+                _from = value;
+            }
+        }
 
-		/// <summary>
-		/// Gets or sets the new label.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This is equivalent to the <c>-vt</c> parameter to the <c>pcli renamelabel</c> command.
-		/// </para>
-		/// </remarks>
-		[TaskAttribute("to", Required = true)]
-		[StringValidator(AllowEmpty = false)]
-		public string To {
-			get {
-				return _to;
-			}
-			set {
-				_to = value;
-			}
-		}
+        /// <summary>
+        /// Gets or sets the new label.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This is equivalent to the <c>-vt</c> parameter to the <c>pcli renamelabel</c> command.
+        /// </para>
+        /// </remarks>
+        [TaskAttribute("to", Required = true)]
+        [StringValidator(AllowEmpty = false)]
+        public string To {
+            get {
+                return _to;
+            }
+            set {
+                _to = value;
+            }
+        }
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		/// <see cref="PVCSTask.AddCommandLineArguments"/>
-		protected override void AddCommandLineArguments(PVCSCommandArgumentCollection arguments) {
-			base.AddCommandLineArguments(arguments);
-			arguments.Add("-vf", From);
-			arguments.Add("-vt", To);
-		}
+        /// <see cref="PVCSTask.AddCommandLineArguments"/>
+        protected override void AddCommandLineArguments(PVCSCommandArgumentCollection arguments) {
+            base.AddCommandLineArguments(arguments);
+            arguments.Add("-vf", From);
+            arguments.Add("-vt", To);
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

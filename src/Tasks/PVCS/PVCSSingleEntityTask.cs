@@ -23,48 +23,50 @@
 
 using System;
 using System.Text;
+
 using NAnt.Core.Attributes;
 using NAnt.Core.Util;
+
 using NAnt.Contrib.Types.PVCS;
 
 namespace NAnt.Contrib.Tasks.PVCS {
-	/// <summary>
-	/// Base class for all PVCS project database tasks that operate against a single entity.
-	/// </summary>
-	public abstract class PVCSSingleEntityTask : PVCSProjectDatabaseTask {
-		#region Fields
+    /// <summary>
+    /// Base class for all PVCS project database tasks that operate against a single entity.
+    /// </summary>
+    public abstract class PVCSSingleEntityTask : PVCSProjectDatabaseTask {
+        #region Fields
 
-		/// <see cref="Entity"/>
-		private string _entity;
+        /// <see cref="Entity"/>
+        private string _entity;
 
-		#endregion
+        #endregion
 
-		#region Properties
+        #region Properties
 
-		/// <summary>
-		/// Gets or sets the entity involved in the operation.
-		/// </summary>
-		[TaskAttribute("entity", Required = true)]
-		[StringValidator(AllowEmpty = false)]
-		public virtual string Entity {
-			get {
-				return _entity;
-			}
-			set {
-				_entity = value;
-			}
-		}
+        /// <summary>
+        /// Gets or sets the entity involved in the operation.
+        /// </summary>
+        [TaskAttribute("entity", Required = true)]
+        [StringValidator(AllowEmpty = false)]
+        public virtual string Entity {
+            get {
+                return _entity;
+            }
+            set {
+                _entity = value;
+            }
+        }
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		/// <see cref="PVCSTask.AddCommandLineArguments"/>
-		protected override void AddCommandLineArguments(PVCSCommandArgumentCollection arguments) {
-			base.AddCommandLineArguments(arguments);
-			arguments.Add(Entity, null, PVCSCommandArgumentPosition.End);
-		}
+        /// <see cref="PVCSTask.AddCommandLineArguments"/>
+        protected override void AddCommandLineArguments(PVCSCommandArgumentCollection arguments) {
+            base.AddCommandLineArguments(arguments);
+            arguments.Add(Entity, null, PVCSCommandArgumentPosition.End);
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

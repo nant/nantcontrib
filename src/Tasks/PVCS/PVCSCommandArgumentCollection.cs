@@ -25,129 +25,129 @@ using System;
 using System.Collections;
 
 namespace NAnt.Contrib.Tasks.PVCS {
-	/// <summary>
-	/// Implements a type-safe collection of <see cref="PVCSCommandArgument"/>s.
-	/// </summary>
-	public sealed class PVCSCommandArgumentCollection : CollectionBase {
-		#region Properties
+    /// <summary>
+    /// Implements a type-safe collection of <see cref="PVCSCommandArgument"/>s.
+    /// </summary>
+    public sealed class PVCSCommandArgumentCollection : CollectionBase {
+        #region Properties
 
-		/// <summary>
-		/// Allows the <see cref="PVCSCommandArgument"/> objects in the collection to be manipulated.
-		/// </summary>
-		public PVCSCommandArgument this[int index] {
-			get {
-				return (PVCSCommandArgument) List[index];
-			}
-			set {
-				List[index] = value;
-			}
-		}
+        /// <summary>
+        /// Allows the <see cref="PVCSCommandArgument"/> objects in the collection to be manipulated.
+        /// </summary>
+        public PVCSCommandArgument this[int index] {
+            get {
+                return (PVCSCommandArgument) List[index];
+            }
+            set {
+                List[index] = value;
+            }
+        }
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		/// <see cref="IList.Add(object)"/>
-		public void Add(PVCSCommandArgument commandArgument) {
-			List.Add(commandArgument);
-		}
+        /// <see cref="IList.Add(object)"/>
+        public void Add(PVCSCommandArgument commandArgument) {
+            List.Add(commandArgument);
+        }
 
-		/// <summary>
-		/// Adds a new command argument to this collection with the specified information.
-		/// </summary>
-		/// <param name="command">The command string for the new command.</param>
-		public void Add(string command) {
-			List.Add(new PVCSCommandArgument(command));
-		}
+        /// <summary>
+        /// Adds a new command argument to this collection with the specified information.
+        /// </summary>
+        /// <param name="command">The command string for the new command.</param>
+        public void Add(string command) {
+            List.Add(new PVCSCommandArgument(command));
+        }
 
-		/// <summary>
-		/// Adds a new command argument to this collection with the specified information.
-		/// </summary>
-		/// <param name="command">The command string for the new command.</param>
-		/// <param name="commandValue">
-		/// The command value for the new command, or <c>null</c> if no value applies.
-		/// </param>
-		public void Add(string command, object commandValue) {
-			List.Add(new PVCSCommandArgument(command, commandValue));
-		}
+        /// <summary>
+        /// Adds a new command argument to this collection with the specified information.
+        /// </summary>
+        /// <param name="command">The command string for the new command.</param>
+        /// <param name="commandValue">
+        /// The command value for the new command, or <c>null</c> if no value applies.
+        /// </param>
+        public void Add(string command, object commandValue) {
+            List.Add(new PVCSCommandArgument(command, commandValue));
+        }
 
-		/// <summary>
-		/// Adds a new command argument to this collection with the specified information.
-		/// </summary>
-		/// <param name="command">The command string for the new command.</param>
-		/// <param name="commandValue">
-		/// The command value for the new command, or <c>null</c> if no value applies.
-		/// </param>
-		/// <param name="position">The position for the new command.</param>
-		public void Add(string command, object commandValue, PVCSCommandArgumentPosition position) {
-			List.Add(new PVCSCommandArgument(command, commandValue, position));
-		}
+        /// <summary>
+        /// Adds a new command argument to this collection with the specified information.
+        /// </summary>
+        /// <param name="command">The command string for the new command.</param>
+        /// <param name="commandValue">
+        /// The command value for the new command, or <c>null</c> if no value applies.
+        /// </param>
+        /// <param name="position">The position for the new command.</param>
+        public void Add(string command, object commandValue, PVCSCommandArgumentPosition position) {
+            List.Add(new PVCSCommandArgument(command, commandValue, position));
+        }
 
-		/// <summary>
-		/// Adds all specified command arguments to this collection.
-		/// </summary>
-		/// <param name="commandArguments">The collection of command arguments to add.</param>
-		public void AddRange(ICollection commandArguments) {
-			foreach (PVCSCommandArgument commandArgument in commandArguments) {
-				Add(commandArgument);
-			}
-		}
+        /// <summary>
+        /// Adds all specified command arguments to this collection.
+        /// </summary>
+        /// <param name="commandArguments">The collection of command arguments to add.</param>
+        public void AddRange(ICollection commandArguments) {
+            foreach (PVCSCommandArgument commandArgument in commandArguments) {
+                Add(commandArgument);
+            }
+        }
 
-		/// <see cref="IList.IndexOf(object)"/>
-		public int IndexOf(PVCSCommandArgument commandArgument) {
-			return List.IndexOf(commandArgument);
-		}
+        /// <see cref="IList.IndexOf(object)"/>
+        public int IndexOf(PVCSCommandArgument commandArgument) {
+            return List.IndexOf(commandArgument);
+        }
 
-		/// <see cref="IList.Insert(int, object)"/>
-		public void Insert(int index, PVCSCommandArgument commandArgument) {
-			List.Insert(index, commandArgument);
-		}
+        /// <see cref="IList.Insert(int, object)"/>
+        public void Insert(int index, PVCSCommandArgument commandArgument) {
+            List.Insert(index, commandArgument);
+        }
 
-		/// <see cref="IList.Remove(object)"/>
-		public void Remove(PVCSCommandArgument commandArgument) {
-			List.Remove(commandArgument);
-		}
+        /// <see cref="IList.Remove(object)"/>
+        public void Remove(PVCSCommandArgument commandArgument) {
+            List.Remove(commandArgument);
+        }
 
-		/// <see cref="IList.Contains(object)"/>
-		public bool Contains(PVCSCommandArgument commandArgument) {
-			return List.Contains(commandArgument);
-		}
+        /// <see cref="IList.Contains(object)"/>
+        public bool Contains(PVCSCommandArgument commandArgument) {
+            return List.Contains(commandArgument);
+        }
 
-		/// <summary>
-		/// Retrieves an array of <see cref="PVCSCommandArgument"/> objects in this collection.
-		/// </summary>
-		/// <returns>An array of command arguments in this collection.</returns>
-		public PVCSCommandArgument[] ToArray() {
-			PVCSCommandArgument[] retVal = new PVCSCommandArgument[List.Count];
+        /// <summary>
+        /// Retrieves an array of <see cref="PVCSCommandArgument"/> objects in this collection.
+        /// </summary>
+        /// <returns>An array of command arguments in this collection.</returns>
+        public PVCSCommandArgument[] ToArray() {
+            PVCSCommandArgument[] retVal = new PVCSCommandArgument[List.Count];
 
-			for (int i = 0; i < retVal.Length; ++i) {
-				retVal[i] = this[i];
-			}
+            for (int i = 0; i < retVal.Length; ++i) {
+                retVal[i] = this[i];
+            }
 
-			return retVal;
-		}
+            return retVal;
+        }
 
-		/// <see cref="CollectionBase.OnInsert(int, object)"/>
-		protected override void OnInsert(int index, object val) {
-			if (!(val is PVCSCommandArgument)) {
-				throw new ArgumentException("val must be of type PVCSCommandArgument.", "val");
-			}
-		}
+        /// <see cref="CollectionBase.OnInsert(int, object)"/>
+        protected override void OnInsert(int index, object val) {
+            if (!(val is PVCSCommandArgument)) {
+                throw new ArgumentException("val must be of type PVCSCommandArgument.", "val");
+            }
+        }
 
-		/// <see cref="CollectionBase.OnSet(int, object, object)"/>
-		protected override void OnSet(int index, object oldValue, object newValue)  {
-			if (!(newValue is PVCSCommandArgument)) {
-				throw new ArgumentException("val must be of type PVCSCommandArgument.", "newValue");
-			}
-		}
+        /// <see cref="CollectionBase.OnSet(int, object, object)"/>
+        protected override void OnSet(int index, object oldValue, object newValue)  {
+            if (!(newValue is PVCSCommandArgument)) {
+                throw new ArgumentException("val must be of type PVCSCommandArgument.", "newValue");
+            }
+        }
 
-		/// <see cref="CollectionBase.OnValidate(object)"/>
-		protected override void OnValidate(object val)  {
-			if (!(val is PVCSCommandArgument)) {
-				throw new ArgumentException("val must be of type PVCSCommandArgument.", "val");
-			}
-		}
+        /// <see cref="CollectionBase.OnValidate(object)"/>
+        protected override void OnValidate(object val)  {
+            if (!(val is PVCSCommandArgument)) {
+                throw new ArgumentException("val must be of type PVCSCommandArgument.", "val");
+            }
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }
