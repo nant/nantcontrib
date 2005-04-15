@@ -28,166 +28,166 @@ using NAnt.Core.Attributes;
 using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Types {
-	/// <summary>
-	/// Represents a single assembly in an <see cref="AssemblySet"/>.
-	/// </summary>
-	public sealed class Assembly : Element {
-		#region Fields
+    /// <summary>
+    /// Represents a single assembly in an <see cref="AssemblySet"/>.
+    /// </summary>
+    public sealed class Assembly : Element {
+        #region Fields
 
-		/// <summary>
-		/// See <see cref="Culture"/>.
-		/// </summary>
-		private string _culture;
+        /// <summary>
+        /// See <see cref="Culture"/>.
+        /// </summary>
+        private string _culture;
 
-		/// <summary>
-		/// See <see cref="If"/>.
-		/// </summary>
-		private bool _if;
+        /// <summary>
+        /// See <see cref="If"/>.
+        /// </summary>
+        private bool _if;
 
-		/// <summary>
-		/// See <see cref="Name"/>.
-		/// </summary>
-		private string _name;
+        /// <summary>
+        /// See <see cref="Name"/>.
+        /// </summary>
+        private string _name;
 
-		/// <summary>
-		/// See <see cref="PublicKeyToken"/>.
-		/// </summary>
-		private string _publicKeyToken;
+        /// <summary>
+        /// See <see cref="PublicKeyToken"/>.
+        /// </summary>
+        private string _publicKeyToken;
 
-		/// <summary>
-		/// See <see cref="Unless"/>.
-		/// </summary>
-		private bool _unless;
+        /// <summary>
+        /// See <see cref="Unless"/>.
+        /// </summary>
+        private bool _unless;
 
-		/// <summary>
-		/// See <see cref="Version"/>.
-		/// </summary>
-		private string _version;
+        /// <summary>
+        /// See <see cref="Version"/>.
+        /// </summary>
+        private string _version;
 
-		#endregion
+        #endregion
 
-		#region Properties
+        #region Properties
 
-		/// <summary>
-		/// The culture for the assembly.
-		/// </summary>
-		[TaskAttribute("culture", Required = false)]
-		[StringValidator(AllowEmpty = false)]
-		public string Culture {
-			get {
-				return _culture;
-			}
-			set {
-				_culture = value;
-			}
-		}
+        /// <summary>
+        /// The culture for the assembly.
+        /// </summary>
+        [TaskAttribute("culture", Required = false)]
+        [StringValidator(AllowEmpty = false)]
+        public string Culture {
+            get {
+                return _culture;
+            }
+            set {
+                _culture = value;
+            }
+        }
 
-		/// <summary>
-		/// If <c>true</c> then the assembly will be included. The default is <c>true</c>.
-		/// </summary>
-		[TaskAttribute("if")]
-		[BooleanValidator]
-		public bool If {
-			get {
-				return _if;
-			}
-			set {
-				_if = value;
-			}
-		}
+        /// <summary>
+        /// If <c>true</c> then the assembly will be included. The default is <c>true</c>.
+        /// </summary>
+        [TaskAttribute("if")]
+        [BooleanValidator]
+        public bool If {
+            get {
+                return _if;
+            }
+            set {
+                _if = value;
+            }
+        }
 
-		/// <summary>
-		/// The name of the assembly.
-		/// </summary>
-		[TaskAttribute("name", Required = true)]
-		[StringValidator(AllowEmpty = false)]
-		public new string Name {
-			get {
-				return _name;
-			}
-			set {
-				_name = value;
-			}
-		}
+        /// <summary>
+        /// The name of the assembly.
+        /// </summary>
+        [TaskAttribute("name", Required = true)]
+        [StringValidator(AllowEmpty = false)]
+        public new string Name {
+            get {
+                return _name;
+            }
+            set {
+                _name = value;
+            }
+        }
 
-		/// <summary>
-		/// The public key token of the assembly.
-		/// </summary>
-		[TaskAttribute("public-key-token", Required = false)]
-		[StringValidator(AllowEmpty = false)]
-		public string PublicKeyToken {
-			get {
-				return _publicKeyToken;
-			}
-			set {
-				_publicKeyToken = value;
-			}
-		}
+        /// <summary>
+        /// The public key token of the assembly.
+        /// </summary>
+        [TaskAttribute("public-key-token", Required = false)]
+        [StringValidator(AllowEmpty = false)]
+        public string PublicKeyToken {
+            get {
+                return _publicKeyToken;
+            }
+            set {
+                _publicKeyToken = value;
+            }
+        }
 
-		/// <summary>
-		/// Opposite of <see cref="If"/>. If <c>false</c> then the assembly will be included. The default is
-		/// <c>false</c>.
-		/// </summary>
-		[TaskAttribute("unless")]
-		[BooleanValidator]
-		public bool Unless {
-			get {
-				return _unless;
-			}
-			set {
-				_unless = value;
-			}
-		}
+        /// <summary>
+        /// Opposite of <see cref="If"/>. If <c>false</c> then the assembly will be included. The default is
+        /// <c>false</c>.
+        /// </summary>
+        [TaskAttribute("unless")]
+        [BooleanValidator]
+        public bool Unless {
+            get {
+                return _unless;
+            }
+            set {
+                _unless = value;
+            }
+        }
 
-		/// <summary>
-		/// The version of the assembly.
-		/// </summary>
-		[TaskAttribute("version", Required = false)]
-		[StringValidator(AllowEmpty = false)]
-		public string Version {
-			get {
-				return _version;
-			}
-			set {
-				_version = value;
-			}
-		}
+        /// <summary>
+        /// The version of the assembly.
+        /// </summary>
+        [TaskAttribute("version", Required = false)]
+        [StringValidator(AllowEmpty = false)]
+        public string Version {
+            get {
+                return _version;
+            }
+            set {
+                _version = value;
+            }
+        }
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		/// <summary>
-		/// Constructs and initializes an instance of <c>Assembly</c>.
-		/// </summary>
-		public Assembly() {
-			If = true;
-		}
+        /// <summary>
+        /// Constructs and initializes an instance of <c>Assembly</c>.
+        /// </summary>
+        public Assembly() {
+            If = true;
+        }
 
-		/// <summary>
-		/// Converts this <c>Assembly</c> object into it's <c>string</c> representation.
-		/// </summary>
-		/// <returns></returns>
-		public override string ToString() {
-			StringBuilder retVal = new StringBuilder();
+        /// <summary>
+        /// Converts this <c>Assembly</c> object into it's <c>string</c> representation.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString() {
+            StringBuilder retVal = new StringBuilder();
 
-			retVal.Append(Name);
+            retVal.Append(Name);
 
-			if (Version != null) {
-				retVal.Append(",Version=").Append(Version);
-			}
+            if (Version != null) {
+                retVal.Append(",Version=").Append(Version);
+            }
 
-			if (Culture != null) {
-				retVal.Append(",Culture=").Append(Culture);
-			}
+            if (Culture != null) {
+                retVal.Append(",Culture=").Append(Culture);
+            }
 
-			if (PublicKeyToken != null) {
-				retVal.Append(",PublicKeyToken=").Append(PublicKeyToken);
-			}
+            if (PublicKeyToken != null) {
+                retVal.Append(",PublicKeyToken=").Append(PublicKeyToken);
+            }
 
-			return retVal.ToString();
-		}
+            return retVal.ToString();
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

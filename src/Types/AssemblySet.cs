@@ -26,55 +26,54 @@ using System.Collections.Specialized;
 using NAnt.Core;
 using NAnt.Core.Attributes;
 
-namespace NAnt.Contrib.Types
-{
-	/// <summary>
-	/// Represents a set of assemblies via their identity information.
-	/// </summary>
-	public class AssemblySet : DataTypeBase {
-		#region Fields
+namespace NAnt.Contrib.Types {
+    /// <summary>
+    /// Represents a set of assemblies via their identity information.
+    /// </summary>
+    public class AssemblySet : DataTypeBase {
+        #region Fields
 
-		/// <see cref="AssemblyCollection"/>
-		private StringCollection _assemblyCollection;
+        /// <see cref="AssemblyCollection"/>
+        private StringCollection _assemblyCollection;
 
-		#endregion
+        #endregion
 
-		#region Properties
+        #region Properties
 
-		/// <summary>
-		/// Gets the collection of assemblies added to this assembly set.
-		/// </summary>
-		internal StringCollection AssemblyCollection {
-			get {
-				return _assemblyCollection;
-			}
-		}
+        /// <summary>
+        /// Gets the collection of assemblies added to this assembly set.
+        /// </summary>
+        internal StringCollection AssemblyCollection {
+            get {
+                return _assemblyCollection;
+            }
+        }
 
-		/// <summary>
-		/// The assemblies to include.
-		/// </summary>
-		[BuildElementArray("assembly", Required = true)]
-		public Assembly[] Assemblies {
-			set {
-				foreach (Assembly assembly in value) {
-					if (assembly.If && !assembly.Unless) {
-						_assemblyCollection.Add(assembly.ToString());
-					}
-				}
-			}
-		}
+        /// <summary>
+        /// The assemblies to include.
+        /// </summary>
+        [BuildElementArray("assembly", Required = true)]
+        public Assembly[] Assemblies {
+            set {
+                foreach (Assembly assembly in value) {
+                    if (assembly.If && !assembly.Unless) {
+                        _assemblyCollection.Add(assembly.ToString());
+                    }
+                }
+            }
+        }
 
-		#endregion
-		
-		#region Methods
+        #endregion
 
-		/// <summary>
-		/// Constructs and initializes an instance of <c>AssemblySet</c>.
-		/// </summary>
-		public AssemblySet() {
-			_assemblyCollection = new StringCollection();
-		}
+        #region Methods
 
-		#endregion
-	}
+        /// <summary>
+        /// Constructs and initializes an instance of <c>AssemblySet</c>.
+        /// </summary>
+        public AssemblySet() {
+            _assemblyCollection = new StringCollection();
+        }
+
+        #endregion
+    }
 }

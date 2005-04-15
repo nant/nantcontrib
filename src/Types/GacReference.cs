@@ -31,113 +31,113 @@ using NAnt.DotNet.Types;
 using NAnt.Contrib.Tasks;
 
 namespace NAnt.Contrib.Types {
-	/// <summary>
-	/// Used to specify reference information when working with the GAC.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// The full details of GAC references can be found in the SDK documentation.
-	/// </para>
-	/// </remarks>
-	public sealed class GacReference : Element {
-		#region Fields
+    /// <summary>
+    /// Used to specify reference information when working with the GAC.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The full details of GAC references can be found in the SDK documentation.
+    /// </para>
+    /// </remarks>
+    public sealed class GacReference : Element {
+        #region Fields
 
-		/// <summary>
-		/// See <see cref="If"/>.
-		/// </summary>
-		private bool _if;
+        /// <summary>
+        /// See <see cref="If"/>.
+        /// </summary>
+        private bool _if;
 
-		/// <summary>
-		/// See <see cref="Unless"/>.
-		/// </summary>
-		private bool _unless;
+        /// <summary>
+        /// See <see cref="Unless"/>.
+        /// </summary>
+        private bool _unless;
 
-		/// <summary>
-		/// See <see cref="SchemeType"/>.
-		/// </summary>
-		private SchemeType _schemeType;
+        /// <summary>
+        /// See <see cref="SchemeType"/>.
+        /// </summary>
+        private SchemeType _schemeType;
 
-		/// <summary>
-		/// See <see cref="SchemeId"/>.
-		/// </summary>
-		private string _schemeId;
+        /// <summary>
+        /// See <see cref="SchemeId"/>.
+        /// </summary>
+        private string _schemeId;
 
-		/// <summary>
-		/// See <see cref="SchemeDescription"/>.
-		/// </summary>
-		private string _schemeDescription;
+        /// <summary>
+        /// See <see cref="SchemeDescription"/>.
+        /// </summary>
+        private string _schemeDescription;
 
-		#endregion
+        #endregion
 
-		#region Properties
+        #region Properties
 
-		/// <summary>
-		/// If <c>true</c> then the entity will be included. The default is <c>true</c>.
-		/// </summary>
-		[TaskAttribute("if")]
-		[BooleanValidator]
-		public bool If {
-			get { return _if; }
-			set { _if = value; }
-		}
+        /// <summary>
+        /// If <c>true</c> then the entity will be included. The default is <c>true</c>.
+        /// </summary>
+        [TaskAttribute("if")]
+        [BooleanValidator]
+        public bool If {
+            get { return _if; }
+            set { _if = value; }
+        }
 
-		/// <summary>
-		/// The scheme type to use when working with GAC references. The default 
-		/// is <see cref="F:SchemeType.None" />, which means that references will 
-		/// not be used by the GAC task.
-		/// </summary>
-		[TaskAttribute("scheme-type", Required=false)]
-		public SchemeType SchemeType {
-			get { return _schemeType; }
-			set { _schemeType = value; }
-		}
+        /// <summary>
+        /// The scheme type to use when working with GAC references. The default 
+        /// is <see cref="F:SchemeType.None" />, which means that references will 
+        /// not be used by the GAC task.
+        /// </summary>
+        [TaskAttribute("scheme-type", Required=false)]
+        public SchemeType SchemeType {
+            get { return _schemeType; }
+            set { _schemeType = value; }
+        }
 
-		/// <summary>
-		/// The scheme ID to use when working with GAC references. This is only 
-		/// relevant if a scheme type other than <see cref="F:SchemeType.None" />
-		/// is specified.
-		/// </summary>
-		[TaskAttribute("scheme-id", Required=false)]
-		[StringValidator(AllowEmpty = false)]
-		public string SchemeId {
-			get { return _schemeId; }
-			set { _schemeId = value; }
-		}
+        /// <summary>
+        /// The scheme ID to use when working with GAC references. This is only 
+        /// relevant if a scheme type other than <see cref="F:SchemeType.None" />
+        /// is specified.
+        /// </summary>
+        [TaskAttribute("scheme-id", Required=false)]
+        [StringValidator(AllowEmpty = false)]
+        public string SchemeId {
+            get { return _schemeId; }
+            set { _schemeId = value; }
+        }
 
-		/// <summary>
-		/// The scheme description to use when working with GAC references. This 
-		/// is only relevant if a scheme type other than <see cref="F:SchemeType.None" />
-		/// is specified.
-		/// </summary>
-		[TaskAttribute("scheme-description", Required = false)]
-		[StringValidator(AllowEmpty = false)]
-		public string SchemeDescription {
-			get { return _schemeDescription; }
-			set { _schemeDescription = value; }
-		}
+        /// <summary>
+        /// The scheme description to use when working with GAC references. This 
+        /// is only relevant if a scheme type other than <see cref="F:SchemeType.None" />
+        /// is specified.
+        /// </summary>
+        [TaskAttribute("scheme-description", Required = false)]
+        [StringValidator(AllowEmpty = false)]
+        public string SchemeDescription {
+            get { return _schemeDescription; }
+            set { _schemeDescription = value; }
+        }
 
-		/// <summary>
-		/// Opposite of <see cref="If"/>. If <c>false</c> then the entity will be included. The default is
-		/// <c>false</c>.
-		/// </summary>
-		[TaskAttribute("unless")]
-		[BooleanValidator]
-		public bool Unless {
-			get { return _unless; }
-			set { _unless = value; }
-		}
+        /// <summary>
+        /// Opposite of <see cref="If"/>. If <c>false</c> then the entity will be included. The default is
+        /// <c>false</c>.
+        /// </summary>
+        [TaskAttribute("unless")]
+        [BooleanValidator]
+        public bool Unless {
+            get { return _unless; }
+            set { _unless = value; }
+        }
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		/// <summary>
-		/// Constructs and initializes an instance of <c>GacReference</c>.
-		/// </summary>
-		public GacReference() {
-			If = true;
-		}
+        /// <summary>
+        /// Constructs and initializes an instance of <c>GacReference</c>.
+        /// </summary>
+        public GacReference() {
+            If = true;
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }
