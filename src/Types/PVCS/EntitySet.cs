@@ -23,60 +23,61 @@
 
 using System;
 using System.Collections.Specialized;
+
 using NAnt.Core;
 using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Types.PVCS {
-	/// <summary>
-	/// Represents a set of entities to include in a PVCS project database task.
-	/// </summary>
-	/// <seealso cref="NAnt.Contrib.Tasks.PVCS.PVCSMultipleEntityTask"/>
-	[Serializable]
-	[ElementName("entities")]
-	public sealed class EntitySet : DataTypeBase {
-		#region Fields
+    /// <summary>
+    /// Represents a set of entities to include in a PVCS project database task.
+    /// </summary>
+    /// <seealso cref="NAnt.Contrib.Tasks.PVCS.PVCSMultipleEntityTask"/>
+    [Serializable]
+    [ElementName("entities")]
+    public sealed class EntitySet : DataTypeBase {
+        #region Fields
 
-		/// <see cref="EntityPaths"/>
-		private StringCollection _entityPaths;
+        /// <see cref="EntityPaths"/>
+        private StringCollection _entityPaths;
 
-		#endregion
+        #endregion
 
-		#region Properties
+        #region Properties
 
-		/// <summary>
-		/// Gets the collection of entity paths assigned to this entity set.
-		/// </summary>
-		internal StringCollection EntityPaths {
-			get {
-				return _entityPaths;
-			}
-		}
+        /// <summary>
+        /// Gets the collection of entity paths assigned to this entity set.
+        /// </summary>
+        internal StringCollection EntityPaths {
+            get {
+                return _entityPaths;
+            }
+        }
 
-		/// <summary>
-		/// The entities to include in the project task.
-		/// </summary>
-		[BuildElementArray("entity", Required = true)]
-		public Entity[] Entities {
-			set {
-				foreach (Entity entity in value) {
-					if (entity.If && !entity.Unless) {
-						EntityPaths.Add(entity.Name);
-					}
-				}
-			}
-		}
+        /// <summary>
+        /// The entities to include in the project task.
+        /// </summary>
+        [BuildElementArray("entity", Required = true)]
+        public Entity[] Entities {
+            set {
+                foreach (Entity entity in value) {
+                    if (entity.If && !entity.Unless) {
+                        EntityPaths.Add(entity.Name);
+                    }
+                }
+            }
+        }
 
-		#endregion
-		
-		#region Methods
+        #endregion
 
-		/// <summary>
-		/// Constructs and initializes an instance of <c>EntitySet</c>.
-		/// </summary>
-		public EntitySet() {
-			_entityPaths = new StringCollection();
-		}
+        #region Methods
 
-		#endregion
-	}
+        /// <summary>
+        /// Constructs and initializes an instance of <c>EntitySet</c>.
+        /// </summary>
+        public EntitySet() {
+            _entityPaths = new StringCollection();
+        }
+
+        #endregion
+    }
 }

@@ -99,7 +99,7 @@ namespace NAnt.Contrib.Tasks.Mks {
             try {
                 string exec = string.Format(CultureInfo.InvariantCulture,
                     "connect --hostname={0} --port={1}", new object[] {_hostName,_port});
-				
+
                 if (UserName != null) {
                     exec+=" --user=" + UserName;
                 }

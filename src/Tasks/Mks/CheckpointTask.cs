@@ -42,7 +42,7 @@ namespace NAnt.Contrib.Tasks.Mks {
     ///       host="servername"
     ///       port="123"
     ///       project="myproject"
-    ///		  recursive="false"
+    ///       recursive="false"
     ///       label="test from nant"
     ///       description="this is a test description"
     ///     />

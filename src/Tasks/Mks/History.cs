@@ -55,7 +55,7 @@ namespace NAnt.Contrib.Tasks.Mks {
 
         private string _sandbox;
         private FileInfo _outputFile;
-		
+
         #endregion Private Instance Fields
 
         #region Public Instance Properties
@@ -124,7 +124,7 @@ namespace NAnt.Contrib.Tasks.Mks {
                             XmlElement revisionDate = doc.CreateElement("date");
                             revisionDate.InnerText=hi.RevisionDate.ToString("s"); //use iso8601 
                             revision.AppendChild(revisionDate);
-						
+
                             member.AppendChild(revision);
                         }
                     }
@@ -150,13 +150,13 @@ namespace NAnt.Contrib.Tasks.Mks {
                 string output = MKSExecute(cmd);
                 if (output != "") {
                     string author=string.Empty;
-					
+
                     ArrayList memberFiles = new ArrayList();
                     HistoryItem hi = new HistoryItem();
                     ChangeHistory memberHistory=new ChangeHistory();
 
                     string[] memberArray = output.Split("¬".ToCharArray());
-					
+
                     for (int x=1; x<memberArray.Length; x++) {
                         string memberLine = memberArray[x];
 
@@ -208,7 +208,7 @@ namespace NAnt.Contrib.Tasks.Mks {
             } catch (Exception ex) {
                 throw new BuildException(string.Format(CultureInfo.InvariantCulture,
                     "Could not get history of project \"{0}\".", Sandbox), 
-                    Location, ex);	
+                    Location, ex);
             }
         }
 
@@ -277,7 +277,7 @@ namespace NAnt.Contrib.Tasks.Mks {
             #region Public Instance Constructors
 
             public HistoryItem() {
-			}
+            }
 
             #endregion Public Instance Constructors
 
