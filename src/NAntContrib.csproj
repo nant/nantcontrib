@@ -793,6 +793,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Types\CodeStatsCount.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Types\CodeStatsCountCollection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Types\Filter.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
