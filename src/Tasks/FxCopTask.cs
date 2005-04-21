@@ -19,7 +19,9 @@
 // Author: James Geurts (jgeurts@users.sourceforge.net)
 
 using System.Diagnostics;
+using System.IO;
 using System.Text;
+
 using NAnt.Core;
 using NAnt.Core.Attributes;
 using NAnt.Core.Tasks;
@@ -70,6 +72,7 @@ namespace NAnt.Contrib.Tasks {
         private bool _includeSummaryReport;
         private string _typeList;
         private bool _saveResults;
+        private bool _failOnAnalysisError;
 
         private StringBuilder _programArguments = new StringBuilder();
 
@@ -203,6 +206,15 @@ namespace NAnt.Contrib.Tasks {
             set { _saveResults = value; }
         }
 
+        /// <summary>
+        /// Determines if the task should fail when analysis errors occur
+        /// </summary>
+        [TaskAttribute("failOnAnalysisError", Required=false)]
+        public bool FailOnAnalysisError {
+            get { return _failOnAnalysisError; }
+            set { _failOnAnalysisError = value; }
+        }
+
         #endregion
 
         /// <summary>
@@ -210,6 +222,13 @@ namespace NAnt.Contrib.Tasks {
         /// </summary>
         public FxCopTask() {
             ExeName = defaultExeFilename;
+        }
+
+        /// <summary>
+        /// Gets the program arguments.
+        /// </summary>
+        public override string ProgramArguments {
+            get { return _programArguments.ToString(); }
         }
 
         /// <summary>
@@ -227,12 +246,20 @@ namespace NAnt.Contrib.Tasks {
         }
 
         /// <summary>
-        /// Gets the program arguments.
+        /// Executes the task.
         /// </summary>
-        public override string ProgramArguments {
-            get { return _programArguments.ToString(); }
-        }
+        protected override void ExecuteTask() 
+        {
+            base.ExecuteTask();
 
+            if (FailOnAnalysisError) {
+                if (File.Exists(AnalysisReportFilename)) {
+                    throw new BuildException(
+                        "Analysis error messages found.", 
+                        Location);
+                }
+            }
+        }
 
         /// <summary>
         /// Builds the arguments to pass to the exe.
@@ -262,7 +289,10 @@ namespace NAnt.Contrib.Tasks {
                 _programArguments.AppendFormat("/i:\"{0}\" ", filename);
             }
 
-            if (!StringUtils.IsNullOrEmpty(AnalysisReportFilename)) {
+            if (!StringUtils.IsNullOrEmpty(AnalysisReportFilename) || FailOnAnalysisError) {
+                if (StringUtils.IsNullOrEmpty(AnalysisReportFilename)) {
+                    AnalysisReportFilename = Path.GetTempFileName();
+                }
                 _programArguments.AppendFormat("/o:\"{0}\" ", AnalysisReportFilename);
             }
 
