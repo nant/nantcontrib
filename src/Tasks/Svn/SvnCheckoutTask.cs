@@ -16,6 +16,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // Clayton Harbour (claytonharbour@sporadicism.com)
+// Marcin Hoppe (marcin.hoppe@gmail.com)
 
 using System;
 using System.Diagnostics;
@@ -42,7 +43,7 @@ namespace NAnt.Contrib.Tasks.Svn {
     ///     destination="c:/dev/src/gentle.net" 
     ///     uri="http://www.mertner.com/svn/repos/projects/gentle" 
     ///     recursive="true"
-    ///     quiet="true"
+    ///     verbose="false"
     ///     username="anonymoose"
     ///     password="Canada" 
     ///     revision="HEAD"
@@ -65,9 +66,7 @@ namespace NAnt.Contrib.Tasks.Svn {
         /// <summary>
         /// Initialize the task, and set the default parameters.
         /// </summary>
-        public SvnCheckoutTask () {
-            this.Quiet = true;
-        }
+        public SvnCheckoutTask () : base() {}
 
         #endregion Public Instance Constructors
 
@@ -82,17 +81,6 @@ namespace NAnt.Contrib.Tasks.Svn {
         public override string CommandName {
             get { return this.COMMAND_NAME; }
             set { this.COMMAND_NAME = value; }
-        }
-
-        /// <summary>
-        /// Determines if the output should be minimized. The default is
-        /// <see langword="true" />.
-        /// </summary>
-        [TaskAttribute("quiet", Required=false)]
-        [BooleanValidator()]
-        public bool Quiet {
-            get { return ((Option)this.CommandOptions["quiet"]).IfDefined; }
-            set { this.SetCommandOption("quiet", "quiet", value); }
         }
 
         /// <summary>

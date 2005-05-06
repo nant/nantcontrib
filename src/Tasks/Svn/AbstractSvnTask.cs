@@ -16,6 +16,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // Clayton Harbour (claytonharbour@sporadicism.com)
+// Marcin Hoppe (marcin.hoppe@gmail.com)
 
 using System;
 using System.Diagnostics;
@@ -71,11 +72,11 @@ namespace NAnt.Contrib.Tasks.Svn {
         #region Protected Instance Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AbstractCvsTask" /> 
+        /// Initializes a new instance of the <see cref="AbstractSvnTask" /> 
         /// class.
         /// </summary>
         protected AbstractSvnTask () : base() {
-            this.Interactive = false;
+            SetPropertiesDefaults();
         }
 
         #endregion Protected Instance Constructors
@@ -118,7 +119,7 @@ namespace NAnt.Contrib.Tasks.Svn {
         /// The full path of the svn executable.
         /// </summary>
         public override string ExeName {
-            get {return this.DeriveVcsFromEnvironment().FullName;}
+            get { return GetSvnExePath(); }
         }
 
         /// <summary>
@@ -198,6 +199,14 @@ namespace NAnt.Contrib.Tasks.Svn {
         public override string CommandName {
             get { return base.CommandName; }
             set { base.CommandName = value; }
+        }
+
+        [TaskAttribute("command", Required=false)]
+ 		[BooleanValidator()]
+        public bool Quiet {
+            get { return (null != this.CommandOptions["quiet"]) ? 
+                      ((Option)this.CommandOptions["quiet"]).IfDefined : true; }
+            set { this.SetCommandOption("quiet", "quiet", value); }
         }
 
         #endregion Public Instance Properties
@@ -284,6 +293,32 @@ namespace NAnt.Contrib.Tasks.Svn {
         private void AddArg (String arg) {
             Arguments.Add(new Argument(string.Format("{0}{1}",
                 ARG_PREFIX, arg)));
+        }
+
+        /// <summary>
+        /// Gets the full path of the svn executable.
+        /// </summary>
+        /// <exception cref="NAnt.Core.BuildException">
+        /// Exception is thrown when Subversion client 
+        /// executable cannot be found.
+        /// </exception>
+        /// <returns>
+        /// The full path of the svn executable.
+        /// </returns>
+        private string GetSvnExePath() {
+            try {
+                return this.DeriveVcsFromEnvironment().FullName;
+            } catch(NullReferenceException) {
+                throw new BuildException("Could not find " + SVN_EXE);
+            }
+        }
+
+        /// <summary>
+        /// Set default values for non-requiered parameters.
+        /// </summary>
+        protected void SetPropertiesDefaults() {
+            this.Interactive = false;
+            this.Quiet = true;
         }
 
         #endregion Private Instance Methods
