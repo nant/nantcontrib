@@ -160,6 +160,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Tasks\ChangeDirectory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Tasks\ChecksumTask.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

@@ -63,7 +63,7 @@
                 />
                 <Reference
                     Name = "System.XML"
-                    AssemblyName = "System.XML"
+                    AssemblyName = "System.Xml"
                 />
             </References>
         </Build>
@@ -102,6 +102,11 @@
                 />
                 <File
                     RelPath = "TestBuildException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\ChangeDirectoryTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
