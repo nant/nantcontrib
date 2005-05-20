@@ -310,12 +310,15 @@ namespace NAnt.Contrib.Tasks {
                             fileEmptyLineCount++;
                         } else if (line.StartsWith(_commentSlashStar)) {
                             fileCommentLineCount++;
-                            if(line.IndexOf(_commentStarSlash)== 0) {
+                            // we're only in comment block if it was not closed
+                            // on same line
+                            if (line.IndexOf(_commentStarSlash) == -1) {
                                 inComment = true;
                             }
                         } else if (inComment) {
                             fileCommentLineCount++;
-                            if(line.IndexOf(_commentStarSlash)>0) {
+                            // check if comment block is closed in line
+                            if (line.IndexOf(_commentStarSlash) != -1) {
                                 inComment = false;
                             }
                         } else if (line.StartsWith(_commentDblSlash)) {
