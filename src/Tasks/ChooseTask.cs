@@ -62,11 +62,11 @@ namespace NAnt.Contrib.Tasks {
     ///   <code>
     ///     <![CDATA[
     /// <choose>
-    ///     <when test="${build.config == 'Debug')}">
+    ///     <when test="${build.config == 'Debug'}">
     ///         <!-- compile app in debug configuration -->
     ///         ...
     ///     </when>
-    ///     <when test="${build.config == 'Release')}">
+    ///     <when test="${build.config == 'Release'}">
     ///         <!-- compile app in release configuration -->
     ///         ...
     ///     </when>
