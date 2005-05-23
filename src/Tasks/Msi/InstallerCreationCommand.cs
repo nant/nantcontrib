@@ -2196,13 +2196,12 @@ namespace NAnt.Contrib.Tasks.Msi {
             cabarcTask.Verbose = Verbose;
             // write output to (Memory)Stream
             cabarcTask.ErrorWriter = cabarcTask.OutputWriter = new StreamWriter(ms);
-            // set command line arguments
-            cabarcTask.CommandLineArguments = "-r -P " + tempDir + @"\ N " 
-                + cabFilePath + " " + tempDir + @"\*";
-
             // set tool to execute
             cabarcTask.FileName = "cabarc";
-            cabarcTask.WorkingDirectory = new DirectoryInfo(Project.BaseDirectory);
+            // set command line arguments
+            cabarcTask.CommandLineArguments = "-r N " + cabFilePath + " *";
+            // use directory containing files to add as working directory
+            cabarcTask.WorkingDirectory = new DirectoryInfo(TempFolderPath);
 
             try {
                 // increment indentation level
