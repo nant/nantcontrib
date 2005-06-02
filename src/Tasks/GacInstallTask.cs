@@ -31,12 +31,14 @@ using NAnt.DotNet.Types;
 
 namespace NAnt.Contrib.Tasks {
     /// <summary>
-    /// Installs assemblies into the Global Assembly Cache (GAC) by using the <c>gacutil</c> SDK tool.
+    /// Installs assemblies into the Global Assembly Cache (GAC) by using the 
+    /// <c>gacutil</c> SDK tool.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Assemblies can be installed to the GAC with or without reference counting. The full details of reference counting can be found in
-    /// the SDK documentation.
+    /// Assemblies can be installed to the GAC with or without reference counting. 
+    /// The full details of reference counting can be found in the SDK 
+    /// documentation.
     /// </para>
     /// </remarks>
     /// <example>
@@ -73,7 +75,8 @@ namespace NAnt.Contrib.Tasks {
     ///   </para>
     ///   <code>
     ///     <![CDATA[
-    /// <gac-install scheme-type="Opaque" scheme-id="MyID" scheme-description="My description">
+    /// <gac-install>
+    ///     <reference scheme-type="Opaque" scheme-id="MyID" scheme-description="My description" />
     ///     <assemblies>
     ///         <include name="Shared.dll" />
     ///         <include name="MyWeb.dll" />

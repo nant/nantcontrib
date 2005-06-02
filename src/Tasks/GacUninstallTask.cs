@@ -32,16 +32,20 @@ using NAnt.Contrib.Types;
 
 namespace NAnt.Contrib.Tasks {
     /// <summary>
-    /// Uninstalls assemblies from the Global Assembly Cache (GAC) by using the <c>gacutil</c> SDK tool.
+    /// Uninstalls assemblies from the Global Assembly Cache (GAC) by using the 
+    /// <c>gacutil</c> SDK tool.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Assemblies are specified via an <see cref="AssemblySet"/>. Individual assemblies are specified by their identity information. Only a
-    /// name is required but, optionally, the assembly version, culture and public key token may be specified.
+    /// Assemblies are specified via an <see cref="AssemblySet"/>. Individual 
+    /// assemblies are specified by their identity information. Only a name is 
+    /// required but, optionally, the assembly version, culture and public key 
+    /// token may be specified.
     /// </para>
     /// <para>
-    /// Assemblies can be uninstalled from the GAC with or without reference counting. The full details of reference counting can be found in
-    /// the SDK documentation.
+    /// Assemblies can be uninstalled from the GAC with or without reference 
+    /// counting. The full details of reference counting can be found in the 
+    /// SDK documentation.
     /// </para>
     /// </remarks>
     /// <example>
@@ -78,7 +82,8 @@ namespace NAnt.Contrib.Tasks {
     ///   </para>
     ///   <code>
     ///     <![CDATA[
-    /// <gac-uninstall scheme-type="Opaque" scheme-id="MyID" scheme-description="My description">
+    /// <gac-uninstall>
+    ///     <reference scheme-type="Opaque" scheme-id="MyID" scheme-description="My description" />
     ///        <assemblies>
     ///            <assembly name="Shared" />
     ///        </assemblies>
