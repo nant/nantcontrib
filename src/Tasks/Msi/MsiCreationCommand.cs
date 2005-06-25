@@ -153,7 +153,15 @@ namespace NAnt.Contrib.Tasks.Msi {
                 using (InstallerRecordReader recordReader = database.FindRecords("Control", new InstallerSearchClause("Control", Comparison.Equals, "AgreementText"))) {
                     if (recordReader.Read()) {
                         string licFile = Path.Combine(Project.BaseDirectory, msi.license);
-                        Log(Level.Info, "Storing license '{0}'.", licFile);
+                        Log(Level.Verbose, "Storing license '{0}'.", licFile);
+
+                        // make sure license exists
+                        if (!File.Exists(licFile)) {
+                            throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                                "License file '{0}' does not exist.", licFile),
+                                Location);
+                        }
+
                         StreamReader licenseFileReader = null;
                         try {
                             licenseFileReader = File.OpenText(licFile);
@@ -195,6 +203,10 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// </summary>
         /// <param name="database">The MSI database.</param>
         private void LoadFeatures(InstallerDatabase database) {
+            if (msi.features == null) {
+                return;
+            }
+
             Log(Level.Verbose, "Adding Features:");
 
             using (InstallerTable featureTable = database.OpenTable("Feature"), conditionTable = database.OpenTable("Condition")) {
