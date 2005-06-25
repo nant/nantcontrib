@@ -46,6 +46,7 @@
             <xsd:element ref="msi:approots" minOccurs="0" maxOccurs="1" />
             <xsd:element ref="msi:iisproperties" minOccurs="0" maxOccurs="1" />
         </xsd:sequence>
+        <xsd:attribute name="failonerror" type="xsd:string" use="optional" />
         <xsd:attribute name="output" type="xsd:string" use="required" />
         <xsd:attribute name="sourcedir" type="xsd:string" use="required" />
         <!-- Used to override the msi template file used (.msi) -->
