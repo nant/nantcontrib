@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -232,7 +233,7 @@ namespace NAnt.Contrib.Tasks.Msi {
             }
         }
 
-        private Hashtable files = new Hashtable();
+        private Hashtable files = CollectionsUtil.CreateCaseInsensitiveHashtable();
         private ArrayList typeLibRecords = new ArrayList();
         private Hashtable typeLibComponents = new Hashtable();
 
@@ -2438,8 +2439,7 @@ namespace NAnt.Contrib.Tasks.Msi {
                     // The file is down a subdirectory path
                     string dirValue = (string)dirMap[dirPath];
                     files.Add(dirValue + "|" + fileName, fileId);
-                }
-                else {
+                } else {
                     // Used to determine the keyfile
                     files.Add(Component.directory + "|" + fileName, fileId);
                 }
@@ -2672,7 +2672,6 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// <param name="database">The MSI database.</param>
         /// <param name="LastSequence">The sequence number of the last file in the .cab</param>
         private void LoadComponents(InstallerDatabase database, ref int LastSequence) {
-
             if (msi.components != null) {
                 Log(Level.Verbose, "Add Files:");
 
