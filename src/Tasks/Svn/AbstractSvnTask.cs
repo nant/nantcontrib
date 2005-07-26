@@ -201,12 +201,27 @@ namespace NAnt.Contrib.Tasks.Svn {
             set { base.CommandName = value; }
         }
 
-        [TaskAttribute("command", Required=false)]
+        /// <summary>
+        /// Specifies whether to print as little information as possible.
+        /// The default is <see langword="false" />.
+        /// </summary>
+        [TaskAttribute("quiet", Required=false)]
  		[BooleanValidator()]
         public bool Quiet {
-            get { return (null != this.CommandOptions["quiet"]) ? 
-                      ((Option)this.CommandOptions["quiet"]).IfDefined : true; }
-            set { this.SetCommandOption("quiet", "quiet", value); }
+            get {
+                Option option = (Option) this.CommandOptions["quiet"];
+                if (option != null && option.IfDefined) {
+                    return true;
+                }
+                return false;
+            }
+            set {
+                if (value) {
+                    this.SetCommandOption("quiet", "quiet", value);
+                } else {
+                    this.CommandOptions.Remove("quiet");
+                }
+            }
         }
 
         #endregion Public Instance Properties
