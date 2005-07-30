@@ -35,7 +35,7 @@ namespace NAnt.Contrib.Tasks.Perforce {
     ///   </para>
     ///   <code>
     ///     <![CDATA[
-    /// <p4Sync 
+    /// <p4sync 
     ///     view="//projects/foo/main/source/..."
     ///     user="fbloggs"
     ///     port="km01:1666"
