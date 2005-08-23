@@ -74,6 +74,7 @@ namespace NAnt.Contrib.Tasks {
         private bool _saveResults;
         private bool _failOnAnalysisError;
 
+        private DirectoryInfo _baseDirectory;
         private StringBuilder _programArguments = new StringBuilder();
 
         #region Properties
@@ -225,6 +226,30 @@ namespace NAnt.Contrib.Tasks {
         }
 
         /// <summary>
+        /// The directory in which the command will be executed.
+        /// </summary>
+        /// <value>
+        /// The directory in which the command will be executed. The default 
+        /// is the project's base directory.
+        /// </value>
+        /// <remarks>
+        /// <para>
+        /// It will be evaluated relative to the project's
+        /// base directory if it is relative.
+        /// </para>
+        /// </remarks>
+        [TaskAttribute("basedir", Required=false)]
+        public override DirectoryInfo BaseDirectory {
+            get {
+                if (_baseDirectory == null) {
+                    return base.BaseDirectory;
+                }
+                return _baseDirectory;
+            }
+            set { _baseDirectory = value; }
+        }
+
+        /// <summary>
         /// Gets the program arguments.
         /// </summary>
         public override string ProgramArguments {
@@ -239,7 +264,7 @@ namespace NAnt.Contrib.Tasks {
             BuildArguments();
 
             Log(Level.Verbose, "Working directory: {0}",
-                process.StartInfo.WorkingDirectory);
+                BaseDirectory);
             Log(Level.Verbose, "Arguments: {0}", ProgramArguments);
 
             base.PrepareProcess(process);
