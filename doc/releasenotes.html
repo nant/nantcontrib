@@ -49,6 +49,58 @@
         <h3>Additions</h3>
         <h4>Tasks</h4>
         <div style="margin-left: 20px;">
+            <h5><a class="heading" href="help/tasks/btsdeploy.html">&lt;btsdeploy&gt;</a></h5>
+            <ul>
+                <li>
+                    Deploys an assembly to a given BizTalk configuration database.
+                </li>
+            </ul>
+        </div>
+        <div style="margin-left: 20px;">
+            <h5><a class="heading" href="help/tasks/btsexport.html">&lt;btsexport&gt;</a></h5>
+            <ul>
+                <li>
+                    Exports bindings for a BizTalk assembly to an assembly binding 
+                    information file.
+                </li>
+            </ul>
+        </div>
+        <div style="margin-left: 20px;">
+            <h5><a class="heading" href="help/tasks/btsimport.html">&lt;btsimport&gt;</a></h5>
+            <ul>
+                <li>
+                    Imports bindings from a given assembly binding information file 
+                    into the specified BizTalk configuration database.
+                </li>
+            </ul>
+        </div>
+        <div style="margin-left: 20px;">
+            <h5><a class="heading" href="help/tasks/btsreset.html">&lt;btsreset&gt;</a></h5>
+            <ul>
+                <li>
+                    Allows stopping, starting and resetting of BizTalk in-process host 
+                    instances on the specified server.
+                </li>
+            </ul>
+        </div>
+        <div style="margin-left: 20px;">
+            <h5><a class="heading" href="help/tasks/btsunbind.html">&lt;btsunbind&gt;</a></h5>
+            <ul>
+                <li>
+                    Removes all bindings for a given assembly from a BizTalk configuration
+                    database.
+                </li>
+            </ul>
+        </div>
+        <div style="margin-left: 20px;">
+            <h5><a class="heading" href="help/tasks/btsundeploy.html">&lt;btsundeploy&gt;</a></h5>
+            <ul>
+                <li>
+                    Removes a given assembly from a BizTalk configuration database.
+                </li>
+            </ul>
+        </div>
+        <div style="margin-left: 20px;">
             <h5><a class="heading" href="help/tasks/cd.html">&lt;cd&gt;</a></h5>
             <ul>
                 <li>
@@ -77,17 +129,17 @@
                     installation (bug <a href="https://sourceforge.net/tracker/?func=detail&amp;atid=474851&amp;aid=1107112&amp;group_id=54790">#1107112</a>).
                 </li>
                 <li>
-					Removed dependency of &lt;properties&gt; element 
-					(bug <a href="https://sourceforge.net/tracker/index.php?func=detail&amp;aid=1149861&amp;group_id=54790&amp;atid=474851">#1149861</a>).
+                    Removed dependency of &lt;properties&gt; element 
+                    (bug <a href="https://sourceforge.net/tracker/index.php?func=detail&amp;aid=1149861&amp;group_id=54790&amp;atid=474851">#1149861</a>).
                 </li>
                 <li>
-					Cabarc process would fail with spaces in filename 
-					(bug <a href="https://sourceforge.net/tracker/?func=detail&amp;atid=474851&amp;aid=1153718&amp;group_id=54790">#1153718</a>).
-				</li>
-				<li>
-				    OCX's are not registered for self-registration
-				    (bug <a href="http://sourceforge.net/tracker/index.php?func=detail&amp;aid=1165416&amp;group_id=54790&amp;atid=474851">#1165416</a>).
-				</li>
+                    Cabarc process would fail with spaces in filename 
+                    (bug <a href="https://sourceforge.net/tracker/?func=detail&amp;atid=474851&amp;aid=1153718&amp;group_id=54790">#1153718</a>).
+                </li>
+                <li>
+                    OCX's are not registered for self-registration
+                    (bug <a href="http://sourceforge.net/tracker/index.php?func=detail&amp;aid=1165416&amp;group_id=54790&amp;atid=474851">#1165416</a>).
+                </li>
             </ul>
         </div>
         <h3>Changes</h3>
@@ -108,15 +160,15 @@
                     Added support for fileset references.
                 </li>
                 <li>
-					Added &lt;summaryinformation&gt; element to specify information for the summary information stream
-					(associated bug <a href="https://sourceforge.net/tracker/?func=detail&amp;atid=474851&amp;aid=1149861&amp;group_id=54790">#1149861</a>).
+                    Added &lt;summaryinformation&gt; element to specify information for the summary information stream
+                    (associated bug <a href="https://sourceforge.net/tracker/?func=detail&amp;atid=474851&amp;aid=1149861&amp;group_id=54790">#1149861</a>).
                 </li>
                 <li>
-					FeatureComponents table is not removed from merge modules (even when empty)
-				</li>
-				<li>
-					Added support for file, ini, and component searches.  Depreciated the old syntax for registry searches.
-					(associated bug <a href="https://sourceforge.net/tracker/?func=detail&amp;atid=474851&amp;aid=1149948&amp;group_id=54790">#1149948</a>).
+                    FeatureComponents table is not removed from merge modules (even when empty)
+                </li>
+                <li>
+                    Added support for file, ini, and component searches.  Depreciated the old syntax for registry searches.
+                    (associated bug <a href="https://sourceforge.net/tracker/?func=detail&amp;atid=474851&amp;aid=1149948&amp;group_id=54790">#1149948</a>).
                 </li>
             </ul>
         </div>
