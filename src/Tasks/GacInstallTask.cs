@@ -112,7 +112,7 @@ namespace NAnt.Contrib.Tasks {
         /// Gets the assembly list to install.
         /// </summary>
         protected override ICollection AssemblyList {
-            get { return _assemblies.Includes; }
+            get { return _assemblies.FileNames; }
         }
 
         /// <summary>
