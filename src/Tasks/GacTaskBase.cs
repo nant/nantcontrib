@@ -133,10 +133,6 @@ namespace NAnt.Contrib.Tasks {
                 //never show logo
                 retVal.Append("/nologo");
 
-                if (!Verbose) {
-                    retVal.Append(" /silent");
-                }
-
                 if (Force) {
                     retVal.Append(" /f");
                 }
@@ -161,9 +157,10 @@ namespace NAnt.Contrib.Tasks {
                     retVal.Append(" \"").Append(Reference.SchemeId).Append("\" \"").Append(Reference.SchemeDescription).Append("\"");
                 }
 
-                //allow concrete task to append any arguments
+                // allow concrete task to append any arguments
                 AppendProgramArguments(retVal);
-                //append the name of the assembly being operated against
+
+                // append the name of the assembly being operated against
                 retVal.Append(" \"").Append(CurrentAssembly).Append("\"");
 
                 return retVal.ToString();
