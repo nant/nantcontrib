@@ -125,6 +125,11 @@
                     AssemblyName = "Interop.MsmMergeTypeLib"
                     HintPath = "..\bin\Interop.MsmMergeTypeLib.dll"
                 />
+                <Reference
+                    Name = "System.Management"
+                    AssemblyName = "System.Management"
+                    HintPath = "G:\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.Management.dll"
+                />
             </References>
         </Build>
         <Files>
@@ -315,6 +320,41 @@
                 />
                 <File
                     RelPath = "Tasks\XsdTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\BizTalk\BizTalkBase.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\BizTalk\Deploy.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\BizTalk\Export.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\BizTalk\Import.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\BizTalk\Reset.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\BizTalk\Unbind.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\BizTalk\Undeploy.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
