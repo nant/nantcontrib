@@ -122,6 +122,8 @@ namespace NAnt.Contrib.Tasks.BizTalk {
         /// </exception>
         protected override void ExecuteTask() {
             try {
+                Log(Level.Verbose, "Removing bindings for \"{0}\"...", Assembly.Name);
+
                 // ensure assembly exists
                 if (!Assembly.Exists) {
                     throw new FileNotFoundException("The assembly does not exist.");
@@ -132,6 +134,8 @@ namespace NAnt.Contrib.Tasks.BizTalk {
                 UnbindSendPorts();
                 UnenlistOrchestrations();
 
+                // success message
+                Log(Level.Info, "Removed bindings for \"{0}\"...", Assembly.Name);
             } catch (Exception ex) {
                 throw new BuildException(string.Format(CultureInfo.InvariantCulture,
                     "Bindings could not be removed for assembly \"{0}\".", Assembly.Name),
@@ -276,8 +280,8 @@ namespace NAnt.Contrib.Tasks.BizTalk {
         }
 
         private bool IsPartOfAssembly(string artifact) {
-            string assemblyName = artifact.Substring(artifact.IndexOf(", ") + 2);
-            return AssemblyName.FullName == assemblyName;
+            string assemblyName = artifact.Substring(artifact.IndexOf(",") + 1);
+            return AssemblyName.FullName == assemblyName.Trim();
         }
 
         #endregion Private Instance Methods
