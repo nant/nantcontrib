@@ -344,6 +344,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Tasks\BizTalk\Orchestration.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Tasks\BizTalk\Reset.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -889,6 +894,11 @@
                 />
                 <File
                     RelPath = "Types\XmlSchemaReferenceCollection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Types\BizTalk\ServiceStatus.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
