@@ -114,7 +114,7 @@ namespace NAnt.Contrib.Tasks.BizTalk {
                     if ((Action & ResetAction.Stop) == ResetAction.Stop) {
                         foreach (ManagementObject hostInstance in searcher.Get()) {
                             if ((uint) hostInstance["ServiceState"] != 1) {
-                                Log(Level.Info, "Stopping {0}...", hostInstance["HostName"]);
+                                Log(Level.Verbose, "Stopping {0}...", hostInstance["HostName"]);
                                 hostInstance.InvokeMethod("Stop", null);
                             }
                         }
@@ -123,14 +123,29 @@ namespace NAnt.Contrib.Tasks.BizTalk {
                     if ((Action & ResetAction.Start) == ResetAction.Start) {
                         foreach (ManagementObject hostInstance in searcher.Get()) {
                             if ((uint) hostInstance["ServiceState"] == 1) {
-                                Log(Level.Info, "Starting {0}...", hostInstance["HostName"]);
+                                Log(Level.Verbose, "Starting {0}...", hostInstance["HostName"]);
                                 hostInstance.InvokeMethod("Start", null);
                             }
                         }
                     }
                 }
+
+                // log success
+                Log(Level.Info, "{0} host instances on server \"{1}\"", 
+                    GetActionFinish(), Server);
             } catch (Exception ex) {
                 throw new BuildException("Reset was not successful.", Location, ex);
+            }
+        }
+
+        private string GetActionFinish() {
+            switch (Action) {
+                case ResetAction.Reset:
+                    return "Resetted";
+                case ResetAction.Start:
+                    return "Started";
+                default:
+                    return "Stopped";
             }
         }
 

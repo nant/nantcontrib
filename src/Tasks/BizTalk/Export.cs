@@ -77,6 +77,8 @@ namespace NAnt.Contrib.Tasks.BizTalk {
         /// </exception>
         protected override void ExecuteTask() {
             try {
+                Log(Level.Verbose, "Exporting bindings for \"{0}\"...", Assembly.Name);
+
                 // ensure assembly exists
                 if (!Assembly.Exists) {
                     throw new FileNotFoundException("The assembly does not exist.");
@@ -111,6 +113,9 @@ namespace NAnt.Contrib.Tasks.BizTalk {
                 }
 
                 deployClass.InvokeMethod("Export", inParams, null);
+
+                // log success
+                Log(Level.Info, "Exported bindings for \"{0}\"", Assembly.Name);
             } catch (Exception ex) {
                 throw new BuildException(string.Format(CultureInfo.InvariantCulture,
                     "Bindings for assembly \"{0}\" could not be exported.", Assembly.Name),

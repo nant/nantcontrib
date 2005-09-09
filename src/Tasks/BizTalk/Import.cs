@@ -68,6 +68,8 @@ namespace NAnt.Contrib.Tasks.BizTalk {
         /// </exception>
         protected override void ExecuteTask() {
             try {
+                Log(Level.Verbose, "Importing bindings from \"{0}\"...", BindingFile.Name);
+
                 // ensure assembly binding file exists
                 if (!BindingFile.Exists) {
                     throw new FileNotFoundException("Assembly binding information"
@@ -96,6 +98,9 @@ namespace NAnt.Contrib.Tasks.BizTalk {
                 }
 
                 deployClass.InvokeMethod("Import", inParams, null);
+
+                // log success
+                Log(Level.Info, "Imported bindings from \"{0}\"", BindingFile.Name);
             } catch (Exception ex) {
                 throw new BuildException(string.Format(CultureInfo.InvariantCulture,
                     "Assembly binding information file \"{0}\" could not be imported.", 

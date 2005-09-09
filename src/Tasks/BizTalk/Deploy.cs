@@ -91,6 +91,8 @@ namespace NAnt.Contrib.Tasks.BizTalk {
         /// </exception>
         protected override void ExecuteTask() {
             try {
+                Log(Level.Verbose, "Deploying \"{0}\"...", Assembly.Name);
+
                 // ensure assembly exists
                 if (!Assembly.Exists) {
                     throw new FileNotFoundException("The assembly does not exist.");
@@ -131,6 +133,9 @@ namespace NAnt.Contrib.Tasks.BizTalk {
                 }
 
                 deployClass.InvokeMethod("Deploy", inParams, null);
+
+                // log success
+                Log(Level.Info, "Deployed \"{0}\"", Assembly.Name);
             } catch (Exception ex) {
                 throw new BuildException(string.Format(CultureInfo.InvariantCulture,
                     "Assembly \"{0}\" could not be deployed.", Assembly.Name),
