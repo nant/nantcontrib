@@ -28,6 +28,8 @@ using System.Text;
 using NAnt.Core;
 using NAnt.Core.Attributes;
 
+using NAnt.Contrib.Types.BizTalk;
+
 namespace NAnt.Contrib.Tasks.BizTalk {
     /// <summary>
     /// Removes all bindings for a given assembly from a BizTalk configuration
@@ -135,7 +137,7 @@ namespace NAnt.Contrib.Tasks.BizTalk {
                 UnenlistOrchestrations();
 
                 // success message
-                Log(Level.Info, "Removed bindings for \"{0}\"...", Assembly.Name);
+                Log(Level.Info, "Removed bindings for \"{0}\"", Assembly.Name);
             } catch (Exception ex) {
                 throw new BuildException(string.Format(CultureInfo.InvariantCulture,
                     "Bindings could not be removed for assembly \"{0}\".", Assembly.Name),
@@ -237,10 +239,10 @@ namespace NAnt.Contrib.Tasks.BizTalk {
 
             using (ManagementObjectSearcher searcher = new ManagementObjectSearcher (Scope, query, EnumerationOptions)) {
                 foreach (ManagementObject orchestration in searcher.Get()) {
-                    uint status = (uint) orchestration["OrchestrationStatus"];
+                    ServiceStatus status = GetOrchestrationStatus(orchestration);
 
-                    // skip orchestration that are unbound
-                    if (status == 1) {
+                    // skip orchestrations that are not enlisted
+                    if (status == ServiceStatus.Bound || status == ServiceStatus.Unbound) {
                         continue;
                     }
 
@@ -282,6 +284,11 @@ namespace NAnt.Contrib.Tasks.BizTalk {
         private bool IsPartOfAssembly(string artifact) {
             string assemblyName = artifact.Substring(artifact.IndexOf(",") + 1);
             return AssemblyName.FullName == assemblyName.Trim();
+        }
+
+        private ServiceStatus GetOrchestrationStatus(ManagementObject orchestration) {
+            uint status = (uint) orchestration["OrchestrationStatus"];
+            return (ServiceStatus) Enum.ToObject(typeof(ServiceStatus), status);
         }
 
         #endregion Private Instance Methods
