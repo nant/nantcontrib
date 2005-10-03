@@ -170,7 +170,7 @@
     </target>
 
     <!-- Build the NAnt.Contrib.Tasks.dll library -->
-    <target name="build" depends="prepare, prepare.slingshot, compile.schemas, create-common-assemblyinfo" description="compiles the source code">
+    <target name="build" depends="prepare, prepare.slingshot, compile.schemas, create-common-assemblyinfo, nunit2report" description="compiles the source code">
         <!--
             The copying of the xsd would not have been necessary if <resourcefileset>
             supported a <resource> child element that allowed the manifest resource 
@@ -180,7 +180,10 @@
             names is in place.
         -->
         <copy file="${src.dir}/Tasks/Msi/MsiTask.xsd" tofile="${build.dir}/schema/Msi/NAnt.Contrib.Schemas.Msi" />
-        <csc target="library" warnaserror="true" debug="${build.debug}" define="${current.build.defines}" output="${build.dir}/bin/${project.FormalName}.Tasks.dll" doc="${build.dir}/bin/${project.FormalName}.Tasks.xml">
+        <csc target="library" warnaserror="true" debug="${build.debug}"
+             define="${current.build.defines}"
+             output="${build.dir}/bin/${project.FormalName}.Tasks.dll"
+             doc="${build.dir}/bin/${project.FormalName}.Tasks.xml">
             <nowarn>
                 <!-- do not report warnings for missing XML comments -->
                 <warning number="1591" />
@@ -192,6 +195,7 @@
                 <include name="${build.dir}/schema/**/*.cs" />
 
                 <exclude name="${src.dir}/tasks/SharePoint/*.cs" />
+                <exclude name="${src.dir}/tasks/NUnit2Report/**/*.cs" />
             </sources>
             <references>
                 <include name="${nant.dir}/bin/NAnt.Core.dll" />
@@ -212,12 +216,24 @@
             </resources>
         </csc>
     </target>
-
+    
     <!-- Build the SLiNgshoT.Core.dll assemblies -->
     <target name="prepare.slingshot" depends="init" description="Compiles and copies the SLiNgshoT assemblies">
+        
         <nant buildfile="${tools.dir}/SLiNgshoT/SLiNgshoT.build" target="Release"/>
         <copy file="${tools.dir}/SLiNgshoT/build/Release/SLiNgshoT.Core.dll" tofile="${build.dir}/bin/SLiNgshoT.Core.dll"/>
         <copy file="${tools.dir}/SLiNgshoT/build/Release/SLiNgshoT.exe" tofile="${build.dir}/bin/SLiNgshoT.exe"/>
+    </target>
+    
+    <target name="nunit2report">
+       <nant buildfile="src/Tasks/NUnit2Report/default.build">
+            <properties>
+                <property name="build.dir" value="${build.dir}\bin" />
+                <property name="output.dir" value="${build.dir}\bin" />
+                <property name="nant.dir" value="${nant.dir}" />
+                <property name="debug" value="${build.debug}" />
+            </properties>
+        </nant>
     </target>
 
     <!-- Build the unit tests library -->
@@ -274,7 +290,6 @@
 
         <!-- output the config file that will be used to run the tests -->
         <echo message="testing with config '${path::combine(nant::get-base-directory(), 'nant.tests.config')}'" />
-
         <!-- execute the unit tests -->
         <nunit2>
             <formatter type="Plain" />
@@ -321,6 +336,7 @@
         <ndoc>
             <assemblies basedir="${build.dir}/bin" failonempty="true">
                 <include name="NAnt.Contrib.Tasks.dll" />
+                <include name="NAnt.NUnit2ReportTasks.dll" />
                 <!-- 
                     we need to add the NAnt.Core assembly too in order to provide
                     doc summaries and add links to NAnt types and tasks
