@@ -1,0 +1,48 @@
+<?xml version="1.0" ?>
+<project name="NAnt.NUnit2ReportTasks" default="build" basedir=".">
+  
+    <property name="output.dir" value="${nant.project.basedir}\bin" unless="${property::exists('output.dir')}" />
+    <property name="build.dir" value="${output.dir}" unless="${property::exists('build.dir')}" />
+    <property name="debug" value="false" unless="${property::exists('debug')}" />
+    
+    <sysinfo/>
+    <if test="${not property::exists('nant.dir')}">
+        <!-- 
+            if NAnt location was not explicitly set, then assume that the
+            the parent directory of the NAnt base directory is what we're
+            looking for 
+        -->
+        <echo message="NAnt base directory=${nant::get-base-directory()}" level="Verbose" />
+        <property name="nant.dir" value="${directory::get-parent-directory(nant::get-base-directory())}" />
+    </if>
+    
+    <property name="nantcorelib" value="${path::combine(nant.dir, 'bin/NAnt.Core.dll')}" />
+
+    <target name="build" >
+        <csc target="library"
+             output="${output.dir}\NAnt.NUnit2ReportTasks.dll"
+             debug="${debug}"
+             doc="${output.dir}\NAnt.NUnit2ReportTasks.xml">
+            <warnaserror>
+                <!-- do not consider deprecation warnings as errors on .NET 2.0 -->
+                <exclude number="618" if="${framework::get-target-framework() == 'net-2.0'}" />
+            </warnaserror>
+            <sources>
+               <include name="..\..\CommonAssemblyInfo.cs" />
+               <include name="NUnit2ReportTask.cs" />
+            </sources>
+            <references>
+               <include name="System.dll" />
+               <include name="${nantcorelib}" />
+            </references>
+            <resources basedir="xsl" prefix="xslt.">
+                <include name="**/*.xsl" />
+                <include name="**/*.xml" />
+            </resources>
+        </csc>
+    </target>
+
+    <target name="test" depends="build" description="run unit tests">
+    </target>
+    
+</project>
