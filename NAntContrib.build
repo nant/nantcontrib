@@ -311,7 +311,7 @@
     </target>
 
     <!-- Build task and sdk documentation -->
-    <target name="doc" depends="build" description="build documentation">
+    <target name="doc" depends="build filter-copy-help-html" description="build documentation">
         <!-- ensure NAnt documenter exists -->
         <if test="${not file::exists(path::combine(nant.dir, 'bin/NDoc.Documenter.NAnt.dll'))}">
             <fail message="NDoc.Documenter.NAnt.dll not found. Run the 'userdoc' target in your NAnt source tree" />
@@ -397,6 +397,7 @@
         <copy todir="${build.dir}/doc/help">
             <fileset basedir="doc/help">
                 <include name="**/*" />
+                <!-- exclude static html pages as these will be filter-copied -->
                 <exclude name="**/*.html" />
             </fileset>
         </copy>
@@ -442,6 +443,11 @@
             </fileset>
         </copy>
 
+        <!-- determine the zip file prefix directory -->
+        <property name="project.zip.prefix" value="${project.name}-${project.version.full}" />
+    </target>
+    
+    <target name = "filter-copy-help-html" >
         <!-- filter-copy static html pages -->
         <copy todir="${build.dir}" overwrite="true">
             <fileset>
@@ -465,9 +471,6 @@
                 />
             </filterchain>
         </copy>
-
-        <!-- determine the zip file prefix directory -->
-        <property name="project.zip.prefix" value="${project.name}-${project.version.full}" />
     </target>
     
     <!-- creates tar for distributing the user manual and SDK to SourceForge -->
