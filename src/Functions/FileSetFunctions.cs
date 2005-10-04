@@ -41,8 +41,22 @@ namespace NAnt.Contrib.Functions {
         /// <summary>
         /// Determines the number of files within a <see cref="FileSet"/>.
         /// </summary>
-        /// <param name="fileset">The FileSet to scan.</param>
+        /// <param name="fileset">The id of the FileSet to scan.</param>
         /// <returns>The number of files included in the FileSet</returns>
+        /// <exception cref="ArgumentException"><paramref name="fileset" /> is not a valid refid to a defined fileset.</exception>
+        /// <example>
+        ///   <para>
+        ///   Define a fileset and check the number of files in it.
+        ///   </para>
+        ///   <code>
+        ///     <![CDATA[
+        /// <fileset id="test.fileset">
+        ///     <include name="**/*.cs">
+        /// </fileset>
+        /// <echo message="FileSet contains ${fileset::get-file-count('test.fileset')} files." />
+        /// ]]>
+        ///   </code>
+        /// </example>
         [Function("get-file-count")]
         public int GetFileCount(string fileset) {
             //Try to retrieve the specified fileset from the Data References on the project
@@ -58,8 +72,24 @@ namespace NAnt.Contrib.Functions {
         /// <summary>
         /// Determines whether <see cref="FileSet"/> contains any files.
         /// </summary>
-        /// <param name="fileset">The fileset to check.</param>
-        /// <returns><c>true</c> if the FileSet contains one or more files, otherwise <c>false</c></returns>
+        /// <param name="fileset">The id of the fileset to check.</param>
+        /// <returns><see langword="true" /> if the FileSet contains one or more files, otherwise <see langword="false"/>.</returns>
+        /// <exception cref="ArgumentException"><paramref name="fileset" /> is not a valid refid to a defined fileset.</exception>
+        /// <example>
+        ///   <para>
+        ///   Perform conditional processing on a fileset if it contains files.
+        ///   </para>
+        ///   <code>
+        ///     <![CDATA[
+        /// <fileset id="test.fileset">
+        ///     <include name="**/*.cs">
+        /// </fileset>
+        /// <if test="${fileset::has-files('test.fileset')}">
+        ///     <dostuff... />
+        /// </if>
+        /// ]]>
+        ///   </code>
+        /// </example>
         [Function("has-files")]
         public bool HasFiles(string fileset) {
             //Try to retrieve the specified fileset from the Data References on the project
