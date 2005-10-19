@@ -31,7 +31,7 @@ using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Tasks.SourceSafe {
     /// <summary>
-    /// Used to delete or destory files or projects in Visual Source Safe.
+    /// Used to delete or Destroy files or projects in Visual Source Safe.
     /// </summary>
     /// <example>
     ///   <para>Delete a project from a local sourcesafe database.</para>
@@ -56,14 +56,14 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
     ///   ]]></code>
     /// </example>
     /// <example>
-    ///   <para>Destory a project from a local sourcesafe database.</para>
+    ///   <para>Destroy a project from a local sourcesafe database.</para>
     ///   <code><![CDATA[
     ///     <vssdelete 
     ///       user="myusername" 
     ///       password="mypassword" 
     ///       dbpath="C:\VSS\srcsafe.ini"
     ///       path="$/MyProduct"
-    ///       destory="true"
+    ///       Destroy="true"
     ///     />
     ///   ]]></code>
     /// </example>
@@ -75,7 +75,7 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
     ///       password="mypassword" 
     ///       dbpath="\\MyServer\VSS\srcsafe.ini"
     ///       path="$/MyProduct/myFile.cs"
-    ///       destory="true"
+    ///       Destroy="true"
     ///     />
     ///   ]]></code>
     /// </example>
@@ -90,7 +90,7 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         #region Public Instance Properties
 
         /// <summary>
-        /// Determines whether or not the item is destroyed. 
+        /// Determines whether or not the item is Destroyed. 
         /// The default is <see langword="false" />.
         /// </summary>
         [TaskAttribute("destroy")]
@@ -102,18 +102,14 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         
         #endregion Public Instance Properties
 
-        protected override void ExecuteTask() {
-            Open();
+        #region Public Instance Methods
 
+        /// <summary>
+        /// Deletes the item unless <see cref="Destroy"/> is <c>True</c>
+        /// then the item is destroyed.
+        /// </summary>
+        public void DeleteItem() {
             if( _destroy ) {
-                try {
-                    Item.Destroy();
-                    Log(Level.Info, "Destroyed '{0}'.", Path);
-                } catch (Exception ex) {
-                    throw new BuildException("The destroy operation failed.", 
-                        Location, ex);
-                }
-            } else {
                 try {
                     Item.Deleted=true;
                     Log(Level.Info, "Deleted '{0}'.", Path);
@@ -121,7 +117,24 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
                     throw new BuildException("The delete operation failed.", 
                         Location, ex);
                 }
+            } else {
+                try {
+                    Item.Destroy();
+                    Log(Level.Info, "Destroyed '{0}'.", Path);
+                } catch (Exception ex) {
+                    throw new BuildException("The destroy operation failed.", 
+                        Location, ex);
+                }
             }
         }
+
+        #endregion Public Instance Methods
+
+        protected override void ExecuteTask() {            
+            Open();
+
+            this.DeleteItem();
+        }
+
     }
 }
