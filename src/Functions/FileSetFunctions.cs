@@ -18,6 +18,7 @@
 //
 
 using System;
+using System.Text;
 using NAnt.Core;
 using NAnt.Core.Types;
 using NAnt.Core.Attributes;
@@ -101,7 +102,53 @@ namespace NAnt.Contrib.Functions {
             //Otherwise return whether or not the fileset contains files.
             return (fs.FileNames.Count > 0);
         }
-        
+        /// <summary>
+        /// Returns a delimited string of all the filenames within a <see cref="FileSet"/> with each filename
+        /// separated by the specified delimiter string.
+        /// </summary>
+        /// <param name="fileset">The id of the fileset to check.</param>
+        /// <param name="delimiter">String to separate filenames with.</param>
+        /// <returns>A delimited string of the filenames within the specified FileSet.</returns>
+        /// <exception cref="ArgumentException"><paramref name="fileset" /> is not a valid refid to a defined fileset.</exception>
+        /// <example>
+        ///   <para>
+        ///   Displays a space-pipe-space separated string fo the files within a defined FileSet.
+        ///   </para>
+        ///   <code>
+        ///     <![CDATA[
+        /// <fileset id="test.fileset">
+        ///     <include name="**/*.cs">
+        /// </fileset>
+        /// <echo message="${fileset::to-string('test.fileset', ' | ')}">
+        /// ]]>
+        ///   </code>
+        /// </example>
+        [Function("to-string")]
+        public string ToString(string fileset, string delimiter){
+            //Try to retrieve the specified fileset from the Data References on the project
+            FileSet fs = base.Project.DataTypeReferences[fileset] as FileSet;
+            
+            //If the value was missing or the referenced type was not a fileset, then throw an exception
+            if (fs == null){
+                throw new ArgumentException(string.Format("'{0}' is not a valid fileset reference", fileset));
+            }
+
+            //We've got a valid fileset.  Use a stringbuilder to build the delimiter separated list.
+            StringBuilder sb = new StringBuilder();
+
+            //This is a loop as we need to omit the delimiter on the last element, and it's easier 
+            //to check the last element with a for loop than in a foreach loop.
+            for (int i = 0; i < fs.FileNames.Count; i++){
+                string file = fs.FileNames[i];
+                sb.Append(file);
+                //if this is not the last element, then append the delimiter
+                if (i < fs.FileNames.Count - 1){
+                    sb.Append(delimiter);
+                }
+            }
+            //Now return the string representation of the FileSet.
+            return sb.ToString();
+        }
         #endregion Public Instance Methods
     }
 }
