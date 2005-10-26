@@ -138,6 +138,10 @@ namespace NAnt.Contrib.Tasks.BizTalk {
             }
         }
 
+        #endregion Override implementation of Task
+
+        #region Private Instance Methods
+
         private string GetActionFinish() {
             switch (Action) {
                 case ResetAction.Reset:
@@ -149,7 +153,7 @@ namespace NAnt.Contrib.Tasks.BizTalk {
             }
         }
 
-        #endregion Override implementation of Task
+        #endregion Private Instance Methods
 
         #region Private Instance Fields
 
