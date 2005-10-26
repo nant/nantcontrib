@@ -339,6 +339,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Tasks\BizTalk\Host.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Tasks\BizTalk\Import.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -814,6 +819,11 @@
                 />
                 <File
                     RelPath = "Tasks\Svn\SvnUpdateTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\Web\ApplicationPool.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
