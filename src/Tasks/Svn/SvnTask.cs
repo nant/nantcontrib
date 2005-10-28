@@ -56,8 +56,8 @@ namespace NAnt.Contrib.Tasks.Svn {
         /// <summary>
         /// The svn command to execute.
         /// </summary>
-        [TaskAttribute("command", Required=true)]
-        [StringValidator(AllowEmpty=false)]
+        [TaskAttribute("command", Required=false)]
+        [StringValidator(AllowEmpty=true)]
         public override string CommandName {
             get { return this._commandName; }
             set { this._commandName = value; }
