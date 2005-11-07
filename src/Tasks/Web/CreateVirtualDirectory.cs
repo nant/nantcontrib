@@ -133,67 +133,68 @@ namespace NAnt.Contrib.Tasks.Web {
         #region Private Instance Fields
 
         private DirectoryInfo _dirPath;
-        private bool _accessExecute = false;
-        private bool _accessNoRemoteExecute = false;
-        private bool _accessNoRemoteRead = false;
-        private bool _accessNoRemoteScript = false;
-        private bool _accessNoRemoteWrite = false;
+        private bool _accessExecute;
+        private bool _accessNoRemoteExecute;
+        private bool _accessNoRemoteRead;
+        private bool _accessNoRemoteScript;
+        private bool _accessNoRemoteWrite;
         private bool _accessRead = true;
-        private bool _accessSource = false;
+        private bool _accessSource;
         private bool _accessScript = true;
-        private bool _accessSsl = false;
-        private bool _accessSsl128 = false;
-        private bool _accessSslMapCert = false;
-        private bool _accessSslNegotiateCert = false;
-        private bool _accessSslRequireCert = false;
-        private bool _accessWrite = false;
+        private bool _accessSsl;
+        private bool _accessSsl128;
+        private bool _accessSslMapCert;
+        private bool _accessSslNegotiateCert;
+        private bool _accessSslRequireCert;
+        private bool _accessWrite;
         private bool _anonymousPasswordSync = true;
-        private bool _appAllowClientDebug = false;
-        private bool _appAllowDebugging = false;
+        private bool _appAllowClientDebug;
+        private bool _appAllowDebugging;
         private AppType _apptype = AppType.Pooled;
         private bool _aspAllowSessionState = true;
         private bool _aspBufferingOn = true;
         private bool _aspEnableApplicationRestart = true;
-        private bool _aspEnableAspHtmlFallback = false;
+        private bool _aspEnableAspHtmlFallback;
         private bool _aspEnableChunkedEncoding = true;
-        private bool _aspErrorsToNTLog = false;
+        private bool _aspErrorsToNTLog;
         private bool _aspEnableParentPaths = true;
         private bool _aspEnableTypelibCache = true;
         private bool _aspExceptionCatchEnable = true;
         private bool _aspLogErrorRequests = true;
         private bool _aspScriptErrorSentToBrowser = true;
-        private bool _aspThreadGateEnabled = false;
-        private bool _aspTrackThreadingModel = false;
+        private bool _aspThreadGateEnabled;
+        private bool _aspTrackThreadingModel;
         private bool _authAnonymous = true;
-        private bool _authBasic = false;
-        private bool _authNtlm = false;
-        private bool _authPersistSingleRequest = false;
+        private bool _authBasic;
+        private bool _authNtlm;
+        private bool _authPersistSingleRequest;
         private bool _authPersistSingleRequestIfProxy = true;
-        private bool _authPersistSingleRequestAlwaysIfProxy = false;
-        private bool _cacheControlNoCache = false;
+        private bool _authPersistSingleRequestAlwaysIfProxy;
+        private bool _cacheControlNoCache;
         private bool _cacheIsapi = true;
         private bool _contentIndexed = true;
         private bool _cpuAppEnabled = true;
         private bool _cpuCgiEnabled = true;
-        private bool _createCgiWithNewConsole = false;
+        private bool _createCgiWithNewConsole;
         private bool _createProcessAsUser = true;
         private bool _dirBrowseShowDate = true;
         private bool _dirBrowseShowExtension = true;
         private bool _dirBrowseShowLongDate = true;
         private bool _dirBrowseShowSize = true;
         private bool _dirBrowseShowTime = true;
-        private bool _dontLog = false;
+        private bool _dontLog;
         private bool _enableDefaultDoc = true;
-        private bool _enableDirBrowsing = false;
-        private bool _enableDocFooter = false;
-        private bool _enableReverseDns = false;
-        private bool _ssiExecDisable = false;
-        private bool _uncAuthenticationPassthrough = false;
+        private bool _enableDirBrowsing;
+        private bool _enableDocFooter;
+        private bool _enableReverseDns;
+        private bool _ssiExecDisable;
+        private bool _uncAuthenticationPassthrough;
         private string _aspScriptErrorMessage = "An error occurred on the server when processing the URL.  Please contact the system administrator.";
         private string _defaultDoc = "Default.htm,Default.asp,index.htm,iisstart.asp,Default.aspx";
-        private string _uncUserName = "";
-        private string  _uncPassword= "";
-        private string _appFriendlyName = "";
+        private string _uncUserName;
+        private string  _uncPassword;
+        private string _appFriendlyName;
+        private string _appPoolId;
 
         #endregion Private Instance Fields
 
@@ -413,6 +414,16 @@ namespace NAnt.Contrib.Tasks.Web {
         public bool AppAllowDebugging {
             get { return _appAllowDebugging; }
             set { _appAllowDebugging = value; }
+        }
+
+        /// <summary>
+        /// Specifies the application pool where the application is routed
+        /// (IIS 6.0 or higher).
+        /// </summary>
+        [TaskAttribute("apppoolid"),IisProperty]
+        public string AppPoolId {
+            get { return _appPoolId; }
+            set { _appPoolId = value; }
         }
 
         /// <summary>
