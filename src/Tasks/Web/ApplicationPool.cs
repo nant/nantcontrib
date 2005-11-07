@@ -153,7 +153,7 @@ namespace NAnt.Contrib.Tasks.Web {
                     pool.InvokeMethod("Recycle", new object[0]);
                 }
 
-                Log(Level.Info, "{0} \"{1}\" on \"{2}\"...", GetActionFinish(),
+                Log(Level.Info, "{0} \"{1}\" on \"{2}\"", GetActionFinish(),
                     PoolName, Server);
             } catch (Exception ex) {
                 throw new BuildException(string.Format(CultureInfo.InvariantCulture,

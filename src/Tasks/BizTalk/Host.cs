@@ -165,7 +165,7 @@ namespace NAnt.Contrib.Tasks.BizTalk {
                             }
                         }
 
-                        Log(Level.Info, "{0} \"{1}\" on \"{2}\"...",
+                        Log(Level.Info, "{0} \"{1}\" on \"{2}\"",
                             GetActionFinish(), hostName, runningServer);
                     }
                 }
