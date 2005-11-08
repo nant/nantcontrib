@@ -63,6 +63,7 @@ namespace NAnt.Contrib.Tasks.BizTalk {
         /// unbinding a receive pipeline.
         /// </summary>
         [TaskAttribute("receivepipeline", Required=true)]
+        [StringValidator(AllowEmpty=false)]
         public string ReceivePipeline {
             get { return _receivePipeline; }
             set { _receivePipeline = value; }
@@ -73,6 +74,7 @@ namespace NAnt.Contrib.Tasks.BizTalk {
         /// unbinding a send pipeline.
         /// </summary>
         [TaskAttribute("sendpipeline", Required=true)]
+        [StringValidator(AllowEmpty=false)]
         public string SendPipeline {
             get { return _sendPipeline; }
             set { _sendPipeline = value; }
