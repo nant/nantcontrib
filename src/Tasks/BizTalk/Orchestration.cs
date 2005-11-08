@@ -50,6 +50,7 @@ namespace NAnt.Contrib.Tasks.BizTalk {
         /// The name of the orchestration to perform an action on.
         /// </summary>
         [TaskAttribute("name", Required=true)]
+        [StringValidator(AllowEmpty=false)]
         public string OrchestrationName {
             get { return _orchestrationName; }
             set { _orchestrationName = value; }
@@ -83,8 +84,8 @@ namespace NAnt.Contrib.Tasks.BizTalk {
                     // ensure we found a matching orchestration
                     if (orchestrations.Count == 0) {
                         throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                            "Orchestration \"{0}\" does not exist.", OrchestrationName),
-                            Location);
+                            "Orchestration \"{0}\" does not exist on \"{0}\".", 
+                            OrchestrationName, Server), Location);
                     }
 
                     // perform actions on each matching orchestration
