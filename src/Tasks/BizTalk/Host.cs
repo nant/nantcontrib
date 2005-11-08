@@ -81,6 +81,7 @@ namespace NAnt.Contrib.Tasks.BizTalk {
         /// The name of the host on which the perform the action.
         /// </summary>
         [TaskAttribute("host", Required=true)]
+        [StringValidator(AllowEmpty=false)]
         public string HostName {
             get { return _hostName; }
             set { _hostName = StringUtils.ConvertEmptyToNull(value); }
