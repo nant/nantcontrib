@@ -359,6 +359,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Tasks\BizTalk\SendPort.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Tasks\BizTalk\Unbind.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
