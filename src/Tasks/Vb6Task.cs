@@ -22,10 +22,12 @@
 // Kevin Dente (kevin_d@mindspring.com)
 // Hani Atassi (haniatassi@users.sourceforge.com)
 
+using Microsoft.Win32;
 using System;
 using System.Collections.Specialized; 
 using System.Globalization;
 using System.IO;
+using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
@@ -41,11 +43,19 @@ namespace NAnt.Contrib.Tasks {
     /// Compiles Microsoft Visual Basic 6 programs.
     /// </summary>
     /// <remarks>
-    ///     <para>Uses the VB6.EXE executable included with the Visual Basic 6 environment.</para>
-    ///     <para>The compiler uses the settings and source files specified in the project or group file.</para>
+    ///   <para>
+    ///   Uses the VB6.EXE executable included with the Visual Basic 6
+    ///   environment.
+    ///   </para>
+    ///   <para>
+    ///   The compiler uses the settings and source files specified in the 
+    ///   project or group file.
+    ///   </para>
     /// </remarks>
     /// <example>
-    ///   <para>Build the project <c>HelloWorld.vbp</c> in the <c>build</c> directory.</para>
+    ///   <para>
+    ///   Build the project <c>HelloWorld.vbp</c> in the <c>build</c> directory.
+    ///   </para>
     ///   <code>
     ///     <![CDATA[
     /// <vb6 project="HelloWorld.vbp" outdir="build" />
@@ -132,7 +142,39 @@ namespace NAnt.Contrib.Tasks {
         /// The filename of the external program.
         /// </value>
         public override string ProgramFileName {
-            get { return Name; }
+            get {
+                // first check to see if VB6.EXE is available in one of the 
+                // directories in the PATH environment variable
+                PathScanner scanner = new PathScanner();
+                // check for VB6.EXE
+                scanner.Add("VB6.EXE");
+                // get results
+                StringCollection results = scanner.Scan();
+                // check if we found a match
+                if (results.Count > 0) {
+                    return results[0];
+                } else {
+                    try {
+                        // check registry for VB6 install dir
+                        RegistryKey vbKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\VisualStudio\6.0\Setup\Microsoft Visual Basic");
+                        if (vbKey != null) {
+                            string productDir = vbKey.GetValue("ProductDir") as string;
+                            if (productDir != null) {
+                                string vb6Exe = Path.Combine(productDir, "VB6.EXE");
+                                if (File.Exists(vb6Exe)) {
+                                    return vb6Exe;
+                                }
+                            }
+                        }
+                    } catch (SecurityException) {
+                    }
+                }
+                
+                // if VB6.exe is not available on PATH, and registry could not
+                // be found or access then just have ExternalProgramBase use
+                // "vb6" as program file name and deal with error
+                return Name; 
+            }
         }
 
         /// <summary>
@@ -265,8 +307,8 @@ namespace NAnt.Contrib.Tasks {
             FileSet sources = new FileSet();
             FileSet references = new FileSet();
             
-            string basedir=Path.GetDirectoryName( projectFile );
-            if ( basedir != "" ) {
+            string basedir = Path.GetDirectoryName(projectFile);
+            if (basedir != "" ) {
                 sources.BaseDirectory = new DirectoryInfo(Path.GetDirectoryName( projectFile ) );
                 references.BaseDirectory = sources.BaseDirectory;
             }
@@ -344,7 +386,7 @@ namespace NAnt.Contrib.Tasks {
                     ushort tmpMinor16 = 0;
                     string [] parts = ver.Split('.');
                     if (parts.Length > 0) {
-                        tmpMajor = (ushort) double.Parse(parts[0], CultureInfo.InvariantCulture);
+                        tmpMajor = (ushort) Convert.ToUInt16(parts[0], 16);
                         if (parts.Length > 1) {
                             tmpMinor16 = Convert.ToUInt16(parts[1], 16);  // Treat minor as hex
                         }
@@ -400,7 +442,7 @@ namespace NAnt.Contrib.Tasks {
             Regex codeRegEx = new Regex(@"(Class|Module)\s*=\s*\w*;\s*(?<filename>.*($^\.)*)\s*$");
 
             // Regexp that extracts reference entries from the VBP (Reference=)
-            Regex referenceRegEx = new Regex(@"(Object|Reference)\s*=\s*({|\*\\G{)(?<tlbguid>[0-9\-A-Fa-f]*($^\.)*)}\#(?<majorver>[0-9($^\.)]*)\.(?<minorver>[0-9a-fA-F($^\.)]*)\#(?<lcid>[0-9]($^\.)*)(;|\#)(?<tlbname>[^\#\n\r]*)");
+            Regex referenceRegEx = new Regex(@"(Object|Reference)\s*=\s*({|\*\\G{)(?<tlbguid>[0-9\-A-Fa-f]*($^\.)*)}\#(?<majorver>[0-9a-fA-F($^\.)]*)\.(?<minorver>[0-9a-fA-F($^\.)]*)\#(?<lcid>[0-9]($^\.)*)(;|\#)(?<tlbname>[^\#\n\r]*)");
             
             string key = String.Empty;
             string keyValue = String.Empty;
@@ -409,85 +451,102 @@ namespace NAnt.Contrib.Tasks {
             using (StreamReader reader = new StreamReader(Project.GetFullPath(projectFile), Encoding.ASCII)) {
                 while ((fileLine = reader.ReadLine()) != null) {
                     match = keyValueRegEx.Match(fileLine);
-                    if (match.Success) {
-                        key = match.Groups["key"].Value;
-                        keyValue = match.Groups["value"].Value;
+                    if (!match.Success) {
+                        continue;
+                    }
 
-                        if (key == "Class" || key == "Module") {
+                    key = match.Groups["key"].Value;
+                    keyValue = match.Groups["value"].Value;
+
+                    switch (key) {
+                        case "Class":
+                        case "Module":
                             // This is a class or module source file - extract the file name and add it to the sources fileset
                             // The entry is of the form "Class=ClassName;ClassFile.cls"
                             match = codeRegEx.Match(fileLine);
                             if (match.Success) {
                                 sources.Includes.Add(match.Groups["filename"].Value);
                             }
-                        }
-                        else if (key == "Form" || key == "UserControl" || key == "PropertyPage") {
+                            break;
+                        case "Form":
+                        case "UserControl":
+                        case "PropertyPage":
                             // This is a form, control, or property page source file - add the file name to the sources fileset
                             // The entry is of the form "Form=Form1.frm"
                             sources.Includes.Add(keyValue);
-                        }
-                        else if (key == "Object" || key == "Reference") {
+                            break;
+                        case "Object":
+                        case "Reference":
                             // This is a source file - extract the reference name and add it to the references fileset
                             match = referenceRegEx.Match(fileLine);
-                            if (match.Success) {
-                                string tlbName = match.Groups["tlbname"].Value;
-                                if (File.Exists(tlbName)) {
-                                    references.Includes.Add(tlbName);
+                            if (!match.Success) {
+                                break;
+                            }
+
+                            string tlbName = match.Groups["tlbname"].Value;
+                            if (File.Exists(tlbName)) {
+                                references.Includes.Add(tlbName);
+                            } else {
+                                // the tlb filename embedded in the VBP file is just
+                                // a hint about where to look for it. If the file isn't
+                                // at that location, the typelib ID is used to lookup
+                                // the file name
+
+                                string temp = match.Groups["majorver"].Value;
+                                ushort majorVer = 0;
+                                if (key == "Object") {
+                                    // for OCX's major is a decimal value
+                                    majorVer = ushort.Parse(temp, CultureInfo.InvariantCulture);
+                                } else {
+                                    // for dll's major is a hex value
+                                    majorVer = (ushort) Convert.ToUInt16(temp, 16);
                                 }
-                                else {
-                                    //the tlb filename embedded in the VBP file is just
-                                    //a hint about where to look for it. If the file isn't
-                                    //at that location, the typelib ID is used to lookup
-                                    //the file name
-                                            
-                                    // # Added to properly cast the parts of the version #
-                                    // Ensure that we use the correct cast option
-                                    string temp = match.Groups["majorver"].Value;
-                                    ushort majorVer = (ushort) double.Parse(temp, CultureInfo.InvariantCulture);
-                                    
-                                    // Minor is considered a hex value
-                                    temp = match.Groups["minorver"].Value;
-                                    ushort minorVer16 = Convert.ToUInt16(temp, 16);
+                            
+                                // minor is considered a hex value
+                                temp = match.Groups["minorver"].Value;
+                                ushort minorVer16 = Convert.ToUInt16(temp, 16);
 
-                                    temp = match.Groups["lcid"].Value;
-                                    uint lcid = 0;
-                                    
-                                    if ( 0 < temp.Length) {
-                                        lcid = (uint) double.Parse(temp, CultureInfo.InvariantCulture);
-                                    }
-                                    
-                                    string tlbGuid = match.Groups["tlbguid"].Value;
-                                    Guid guid = new Guid(tlbGuid);
+                                temp = match.Groups["lcid"].Value;
+                                uint lcid = 0;
+                            
+                                if (temp.Length != 0) {
+                                    lcid = (uint) double.Parse(temp, CultureInfo.InvariantCulture);
+                                }
+                            
+                                string tlbGuid = match.Groups["tlbguid"].Value;
+                                Guid guid = new Guid(tlbGuid);
 
-                                    // Find the tlb file 
-                                    tlbName = VB6GetTypeLibFile(guid, majorVer, minorVer16, lcid);
+                                // find the type library file 
+                                tlbName = VB6GetTypeLibFile(guid, majorVer, minorVer16, lcid);
+                                if (tlbName == null) {
+                                    Log(Level.Warning, "Type library '{0}' version {1}.{2:x} could not be found.", 
+                                        guid, match.Groups["majorver"].Value, match.Groups["minorver"].Value);
+                                } else {
                                     if (File.Exists(tlbName)) {
                                         references.Includes.Add(tlbName);
                                     } else {
-                                        // Show a warning if we couldn't find the reference. Don't rely on VB.
-                                        if (tlbName == null) {
-                                            Log(Level.Warning, "Couldn't find the tlb file for '{0}' ver.{1}.{2:x}.", guid, majorVer, minorVer16);
-                                        } else {
-                                            Log(Level.Warning, "Couldn't find the file '{0}'.", tlbName);
-                                        }
+                                        Log(Level.Warning, "Type library file '{0}' does not exist.", tlbName);
                                     }
                                 }
                             }
-                        } else if (key == "ExeName32") {
+                            break;
+                        case "ExeName32":
                             // Store away the built file name so that we can check against it later
                             // If the project was never built in the IDE, or the project file wasn't saved
                             // after the build occurred, this setting won't exist. In that case, VB uses the
                             // ProjectName as the DLL/EXE name
                             outputFile = keyValue.Trim('"');
-                        } else if (key == "Type") {
+                            break;
+                        case "Type":
                             // Store away the project type - we may need it to construct the built
                             // file name if ExeName32 doesn't exist
                             projectType = keyValue;
-                        } else if (key == "Name") {
+                            break;
+                        case "Name":
                             // Store away the project name - we may need it to construct the built
                             // file name if ExeName32 doesn't exist
                             projectName = keyValue.Trim('"');
-                        }
+                            break;
                     }
                 }
                 reader.Close();
