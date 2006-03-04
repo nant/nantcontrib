@@ -184,8 +184,8 @@ namespace NAnt.Contrib.Tasks.BizTalk {
         private void ReportActionFailure(string action, string server, Exception ex, bool throwException) {
             string msg = string.Format(CultureInfo.InvariantCulture,
                 "Failed {0} host \"{1}\"", action, HostName);
-            if (Server != null) {
-                msg += " on \"" + Server + "\".";
+            if (server != null) {
+                msg += " on \"" + server + "\".";
             } else {
                 msg += ".";
             }
