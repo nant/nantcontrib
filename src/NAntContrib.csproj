@@ -240,6 +240,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Tasks\MSBuildTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Tasks\NAnt.xsd"
                     BuildAction = "Content"
                 />
