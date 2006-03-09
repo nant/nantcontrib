@@ -143,7 +143,7 @@ namespace NAnt.Contrib.Tasks.BizTalk {
                     // ensure we found a matching send port
                     if (sendPorts.Count == 0) {
                         throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                            "Send port \"{0}\" does not exist on \"{0}\".", 
+                            "Send port \"{0}\" does not exist on \"{1}\".", 
                             PortName, Server), Location);
                     }
 
@@ -159,7 +159,7 @@ namespace NAnt.Contrib.Tasks.BizTalk {
                                 ReportActionFailure("stopping", ex, FailOnError);
                             }
                         }
-            						
+
                         if (Action == SendPortAction.Start || Action == SendPortAction.Restart) {
                             Log(Level.Verbose, "Starting \"{0}\" on \"{1}\"...",
                                 PortName, Server);
