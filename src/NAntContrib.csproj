@@ -130,6 +130,11 @@
                     AssemblyName = "System.Management"
                     HintPath = "G:\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.Management.dll"
                 />
+                <Reference
+                    Name = "System.ServiceProcess"
+                    AssemblyName = "System.ServiceProcess"
+                    HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.ServiceProcess.dll"
+                />
             </References>
         </Build>
         <Files>
@@ -141,6 +146,16 @@
                 />
                 <File
                     RelPath = "CommonAssemblyInfo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Functions\FileSetFunctions.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Functions\ServiceFunctions.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
