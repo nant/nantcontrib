@@ -14,31 +14,30 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// Bill Martin
 //
+// Bill Martin
 
 using System;
 using System.Text;
+
 using NAnt.Core;
 using NAnt.Core.Types;
 using NAnt.Core.Attributes;
 
 namespace NAnt.Contrib.Functions {
-    
     /// <summary>
     /// Provides methods for interrogating Filesets.
     /// </summary>
     [FunctionSet("fileset", "FileSet")]
     public class FileSetFunctions : FunctionSetBase {
-        
         #region Public Instance Constructors
-        
+
         public FileSetFunctions(Project project, PropertyDictionary properties) : base(project, properties) { }
-        
+
         #endregion Public Instance Constructors
 
         #region Public Instance Methods
-        
+
         /// <summary>
         /// Determines the number of files within a <see cref="FileSet"/>.
         /// </summary>
@@ -102,6 +101,7 @@ namespace NAnt.Contrib.Functions {
             //Otherwise return whether or not the fileset contains files.
             return (fs.FileNames.Count > 0);
         }
+
         /// <summary>
         /// Returns a delimited string of all the filenames within a <see cref="FileSet"/> with each filename
         /// separated by the specified delimiter string.
@@ -149,6 +149,7 @@ namespace NAnt.Contrib.Functions {
             //Now return the string representation of the FileSet.
             return sb.ToString();
         }
+
         #endregion Public Instance Methods
     }
 }
