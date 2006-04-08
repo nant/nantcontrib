@@ -54,7 +54,7 @@ namespace NAnt.Contrib.Functions {
         ///     <include name="**/*.cs">
         /// </fileset>
         /// <echo message="FileSet contains ${fileset::get-file-count('test.fileset')} files." />
-        /// ]]>
+        ///     ]]>
         ///   </code>
         /// </example>
         [Function("get-file-count")]
@@ -87,7 +87,7 @@ namespace NAnt.Contrib.Functions {
         /// <if test="${fileset::has-files('test.fileset')}">
         ///     <dostuff... />
         /// </if>
-        /// ]]>
+        ///     ]]>
         ///   </code>
         /// </example>
         [Function("has-files")]
@@ -120,16 +120,16 @@ namespace NAnt.Contrib.Functions {
         ///     <include name="**/*.cs">
         /// </fileset>
         /// <echo message="${fileset::to-string('test.fileset', ' | ')}">
-        /// ]]>
+        ///     ]]>
         ///   </code>
         /// </example>
         [Function("to-string")]
-        public string ToString(string fileset, string delimiter){
+        public string ToString(string fileset, string delimiter) {
             //Try to retrieve the specified fileset from the Data References on the project
             FileSet fs = base.Project.DataTypeReferences[fileset] as FileSet;
             
             //If the value was missing or the referenced type was not a fileset, then throw an exception
-            if (fs == null){
+            if (fs == null) {
                 throw new ArgumentException(string.Format("'{0}' is not a valid fileset reference", fileset));
             }
 
@@ -138,11 +138,11 @@ namespace NAnt.Contrib.Functions {
 
             //This is a loop as we need to omit the delimiter on the last element, and it's easier 
             //to check the last element with a for loop than in a foreach loop.
-            for (int i = 0; i < fs.FileNames.Count; i++){
+            for (int i = 0; i < fs.FileNames.Count; i++) {
                 string file = fs.FileNames[i];
                 sb.Append(file);
                 //if this is not the last element, then append the delimiter
-                if (i < fs.FileNames.Count - 1){
+                if (i < fs.FileNames.Count - 1) {
                     sb.Append(delimiter);
                 }
             }
