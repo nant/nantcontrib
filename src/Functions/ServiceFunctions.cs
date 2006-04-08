@@ -139,7 +139,7 @@ namespace NAnt.Contrib.Functions {
         }
 
         /// <summary>
-        /// Gets the status of the service.
+        /// Gets the status of the specified service.
         /// </summary>
         /// <param name="service">The short name that identifies the service to the system.</param>
         /// <param name="machineName">The computer on which the service resides.</param>
@@ -198,6 +198,35 @@ namespace NAnt.Contrib.Functions {
             }
         }
 
+        /// <summary>
+        /// Gets the friendly name of the specified service.
+        /// </summary>
+        /// <param name="service">The short name that identifies the service to the system.</param>
+        /// <param name="machineName">The computer on which the service resides.</param>
+        /// <returns>
+        /// The friendly name of the service, which can be used to identify the service.
+        /// </returns>
+        [Function("get-display-name")]
+        public static string GetDisplayName(string service, string machineName) {
+            using (ServiceController sc = GetServiceController(service, machineName)) {
+                return sc.DisplayName;
+            }
+        }
+
+        /// <summary>
+        /// Gets the name that identifies the specified service 
+        /// </summary>
+        /// <param name="service">The short name that identifies the service to the system.</param>
+        /// <param name="machineName">The computer on which the service resides.</param>
+        /// <returns>
+        /// The name that identifies the service.
+        /// </returns>
+        [Function("get-service-name")]
+        public static string GetServiceName(string service, string machineName) {
+            using (ServiceController sc = GetServiceController(service, machineName)) {
+                return sc.ServiceName;
+            }
+        }
 
         #endregion Public Instance Methods
 
