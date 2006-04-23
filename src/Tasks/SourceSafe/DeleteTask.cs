@@ -83,7 +83,7 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
     public sealed class DeleteTask : BaseTask {
         #region Private Instance Fields
         
-        private bool _destroy = false;
+        private bool _destroy;
 
         #endregion Private Instance Fields
 
@@ -105,24 +105,24 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         #region Public Instance Methods
 
         /// <summary>
-        /// Deletes the item unless <see cref="Destroy"/> is <c>True</c>
+        /// Deletes the item unless <see cref="Destroy"/> is <see langword="true" />
         /// then the item is destroyed.
         /// </summary>
         public void DeleteItem() {
-            if( _destroy ) {
-                try {
-                    Item.Deleted=true;
-                    Log(Level.Info, "Deleted '{0}'.", Path);
-                } catch (Exception ex) {
-                    throw new BuildException("The delete operation failed.", 
-                        Location, ex);
-                }
-            } else {
+            if (Destroy) {
                 try {
                     Item.Destroy();
                     Log(Level.Info, "Destroyed '{0}'.", Path);
                 } catch (Exception ex) {
                     throw new BuildException("The destroy operation failed.", 
+                        Location, ex);
+                }
+            } else {
+                try {
+                    Item.Deleted = true;
+                    Log(Level.Info, "Deleted '{0}'.", Path);
+                } catch (Exception ex) {
+                    throw new BuildException("The delete operation failed.", 
                         Location, ex);
                 }
             }
@@ -135,6 +135,5 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
 
             this.DeleteItem();
         }
-
     }
 }
