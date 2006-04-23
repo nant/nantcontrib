@@ -131,7 +131,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Tasks\SourceSafe\DeleteTaskTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Tasks\SourceSafe\GetTaskTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\SourceSafe\MockVssItem.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\SourceSafe\MockVssItems.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
