@@ -141,9 +141,9 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         }
 
         /// <summary>
-        /// Determines whether files marked "deleted" in the
-        /// repository will be removed from the local copy.
-        /// The default is <see langword="false" />.
+        /// If <see cref="Path" /> refers to a project, determines whether files
+        /// marked "deleted" in the repository will be removed from the local
+        /// copy. The default is <see langword="false" />.
         /// </summary>
         [TaskAttribute("removedeleted")]
         [BooleanValidator()]
@@ -229,7 +229,7 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         /// the scan.
         /// </summary>
         public void RemoveDeletedFromLocalImage() {
-            if(RemoveDeleted) {
+            if (RemoveDeleted && IsProject(Item)) {
                 Log(Level.Info, "Removing deleted files from local image...");
                 RemoveDeletedFromLocalImage(Item, LocalPath.FullName);
                 Log(Level.Info, "Removed {0} deleted files from local image.", _deleteCount);
@@ -247,18 +247,17 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
             IVSSItems items = item.get_Items(true);
 
             Hashtable deletedTable = BuildDeletedTable(items);
-            
+        
             IEnumerator ie = items.GetEnumerator();
-
-            while(ie.MoveNext()) {
+            while (ie.MoveNext()) {
                 IVSSItem i = (IVSSItem) ie.Current;
                 string localPath = System.IO.Path.Combine(localPathPrefix, i.Name);
 
-                if(IsTrulyDeleted(deletedTable, i) && Exists(localPath)) {
+                if (IsTrulyDeleted(deletedTable, i) && Exists(localPath)) {
                     SetToWriteable(localPath);
                     Delete(localPath);
                 } else {
-                    if(IsProject(i) && Recursive) {
+                    if (IsProject(i) && Recursive) {
                         RemoveDeletedFromLocalImage(i, System.IO.Path.Combine(localPathPrefix, i.Name));
                     }
                 }
@@ -269,7 +268,7 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
             Hashtable result = new Hashtable(new CaseInsensitiveHashCodeProvider(), new CaseInsensitiveComparer());
 
             IEnumerator ie = items.GetEnumerator();
-            while(ie.MoveNext()) {
+            while (ie.MoveNext()) {
                 IVSSItem item = (IVSSItem) ie.Current;
                 bool currentState = result[item.Name] == null ? true : (bool) result[item.Name];
                 result[item.Name] = currentState & item.Deleted;
