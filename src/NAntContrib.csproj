@@ -778,6 +778,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Tasks\SourceSafe\DeleteTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Tasks\SourceSafe\DiffTask.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
