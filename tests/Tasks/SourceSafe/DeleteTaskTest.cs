@@ -79,8 +79,8 @@ namespace Tests.NAnt.Contrib.Tasks.SourceSafe {
             _deleteTask.Destroy = false;
             _deleteTask.DeleteItem();
 
-            Assert.IsFalse(_project.Deleted, "Delete did not occur");
-            Assert.IsTrue(_project.IsDestroyed, "Item should not have been Destroyed");
+            Assert.IsTrue(_project.Deleted, "Delete did not occur");
+            Assert.IsFalse(_project.IsDestroyed, "Item should not have been Destroyed");
         }
 
         /// <summary>
@@ -91,8 +91,8 @@ namespace Tests.NAnt.Contrib.Tasks.SourceSafe {
             _deleteTask.Destroy = true;
             _deleteTask.DeleteItem();
 
-            Assert.IsFalse(_project.IsDestroyed, "Destroy did not occur");
-            Assert.IsTrue(_project.Deleted, "Item should not have been Deleted");
+            Assert.IsTrue(_project.IsDestroyed, "Destroy did not occur");
+            Assert.IsFalse(_project.Deleted, "Item should not have been Deleted");
         }
    }
 }
