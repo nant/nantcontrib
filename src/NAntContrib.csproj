@@ -279,11 +279,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Tasks\RegasmTask.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Tasks\SchemaValidatedTask.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
