@@ -558,6 +558,27 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Tasks\NUnit2Report\NUnit2ReportTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tasks\NUnit2Report\xsl\i18n.xsl"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Tasks\NUnit2Report\xsl\NUnit-Frame.xsl"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Tasks\NUnit2Report\xsl\NUnit-NoFrame.xsl"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Tasks\NUnit2Report\xsl\toolkit.xsl"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "Tasks\Perforce\P4Add.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -999,6 +1020,11 @@
                 />
                 <File
                     RelPath = "Types\ClearCase\TypeKind.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Types\NUnit2Report\ReportFormat.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
