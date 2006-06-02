@@ -170,7 +170,7 @@
     </target>
 
     <!-- Build the NAnt.Contrib.Tasks.dll library -->
-    <target name="build" depends="prepare, prepare.slingshot, compile.schemas, create-common-assemblyinfo, nunit2report" description="compiles the source code">
+    <target name="build" depends="prepare, prepare.slingshot, compile.schemas, create-common-assemblyinfo" description="compiles the source code">
         <!--
             The copying of the xsd would not have been necessary if <resourcefileset>
             supported a <resource> child element that allowed the manifest resource 
@@ -195,7 +195,6 @@
                 <include name="${build.dir}/schema/**/*.cs" />
 
                 <exclude name="${src.dir}/tasks/SharePoint/*.cs" />
-                <exclude name="${src.dir}/tasks/NUnit2Report/**/*.cs" />
             </sources>
             <references>
                 <include name="${nant.dir}/bin/NAnt.Core.dll" />
@@ -214,6 +213,9 @@
                 <include name="${src.dir}/xsl/**" />
                 <include name="${build.dir}/schema/Msi/NAnt.Contrib.Schemas.Msi" />
             </resources>
+            <resources basedir="${src.dir}/Tasks/NUnit2Report/xsl" prefix="xslt.">
+                <include name="**/*.xsl" />
+            </resources>
         </csc>
     </target>
     
@@ -225,17 +227,6 @@
         <copy file="${tools.dir}/SLiNgshoT/build/Release/SLiNgshoT.exe" tofile="${build.dir}/bin/SLiNgshoT.exe"/>
     </target>
     
-    <target name="nunit2report">
-       <nant buildfile="src/Tasks/NUnit2Report/default.build">
-            <properties>
-                <property name="build.dir" value="${build.dir}\bin" />
-                <property name="output.dir" value="${build.dir}\bin" />
-                <property name="nant.dir" value="${nant.dir}" />
-                <property name="debug" value="${build.debug}" />
-            </properties>
-        </nant>
-    </target>
-
     <!-- Build the unit tests library -->
     <target name="buildtests" depends="build" description="Compiles the NUnit Tests">
         <!-- copy NAnt assemblies needed for the tests to run -->
@@ -336,7 +327,6 @@
         <ndoc>
             <assemblies basedir="${build.dir}/bin" failonempty="true">
                 <include name="NAnt.Contrib.Tasks.dll" />
-                <include name="NAnt.NUnit2ReportTasks.dll" />
                 <!-- 
                     we need to add the NAnt.Core assembly too in order to provide
                     doc summaries and add links to NAnt types and tasks
