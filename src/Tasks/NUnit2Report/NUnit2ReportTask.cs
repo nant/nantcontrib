@@ -23,86 +23,74 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//Gilles Bayon (gilles.bayon@laposte.net)
-//Ian Maclean (imaclean@gmail.com)
+// Gilles Bayon (gilles.bayon@laposte.net)
+// Ian Maclean (imaclean@gmail.com)
+// Gert Driesen (drieseng@users.sourceforge.net)
 
 using System;
 using System.Collections;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Xml;
 using System.Xml.XPath;
 using System.Xml.Xsl;
+
 using NAnt.Core;
 using NAnt.Core.Attributes;
 using NAnt.Core.Types;
 using NAnt.Core.Util;
 
-namespace NAntContrib.NUnit2ReportTasks {
+using NAnt.Contrib.Types.NUnit2Report;
 
+namespace NAnt.Contrib.Tasks.NUnit2Report {
     /// <summary>
     /// A task that generates a summary HTML
     /// from a set of NUnit xml report files.
     /// </summary>
     /// <remarks>
-    /// This task can generate a combined HTML report out of a
-    /// set of NUnit result files generated using the
-    /// XML Result Formatter.
-    ///
-    /// By default, NUnitReport will generate the combined
-    /// report using the NUnitSummary.xsl file located at the
-    /// assembly's location, but you can specify a different
-    /// XSLT template to use with the <code>xslfile</code>
-    /// attribute.
-    ///
-    /// Also, all the properties defined in the current
-    /// project will be passed down to the XSLT file as
-    /// template parameters, so you can access properties
-    /// such as nant.project.name, nant.version, etc.
+    ///   <para>
+    ///   This task can generate a combined HTML report out of a set of NUnit
+    ///   result files generated using the XML Result Formatter.
+    ///   </para>
+    ///   <para>
+    ///   All the properties defined in the current project will be passed
+    ///   down to the XSLT file as template parameters, so you can access 
+    ///   properties such as nant.project.name, nant.version, etc.
+    ///   </para>
     /// </remarks>
     /// <example>
-    ///   <code><![CDATA[
-    ///   <nunit2report
-    ///         out="${outputdir}\TestSummary.html"
-    ///         >
-    ///      <fileset>
+    ///   <code>
+    ///     <![CDATA[
+    /// <nunit2report todir="${outputdir}">
+    ///     <fileset>
     ///         <includes name="${outputdir}\results.xml" />
-    ///      </fileset>
-    ///   </nunit2report>
-    ///
-    ///   ]]></code>
+    ///     </fileset>
+    /// </nunit2report>
+    ///     ]]>
+    ///   </code>
     /// </example>
     [TaskName("nunit2report")]
     public class NUnit2ReportTask : Task  {
-        
-        #region static declarations
-        private  static readonly ArrayList resFiles = new ArrayList(new string[3]{"toolkit.xsl", "Traductions.xml", "NUnit-Frame.xsl"});  
-        #endregion
-        
         #region Private Static Fields
 
-        private const string XSL_DEF_FILE_NOFRAME = "NUnit-NoFrame.xsl";
-        private const string XSL_I18N_FILE = "i18n.xsl"; 
-        
+        private static readonly ArrayList _resFiles = new ArrayList(new string[3]{"toolkit.xsl", "Traductions.xml", "NUnit-Frame.xsl"});  
+
         #endregion Private Static Fields
 
         #region Private Instance Fields
 
-        private string _outFilename="index.htm";
-        private string _todir="";
-     
+        private DirectoryInfo _toDir;
         private FileSet _fileset = new FileSet();
         private XmlDocument _fileSetSummary;
-     
         private FileSet _summaries = new FileSet();
         private string _tempXmlFileSummarie = "";
      
-        private string _xslFile = null;
-        private string _i18nXsl = null;
+        private FileInfo _xslFile;
         private string _openDescription ="no";
         private string _language = "";
-        private string _format = "noframes";
+        private ReportFormat _format = ReportFormat.NoFrames;
         private XsltArgumentList _xsltArgs;
 
         #endregion Private Instance Fields
@@ -110,51 +98,46 @@ namespace NAntContrib.NUnit2ReportTasks {
         #region Public Instance Properties
 
         /// <summary>
-        /// The format of the generated report.
-        /// Must be "noframes" or "frames".
-        /// Default to "noframes".
+        /// The format of the generated report. The default is 
+        /// <see cref="ReportFormat.NoFrames" />.
         /// </summary>
-        [TaskAttribute("format", Required=false)]
-        public string Format {
+        [TaskAttribute("format")]
+        public ReportFormat Format {
             get { return _format; }
-            set { _format = StringUtils.ConvertEmptyToNull(value); }
+            set { _format = value; }
         }
 
         /// <summary>
         /// The output language.
         /// </summary>
-        [TaskAttribute("lang", Required=false)]
+        [TaskAttribute("lang")]
         public string Language {
             get { return _language; }
             set { _language = value; }
         }
-    
+
         /// <summary>
         /// Open all description method. Default to "false".
         /// </summary>
-        [TaskAttribute("opendesc", Required=false)]
+        [TaskAttribute("opendesc")]
         public string OpenDescription {
             get { return _openDescription; }
             set { _openDescription = StringUtils.ConvertEmptyToNull(value); }
         }
-    
+
         /// <summary>
-        /// The directory where the files resulting from the transformation should be written to.
+        /// The directory where the files resulting from the transformation
+        /// should be written to. The default is the project's base directory.
         /// </summary>
-        [TaskAttribute("todir", Required=false)]
-        public string Todir {
-            get { return _todir; }
-            set { _todir = value; }
-        }
-    
-        /// <summary>
-        /// Index of the Output HTML file(s).
-        /// Default to "index.htm".
-        /// </summary>
-        [TaskAttribute("out", Required=false)]
-        public string OutFilename {
-            get { return _outFilename; }
-            set { _outFilename = StringUtils.ConvertEmptyToNull(value); }
+        [TaskAttribute("todir")]
+        public DirectoryInfo ToDir {
+            get {
+                if (_toDir == null) {
+                    return new DirectoryInfo(Project.BaseDirectory);
+                }
+                return _toDir;
+            }
+            set { _toDir = value; }
         }
 
         /// <summary>
@@ -164,21 +147,23 @@ namespace NAntContrib.NUnit2ReportTasks {
         public FileSet XmlFileSet {
             get { return _fileset; }
         }
-    
+
         /// <summary>
-        /// Set of Summary XML files to use as input
+        /// Set of summary XML files to use as input.
         /// </summary>
-        [BuildElement("summaries")]
+        //[BuildElement("summaries")]
         public FileSet XmlSummaries {
             get { return _summaries; }
         }
+
         /// <summary>
-        /// XSLT file used to generate the report.
+        /// XSLT file used to generate the report if <see cref="Format" /> is 
+        /// <see cref="ReportFormat.NoFrames" />.
         /// </summary>
-        [TaskAttribute("xslfile", Required=false)]
-        public string XslFile { 
-            get { return _xslFile; } 
-            set { _xslFile = StringUtils.ConvertEmptyToNull(value); } 
+        [TaskAttribute("xslfile")]
+        public FileInfo XslFile {
+            get { return _xslFile; }
+            set { _xslFile = value; }
         }
 
         #endregion Public Instance Properties
@@ -190,31 +175,24 @@ namespace NAntContrib.NUnit2ReportTasks {
         ///</summary>
         ///<param name="taskNode">Xml node used to define this task instance.</param>
         protected override void InitializeTask(XmlNode taskNode) {
-
-            if (Format=="noframes") {
-                // Use the default iff the user didn't set an xslt file.
-                if ( _xslFile == null )    {
-                    _xslFile = XSL_DEF_FILE_NOFRAME;
+            if (Format == ReportFormat.NoFrames) {
+                if (XslFile != null && !XslFile.Exists) {
+                    throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                        "The XSLT file \"{0}\" could not be found.",
+                        XslFile.FullName), Location);
                 }
             }
-            _i18nXsl = XSL_I18N_FILE;
 
             if (XmlFileSet.FileNames.Count == 0) {
                 throw new BuildException("NUnitReport fileset cannot be empty!", Location);
             }
 
-            foreach ( string file in XmlSummaries.FileNames ) {
+            foreach (string file in XmlSummaries.FileNames) {
                 _tempXmlFileSummarie = file;
             }
 
-            // Get the Nant, OS parameters
+            // Get the NAnt, OS parameters
             _xsltArgs = GetPropertyList();
-
-            //Create directory if ...
-            if (Todir!="") {
-                Directory.CreateDirectory(Todir);
-            }
-
         }
 
         /// <summary>
@@ -223,60 +201,69 @@ namespace NAntContrib.NUnit2ReportTasks {
         protected override void ExecuteTask() {
             _fileSetSummary = CreateSummaryXmlDoc();
     
-            foreach ( string file in XmlFileSet.FileNames ) {
+            foreach (string file in XmlFileSet.FileNames) {
                 XmlDocument source = new XmlDocument();
                 source.Load(file);
                 XmlNode node = _fileSetSummary.ImportNode(source.DocumentElement, true);
                 _fileSetSummary.DocumentElement.AppendChild(node);
             }
 
-            // prepare properties and transforms
+            Log(Level.Info, "Generating report...");
+
             try {
-                if ( Format=="noframes") {
-         
+                // ensure destination directory exists
+                if (!ToDir.Exists) {
+                    ToDir.Create();
+                    ToDir.Refresh();
+                }
+
+                if (Format == ReportFormat.NoFrames) {
                     XslTransform xslTransform = new XslTransform();
-                   
                     XmlResolver resolver = new LocalResXmlResolver();
-                    xslTransform.Load(LoadStyleSheet(_xslFile), resolver);            
-         
+
+                    if (XslFile != null) {
+                        xslTransform.Load(LoadStyleSheet(XslFile), resolver);
+                    } else {
+                        xslTransform.Load(LoadStyleSheet("NUnit-NoFrame.xsl"), resolver);
+                    }
+
                     // xmlReader hold the first transformation
                     XmlReader xmlReader = xslTransform.Transform(_fileSetSummary, _xsltArgs);
-         
-                    //  i18n 
+
+                    // i18n
                     XsltArgumentList xsltI18nArgs = new XsltArgumentList();
                     xsltI18nArgs.AddParam("lang", "",Language);
-         
+
+                    // Load the i18n stylesheet
                     XslTransform xslt = new XslTransform();
-                    //Load the i18n stylesheet.
-                    xslt.Load(LoadStyleSheet(_i18nXsl),resolver);
-         
+                    xslt.Load(LoadStyleSheet("i18n.xsl"), resolver);
+
                     XPathDocument xmlDoc;
                     xmlDoc = new XPathDocument(xmlReader);
-         
-                    XmlTextWriter writerFinal = new XmlTextWriter(Path.Combine(Todir, OutFilename), 
+
+                    XmlTextWriter writerFinal = new XmlTextWriter(
+                        Path.Combine(ToDir.FullName, "index.html"), 
                         Encoding.GetEncoding("ISO-8859-1"));
-                    
+
                     // Apply the second transform to xmlReader to final ouput
                     xslt.Transform(xmlDoc, xsltI18nArgs, writerFinal);
-         
+
                     xmlReader.Close();
                     writerFinal.Close();
-                }
-                else {
-                    StringReader stream;
+                } else {
                     XmlTextReader reader = null;
-    
+
                     try {
                         // create the index.html
-                        stream = new StringReader("<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='1.0' >" +
+                        StringReader stream = new StringReader("<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='1.0' >" +
                             "<xsl:output method='html' indent='yes' encoding='ISO-8859-1'/>" +
                             "<xsl:include href=\"NUnit-Frame.xsl\"/>" +
                             "<xsl:template match=\"test-results\">" +
                             "   <xsl:call-template name=\"index.html\"/>" +
                             " </xsl:template>" +
                             " </xsl:stylesheet>");
-                        Write (stream,Path.Combine(Todir,OutFilename));
-    
+                        Write (stream, Path.Combine(ToDir.FullName, "index.html"));
+
                         // create the stylesheet.css
                         stream = new StringReader("<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='1.0' >" +
                             "<xsl:output method='html' indent='yes' encoding='ISO-8859-1'/>" +
@@ -285,8 +272,8 @@ namespace NAntContrib.NUnit2ReportTasks {
                             "   <xsl:call-template name=\"stylesheet.css\"/>" +
                             " </xsl:template>" +
                             " </xsl:stylesheet>");
-                        Write (stream,Path.Combine(Todir,"stylesheet.css"));
-    
+                        Write (stream, Path.Combine(ToDir.FullName, "stylesheet.css"));
+
                         // create the overview-summary.html at the root
                         stream = new StringReader("<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='1.0' >" +
                             "<xsl:output method='html' indent='yes' encoding='ISO-8859-1'/>" +
@@ -295,9 +282,8 @@ namespace NAntContrib.NUnit2ReportTasks {
                             "    <xsl:call-template name=\"overview.packages\"/>" +
                             " </xsl:template>" +
                             " </xsl:stylesheet>");
-                        Write (stream,Path.Combine(Todir,"overview-summary.html"));
-    
-    
+                        Write (stream, Path.Combine(ToDir.FullName, "overview-summary.html"));
+
                         // create the allclasses-frame.html at the root
                         stream = new StringReader("<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='1.0' >" +
                             "<xsl:output method='html' indent='yes' encoding='ISO-8859-1'/>" +
@@ -306,8 +292,8 @@ namespace NAntContrib.NUnit2ReportTasks {
                             "    <xsl:call-template name=\"all.classes\"/>" +
                             " </xsl:template>" +
                             " </xsl:stylesheet>");
-                        Write (stream,Path.Combine(Todir,"allclasses-frame.html"));
-    
+                        Write (stream, Path.Combine(ToDir.FullName, "allclasses-frame.html"));
+
                         // create the overview-frame.html at the root
                         stream = new StringReader("<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='1.0' >" +
                             "<xsl:output method='html' indent='yes' encoding='ISO-8859-1'/>" +
@@ -316,48 +302,49 @@ namespace NAntContrib.NUnit2ReportTasks {
                             "    <xsl:call-template name=\"all.packages\"/>" +
                             " </xsl:template>" +
                             " </xsl:stylesheet>");
-                        Write (stream,Path.Combine(Todir,"overview-frame.html"));
-    
-                        // Create directory
-                        string path ="";
-    
-                        XPathNavigator xpathNavigator = _fileSetSummary.CreateNavigator(); //doc.CreateNavigator();
-    
+                        Write (stream, Path.Combine(ToDir.FullName, "overview-frame.html"));
+
+                        XPathNavigator xpathNavigator = _fileSetSummary.CreateNavigator();
+
                         // Get All the test suite containing test-case.
                         XPathExpression expr = xpathNavigator.Compile("//test-suite[(child::results/test-case)]");
-    
-                        XPathNodeIterator iterator = xpathNavigator.Select(expr);
-                        string directory="";
-                        string testSuiteName = "";
-    
-                        while (iterator.MoveNext()) {
-                            XPathNavigator xpathNavigator2 = iterator.Current;
-                            testSuiteName = iterator.Current.GetAttribute("name","");
-                               
-                            Log(Level.Debug,"Test case : "+ testSuiteName);
 
+                        XPathNodeIterator iterator = xpathNavigator.Select(expr);
+                        while (iterator.MoveNext()) {
+                            // output directory
+                            string path = "";
+
+                            XPathNavigator xpathNavigator2 = iterator.Current;
+                            string testSuiteName = iterator.Current.GetAttribute("name", "");
+                               
                             // Get get the path for the current test-suite.
                             XPathNodeIterator iterator2 = xpathNavigator2.SelectAncestors("", "", true);
-                            path = "";
                             string parent = "";
                             int parentIndex = -1;
-    
+
                             while (iterator2.MoveNext()) {
-                                directory = iterator2.Current.GetAttribute("name","");
-                                if (directory!="" && directory.IndexOf(".dll")<0) {
-                                    path = directory+"/"+path;
+                                string directory = iterator2.Current.GetAttribute("name","");
+                                if (directory != "" && directory.IndexOf(".dll") < 0) {
+                                    path = directory + "/" + path;
                                 }
-                                if (parentIndex==1) {
+                                if (parentIndex == 1) {
                                     parent = directory;
                                 }
                                 parentIndex++;
                             }
-                            Directory.CreateDirectory(Path.Combine(Todir,path));// path = xx/yy/zz                                                        
-                            
+
+                            // resolve to absolute path
+                            path = Path.Combine(ToDir.FullName, path);
+
+                            // ensure directory exists
+                            if (!Directory.Exists(path)) {
+                                Directory.CreateDirectory(path);
+                            }
+
                             // Build the "testSuiteName".html file
                             // Correct MockError duplicate testName !
                             // test-suite[@name='MockTestFixture' and ancestor::test-suite[@name='Assemblies'][position()=last()]]
-    
+
                             stream = new StringReader("<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='1.0' >" +
                                 "<xsl:output method='html' indent='yes' encoding='ISO-8859-1'/>" +
                                 "<xsl:include href=\"NUnit-Frame.xsl\"/>" +
@@ -369,22 +356,12 @@ namespace NAntContrib.NUnit2ReportTasks {
                                 "    </xsl:for-each>" +
                                 " </xsl:template>" +
                                 " </xsl:stylesheet>");
-                            Write (stream, Path.Combine( Path.Combine(Todir,path) ,testSuiteName+".html") );
-    
-                            Log(Level.Debug,"dir={0} Generating {1}.html", Todir+path, testSuiteName );
-                            
-                        }
-                        Log(Level.Info,"Processing ...");
+                            Write(stream, Path.Combine(path, testSuiteName + ".html"));
 
-    
-                    }
-    
-                    catch (Exception e) {
-                        Console.WriteLine ("Exception: {0}", e.ToString());
-                    }
-    
-                    finally {
-                        Log(Level.Debug,"Processing of stream complete.");
+                            Log(Level.Debug,"dir={0} Generating {1}.html", path, testSuiteName);
+                        }
+                    } finally {
+                        Log(Level.Debug, "Processing of stream complete.");
 
                         // Finished with XmlTextReader
                         if (reader != null) {
@@ -392,9 +369,8 @@ namespace NAntContrib.NUnit2ReportTasks {
                         }
                     }
                 }
-            }
-            catch (Exception e) {
-                throw new BuildException(e.Message, Location);
+            } catch (Exception ex) {
+                throw new BuildException("Failure generating report.", Location, ex);
             }
         }
 
@@ -406,19 +382,28 @@ namespace NAntContrib.NUnit2ReportTasks {
         /// Load a stylesheet from the assemblies resource stream.
         /// </summary>
         ///<param name="xslFileName">File name of the file to extract.</param>
-        protected XmlDocument LoadStyleSheet(string xslFileName) {
+        protected XPathDocument LoadStyleSheet(string xslFileName) {
             Stream xsltStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(
                 string.Format("xslt.{0}", xslFileName) );
             if (xsltStream == null) {
-                throw new Exception(string.Format("Missing '{0}' Resource Stream", xslFileName));
+                throw new BuildException(string.Format("Missing '{0}' resource stream",
+                    xslFileName), Location);
             }
 
-            XmlTextReader reader = new XmlTextReader(xsltStream, XmlNodeType.Document,null);
+            XmlTextReader xtr = new XmlTextReader(xsltStream, XmlNodeType.Document, null);
+            return new XPathDocument(xtr);
+        }
 
-            //first load in an XmlDocument so we can set the appropriate nant-namespace
-            XmlDocument xsltDoc = new XmlDocument();
-            xsltDoc.Load(reader);
-            return xsltDoc;
+        /// <summary>
+        /// Load a stylesheet from the file system.
+        /// </summary>
+        ///<param name="xslFile">The XSLT file to load.</param>
+        protected XPathDocument LoadStyleSheet(FileInfo xslFile) {
+            Stream stream = new FileStream(xslFile.FullName, FileMode.Open,
+                FileAccess.Read);
+
+            XmlTextReader xtr = new XmlTextReader(stream);
+            return new XPathDocument(xtr);
         }
 
         /// <summary>
@@ -445,19 +430,13 @@ namespace NAntContrib.NUnit2ReportTasks {
             XsltArgumentList args = new XsltArgumentList();
 
             Log(Level.Verbose, "Processing XsltArgumentList");
-            foreach ( DictionaryEntry entry in Project.Properties ) {
-    
-                if ((string)entry.Value!=null) {
-                
-                    try {
-                        args.AddParam((string)entry.Key, "", (string)entry.Value);
-                    }
-                    catch(ArgumentException aex) {
-                        Console.WriteLine("Invalid Xslt parameter {0}", aex);
-                    }
+            foreach (DictionaryEntry entry in Project.Properties) {
+                string value = entry.Value as string;
+                if (value != null) {
+                    args.AddParam((string) entry.Key, "", value);
                 }
             }
-    
+
             // Add argument to the C# XML comment file
             args.AddParam("summary.xml", "", _tempXmlFileSummarie);
             // Add open.description argument
@@ -473,35 +452,35 @@ namespace NAntContrib.NUnit2ReportTasks {
         /// <param name="fileName"></param>
         private void Write(StringReader stream, string fileName) {
             XmlTextReader reader = null;
-    
+
             // Load the XmlTextReader from the stream
             reader = new XmlTextReader(stream);
             XslTransform xslTransform = new XslTransform();
             XmlResolver resolver = new LocalResXmlResolver();
-            
+
             //Load the stylesheet from the stream.
             xslTransform.Load(reader, resolver);
-    
+
             XPathDocument xmlDoc;
             
             // xmlReader hold the first transformation
-            XmlReader xmlReader = xslTransform.Transform(_fileSetSummary, _xsltArgs);//(xmlDoc, _xsltArgs);
-    
-            //  i18n
+            XmlReader xmlReader = xslTransform.Transform(_fileSetSummary, _xsltArgs);
+
+            // i18n
             XsltArgumentList xsltI18nArgs = new XsltArgumentList();
             xsltI18nArgs.AddParam("lang", "", Language);
-    
+
             XslTransform xslt = new XslTransform();
-    
-            //Load the stylesheet.
-            xslt.Load(LoadStyleSheet(_i18nXsl), resolver);
-    
+
+            // Load the stylesheet.
+            xslt.Load(LoadStyleSheet("i18n.xsl"), resolver);
+
             xmlDoc = new XPathDocument(xmlReader);
-    
+
             XmlTextWriter writerFinal = new XmlTextWriter(fileName, Encoding.GetEncoding("ISO-8859-1"));
             // Apply the second transform to xmlReader to final ouput
             xslt.Transform(xmlDoc, xsltI18nArgs, writerFinal);
-    
+
             xmlReader.Close();
             writerFinal.Close();
         }
@@ -524,20 +503,19 @@ namespace NAntContrib.NUnit2ReportTasks {
             /// <returns></returns>
             public override object GetEntity(Uri absoluteUri, string role, Type objToReturn) {
                 string filename = absoluteUri.Segments[absoluteUri.Segments.Length-1];
-                
+
                 if (absoluteUri.Scheme == SCHEME_MRES || 
                     (absoluteUri.Scheme == "file" 
                         && ! File.Exists(absoluteUri.AbsolutePath)
-                        && resFiles.Contains(filename) ))  {
+                        && _resFiles.Contains(filename))) {
                     Assembly thisAssm = Assembly.GetExecutingAssembly();
                     //string filename = absoluteUri.Segments[absoluteUri.Segments.Length-1];
                     return thisAssm.GetManifestResourceStream("xslt." + filename);
-                }
-                else {
+                } else {
                     // we don't know how to handle this URI scheme....
                     return base.GetEntity(absoluteUri, role, objToReturn);
                 }
             }
         }
-    } 
+    }
 }
