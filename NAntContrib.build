@@ -411,6 +411,7 @@
             <fileset>
                 <include name="*" />
                 <include name="${src.dir}/**" />
+                <include name="examples/**" />
                 <include name="${tests.dir}/**" />
                 <include name="${tools.dir}/**" />
                 <!-- website -->
@@ -512,6 +513,8 @@
                 <include name="doc/*" />
                 <!-- user manual (no SDK) -->
                 <include name="doc/help/**" />
+                <!-- examples -->
+                <include name="examples/**/*" />
             </fileset>
         </zip>
         <echo message="Created a '${project.config}' source package at file://${project.zip-path.src}" />
@@ -534,6 +537,8 @@
                 <include name="doc/help/**" />
                 <!-- SDK (in HTML Help format) -->
                 <include name="doc/sdk/NAnt-SDK.chm" />
+                <!-- examples -->
+                <include name="examples/**/*" />
 
                 <!-- do not include NAnt.Xsd.Tasks assembly -->
                 <exclude name="bin/NAnt.Xsd.Tasks.*" />
