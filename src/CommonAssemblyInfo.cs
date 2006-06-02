@@ -10,7 +10,7 @@ using System.Reflection;
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: AssemblyConfigurationAttribute("rc4")]
+[assembly: AssemblyConfigurationAttribute("dev")]
 [assembly: AssemblyCompanyAttribute("http://nantcontrib.sourceforge.net")]
 [assembly: AssemblyProductAttribute("NAntContrib")]
 [assembly: AssemblyCopyrightAttribute("Copyright (C) 2001-2006 Gerry Shaw")]
