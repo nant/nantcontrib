@@ -18,68 +18,54 @@
 //
 
 using System;
-using System.Collections;
-using System.Collections.Specialized;
-using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Security.Cryptography;
-using NAnt.Core.Attributes;
-using NAnt.Core;
 
-namespace NAnt.Contrib.Util
-{ 
-   /// <summary>
-   /// Helper class to adapt SQL statements from some
-   /// input into something OLEDB can consume directly
-   /// </summary>
-   public class SqlStatementAdapter
-   {
-      public static readonly string SEPARATOR = Environment.NewLine;
-      private SqlStatementList _list;
+namespace NAnt.Contrib.Util {
+    /// <summary>
+    /// Helper class to adapt SQL statements from some
+    /// input into something OLEDB can consume directly
+    /// </summary>
+    public class SqlStatementAdapter {
+        public static readonly string SEPARATOR = Environment.NewLine;
+        private readonly SqlStatementList _list;
 
+        /// <summary>
+        /// Creates a new instance
+        /// </summary>
+        /// 
+        public SqlStatementAdapter(SqlStatementList stmtList) {
+            _list = stmtList;
+        }
 
-      /// <summary>
-      /// Creates a new instance
-      /// </summary>
-      /// 
-      public SqlStatementAdapter(SqlStatementList stmtList)
-      {
-         _list = stmtList;
-      }
+        /// <summary>
+        /// Adapts a set of Sql statements from a string.
+        /// </summary>
+        /// <param name="sql">A string containing the original sql statements</param>
+        public string AdaptSql(string sql) {
+            StringBuilder newSql = new StringBuilder("");
 
-      /// <summary>
-      /// Adapts a set of Sql statements from a string.
-      /// </summary>
-      /// <param name="sql">A string containing the original sql statements</param>
-      public string AdaptSql(string sql)
-      {
-         StringBuilder newSql = new StringBuilder("");
+            _list.ParseSql(sql);
+            foreach (string s in _list) {
+                newSql.Append(s + SEPARATOR);
+            }
+            return newSql.ToString();
 
-         _list.ParseSql(sql);
-         foreach ( string s in _list ) {
-            newSql.Append(s + SEPARATOR);
-         }
-         return newSql.ToString();
+        }
 
-      }
+        /// <summary>
+        /// Adapts a set of Sql statements from a string.
+        /// </summary>
+        /// <param name="file">Path of file containing all sql statements</param>
+        /// <param name="encoding">The encoding of the file containing the SQL statements.</param>
+        /// <returns>The new instance</returns>
+        public string AdaptSqlFile(string file, Encoding encoding) {
+            StringBuilder newSql = new StringBuilder("");
 
-      /// <summary>
-      /// Adapts a set of Sql statements from a string.
-      /// </summary>
-      /// <param name="file">Path of file containing all sql statements</param>
-      /// <returns>The new instance</returns>
-      public string AdaptSqlFile(string file)
-      {
-         StringBuilder newSql = new StringBuilder("");
-
-         _list.ParseSqlFromFile(file);
-         foreach ( string sql in _list ) {
-            newSql.Append(sql + SEPARATOR);
-         }
-         return newSql.ToString();
-      }
-
-   } // class SqlStatementAdapter
-
-} // namespace NAnt.Contrib.Util
+            _list.ParseSqlFromFile(file, encoding);
+            foreach (string sql in _list) {
+                newSql.Append(sql + SEPARATOR);
+            }
+            return newSql.ToString();
+        }
+    }
+}

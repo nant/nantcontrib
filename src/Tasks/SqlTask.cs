@@ -103,6 +103,7 @@ namespace NAnt.Contrib.Tasks {
         #region Private Instance Fields
 
         private string _connectionString;
+        private Encoding _encoding;
         private string _source;
         private string _delimiter;
         private DelimiterStyle _delimiterStyle = DelimiterStyle.Normal;
@@ -131,6 +132,21 @@ namespace NAnt.Contrib.Tasks {
         public string ConnectionString  {
             get { return _connectionString; }
             set { _connectionString = StringUtils.ConvertEmptyToNull(value); }
+        }
+
+        /// <summary>
+        /// The encoding of the files containing SQL statements. The default is
+        /// the system's current ANSI code page.
+        /// </summary>
+        [TaskAttribute("encoding")]
+        public Encoding Encoding {
+            get {
+                if (_encoding == null) {
+                    _encoding = Encoding.Default;
+                }
+                return _encoding;
+            }
+            set { _encoding = value; }
         }
 
         /// <summary>
@@ -303,7 +319,7 @@ namespace NAnt.Contrib.Tasks {
         protected override void ExecuteTask() {
             if (Output != null) {
                 try  {
-                    if(Append) {
+                    if (Append) {
                         _outputWriter = File.AppendText(Output);
                     } else {
                         _outputWriter = File.CreateText(Output);
@@ -359,7 +375,7 @@ namespace NAnt.Contrib.Tasks {
             if (Source == null) {
                 list.ParseSql(_embeddedSqlStatements);
             } else {
-                list.ParseSqlFromFile(Source);
+                list.ParseSqlFromFile(Source, Encoding);
             }
 
             foreach (string statement in list) {
@@ -402,7 +418,7 @@ namespace NAnt.Contrib.Tasks {
             if (Source == null) {
                 sql = adapter.AdaptSql(_embeddedSqlStatements);
             } else {
-                sql = adapter.AdaptSqlFile(Source);
+                sql = adapter.AdaptSqlFile(Source, Encoding);
             }
 
             // only write messages to the build log if the OutputWriter is not

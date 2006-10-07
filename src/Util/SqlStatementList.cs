@@ -23,8 +23,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Security.Cryptography;
-using NAnt.Core.Attributes;
+
 using NAnt.Core;
 
 namespace NAnt.Contrib.Util {
@@ -47,9 +46,9 @@ namespace NAnt.Contrib.Util {
     /// Helper class to maintain a list of SQL Statements.
     /// </summary>
     public class SqlStatementList : IEnumerable {
-        private StringCollection _statements;
-        private string _delimiter;
-        private DelimiterStyle _style;
+        private readonly StringCollection _statements;
+        private readonly string _delimiter;
+        private readonly DelimiterStyle _style;
         private PropertyDictionary _properties;
 
         /// <summary>
@@ -163,16 +162,11 @@ namespace NAnt.Contrib.Util {
         /// and delimiter style
         /// </summary>
         /// <param name="file">File name</param>
-        public void ParseSqlFromFile(string file) {
-            string statements;
-            StreamReader reader = null;
-            try {
-                reader = new StreamReader(File.OpenRead(file));
-                statements = reader.ReadToEnd();
+        /// <param name="encoding">The encoding of the file containing the SQL statements.</param>
+        public void ParseSqlFromFile(string file, Encoding encoding) {
+            using (StreamReader sr = new StreamReader(File.OpenRead(file), encoding, true)) {
+                string statements = sr.ReadToEnd();
                 ParseSql(statements);
-            } finally {
-                if ( reader != null )
-                    reader.Close();
             }
         }
 
