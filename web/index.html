@@ -5,6 +5,8 @@
         <meta http-equiv="Content-Language" content="en-ca" />
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <link href="style.css" type="text/css" rel="stylesheet" />
+        <link rel="stylesheet" type="text/css" href="tree.css" />
+        <script src="tree.js" type="text/javascript"></script>
     </head>
     <body>
         <table class="NavBar" cellspacing="0" cellpadding="2" width="100%" border="0">
@@ -21,83 +23,479 @@
             NAnt distribution yet or for whatever reason don't belong there. Don't know what
             NAnt is ? Then you need to go <a href="http://nant.sourceforge.net/">here.</a>
         </p>
-        <p>
-            Its also the home of the Slingshot buildfile generator.
-        </p>
-        <h2>News</h2>
-        <p>
-            <img alt=">" src="bullet.gif" />
-            <span style="font-weight:bold; font-style:italic; color:red;">2006/06/02 - **New**:
-            </span>NAntContrib 0.85 Release Candidate 4 is available NOW ! A list of the new features is available
-            <a href="release/0.85-rc4/releasenotes.html">here</a>.
-        </p>
-        <p>
-            <img alt=">" src="bullet.gif" />
-            <span style="font-weight:bold; font-style:italic;">2005/04/16:
-            </span>NAntContrib 0.85 Release Candidate 3 is available NOW ! A list of the new features is available
-            <a href="release/0.85-rc3/releasenotes.html">here</a>.
-        </p>
-        <p>
-            <img alt=">" src="bullet.gif" />
-            <span style="font-weight:bold; font-style:italic;">2005/02/12:
-            </span>NAntContrib 0.85 Release Candidate 2 is available NOW ! A list of the new features is available
-            <a href="release/0.85-rc2/releasenotes.html">here</a>.
-        </p>
-        <p>
-            <img alt=">" src="bullet.gif" />
-            <span style="font-weight:bold; font-style:italic;">2004/11/28:
-            </span>NAntContrib 0.85 Release Candidate 1 is available ! A list of the new features is available
-            <a href="release/0.85-rc1/releasenotes.html">here</a>.
-        </p>
-        <h2>Getting Started</h2>
-        <p>
-            <img alt=">" src="bullet.gif" />
-            Download the latest <a href="http://sourceforge.net/project/showfiles.php?group_id=54790">stable release</a>
-            or a <a href="http://nantcontrib.sourceforge.net/nightly/">nightly build</a>
-        </p>
-        <p>
-            <img alt=">" src="bullet.gif" />
-            Read the user documentation for the latest <a href="release/latest/help/">release</a>
-            or the <a href="nightly/latest/help/">nighty build</a>
-        </p>
-        <p>
-            <img alt=">" src="bullet.gif" />
-            Read and search the mail archives: <a href="http://sourceforge.net/mailarchive/forum.php?forum_id=9572">NAntContrib-Dev</a>
-        </p>
-        <p>
-            <img alt=">" src="bullet.gif" />
-            Want to contribute or submit patches ? Make sure you have the latest source then
-            submit your proposal or fix to the developer list
-        </p>
-        <h2>User Information</h2>
-        <ul>
-            <li>
-                <a href="license.html">License</a>
-            </li>
-        </ul>
-        <h2>Developer Information</h2>
-        <ul>
-            <li>
-                <a href="http://sourceforge.net/projects/nantcontrib/">SourceForge Project Page</a>
-            </li>
-            <li>
-                <a href="http://sourceforge.net/docman/display_doc.php?docid=6080&amp;group_id=31650">
-                    Coding Conventions</a>
-            </li>
-            <li>
-                <a href="http://sourceforge.net/docman/display_doc.php?docid=6081&amp;group_id=31650">
-                    SourceForge Survial Kit</a>
-            </li>
-        </ul>
-        <p>
-            Developers should join the <a href="http://sourceforge.net/mail/?group_id=54790">nantcontrib-developers</a>
-            list.
-        </p>
-        <p style="text-align: right;">
-            <a href="http://sourceforge.net">
-                <img style="border-width: 0px;" height="31" alt="SourceForge logo (link to home page)"
-                    src="sf.gif" width="88" /></a><br />
-            Last Updated Saturday, April 16, 2005
-        </p>
+        <div>
+            <div class="menucontainer">
+                <div id="release-tree" class="treeDiv">
+                    <div style="display: inline;">
+                        <a href="javascript:void(0)" onclick="expandAll(document.getElementById('release-tree'));">Expand all</a>
+                        <a href="javascript:void(0)" onclick="collapseAll(document.getElementById('release-tree'));">Collapse all</a> 
+                    </div>
+                    <br/>
+                    <br />
+                    <div class="treeNode">
+                        <img src="treenodeminus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                        <b>Documentation</b>
+                        <div class="treeSubnodes">
+                            <div class="treeNode">
+                                <img src="treenodeminus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                                <a href="release/latest/help/" class="treeUnselected" onclick="clickAnchor(this)">
+                                    User Manual</a>
+                                <div class="treeSubnodes">
+                                    <div class="treeNode">
+                                        <img src="treenodeminus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                                        Reference
+                                        <div class="treeSubnodes">
+                                            <div class="treeNode">
+                                                <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="release/latest/help/tasks/" class="treeUnselected" onclick="clickAnchor(this)">
+                                                    Tasks</a>
+                                            </div>
+                                            <div class="treeNode">
+                                                <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="release/latest/help/types/" class="treeUnselected" onclick="clickAnchor(this)">
+                                                    Types</a>
+                                            </div>
+                                            <div class="treeNode">
+                                                <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="release/latest/help/functions/" class="treeUnselected" onclick="clickAnchor(this)">
+                                                    Functions</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="treeNode">
+                                <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="release/latest/releasenotes.html" class="treeUnselected" onclick="clickAnchor(this)">
+                                    Release Notes</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="treeNode">
+                        <img src="treenodeminus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                        <b>Contributing</b>
+                        <div class="treeSubnodes">
+                            <div class="treeNode">
+                                <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="mailinglists.html" class="treeUnselected" onclick="clickAnchor(this)">
+                                    Mailing Lists</a>
+                            </div>
+                            <div class="treeNode">
+                                <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="http://sourceforge.net/tracker/?group_id=54790&amp;atid=474851" class="treeUnselected" onclick="clickAnchor(this)">Bug Database</a>
+                            </div>
+                            <div class="treeNode">
+                                <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="http://sourceforge.net/tracker/?group_id=54790&amp;atid=474854" class="treeUnselected" onclick="clickAnchor(this)">Enhancement Requests</a>
+                            </div>
+                            <div class="treeNode">
+                                <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="http://sourceforge.net/tracker/?group_id=54790&amp;atid=474853" class="treeUnselected" onclick="clickAnchor(this)">Patches</a>
+                            </div>
+                            <div class="treeNode">
+                                <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="http://sourceforge.net/docman/display_doc.php?docid=6081&amp;group_id=31650"
+                                    class="treeUnselected" onclick="clickAnchor(this)">SourceForge 
+                                    Survival Kit</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="treeNode">
+                        <img src="treenodeminus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                        <a href="http://sourceforge.net/project/showfiles.php?group_id=31650" class="treeUnselected" onclick="clickAnchor(this)"><b>Releases</b></a>
+                        <div class="treeSubnodes">
+                            <div class="treeNode">
+                                <img src="treenodeplus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                                <a href="release/0.85/" class="treeUnselected" onclick="clickAnchor(this)">0.85</a>
+                                <div class="treeSubnodesHidden">
+                                    <div class="treeNode">
+                                        <img src="treenodeplus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                                        <a href="http://sourceforge.net/project/showfiles.php?group_id=31650&amp;package_id=23704&amp;release_id=455595" class="treeUnselected" onclick="clickAnchor(this)">Download</a>
+                                        <div class="treeSubnodesHidden">
+                                            <div class="treeNode">
+                                                <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="http://prdownloads.sourceforge.net/nantcontrib/nantcontrib-0.85-bin.zip?download" class="treeUnselected"
+                                                    onclick="clickAnchor(this)">Binary</a>
+                                            </div>
+                                            <div class="treeNode">
+                                                <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="http://prdownloads.sourceforge.net/nantcontrib/nantcontrib-0.85-src.zip?download" class="treeUnselected"
+                                                    onclick="clickAnchor(this)">Source</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="treeNode">
+                                        <img src="treenodeplus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                                        <a href="release/0.85/help/" class="treeUnselected" onclick="clickAnchor(this)">
+                                            User Manual</a>
+                                        <div class="treeSubnodesHidden">
+                                            <div class="treeNode">
+                                                <img src="treenodeplus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                                                Reference
+                                                <div class="treeSubnodesHidden">
+                                                    <div class="treeNode">
+                                                        <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="release/0.85/help/tasks/" class="treeUnselected" onclick="clickAnchor(this)">
+                                                            Tasks</a>
+                                                    </div>
+                                                    <div class="treeNode">
+                                                        <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="release/0.85/help/types/" class="treeUnselected" onclick="clickAnchor(this)">
+                                                            Types</a>
+                                                    </div>
+                                                    <div class="treeNode">
+                                                        <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="release/0.85/help/functions/" class="treeUnselected" onclick="clickAnchor(this)">
+                                                            Functions</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="treeNode">
+                                        <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="release/0.85/license.html" class="treeUnselected" onclick="clickAnchor(this)">
+                                            License</a>
+                                    </div>
+                                    <div class="treeNode">
+                                        <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="release/0.85/releasenotes.html" class="treeUnselected" onclick="clickAnchor(this)">
+                                            Release Notes</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="treeNode">
+                                <img src="treenodeplus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                                <a href="release/0.85-rc4/" class="treeUnselected" onclick="clickAnchor(this)">0.85 Release Candidate 4</a>
+                                <div class="treeSubnodesHidden">
+                                    <div class="treeNode">
+                                        <img src="treenodeplus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                                        <a href="http://sourceforge.net/project/showfiles.php?group_id=31650&amp;package_id=23704&amp;release_id=421952" class="treeUnselected" onclick="clickAnchor(this)">Download</a>
+                                        <div class="treeSubnodesHidden">
+                                            <div class="treeNode">
+                                                <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="http://prdownloads.sourceforge.net/nantcontrib/nantcontrib-0.85-rc4-bin.zip?download" class="treeUnselected"
+                                                    onclick="clickAnchor(this)">Binary</a>
+                                            </div>
+                                            <div class="treeNode">
+                                                <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="http://prdownloads.sourceforge.net/nantcontrib/nantcontrib-0.85-rc4-src.zip?download" class="treeUnselected"
+                                                    onclick="clickAnchor(this)">Source</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="treeNode">
+                                        <img src="treenodeplus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                                        <a href="release/0.85-rc4/help/" class="treeUnselected" onclick="clickAnchor(this)">
+                                            User Manual</a>
+                                        <div class="treeSubnodesHidden">
+                                            <div class="treeNode">
+                                                <img src="treenodeplus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                                                Reference
+                                                <div class="treeSubnodesHidden">
+                                                    <div class="treeNode">
+                                                        <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="release/0.85-rc4/help/tasks/" class="treeUnselected" onclick="clickAnchor(this)">
+                                                            Tasks</a>
+                                                    </div>
+                                                    <div class="treeNode">
+                                                        <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="release/0.85-rc4/help/types/" class="treeUnselected" onclick="clickAnchor(this)">
+                                                            Types</a>
+                                                    </div>
+                                                    <div class="treeNode">
+                                                        <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="release/0.85-rc4/help/functions/" class="treeUnselected" onclick="clickAnchor(this)">
+                                                            Functions</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="treeNode">
+                                        <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="release/0.85-rc4/license.html" class="treeUnselected" onclick="clickAnchor(this)">
+                                            License</a>
+                                    </div>
+                                    <div class="treeNode">
+                                        <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="release/0.85-rc4/releasenotes.html" class="treeUnselected" onclick="clickAnchor(this)">
+                                            Release Notes</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="treeNode">
+                                <img src="treenodeplus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                                <a href="release/0.85-rc3/" class="treeUnselected" onclick="clickAnchor(this)">0.85 Release Candidate 3</a>
+                                <div class="treeSubnodesHidden">
+                                    <div class="treeNode">
+                                        <img src="treenodeplus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                                        <a href="http://sourceforge.net/project/showfiles.php?group_id=31650&amp;package_id=23704&amp;release_id=320983" class="treeUnselected" onclick="clickAnchor(this)">Download</a>
+                                        <div class="treeSubnodesHidden">
+                                            <div class="treeNode">
+                                                <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="http://prdownloads.sourceforge.net/nantcontrib/nantcontrib-0.85-rc3-bin.zip?download" class="treeUnselected"
+                                                    onclick="clickAnchor(this)">Binary</a>
+                                            </div>
+                                            <div class="treeNode">
+                                                <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="http://prdownloads.sourceforge.net/nantcontrib/nantcontrib-0.85-rc3-src.zip?download" class="treeUnselected"
+                                                    onclick="clickAnchor(this)">Source</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="treeNode">
+                                        <img src="treenodeplus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                                        <a href="release/0.85-rc3/help/" class="treeUnselected" onclick="clickAnchor(this)">
+                                            User Manual</a>
+                                        <div class="treeSubnodesHidden">
+                                            <div class="treeNode">
+                                                <img src="treenodeplus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                                                Reference
+                                                <div class="treeSubnodesHidden">
+                                                    <div class="treeNode">
+                                                        <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="release/0.85-rc3/help/tasks/" class="treeUnselected" onclick="clickAnchor(this)">
+                                                            Tasks</a>
+                                                    </div>
+                                                    <div class="treeNode">
+                                                        <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="release/0.85-rc3/help/types/" class="treeUnselected" onclick="clickAnchor(this)">
+                                                            Types</a>
+                                                    </div>
+                                                    <div class="treeNode">
+                                                        <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="release/0.85-rc3/help/functions/" class="treeUnselected" onclick="clickAnchor(this)">
+                                                            Functions</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="treeNode">
+                                        <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="release/0.85-rc3/license.html" class="treeUnselected" onclick="clickAnchor(this)">
+                                            License</a>
+                                    </div>
+                                    <div class="treeNode">
+                                        <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="release/0.85-rc3/releasenotes.html" class="treeUnselected" onclick="clickAnchor(this)">
+                                            Release Notes</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="treeNode">
+                                <img src="treenodeplus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                                <a href="release/0.85-rc2/" class="treeUnselected" onclick="clickAnchor(this)">0.85 Release Candidate 2</a>
+                                <div class="treeSubnodesHidden">
+                                    <div class="treeNode">
+                                        <img src="treenodeplus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                                        <a href="http://sourceforge.net/project/showfiles.php?group_id=31650&amp;package_id=23704&amp;release_id=304418" class="treeUnselected" onclick="clickAnchor(this)">Download</a>
+                                        <div class="treeSubnodesHidden">
+                                            <div class="treeNode">
+                                                <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="http://prdownloads.sourceforge.net/nantcontrib/nantcontrib-0.85-rc2-bin.zip?download" class="treeUnselected"
+                                                    onclick="clickAnchor(this)">Binary</a>
+                                            </div>
+                                            <div class="treeNode">
+                                                <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="http://prdownloads.sourceforge.net/nantcontrib/nantcontrib-0.85-rc2-src.zip?download" class="treeUnselected"
+                                                    onclick="clickAnchor(this)">Source</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="treeNode">
+                                        <img src="treenodeplus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                                        <a href="release/0.85-rc2/help/" class="treeUnselected" onclick="clickAnchor(this)">
+                                            User Manual</a>
+                                        <div class="treeSubnodesHidden">
+                                            <div class="treeNode">
+                                                <img src="treenodeplus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                                                Reference
+                                                <div class="treeSubnodesHidden">
+                                                    <div class="treeNode">
+                                                        <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="release/0.85-rc2/help/tasks/" class="treeUnselected" onclick="clickAnchor(this)">
+                                                            Tasks</a>
+                                                    </div>
+                                                    <div class="treeNode">
+                                                        <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="release/0.85-rc2/help/types/" class="treeUnselected" onclick="clickAnchor(this)">
+                                                            Types</a>
+                                                    </div>
+                                                    <div class="treeNode">
+                                                        <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="release/0.85-rc2/help/functions/" class="treeUnselected" onclick="clickAnchor(this)">
+                                                            Functions</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="treeNode">
+                                        <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="release/0.85-rc2/license.html" class="treeUnselected" onclick="clickAnchor(this)">
+                                            License</a>
+                                    </div>
+                                    <div class="treeNode">
+                                        <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="release/0.85-rc2/releasenotes.html" class="treeUnselected" onclick="clickAnchor(this)">
+                                            Release Notes</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="treeNode">
+                                <img src="treenodeplus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                                <a href="release/0.85-rc1/" class="treeUnselected" onclick="clickAnchor(this)">0.85 Release Candidate 1</a>
+                                <div class="treeSubnodesHidden">
+                                    <div class="treeNode">
+                                        <img src="treenodeplus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                                        <a href="http://sourceforge.net/project/showfiles.php?group_id=31650&amp;package_id=23704&amp;release_id=286005" class="treeUnselected" onclick="clickAnchor(this)">Download</a>
+                                        <div class="treeSubnodesHidden">
+                                            <div class="treeNode">
+                                                <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="http://prdownloads.sourceforge.net/nantcontrib/nantcontrib-0.85-rc1-bin.zip?download" class="treeUnselected"
+                                                    onclick="clickAnchor(this)">Binary</a>
+                                            </div>
+                                            <div class="treeNode">
+                                                <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="http://prdownloads.sourceforge.net/nantcontrib/nantcontrib-0.85-rc1-src.zip?download" class="treeUnselected"
+                                                    onclick="clickAnchor(this)">Source</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="treeNode">
+                                        <img src="treenodeplus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                                        <a href="release/0.85-rc1/help/" class="treeUnselected" onclick="clickAnchor(this)">
+                                            User Manual</a>
+                                        <div class="treeSubnodesHidden">
+                                            <div class="treeNode">
+                                                <img src="treenodeplus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                                                Reference
+                                                <div class="treeSubnodesHidden">
+                                                    <div class="treeNode">
+                                                        <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="release/0.85-rc1/help/tasks/" class="treeUnselected" onclick="clickAnchor(this)">
+                                                            Tasks</a>
+                                                    </div>
+                                                    <div class="treeNode">
+                                                        <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="release/0.85-rc1/help/types/" class="treeUnselected" onclick="clickAnchor(this)">
+                                                            Types</a>
+                                                    </div>
+                                                    <div class="treeNode">
+                                                        <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="release/0.85-rc1/help/functions/" class="treeUnselected" onclick="clickAnchor(this)">
+                                                            Functions</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="treeNode">
+                                        <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="release/0.85-rc1/license.html" class="treeUnselected" onclick="clickAnchor(this)">
+                                            License</a>
+                                    </div>
+                                    <div class="treeNode">
+                                        <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="release/0.85-rc1/releasenotes.html" class="treeUnselected" onclick="clickAnchor(this)">
+                                            Release Notes</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="treeNode">
+                                <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="http://sourceforge.net/project/showfiles.php?group_id=54790" class="treeUnselected" onclick="clickAnchor(this)">Archive</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="treeNode">
+                        <img src="treenodeminus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                        <b>Nightly Builds</b>
+                        <div class="treeSubnodes">
+                            <div class="treeNode">
+                                <img src="treenodeplus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                                <a href="nightly/latest/" class="treeUnselected" onclick="clickAnchor(this)">Latest</a>
+                                <div class="treeSubnodesHidden">
+                                    <div class="treeNode">
+                                        <img src="treenodeplus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                                        Download
+                                        <div class="treeSubnodesHidden">
+                                            <div class="treeNode">
+                                                <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="nightly/latest/nantcontrib-bin.zip" class="treeUnselected"
+                                                    onclick="clickAnchor(this)">Binary</a>
+                                            </div>
+                                            <div class="treeNode">
+                                                <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="nightly/latest/nantcontrib-sec.zip" class="treeUnselected"
+                                                    onclick="clickAnchor(this)">Source</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="treeNode">
+                                        <img src="treenodeplus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                                        <a href="nightly/latest/help/" class="treeUnselected" onclick="clickAnchor(this)">
+                                            User Manual</a>
+                                        <div class="treeSubnodesHidden">
+                                            <div class="treeNode">
+                                                <img src="treenodeplus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                                                Reference
+                                                <div class="treeSubnodesHidden">
+                                                    <div class="treeNode">
+                                                        <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="nightly/latest/help/tasks/" class="treeUnselected" onclick="clickAnchor(this)">
+                                                            Tasks</a>
+                                                    </div>
+                                                    <div class="treeNode">
+                                                        <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="nightly/latest/help/types/" class="treeUnselected" onclick="clickAnchor(this)">
+                                                            Types</a>
+                                                    </div>
+                                                    <div class="treeNode">
+                                                        <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="nightly/latest/help/functions/" class="treeUnselected" onclick="clickAnchor(this)">
+                                                            Functions</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="treeNode">
+                                        <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="nightly/latest/license.html" class="treeUnselected" onclick="clickAnchor(this)">
+                                            License</a>
+                                    </div>
+                                    <div class="treeNode">
+                                        <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="nightly/latest/releasenotes.html" class="treeUnselected" onclick="clickAnchor(this)">
+                                            Release Notes</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="treeNode">
+                                <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="nightly/" class="treeUnselected" onclick="clickAnchor(this)">
+                                    Archive</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="treeNode">
+                        <img src="treenodeminus.gif" class="treeLinkImage" onclick="expandCollapse(this.parentNode)" alt="Expand / Collapse" />
+                        <b>Project</b>
+                        <div class="treeSubnodes">
+                            <div class="treeNode">
+                                <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="license.html" class="treeUnselected" onclick="clickAnchor(this)">
+                                    License</a>
+                            </div>
+                            <div class="treeNode">
+                                <img src="treenodedot.gif" class="treeLinkImage" alt="*" /> <a href="http://sourceforge.net/projects/nantcontrib/" class="treeUnselected"
+                                    onclick="clickAnchor(this)">SourceForge Foundry</a>
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                    <div style="display: inline;">
+                        <a href="javascript:void(0)" onclick="expandAll(document.getElementById('release-tree'));">Expand all</a>
+                        <a href="javascript:void(0)" onclick="collapseAll(document.getElementById('release-tree'));">Collapse all</a> 
+                    </div>
+                </div>
+            </div>
+            <div class="main">
+                <h2>News</h2>
+                <p>
+                    <img alt=">" src="bullet.gif" />
+                    <span style="font-weight:bold; font-style:italic; color:red;">2006/06/02 - **New**:
+                    </span>NAntContrib 0.85 Release Candidate 4 is available NOW ! A list of the new features is available
+                    <a href="release/0.85-rc4/releasenotes.html">here</a>.
+                </p>
+                <p>
+                    <img alt=">" src="bullet.gif" />
+                    <span style="font-weight:bold; font-style:italic;">2005/04/16:
+                    </span>NAntContrib 0.85 Release Candidate 3 is available NOW ! A list of the new features is available
+                    <a href="release/0.85-rc3/releasenotes.html">here</a>.
+                </p>
+                <p>
+                    <img alt=">" src="bullet.gif" />
+                    <span style="font-weight:bold; font-style:italic;">2005/02/12:
+                    </span>NAntContrib 0.85 Release Candidate 2 is available NOW ! A list of the new features is available
+                    <a href="release/0.85-rc2/releasenotes.html">here</a>.
+                </p>
+                <p>
+                    <img alt=">" src="bullet.gif" />
+                    <span style="font-weight:bold; font-style:italic;">2004/11/28:
+                    </span>NAntContrib 0.85 Release Candidate 1 is available ! A list of the new features is available
+                    <a href="release/0.85-rc1/releasenotes.html">here</a>.
+                </p>
+                <h2>Getting Started</h2>
+                <p>
+                    <img alt=">" src="bullet.gif" />
+                    Download the latest <a href="http://sourceforge.net/project/showfiles.php?group_id=54790">stable release</a>
+                    or a <a href="http://nantcontrib.sourceforge.net/nightly/">nightly build</a>
+                </p>
+                <p>
+                    <img alt=">" src="bullet.gif" />
+                    Read the user documentation for the latest <a href="release/latest/help/">release</a>
+                    or the <a href="nightly/latest/help/">nighty build</a>
+                </p>
+                <p>
+                    <img alt=">" src="bullet.gif" />
+                    Read and search the mail archives: <a href="http://sourceforge.net/mailarchive/forum.php?forum_id=9572">NAntContrib-Dev</a>
+                </p>
+                <p>
+                    <img alt=">" src="bullet.gif" />
+                    Want to contribute or submit patches ? Make sure you have the latest source then
+                    submit your proposal or fix to the developer list
+                </p>
+            </div>
+        </div>
     </body>
 </html>
