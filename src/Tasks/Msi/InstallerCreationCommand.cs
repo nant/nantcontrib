@@ -637,6 +637,11 @@ namespace NAnt.Contrib.Tasks.Msi {
 
             StringBuilder shortPath = new StringBuilder(255);
             int result = GetShortPathName(LongFile, shortPath, shortPath.Capacity);
+            if (result == 0) {
+                throw new BuildException (string.Format (CultureInfo.InvariantCulture,
+                    "The short path for '{0}' could not be determined.",
+                    LongFile), Location);
+            }
             return Path.GetFileName(shortPath.ToString());
         }
 
@@ -652,10 +657,19 @@ namespace NAnt.Contrib.Tasks.Msi {
 
             StringBuilder shortPath = new StringBuilder(255);
             int result = GetShortPathName(LongPath, shortPath, shortPath.Capacity);
+            if (result == 0) {
+                throw new BuildException (string.Format (CultureInfo.InvariantCulture,
+                    "The short path for '{0}' could not be determined.",
+                    LongPath), Location);
+            }
 
             Uri shortPathUri = null;
             try {
                 shortPathUri = new Uri("file://" + shortPath.ToString());
+                if (shortPathUri == null) {
+                    // done to prevent CS0219 warning, variable is assigned but
+                    // its value is never used
+                }
             }
             catch (Exception) {
                 throw new BuildException(String.Format(CultureInfo.InvariantCulture, "Directory {0} not found.", LongPath), Location);
@@ -683,10 +697,19 @@ namespace NAnt.Contrib.Tasks.Msi {
 
             StringBuilder shortPath = new StringBuilder(255);
             int result = GetShortPathName(LongPath, shortPath, shortPath.Capacity);
+            if (result == 0) {
+                throw new BuildException (string.Format (CultureInfo.InvariantCulture,
+                    "The short path for '{0}' could not be determined.",
+                    LongPath), Location);
+            }
 
             Uri shortPathUri = null;
             try {
                 shortPathUri = new Uri("file://" + shortPath.ToString());
+                if (shortPathUri == null) {
+                    // done to prevent CS0219 warning, variable is assigned but
+                    // its value is never used
+                }
             }
             catch (Exception) {
                 throw new BuildException(String.Format(CultureInfo.InvariantCulture, "Directory {0} not found.", LongPath), Location);
@@ -739,11 +762,7 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// <param name="database">The MSI database.</param>
         private void LoadTypeLibs(InstallerDatabase database) {
             // Open the "TypeLib" Table
-            using (InstallerTable typeLibTable = database.OpenTable("TypeLib"),
-                       registryTable = database.OpenTable("Registry")) {
-
-                string runtimeVer = Environment.Version.ToString(4);
-
+            using (InstallerTable typeLibTable = database.OpenTable("TypeLib"), registryTable = database.OpenTable("Registry")) {
                 for (int i = 0; i < typeLibRecords.Count; i++) {
                     TypeLibRecord tlbRecord = (TypeLibRecord)typeLibRecords[i];
 
