@@ -1054,6 +1054,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Util\IniFile.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Util\SqlHelper.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
