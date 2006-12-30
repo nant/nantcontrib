@@ -195,7 +195,13 @@
                 <include name="${src.dir}/**/*.cs" />
                 <include name="${build.dir}/schema/**/*.cs" />
 
+                <!-- bug 80407 -->
+                <exclude name="${src.dir}/Tasks/Msi/*.cs" if="${framework::get-family(framework::get-target-framework())=='mono'}" />
                 <exclude name="${src.dir}/Tasks/SharePoint/*.cs" />
+                <!-- bug 80407 -->
+                <exclude name="${src.dir}/Tasks/SourceSafe/*.cs" if="${framework::get-family(framework::get-target-framework())=='mono'}" />
+                <!-- bug 80408 -->
+                <exclude name="${src.dir}/Tasks/StarTeam/*.cs" if="${framework::get-family(framework::get-target-framework())=='mono'}" />
             </sources>
             <references>
                 <include name="${nant.dir}/bin/NAnt.Core.dll" />
@@ -255,13 +261,24 @@
                 <!-- common assembly-level attributes -->
                 <include name="${src.dir}/CommonAssemblyInfo.cs" />
 
-                <exclude name="${tests.dir}/tasks/SharePoint/*.cs"/>
+                <!-- bug 80407 -->
+                <exclude name="${tests.dir}/Tasks/Msi/*.cs" if="${framework::get-family(framework::get-target-framework())=='mono'}" />
+                <exclude name="${tests.dir}/Tasks/SharePoint/*.cs"/>
+                <!-- bug 80407 -->
+                <exclude name="${tests.dir}/Tasks/SourceSafe/*.cs" if="${framework::get-family(framework::get-target-framework())=='mono'}" />
+                <!-- bug 80408 -->
+                <exclude name="${tests.dir}/Tasks/StarTeam/*.cs" if="${framework::get-family(framework::get-target-framework())=='mono'}" />
             </sources>
             <references>
-                 <include name="${nant.dir}/bin/NAnt.Core.dll" />
-                 <include name="${nant.dir}/bin/lib/${framework::get-family(framework::get-target-framework())}/${framework::get-version(framework::get-target-framework())}/nunit.framework.dll" />
-                 <include name="${build.dir}/bin/${project.FormalName}.Tasks.dll" />
-                 <include name="${build.dir}/bin/SourceSafe.Interop.dll" />
+                <include name="${nant.dir}/bin/NAnt.Core.dll" />
+                <include name="${nant.dir}/bin/lib/${framework::get-family(framework::get-target-framework())}/${framework::get-version(framework::get-target-framework())}/nunit.framework.dll" />
+                <include name="${build.dir}/bin/${project.FormalName}.Tasks.dll" />
+                <include name="${build.dir}/bin/SourceSafe.Interop.dll" />
+                <include name="System.Data.dll" />
+                <include name="System.DirectoryServices.dll" />
+                <include name="System.Management.dll" />
+                <include name="System.ServiceProcess.dll" />
+                <include name="System.Web.dll" />
             </references>
         </csc>
     </target>
@@ -270,28 +287,28 @@
     <target name="test" depends="buildtests init" description="run unit tests">
         <!-- make copy of NAnt configuration file -->
         <copy 
-            file="${path::combine(nant::get-base-directory(), 'nant.exe.config')}"
-            tofile="${path::combine(nant::get-base-directory(), 'nant.tests.config')}" />
+            file="${path::combine(nant::get-base-directory(), 'NAnt.exe.config')}"
+            tofile="${path::combine(nant::get-base-directory(), 'NAnt.tests.config')}" />
 
         <!-- make sure the config file is writable -->
         <attrib 
-            file="${path::combine(nant::get-base-directory(), 'nant.tests.config')}"
+            file="${path::combine(nant::get-base-directory(), 'NAnt.tests.config')}"
             readonly="false" />
 
         <!-- ensure the tests target the current framework -->
         <xmlpoke 
-            file="${path::combine(nant::get-base-directory(), 'nant.tests.config')}"
+            file="${path::combine(nant::get-base-directory(), 'NAnt.tests.config')}"
             xpath="//configuration/nant/frameworks/platform[@name='${platform::get-name()}']/@default"
             value="${framework::get-target-framework()}" />
 
         <!-- output the config file that will be used to run the tests -->
-        <echo message="testing with config '${path::combine(nant::get-base-directory(), 'nant.tests.config')}'" />
+        <echo message="testing with config '${path::combine(nant::get-base-directory(), 'NAnt.tests.config')}'" />
         <!-- execute the unit tests -->
         <nunit2>
             <formatter type="Plain" />
             <test 
                 assemblyname="${build.dir}/bin/${project.FormalName}.Tests.dll" 
-                appconfig="${path::combine(nant::get-base-directory(), 'nant.tests.config')}" />
+                appconfig="${path::combine(nant::get-base-directory(), 'NAnt.tests.config')}" />
         </nunit2>
         
         <!-- remove NAnt assemblies that were needed for the tests to run -->
