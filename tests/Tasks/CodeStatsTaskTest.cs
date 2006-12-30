@@ -31,7 +31,7 @@ namespace NAnt.Contrib.Tests.Tasks {
     public class CodeStatsTaskTest : BuildTestBase {
         [Test]
         public void Test_CatchExceptionWithoutMessage() {
-            string tempFile = CreateTempFile("test.cs",
+            CreateTempFile("test.cs",
                 "// comment" + Environment.NewLine
                 + "//" + Environment.NewLine + Environment.NewLine
                 + "/*" + Environment.NewLine 
@@ -41,15 +41,15 @@ namespace NAnt.Contrib.Tests.Tasks {
 
             string _xml = @"
                     <project>
-		                <codestats output='test.xml' append='false' buildname='MyTestBuild'>
-			                <counts>
-				                <count label='C#'>
-					                <fileset>
-						                <include name='**/*.cs' />
-					                </fileset>
-				                </count>
-			                </counts>
-		                </codestats>
+                        <codestats output='test.xml' append='false' buildname='MyTestBuild'>
+                            <counts>
+                                <count label='C#'>
+                                    <fileset>
+                                        <include name='**/*.cs' />
+                                    </fileset>
+                                </count>
+                            </counts>
+                        </codestats>
                     </project>";
             RunBuild(_xml);
 

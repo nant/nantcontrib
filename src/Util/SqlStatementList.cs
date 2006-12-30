@@ -177,33 +177,6 @@ namespace NAnt.Contrib.Util {
         public IEnumerator GetEnumerator() {
             return ((IEnumerable)_statements).GetEnumerator();
         }
-      
-
-        /// <summary>
-        /// Strips all single line comments 
-        /// in the specified sql
-        /// </summary>
-        /// <param name="sql"></param>
-        /// <returns></returns>
-        private string StripComments(string sql) {
-            StringReader reader = new StringReader(sql);
-            StringBuilder newSql = new StringBuilder("");
-
-            string line = null;
-            while ((line = reader.ReadLine()) != null) {
-                line = line.Trim();
-                if (line == string.Empty) {
-                    continue;
-                }
-                if (line.StartsWith("//") || line.StartsWith("--")) {
-                    continue;
-                }
-
-                newSql.Append(line + Environment.NewLine);
-            }
-
-            return newSql.ToString();
-        }
 
         /// <summary>
         /// Expands project properties in the
