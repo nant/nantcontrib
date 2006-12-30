@@ -25,6 +25,13 @@ using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
+#if NET_2_0
+using SYSKIND = System.Runtime.InteropServices.ComTypes.SYSKIND;
+using TYPELIBATTR = System.Runtime.InteropServices.ComTypes.TYPELIBATTR;
+#else
+using SYSKIND = System.Runtime.InteropServices.SYSKIND;
+using TYPELIBATTR = System.Runtime.InteropServices.TYPELIBATTR;
+#endif
 using System.Text;
 
 using NAnt.Core;
