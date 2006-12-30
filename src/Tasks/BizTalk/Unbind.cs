@@ -295,18 +295,6 @@ namespace NAnt.Contrib.Tasks.BizTalk {
 
         #endregion Private Instance Methods
 
-        #region Private Static Methods
-
-        private static string GetPublicKeyToken(AssemblyName name) {
-            StringBuilder result = new StringBuilder();
-            foreach (byte b in name.GetPublicKeyToken()) {
-                result.AppendFormat("{0:x2}", b);
-            }
-            return result.ToString();
-        }
-
-        #endregion Private Static Methods
-
         #region Private Instance Fields
 
         private string _server;

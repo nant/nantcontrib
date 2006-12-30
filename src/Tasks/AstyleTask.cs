@@ -68,9 +68,7 @@ namespace NAnt.Contrib.Tasks {
         private const String DEFAULT_EXECUTABLE_NAME = "astyle.exe";
         private const String ASTYLE_OPTION_ENV_VAR = "ARTISTIC_STYLE_OPTIONS";
         private FileSet _sources = new FileSet();
-        private Hashtable _fileCopyMap = new Hashtable();
         private bool _cleanUp = false;
-        private OptionCollection _styleOptions = new OptionCollection();
         private Hashtable _commandOptions = new Hashtable();
         private string _commandLineArguments;
 

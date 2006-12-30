@@ -22,10 +22,7 @@
 using System.Runtime.InteropServices;
 
 namespace NAnt.Contrib.Util {
-    
-    
     public class IniFile {
-
         # region API functions
         // API functions
         [ DllImport("Kernel32.dll", EntryPoint = "GetPrivateProfileStringA",
@@ -78,6 +75,7 @@ namespace NAnt.Contrib.Util {
                 return string.Empty;
             }
         }
+
         /// <summary>
         /// ' Writes a string to your INI file
         /// </summary>
@@ -87,15 +85,6 @@ namespace NAnt.Contrib.Util {
         public void WriteString(string Section, 
             string Key, string String) {
             WritePrivateProfileString(Section, Key, String, strFilename);
-            // Flush();
-        }
-        
-        /// <summary>
-        /// ' Stores all the cached changes to your INI file
-        /// </summary>
-        private void Flush() {
-                WritePrivateProfileString("", "", "", strFilename);
         }
     }
 }
-
