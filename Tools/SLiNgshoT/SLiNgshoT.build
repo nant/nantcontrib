@@ -9,8 +9,8 @@
     </target>
     <target name="SLiNgshoT.Debug" depends="SLiNgshoT.Core.Debug">
         <property name="project.name" value="SLiNgshoT" />
-        <property name="build.dir" value="${build.basedir}\Debug" />
-        <property name="output" value="${build.dir}\SLiNgshoT.exe" />
+        <property name="build.dir" value="${build.basedir}/Debug" />
+        <property name="output" value="${build.dir}/SLiNgshoT.exe" />
         <property name="debug" value="true" />
         <property name="unsafe" value="/unsafe-" />
         <property name="checked" value="/checked-" />
@@ -19,8 +19,8 @@
     </target>
     <target name="SLiNgshoT.Release" depends="SLiNgshoT.Core.Release">
         <property name="project.name" value="SLiNgshoT" />
-        <property name="build.dir" value="${build.basedir}\Release" />
-        <property name="output" value="${build.dir}\SLiNgshoT.exe" />
+        <property name="build.dir" value="${build.basedir}/Release" />
+        <property name="output" value="${build.dir}/SLiNgshoT.exe" />
         <property name="debug" value="false" />
         <property name="unsafe" value="/unsafe-" />
         <property name="checked" value="/checked-" />
@@ -40,14 +40,14 @@
                 <include name="System.dll" />
                 <include name="System.Data.dll" />
                 <include name="System.XML.dll" />
-                <include name="${build.dir}\SLiNgshoT.Core.dll" />
+                <include name="${build.dir}/SLiNgshoT.Core.dll" />
             </references>
         </csc>
     </target>
     <target name="SLiNgshoT.Core.Debug">
         <property name="project.name" value="SLiNgshoT.Core" />
-        <property name="build.dir" value="${build.basedir}\Debug" />
-        <property name="output" value="${build.dir}\SLiNgshoT.Core.dll" />
+        <property name="build.dir" value="${build.basedir}/Debug" />
+        <property name="output" value="${build.dir}/SLiNgshoT.Core.dll" />
         <property name="debug" value="true" />
         <property name="unsafe" value="/unsafe-" />
         <property name="checked" value="/checked-" />
@@ -56,8 +56,8 @@
     </target>
     <target name="SLiNgshoT.Core.Release">
         <property name="project.name" value="SLiNgshoT.Core" />
-        <property name="build.dir" value="${build.basedir}\Release" />
-        <property name="output" value="${build.dir}\SLiNgshoT.Core.dll" />
+        <property name="build.dir" value="${build.basedir}/Release" />
+        <property name="output" value="${build.dir}/SLiNgshoT.Core.dll" />
         <property name="debug" value="false" />
         <property name="unsafe" value="/unsafe-" />
         <property name="checked" value="/checked-" />
@@ -69,7 +69,7 @@
             <arg value="${unsafe}" />
             <arg value="${checked}" />
             <sources>
-                <include name="SLiNgshoT.Core\*.cs" />
+                <include name="SLiNgshoT.Core/*.cs" />
                 <!-- common assembly-level attributes -->
                 <include name="../../src/CommonAssemblyInfo.cs" />
             </sources>

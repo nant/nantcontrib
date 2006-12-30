@@ -141,6 +141,7 @@
                 <include name="Tasks/XsdTask.cs" />
             </sources>
             <references>
+                <include name="System.Data.dll" />
                 <include name="${nant.dir}/bin/NAnt.Core.dll" />
                 <include name="${nant.dir}/bin/NAnt.DotNetTasks.dll" />
             </references>
@@ -194,7 +195,7 @@
                 <include name="${src.dir}/**/*.cs" />
                 <include name="${build.dir}/schema/**/*.cs" />
 
-                <exclude name="${src.dir}/tasks/SharePoint/*.cs" />
+                <exclude name="${src.dir}/Tasks/SharePoint/*.cs" />
             </sources>
             <references>
                 <include name="${nant.dir}/bin/NAnt.Core.dll" />
@@ -207,7 +208,11 @@
                 <include name="${build.dir}/bin/Interop.MsmMergeTypeLib.dll" />
                 <include name="${build.dir}/bin/SLiNgshoT.Core.dll" />
                 <include name="${build.dir}/bin/NAnt.Contrib.Schemas.dll" />
-                <include name="System.DirectoryServices.dll"/>
+                <include name="System.Data.dll" />
+                <include name="System.DirectoryServices.dll" />
+                <include name="System.Management.dll" />
+                <include name="System.ServiceProcess.dll" />
+                <include name="System.Web.dll" />
             </references>
             <resources>
                 <include name="${src.dir}/xsl/**" />
