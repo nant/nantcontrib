@@ -40,62 +40,61 @@ namespace Tests.NAnt.Contrib.Tasks {
         [Test]
         [ExpectedException(typeof(FormatException))]
         public void TestBadMajorNumber() {
-            Version version = new Version("a.1.2.0");
+            new Version("a.1.2.0");
         } 
-        
+
         [Test]
         [ExpectedException(typeof(FormatException))]
         public void TestBadMinorNumber() {
-            Version version = new Version("1.a.2.0");
+            new Version("1.a.2.0");
         } 
-        
+
         [Test]
         [ExpectedException(typeof(FormatException))]
         public void TestBadBuildNumber() {
-            Version version = new Version("1.1.a.0");
+            new Version("1.1.a.0");
         } 
-        
+
         [Test]
         [ExpectedException(typeof(FormatException))]
         public void TestBadrevisionNumber() {
-            Version version = new Version("1.1.2.a");
+            new Version("1.1.2.a");
         }
 
         [Test]
         public void TestVersionNumberToShort() {
             Version version = new Version("1.1.2");
-
             Assert.AreEqual(-1, version.Revision);
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentException))]
         public void TestVersionNumberToLong() {
-            Version version = new Version("1.1.2.0.0");
+            new Version("1.1.2.0.0");
         }
 
         [Test]
         [ExpectedException(typeof(FormatException))]
         public void TestMissingMajorNumber() {
-            Version version = new Version(".1.2.0");
+            new Version(".1.2.0");
         }
 
         [Test]
         [ExpectedException(typeof(FormatException))]
         public void TestMissingMinorNumber() {
-            Version version = new Version("1..2.0");
+            new Version("1..2.0");
         }
 
         [Test]
         [ExpectedException(typeof(FormatException))]
         public void TestMissingBuildNumber() {
-            Version version = new Version("1.1..0");
+            new Version("1.1..0");
         }
         
         [Test]
         [ExpectedException(typeof(FormatException))]
         public void TestMissingRevisionNumber() {
-            Version version = new Version("1.1.2.");
+            new Version("1.1.2.");
         }
 
         [Test]
@@ -106,14 +105,12 @@ namespace Tests.NAnt.Contrib.Tasks {
         [Test]
         public void TestSetPrefix() {
             _task.Prefix = "build";
-
             Assert.AreEqual("build", _task.Prefix);
         }
 
         [Test]
         public void TestSetEmptyPrefix() {
             _task.Prefix = string.Empty;
-
             Assert.IsNull(_task.Prefix);
         }
 
@@ -138,7 +135,6 @@ namespace Tests.NAnt.Contrib.Tasks {
         [Test]
         public void TestSetBuildType() {
             _task.BuildType = VersionTask.BuildNumberAlgorithm.Increment;
-
             Assert.AreEqual(VersionTask.BuildNumberAlgorithm.Increment, _task.BuildType);
         }
 
@@ -150,7 +146,6 @@ namespace Tests.NAnt.Contrib.Tasks {
         [Test]
         public void TestSetRevisionType() {
             _task.RevisionType = VersionTask.RevisionNumberAlgorithm.Increment;
-
             Assert.AreEqual(VersionTask.RevisionNumberAlgorithm.Increment, _task.RevisionType);
         }
     }
