@@ -21,10 +21,11 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 
+using NAnt.Core;
 using NAnt.Core.Attributes;
 using NAnt.Core.Util;
 
-namespace NAnt.Core.Tasks {
+namespace NAnt.Contrib.Tasks {
     /// <summary>
     /// Immediately stops a given process.
     /// </summary>
