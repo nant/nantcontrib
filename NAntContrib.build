@@ -6,7 +6,7 @@
     <!-- global project settings -->
     <property name="project.name" value="nantcontrib" />
     <property name="project.FormalName" value="NAnt.Contrib" />
-    <property name="project.version" value="0.85" unless="${property::exists('project.version')}" />
+    <property name="project.version" value="0.86" unless="${property::exists('project.version')}" />
     <property name="project.release.type" value="dev" unless="${property::exists('project.release.type')}" /> <!-- nightly / dev / alpha / beta# / rc# / release -->
     <if test="${project.release.type == 'nightly'}">
         <property name="project.version.full" value="${project.version + '-nightly-' + build.date}" />
@@ -180,8 +180,16 @@
             TO-DO : remove this "hack" once support for explicit manifest resource
             names is in place.
         -->
+        <if test="${framework::get-family(framework::get-target-framework())=='mono'}">
+            <property name="targeting.mono" value="true" />
+            <property name="csc.warnaserror" value="false" />
+        </if>
+        <if test="${framework::get-family(framework::get-target-framework())!='mono'}">        
+            <property name="targeting.mono" value="false" />
+            <property name="csc.warnaserror" value="true" />
+        </if>
         <copy file="${src.dir}/Tasks/Msi/MsiTask.xsd" tofile="${build.dir}/schema/Msi/NAnt.Contrib.Schemas.Msi" />
-        <csc target="library" warnaserror="true" debug="${build.debug}"
+        <csc target="library" warnaserror="${csc.warnaserror}" debug="${build.debug}"
              define="${current.build.defines}"
              output="${build.dir}/bin/${project.FormalName}.Tasks.dll"
              doc="${build.dir}/bin/${project.FormalName}.Tasks.xml">
