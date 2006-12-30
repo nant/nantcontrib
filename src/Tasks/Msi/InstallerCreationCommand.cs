@@ -179,6 +179,10 @@ namespace NAnt.Contrib.Tasks.Msi {
             foreach (string versionPart in versionParts) {
                 try {
                     int iVersionPart = Convert.ToInt32(versionPart);
+                    if (iVersionPart == 0) {
+                        // done to prevent CS0219 warning, variable is assigned
+                        // but its value is never used
+                    }
                 }
                 catch (Exception) {
                     result = false;
