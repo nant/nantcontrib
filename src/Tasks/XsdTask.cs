@@ -281,6 +281,22 @@ namespace NAnt.Contrib.Tasks {
         #region Override implementation of ExternalProgramBase
 
         /// <summary>
+        /// Gets a value indiciating whether the external program is a managed
+        /// application which should be executed using a runtime engine, if 
+        /// configured. 
+        /// </summary>
+        /// <value>
+        /// <see langword="true" />.
+        /// </value>
+        /// <remarks>
+        /// Modifying this property has no effect.
+        /// </remarks>
+        public override bool Managed {
+            get { return true; }
+            set { }
+        }
+
+        /// <summary>
         /// Gets the command-line arguments for the external program.
         /// </summary>
         /// <value>
