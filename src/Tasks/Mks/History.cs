@@ -149,8 +149,6 @@ namespace NAnt.Contrib.Tasks.Mks {
 
                 string output = MKSExecute(cmd);
                 if (output != "") {
-                    string author=string.Empty;
-
                     ArrayList memberFiles = new ArrayList();
                     HistoryItem hi = new HistoryItem();
                     ChangeHistory memberHistory=new ChangeHistory();
