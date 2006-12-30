@@ -71,6 +71,10 @@ namespace NAnt.Contrib.Functions {
             using (ServiceController sc = GetServiceController(service, machineName)) {
                 try {
                     bool isStarted = (sc.Status == ServiceControllerStatus.Running);
+                    if (!isStarted) {
+                        // done to prevent CS0219, variable is assigned but its
+                        // value is never used
+                    }
                     return true;
                 } catch (InvalidOperationException) {
                     return false;
