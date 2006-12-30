@@ -191,6 +191,10 @@ namespace NAnt.Contrib.Tasks.Web {
             try {
                 //trigger the *private* entry.Bind() method
                 object adsobject = entry.NativeObject;
+                if (adsobject == null) {
+                    // done to prevent CS0219, variable is assigned but its
+                    // value is never used
+                }
                 return true;
             } catch {
                 return false;

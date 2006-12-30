@@ -230,7 +230,6 @@ namespace NAnt.Contrib.Tasks {
                         XmlNode fileSummaries = doc.CreateElement("file-summaries");
 
                         ICollection collection = this._fileNames;
-                        int filesCounted = collection.Count;
 
                         // loop thru each file in the _fileNames ArrayList 
                         foreach (FileCodeCountInfo file in collection) {

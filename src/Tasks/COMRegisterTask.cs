@@ -441,11 +441,10 @@ namespace NAnt.Contrib.Tasks {
 
                 // Dynamically construct a global PInvoke signature 
                 // using the input information
-                MethodBuilder dynamicMethod = dynamicMod.DefinePInvokeMethod(
-                    entryPoint, dll, MethodAttributes.Static | MethodAttributes.Public
-                    | MethodAttributes.PinvokeImpl, CallingConventions.Standard,
-                    returnType, parameterTypes, CallingConvention.Winapi, 
-                    CharSet.Ansi);
+                dynamicMod.DefinePInvokeMethod(entryPoint, dll, 
+                    MethodAttributes.Static | MethodAttributes.Public | MethodAttributes.PinvokeImpl,
+                    CallingConventions.Standard, returnType, parameterTypes, 
+                    CallingConvention.Winapi, CharSet.Ansi);
 
                 // This global method is now complete
                 dynamicMod.CreateGlobalFunctions();
