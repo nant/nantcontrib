@@ -215,7 +215,10 @@ namespace NAnt.Contrib.Tasks.Perforce {
         /// <returns></returns>
         public static string getProcessOutput( string exe, string prms, string input ) {
             string output = null;
-            int exitCode = RunProcess( exe, prms, input, ref output );
+            int exitCode = RunProcess(exe, prms, input, ref output);
+            if (exitCode != 0) {
+                // TODO: determine if we should throw a BuildException here
+            }
             return output;
         }
         
