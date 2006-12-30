@@ -28,6 +28,7 @@ using System.Runtime.InteropServices;
 #if NET_2_0
 using SYSKIND = System.Runtime.InteropServices.ComTypes.SYSKIND;
 using TYPELIBATTR = System.Runtime.InteropServices.ComTypes.TYPELIBATTR;
+using System.Runtime.InteropServices.ComTypes;
 #else
 using SYSKIND = System.Runtime.InteropServices.SYSKIND;
 using TYPELIBATTR = System.Runtime.InteropServices.TYPELIBATTR;
@@ -297,11 +298,21 @@ namespace NAnt.Contrib.Tasks {
 
             try {
                 if (Unregister) {
+#if NET_2_0
+                    ITypeLib typeLib = null;
+#else
                     UCOMITypeLib typeLib = null;
+#endif
 
                     try {
+#if NET_2_0
+                        typeLib = (ITypeLib) Marshal.GetTypedObjectForIUnknown(
+                            Typelib, typeof(ITypeLib));
+
+#else
                         typeLib = (UCOMITypeLib) Marshal.GetTypedObjectForIUnknown(
                             Typelib, typeof(UCOMITypeLib));
+#endif
                         // check for for win32 error
                         error = Marshal.GetLastWin32Error();
                         if (error != 0) {
