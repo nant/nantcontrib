@@ -131,8 +131,6 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         /// <returns></returns>
         protected IVSSItem CreateProjectPath(string file) {
             if (file.StartsWith(AddFileSet.BaseDirectory.FullName)) {
-                FileInfo fi = new FileInfo(file);
-
                 // Get file path relative to fileset base directory
                 string relativePath = file.Replace(AddFileSet.BaseDirectory.FullName, "").Replace('/', '\\');
 
@@ -154,11 +152,10 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
 
                     try {
                         // Try to retrieve the VSS directory
-                        currentItem = Database.get_VSSItem( newPath, false );
-                    }
-                    catch {
+                        currentItem = Database.get_VSSItem(newPath, false);
+                    } catch {
                         // Create it if it doesn't exist
-                        currentItem = Database.get_VSSItem( oldPath, false );
+                        currentItem = Database.get_VSSItem(oldPath, false);
                         currentItem = currentItem.NewSubproject(projects[i], "NAntContrib vssadd" );
                         Log(Level.Info, "Adding VSS Project : " + newPath);
                     }
