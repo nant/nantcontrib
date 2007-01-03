@@ -23,18 +23,38 @@ using System.Globalization;
 
 using NAnt.Core;
 using NAnt.Core.Attributes;
+using NAnt.Core.Tasks;
 using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks {
     /// <summary>
     /// Immediately stops a given process.
     /// </summary>
+    /// <remarks>
+    /// When used in combination with the <see cref="ExecTask" />, it allows 
+    /// processed to be spawned for a certain duration or task, and then 
+    /// stopped.
+    /// </remarks>
+    /// <example>
+    ///   <para>
+    ///   Starts a server and a client process on the local computer, and stops
+    ///   the server process once the client process has finished executing.
+    ///   </para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <exec program="server.exe" pidproperty="server.pid" spawn="true" />
+    /// <exec program="client.exe" />
+    /// <kill pid="${server.pid}" />
+    ///     ]]>
+    ///   </code>
+    /// </example>
     [TaskName("kill")]
     public class KillTask : Task {
         #region Private Instance Fields
 
         private int _processId;
         private string _machine;
+        private int _timeout = Int32.MaxValue;
 
         #endregion Private Instance Fields
 
@@ -64,6 +84,17 @@ namespace NAnt.Contrib.Tasks {
             set { _machine = StringUtils.ConvertEmptyToNull(value); }
         }
 
+        /// <summary>
+        /// The maximum amount of time to wait until the process is stopped,
+        /// expressed in milliseconds.  The default is to wait indefinitely.
+        /// </summary>
+        [TaskAttribute("timeout")]
+        [Int32Validator()]
+        public int TimeOut {
+            get { return _timeout; }
+            set { _timeout = value; }
+        }
+
         #endregion Public Instance Properties
 
         #region Override implementation of Task
@@ -72,7 +103,7 @@ namespace NAnt.Contrib.Tasks {
             try {
                 Process process = Process.GetProcessById(ProcessId, Machine);
                 process.Kill();
-                process.WaitForExit ();
+                process.WaitForExit (_timeout);
             } catch (Exception ex) {
                 throw new BuildException (string.Format (CultureInfo.InvariantCulture,
                     "Process '{0}' could not be stopped on '{1}'.", ProcessId,
