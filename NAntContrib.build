@@ -208,7 +208,7 @@
                 <exclude name="${src.dir}/Tasks/SharePoint/*.cs" />
                 <!-- bug 80407 -->
                 <exclude name="${src.dir}/Tasks/SourceSafe/*.cs" if="${framework::get-family(framework::get-target-framework())=='mono'}" />
-                <!-- bug 80408 -->
+                <!-- bug 80407 -->
                 <exclude name="${src.dir}/Tasks/StarTeam/*.cs" if="${framework::get-family(framework::get-target-framework())=='mono'}" />
             </sources>
             <references>
