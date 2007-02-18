@@ -53,9 +53,9 @@ namespace NAnt.Contrib.Tasks {
 
         /// <summary>
         /// Returns the object from the Schema wrapper after 
-        /// <see cref="Initialize"/> is called.
+        /// <see cref="Initialize()"/> is called.
         /// </summary>
-        /// <value>The object from the Schema wrapper after <see cref="Initialize"/> is called.</value>
+        /// <value>The object from the Schema wrapper after <see cref="Initialize()"/> is called.</value>
         public Object SchemaObject {
             get { return _schemaObject; }
         }
