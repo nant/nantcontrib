@@ -100,11 +100,11 @@
     </target>
     
     <include buildfile="NAntContribInstall.include" />
-    <include buildfile="${tools.dir}/SLiNgshoT/SLiNgshoTInstall.include" />
     
     <!-- Clean the output of the current build configuration -->
     <target name="clean" depends="init" description="cleans up everything">
         <delete dir="${build.dir}" if="${directory::exists(build.dir)}" />
+        <nant buildfile="${tools.dir}/SLiNgshoT/SLiNgshoT.build" target="ReleaseClean" />
     </target>
     
     <!-- Clean the output of both the debug and release build configurations -->
@@ -240,7 +240,6 @@
     
     <!-- Build the SLiNgshoT.Core.dll assemblies -->
     <target name="prepare.slingshot" depends="init" description="Compiles and copies the SLiNgshoT assemblies">
-        
         <nant buildfile="${tools.dir}/SLiNgshoT/SLiNgshoT.build" target="Release"/>
         <copy file="${tools.dir}/SLiNgshoT/build/Release/SLiNgshoT.Core.dll" tofile="${build.dir}/bin/SLiNgshoT.Core.dll"/>
         <copy file="${tools.dir}/SLiNgshoT/build/Release/SLiNgshoT.exe" tofile="${build.dir}/bin/SLiNgshoT.exe"/>
