@@ -262,13 +262,12 @@ namespace NAnt.Contrib.Tasks {
 
         #endregion Public Instance Properties
 
-        #region Override implementation of Task
+        #region Override implementation of Element
 
         /// <summary>
         /// Validates the <see cref="Task" />.
         /// </summary>
-        /// <param name="taskNode">The <see cref="XmlNode" /> used to initialize the <see cref="Task" />.</param>
-        protected override void InitializeTask(XmlNode taskNode) {
+        protected override void Initialize() {
             if (Xdr == null && XmlDoc == null && Assembly == null && Schema == null) {
                 throw new BuildException(string.Format(CultureInfo.InvariantCulture,
                     "Either the 'xdr', 'xmldoc', 'assembly' or 'schema' attribute"
@@ -276,7 +275,7 @@ namespace NAnt.Contrib.Tasks {
             }
         }
 
-        #endregion Override implementation of Task
+        #endregion Override implementation of Element
 
         #region Override implementation of ExternalProgramBase
 
