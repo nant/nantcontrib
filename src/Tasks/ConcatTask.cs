@@ -99,18 +99,21 @@ namespace NAnt.Contrib.Tasks {
 
         #endregion Public Instance Properties
 
-        #region Override implementation of Task
+        #region Override implementation of Element
 
-        ///<summary>
-        ///Initializes task and ensures the supplied attributes are valid.
-        ///</summary>
-        ///<param name="taskNode">Xml node used to define this task instance.</param>
-        protected override void InitializeTask(System.Xml.XmlNode taskNode) {
+        /// <summary>
+        /// Initializes task and ensures the supplied attributes are valid.
+        /// </summary>
+        protected override void Initialize() {
             if (FileSet.FileNames.Count == 0) {
                 throw new BuildException("Concat fileset cannot be empty!", 
                     Location);
             }
         }
+
+        #endregion Override implementation of Element
+
+        #region Override implementation of Task
 
         /// <summary>
         /// This is where the work is done

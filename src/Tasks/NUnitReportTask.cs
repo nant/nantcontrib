@@ -99,11 +99,10 @@ namespace NAnt.Contrib.Tasks {
             set { _fileset = value; }
         }
 
-        ///<summary>
-        ///Initializes task and ensures the supplied attributes are valid.
-        ///</summary>
-        ///<param name="taskNode">Xml node used to define this task instance.</param>
-        protected override void InitializeTask(System.Xml.XmlNode taskNode) {
+        /// <summary>
+        /// Initializes task and ensures the supplied attributes are valid.
+        /// </summary>
+        protected override void Initialize() {
             if (OutFilename == null) {
                 throw new BuildException("NUnitReport attribute \"out\" is required.", Location);
             }

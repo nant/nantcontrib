@@ -53,9 +53,9 @@ namespace NAnt.Contrib.Tasks {
 
         /// <summary>
         /// Returns the object from the Schema wrapper after 
-        /// <see cref="InitializeTask"/> is called.
+        /// <see cref="Initialize"/> is called.
         /// </summary>
-        /// <value>The object from the Schema wrapper after <see cref="InitializeTask"/> is called.</value>
+        /// <value>The object from the Schema wrapper after <see cref="Initialize"/> is called.</value>
         public Object SchemaObject {
             get { return _schemaObject; }
         }
@@ -67,9 +67,8 @@ namespace NAnt.Contrib.Tasks {
         /// <summary>
         /// Initializes the task and verifies parameters.
         /// </summary>
-        /// <param name="TaskNode">Node that contains the XML fragment used to define this task instance.</param>
-        protected override void InitializeTask(XmlNode TaskNode) {
-            XmlElement taskXml = (XmlElement) TaskNode.Clone();
+        protected override void Initialize() {
+            XmlElement taskXml = (XmlElement) XmlNode.Clone();
 
             // Expand all properties in the task and its child elements
             if (taskXml.ChildNodes != null) {

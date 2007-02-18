@@ -165,11 +165,10 @@ namespace NAnt.Contrib.Tasks {
             get { return _args; }
         }
 
-        ///<summary>
-        ///Initializes task and ensures the supplied attributes are valid.
-        ///</summary>
-        ///<param name="taskNode">Xml node used to define this task instance.</param>
-        protected override void InitializeTask(System.Xml.XmlNode taskNode) {
+        /// <summary>
+        /// Initializes task and ensures the supplied attributes are valid.
+        /// </summary>
+        protected override void Initialize() {
             if (WmiClass == null) {
                 throw new BuildException("MgmtClassGen attribute \"wmiclass\" is required.", Location);
             }

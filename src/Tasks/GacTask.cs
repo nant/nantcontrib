@@ -216,10 +216,10 @@ namespace NAnt.Contrib.Tasks {
 
         #endregion Override implementation of ExternalProgramBase
 
-        #region Override implementation of Task
+        #region Override implementation of Element
 
-        protected override void InitializeTask(System.Xml.XmlNode taskNode) {
-            base.InitializeTask (taskNode);
+        protected override void Initialize() {
+            base.Initialize ();
 
             if (AssemblyName != null && AssemblyFileSet.FileNames.Count != 0) {
                 throw new BuildException("Cannot use both the \"assembly\"" +
@@ -230,6 +230,6 @@ namespace NAnt.Contrib.Tasks {
             }
         }
 
-        #endregion Override implementation of Task
+        #endregion Override implementation of Element
     }
 }

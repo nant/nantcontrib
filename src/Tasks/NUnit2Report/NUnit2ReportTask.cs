@@ -170,11 +170,10 @@ namespace NAnt.Contrib.Tasks.NUnit2Report {
 
         #region Override implementation of Task
 
-        ///<summary>
-        ///Initializes task and ensures the supplied attributes are valid.
-        ///</summary>
-        ///<param name="taskNode">Xml node used to define this task instance.</param>
-        protected override void InitializeTask(XmlNode taskNode) {
+        /// <summary>
+        /// Initializes task and ensures the supplied attributes are valid.
+        /// </summary>
+        protected override void Initialize() {
             if (Format == ReportFormat.NoFrames) {
                 if (XslFile != null && !XslFile.Exists) {
                     throw new BuildException(string.Format(CultureInfo.InvariantCulture,

@@ -94,11 +94,10 @@ namespace NAnt.Contrib.Tasks {
         }
 
 
-        ///<summary>
-        ///Initializes task and ensures the supplied attributes are valid.
-        ///</summary>
-        ///<param name="taskNode">Xml node used to define this task instance.</param>
-        protected override void InitializeTask(System.Xml.XmlNode taskNode) {
+        /// <summary>
+        /// Initializes task and ensures the supplied attributes are valid.
+        /// </summary>
+        protected override void Initialize() {
             if (FileSet.FileNames.Count == 0) {
                 throw new BuildException("Checksum fileset cannot be empty!", Location);
             }

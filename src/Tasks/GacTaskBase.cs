@@ -181,9 +181,8 @@ namespace NAnt.Contrib.Tasks {
         /// <summary>
         /// Validates the task's configuration.
         /// </summary>
-        /// <param name="taskNode">The task node.</param>
-        protected sealed override void InitializeTask(System.Xml.XmlNode taskNode) {
-            base.InitializeTask(taskNode);
+        protected sealed override void Initialize() {
+            base.Initialize();
 
             if (AssemblyList.Count == 0) {
                 throw new BuildException("At least one assembly must be specified.");

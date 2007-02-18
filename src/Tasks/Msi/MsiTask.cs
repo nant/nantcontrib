@@ -370,9 +370,8 @@ namespace NAnt.Contrib.Tasks.Msi {
         /// <summary>
         /// Initializes task and verifies parameters.
         /// </summary>
-        /// <param name="TaskNode">Node that contains the XML fragment used to define this task instance.</param>
-        protected override void InitializeTask(XmlNode TaskNode) {
-            base.InitializeTask(TaskNode);
+        protected override void Initialize() {
+            base.Initialize();
 
             _taskCommand = new MsiCreationCommand((msi) SchemaObject, this, 
                 this.Location, this.XmlNode);

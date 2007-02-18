@@ -114,13 +114,6 @@ namespace NAnt.Contrib.Tasks {
             get { return _args; }
         }
 
-        ///<summary>
-        ///Initializes task and ensures the supplied attributes are valid.
-        ///</summary>
-        ///<param name="taskNode">Xml node used to define this task instance.</param>
-        protected override void InitializeTask(System.Xml.XmlNode taskNode) {
-        }
-
         protected override void ExecuteTask() {
             StringBuilder arguments = new StringBuilder();
 

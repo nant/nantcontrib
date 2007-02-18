@@ -301,12 +301,11 @@ namespace NAnt.Contrib.Tasks {
 
         #region Override implementation of Task
 
-        ///<summary>
-        ///Initializes task and ensures the supplied attributes are valid.
-        ///</summary>
-        ///<param name="taskNode">XML node used to define this task instance.</param>
-        protected override void InitializeTask(System.Xml.XmlNode taskNode) {
-            _embeddedSqlStatements = ((XmlElement) taskNode).InnerText;
+        /// <summary>
+        /// Initializes task and ensures the supplied attributes are valid.
+        /// </summary>
+        protected override void Initialize() {
+            _embeddedSqlStatements = ((XmlElement) XmlNode).InnerText;
             if (Source == null && StringUtils.IsNullOrEmpty(_embeddedSqlStatements)) {
                 throw new BuildException("No source file or statements have been specified.", 
                     Location);

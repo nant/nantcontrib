@@ -99,15 +99,19 @@ namespace NAnt.Contrib.Tasks {
 
         #endregion Public Instance Properties
 
-        #region Override implementation of Task
+        #region Override implementation of Element
 
-        protected override void InitializeTask(XmlNode taskNode) {
-            base.InitializeTask (taskNode);
+        protected override void Initialize() {
+            base.Initialize ();
 
             if (this.PropertyName == null && this.PropertyList.Count == 0) {
                 throw new BuildException("\"propname\" attribute or at least one <option> element is required.");
             }
         }
+
+        #endregion Override implementation of Element
+
+        #region Override implementation of Task
 
         /// <summary>
         /// Sets the specified property

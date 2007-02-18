@@ -24,6 +24,7 @@ using System.Globalization;
 using NAnt.Core;
 using NAnt.Core.Attributes;
 using NAnt.Core.Tasks;
+
 using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Tasks {
@@ -103,7 +104,7 @@ namespace NAnt.Contrib.Tasks {
             try {
                 Process process = Process.GetProcessById(ProcessId, Machine);
                 process.Kill();
-                process.WaitForExit (_timeout);
+                process.WaitForExit (TimeOut);
             } catch (Exception ex) {
                 throw new BuildException (string.Format (CultureInfo.InvariantCulture,
                     "Process '{0}' could not be stopped on '{1}'.", ProcessId,

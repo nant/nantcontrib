@@ -198,8 +198,8 @@ namespace NAnt.Contrib.Tasks {
             }
         }
 
-        protected override void InitializeTask(XmlNode taskNode) {
-            base.InitializeTask (taskNode);
+        protected override void Initialize() {
+            base.Initialize();
 
             if (OutputFile == null && UncompileFile == null) {
                 throw new BuildException(
