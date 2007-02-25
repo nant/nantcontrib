@@ -203,13 +203,12 @@
                 <include name="${src.dir}/**/*.cs" />
                 <include name="${build.dir}/schema/**/*.cs" />
 
-                <!-- bug 80407 -->
+                <!-- bug 80959 -->
                 <exclude name="${src.dir}/Tasks/Msi/*.cs" if="${framework::get-family(framework::get-target-framework())=='mono'}" />
+                <!-- Required MS SharePoint -->
                 <exclude name="${src.dir}/Tasks/SharePoint/*.cs" />
-                <!-- bug 80407 -->
+                <!-- bug 80959 -->
                 <exclude name="${src.dir}/Tasks/SourceSafe/*.cs" if="${framework::get-family(framework::get-target-framework())=='mono'}" />
-                <!-- bug 80407 -->
-                <exclude name="${src.dir}/Tasks/StarTeam/*.cs" if="${framework::get-family(framework::get-target-framework())=='mono'}" />
             </sources>
             <references>
                 <include name="${nant.dir}/bin/NAnt.Core.dll" />
