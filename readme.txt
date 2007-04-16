@@ -37,46 +37,38 @@ For example:
 This example assumes you've registered an environment variable named "NANTCONTRIB_DIR", holding the 
 path to NAntContrib (eg. c:\nantcontrib-0.85).
 
-
 2. Copy the content of the NAntContrib bin directory to the NAnt directory
 
-In order to make certain tasks available to every build file, you can copy the tasks assembly and 
-all its non-assembly dependencies to the "<nant>\bin\tasks" directory, and copy the assembly 
-dependencies to the "<nant>\bin\lib" directory.
+In order to make certain tasks available to every build file, you can copy the
+extensions assembly to the following directory:
 
-However, as NAntContrib contains tasks that rely on COM Interop, it is only supported on the .NET
-Framework (not on Mono). So, in order to avoid issues when running NAnt on Mono, you should copy
-the content of the NAntContrib bin directory to "<nant>\bin\tasks\net" and "<nant>\bin\lib\net". 
-This will ensure that NAnt only loads the NAntContrib tasks when running on one of the MS .NET 
-Framework runtimes.
+    <nant>\bin\extensions\common\neutral\NAntContrib
+
+and copy the third-party assemblies to directory:
+
+    <nant>\bin\lib\common\neutral\NAntContrib
 
 You should eventually end up with the following directory structure:
 
 <nant>\
     bin\
+        extensions\
+            common\
+                neutral\
+                    NAnt.Contrib.Tasks.dll
+                    NAnt.Contrib.Tasks.pdb (not available for releases)
+                    NAnt.Contrib.Tasks.xml
         lib\
-            net\
-                CollectionGen.dll
-                Interop.MsmMergeTypeLib.dll
-                Interop.StarTeam.dll
-                Interop.WindowsInstaller.dll
-                SourceSafe.Interop.dll
+            common\
+                neutral\
+                    CollectionGen.dll
+                    Interop.MsmMergeTypeLib.dll
+                    Interop.StarTeam.dll
+                    Interop.WindowsInstaller.dll
+                    SLiNgshoT.Core.dll
+                    SourceSafe.Interop.dll
 
-        tasks\
-            net\
-                MSITaskErrors.mst
-                MSITaskTemplate.msi
-                MSMTaskErrors.mst
-                MSMTaskTemplate.msm
-                NAnt.Contrib.Tasks.dll
-                NAnt.Contrib.Tasks.pdb (not available for releases)
-                NAnt.Contrib.Tasks.xml
-
-        SLiNgshoT.Core.dll
-        SLiNgshoT.exe
-
-Note: you might have to manually create the "tasks\net" and "lib\net" directories.
-
+Note: you might have to manually create the directories.
 
 3. Modify NAnt configuration file (not recommended)
 
