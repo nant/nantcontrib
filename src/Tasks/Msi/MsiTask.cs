@@ -30,12 +30,13 @@ using NAnt.Contrib.Schemas.Msi;
 
 namespace NAnt.Contrib.Tasks.Msi {
     /// <summary>
-    /// Creates a Windows Installer (also known as Microsoft Installer, or MSI) setup database for installing software on the Windows Platform. 
+    /// Creates a Windows Installer (also known as Microsoft Installer, or MSI)
+    /// setup database for installing software on the Windows Platform. 
     /// </summary>
     /// <remarks>
     /// <para>
     /// Requires <c>cabarc.exe</c> in the path.  This tool is part of the 
-    /// <see href="http://msdn.microsoft.com/library/en-us/dncabsdk/html/cabdl.asp">Microsoft Cabinet SDK</see>.
+    /// <see href="http://msdn2.microsoft.com/en-us/library/ms974336.aspx">Microsoft Cabinet SDK</see>.
     /// </para>
     /// <para>
     /// Requires <c>mergemod.dll</c> version 2.0 or greater.  This dll is part of the 

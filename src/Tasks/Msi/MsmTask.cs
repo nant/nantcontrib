@@ -34,7 +34,7 @@ namespace NAnt.Contrib.Tasks.Msi {
     /// </summary>
     /// <para>
     /// Requires <c>cabarc.exe</c> in the path.  This tool is part of the 
-    /// <see href="http://msdn.microsoft.com/library/en-us/dncabsdk/html/cabdl.asp">http://msdn.microsoft.com/library/en-us/dncabsdk/html/cabdl.asp">Microsoft Cabinet SDK</see>.
+    /// <see href="http://msdn2.microsoft.com/en-us/library/ms974336.aspx">Microsoft Cabinet SDK</see>.
     /// </para>
     [TaskName("msm")]
     [SchemaValidator(typeof(msm), "NAnt.Contrib.Tasks.Msi.MsiTask")]
