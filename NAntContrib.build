@@ -126,10 +126,6 @@
                 <include name="Interop.StarTeam.dll" />
                 <include name="Interop.WindowsInstaller.dll" />
                 <include name="Interop.MsmMergeTypeLib.dll" />
-                <include name="MSITaskErrors.mst" />
-                <include name="MSITaskTemplate.msi" />
-                <include name="MSMTaskErrors.mst" />
-                <include name="MSMTaskTemplate.msm" />
             </fileset>
         </copy>
     </target>
@@ -233,6 +229,12 @@
             </resources>
             <resources basedir="${src.dir}/Tasks/NUnit2Report/xsl" prefix="xslt.">
                 <include name="**/*.xsl" />
+            </resources>
+            <resources basedir="etc">
+                <include name="MSITaskErrors.mst" />
+                <include name="MSITaskTemplate.msi" />
+                <include name="MSMTaskErrors.mst" />
+                <include name="MSMTaskTemplate.msm" />
             </resources>
         </csc>
     </target>
@@ -466,7 +468,7 @@
         <property name="project.zip.prefix" value="${project.name}-${project.version.full}" />
     </target>
     
-    <target name = "filter-copy-help-html" >
+    <target name="filter-copy-help-html">
         <!-- filter-copy static html pages -->
         <copy todir="${build.dir}" overwrite="true">
             <fileset>
@@ -526,13 +528,10 @@
                 <include name="bin/Interop.StarTeam.dll" />
                 <include name="bin/Interop.WindowsInstaller.dll" />
                 <include name="bin/SourceSafe.Interop.dll" />
-                <!-- msi/msm dependencies -->
-                <include name="bin/MSITaskErrors.mst" />
-                <include name="bin/MSITaskTemplate.msi" />
-                <include name="bin/MSMTaskErrors.mst" />
-                <include name="bin/MSMTaskTemplate.msm" />
                 <!-- sources -->
                 <include name="src/**/*" />
+                <!-- varia -->
+                <include name="etc/**/*" />
                 <!-- unit tests -->
                 <include name="tests/**/*" />
                 <!-- tools -->
@@ -576,6 +575,26 @@
     </target>
     
     <target name="package" depends="package-src, package-bin" description="Creates a binary and source distribution package." />
+
+    <target name="install" depends="build">
+        <!-- install NAntContrib extension assembly -->
+        <copy todir="${nant::get-base-directory()}/extensions/common/neutral/NAntContrib" overwrite="true">
+            <fileset basedir="${build.dir}/bin">
+                <include name="NAnt.Contrib.Tasks.*" />
+            </fileset>
+        </copy>
+        <!-- install third-party & support assemblies -->
+        <copy todir="${nant::get-base-directory()}/lib/common/neutral/NAntContrib" overwrite="true">
+            <fileset basedir="${build.dir}/bin">
+                <include name="CollectionGen.dll" />
+                <include name="Interop.MsmMergeTypeLib.dll" />
+                <include name="Interop.StarTeam.dll" />
+                <include name="Interop.WindowsInstaller.dll" />
+                <include name="SLiNgshoT.Core.dll" />
+                <include name="SourceSafe.Interop.dll" />
+            </fileset>
+        </copy>
+    </target>
 
     <!-- Framework support targets -->
     <target name="set-framework-configuration">

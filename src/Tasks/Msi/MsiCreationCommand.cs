@@ -47,11 +47,11 @@ namespace NAnt.Contrib.Tasks.Msi {
             get { return (msi) this.MsiBase; }
         }
 
-        protected override string TemplateFileName {
+        protected override string TemplateResourceName {
             get { return "MSITaskTemplate.msi"; }
         }
 
-        protected override string ErrorTemplateFileName {
+        protected override string ErrorsResourceName {
             get { return "MSITaskErrors.mst"; }
         }
 

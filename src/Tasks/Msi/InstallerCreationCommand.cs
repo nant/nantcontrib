@@ -106,11 +106,11 @@ namespace NAnt.Contrib.Tasks.Msi {
             get;
         }
 
-        protected abstract string TemplateFileName {
+        protected abstract string TemplateResourceName {
             get;
         }
 
-        protected abstract string ErrorTemplateFileName {
+        protected abstract string ErrorsResourceName {
             get;
         }
 
@@ -2804,18 +2804,21 @@ namespace NAnt.Contrib.Tasks.Msi {
         public void Execute() {
             string cabFilePath = Path.Combine(Project.BaseDirectory,
                 Path.Combine(msi.sourcedir, CabFileName));
+            string errorsTempFile = null;
 
             try {
-                // Open the Template MSI File
-                string source = GetCheckedTemplatePath();
-                string errors = GetCheckedErrorTemplatePath();
-
                 CleanOutput(cabFilePath, TempFolderPath);
 
                 string dest = GetDestinationPath();
 
-                // Copy the template MSI file
-                CopyFile(source, dest);
+                // write the template resource to the destination file
+                try {
+                    WriteResourceToFile(TemplateResourceName, dest);
+                } catch (Exception ex) {
+                    throw new BuildException(string.Format(CultureInfo.InvariantCulture, 
+                        "Failed writing template to destination file '{0}'.", dest),
+                        Location, ex);
+                }
 
                 Log(Level.Info, "Building Installer Database '{0}'.", msi.output);
 
@@ -2824,8 +2827,17 @@ namespace NAnt.Contrib.Tasks.Msi {
                 database.Open();
 
                 if (msi.debug) {
-                    // if debug is true, transform the error strings in
-                    database.ApplyTransform(errors);
+                    errorsTempFile = Path.GetTempFileName();
+                    try {
+                        // write errors template to file
+                        WriteResourceToFile(ErrorsResourceName, errorsTempFile);
+                        // if debug is true, transform the error strings in
+                        database.ApplyTransform(errorsTempFile);
+                    } catch (IOException ex) {
+                        throw new BuildException(string.Format(CultureInfo.InvariantCulture, 
+                            "Failed writing errors template to '{0}'.", errorsTempFile),
+                            Location, ex);
+                    }
                 }
 
                 int fileSequenceNumber = 0;
@@ -2847,6 +2859,9 @@ namespace NAnt.Contrib.Tasks.Msi {
                     Location, ex);
             } finally {
                 CleanOutput(cabFilePath, TempFolderPath);
+                if (errorsTempFile != null) {
+                    File.Delete(errorsTempFile);
+                }
             }
         }
 
@@ -2898,28 +2913,19 @@ namespace NAnt.Contrib.Tasks.Msi {
             return Path.Combine(Project.BaseDirectory, Path.Combine(msi.sourcedir, msi.output));
         }
 
-        private string GetCheckedErrorTemplatePath() {
-            string errors = Path.Combine(TemplateFolder, ErrorTemplateFileName);
-            if (msi.errortemplate != null) {
-                errors = Path.Combine(Project.BaseDirectory, msi.errortemplate);
+        private void WriteResourceToFile (string resourceName, string fileName) {
+            using (Stream s = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName)) {
+                using (FileStream fs = File.Create(fileName)) {
+                    byte[] buffer = new byte[4096];
+                    int bytesRead = s.Read(buffer, 0, buffer.Length);
+                    while (bytesRead > 0) {
+                        fs.Write(buffer, 0, bytesRead);
+                        bytesRead = s.Read(buffer, 0, buffer.Length);
+                    }
+                    fs.Flush();
+                }
+                s.Close();
             }
-            if (!File.Exists(errors)) {
-                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                    "Unable to find error template file {0}.", errors), Location);
-            }
-            return errors;
-        }
-
-        private string GetCheckedTemplatePath() {
-            string source = Path.Combine(TemplateFolder, TemplateFileName);
-            if (msi.template != null) {
-                source = Path.Combine(Project.BaseDirectory, msi.template);
-            }
-            if (!File.Exists(source)) {
-                throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                    "Unable to find template file {0}.", source), Location);
-            }
-            return source;
         }
 
         private string TemplateFolder {
