@@ -98,17 +98,24 @@ namespace NAnt.Contrib.Tasks {
                 } catch (ArgumentException) {
                     Log (Level.Verbose, "Process '{0}' was not running.",
                         ProcessId);
+                    return;
                 }
-                bool exited = process.WaitForExit (TimeOut);
+                bool exited = process.WaitForExit(TimeOut);
                 if (!exited) {
-                    throw new BuildException ("Process '{0}' did not exit by "
-                        + "then end of the configured interval.", Location);
+                    throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                        "Process '{0}' did not exit within the configured interval.",
+                        ProcessId), Location);
+                }
+                if (process.ExitCode != 0) {
+                    throw new BuildException(string.Format(CultureInfo.InvariantCulture,
+                        "External Program Failed: {0} (return code was {1}).",
+                        ProcessId, process.ExitCode), Location);
                 }
             } catch (BuildException) {
                 throw;
             } catch (Exception ex) {
                 throw new BuildException (string.Format (CultureInfo.InvariantCulture,
-                    "Failed to wait for process '{0}' to exit.", ProcessId),
+                    "Failure waiting for process '{0}' to exit.", ProcessId),
                     Location, ex);
             }
         }
