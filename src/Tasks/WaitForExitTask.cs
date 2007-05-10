@@ -106,11 +106,6 @@ namespace NAnt.Contrib.Tasks {
                         "Process '{0}' did not exit within the configured interval.",
                         ProcessId), Location);
                 }
-                if (process.ExitCode != 0) {
-                    throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                        "External Program Failed: {0} (return code was {1}).",
-                        ProcessId, process.ExitCode), Location);
-                }
             } catch (BuildException) {
                 throw;
             } catch (Exception ex) {
