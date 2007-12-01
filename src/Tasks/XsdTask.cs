@@ -138,12 +138,12 @@ namespace NAnt.Contrib.Tasks {
         private string _element;
         private string _language;
         private string _namespace;
-        private DirectoryInfo _outputdir = null;
-        private string _types = null;
-        private string _uri = null;
-        private FileInfo _assembly = null;
-        private FileInfo _xmldoc = null;
-        private FileInfo _xdr = null;
+        private DirectoryInfo _outputdir;
+        private string _types;
+        private string _uri;
+        private FileInfo _assembly;
+        private FileInfo _xmldoc;
+        private FileInfo _xdr;
 
         #endregion Private Instance Fields
 
@@ -285,13 +285,13 @@ namespace NAnt.Contrib.Tasks {
         /// configured. 
         /// </summary>
         /// <value>
-        /// <see langword="true" />.
+        /// <see langword="ManagedExecutionMode.Auto" />.
         /// </value>
         /// <remarks>
         /// Modifying this property has no effect.
         /// </remarks>
-        public override bool Managed {
-            get { return true; }
+        public override ManagedExecution Managed {
+            get { return ManagedExecution.Auto; }
             set { }
         }
 
