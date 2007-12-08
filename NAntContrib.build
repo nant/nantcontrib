@@ -3,6 +3,7 @@
     <include buildfile="../properties.xml" if="${file::exists('../properties.xml')}" />
     <!-- set build.date property to current date in format yyyy-MM-dd -->
     <tstamp property="build.date" pattern="yyyy-MM-dd" />
+    <property name="build.warnaserror" value="false" />
     <!-- global project settings -->
     <property name="project.name" value="nantcontrib" />
     <property name="project.FormalName" value="NAnt.Contrib" />
@@ -13,6 +14,9 @@
     </if>
     <if test="${project.release.type != 'nightly'}">
         <property name="project.version.full" value="${project.version + if(project.release.type == 'release', '', '-' + project.release.type)}" dynamic="true" />    
+    </if>
+    <if test="${project.release.type == 'dev' or project.release.type == 'nightly'}">
+        <property name="build.warnaserror" value="true" />
     </if>
 
     <!-- 
@@ -176,16 +180,9 @@
             TO-DO : remove this "hack" once support for explicit manifest resource
             names is in place.
         -->
-        <if test="${framework::get-family(framework::get-target-framework())=='mono'}">
-            <property name="targeting.mono" value="true" />
-            <property name="csc.warnaserror" value="false" />
-        </if>
-        <if test="${framework::get-family(framework::get-target-framework())!='mono'}">        
-            <property name="targeting.mono" value="false" />
-            <property name="csc.warnaserror" value="true" />
-        </if>
+        <property name="targeting.mono" value="${framework::get-family(framework::get-target-framework())=='mono'}" />
         <copy file="${src.dir}/Tasks/Msi/MsiTask.xsd" tofile="${build.dir}/schema/Msi/NAnt.Contrib.Schemas.Msi" />
-        <csc target="library" warnaserror="${csc.warnaserror}" debug="${build.debug}"
+        <csc target="library" warnaserror="${build.warnaserror}" debug="${build.debug}"
              define="${current.build.defines}"
              output="${build.dir}/bin/${project.FormalName}.Tasks.dll"
              doc="${build.dir}/bin/${project.FormalName}.Tasks.xml">
@@ -200,11 +197,11 @@
                 <include name="${build.dir}/schema/**/*.cs" />
 
                 <!-- bug 80959 -->
-                <exclude name="${src.dir}/Tasks/Msi/*.cs" if="${framework::get-family(framework::get-target-framework())=='mono'}" />
+                <exclude name="${src.dir}/Tasks/Msi/*.cs" if="${targeting.mono}" />
                 <!-- Required MS SharePoint -->
                 <exclude name="${src.dir}/Tasks/SharePoint/*.cs" />
                 <!-- bug 80959 -->
-                <exclude name="${src.dir}/Tasks/SourceSafe/*.cs" if="${framework::get-family(framework::get-target-framework())=='mono'}" />
+                <exclude name="${src.dir}/Tasks/SourceSafe/*.cs" if="${targeting.mono}" />
             </sources>
             <references>
                 <include name="${nant.dir}/bin/NAnt.Core.dll" />
@@ -269,13 +266,9 @@
                 <!-- common assembly-level attributes -->
                 <include name="${src.dir}/CommonAssemblyInfo.cs" />
 
-                <!-- bug 80407 -->
-                <exclude name="${tests.dir}/Tasks/Msi/*.cs" if="${framework::get-family(framework::get-target-framework())=='mono'}" />
-                <exclude name="${tests.dir}/Tasks/SharePoint/*.cs"/>
-                <!-- bug 80407 -->
+                <!-- bug 80959 -->
                 <exclude name="${tests.dir}/Tasks/SourceSafe/*.cs" if="${framework::get-family(framework::get-target-framework())=='mono'}" />
-                <!-- bug 80408 -->
-                <exclude name="${tests.dir}/Tasks/StarTeam/*.cs" if="${framework::get-family(framework::get-target-framework())=='mono'}" />
+                <exclude name="${tests.dir}/Tasks/SharePoint/*.cs"/>
             </sources>
             <references>
                 <include name="${nant.dir}/bin/NAnt.Core.dll" />
