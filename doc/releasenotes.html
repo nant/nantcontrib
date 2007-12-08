@@ -5,9 +5,29 @@
         <meta http-equiv="Content-Language" content="en-ca" />
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <link rel="stylesheet" type="text/css" href="help/style.css" />
-        <style type="text/css">
+        <style type="text/css"> 
             li {
                 margin-top: 10px;
+            }
+
+            .xmlelement {
+                color: #660000;
+            }
+            
+            .xmlattribute {
+                color: red;
+            }
+
+            .xmltext {
+                color: blue;
+            }
+
+            .xmlcomment {
+                color: green;
+            }
+
+            .xmlcdata {
+                color: #FF00CC;
             }
         </style>
     </head>
@@ -23,6 +43,67 @@
         </table>
         <h1>
             <span class="N">N</span><span class="Ant">Ant</span>Contrib Release Notes</h1>
+        <h2>0.86-beta1 (December 8, 2007)</h2>
+        <h3>Additions</h3>
+        <h4>Tasks</h4>
+        <div style="margin-left: 20px;">
+            <h5><a class="heading" href="help/tasks/kill.html">&lt;kill&gt;</a></h5>
+            <div style="margin-left: 20px;">
+                <p>
+                    Immediately stops a given process.
+                </p>
+                <p>
+                    When used in combination with the <span class="xmltext">&lt;</span><span class="xmlelement">exec</span><span class="xmltext">&gt;</span>
+                    task, it allows processed to be spawned for a certain duration or task, and then 
+                    stopped.
+                </p>
+            </div>
+            <h5><a class="heading" href="help/tasks/waitforexit.html">&lt;waitforexit&gt;</a></h5>
+            <div style="margin-left: 20px;">
+                <p>
+                    Waits for a given process on the local computer to exit.
+                </p>
+                <p>
+                    When used in combination with the <span class="xmltext">&lt;</span><span class="xmlelement">exec</span><span class="xmltext">&gt;</span>
+                    task, it allows processed to be spawned for a certain duration or task, and then 
+                    wait until the process is finished before continueing.
+                </p>
+            </div>
+        </div>
+        <h3>Changes</h3>
+        <h4>Framework&nbsp;support</h4>
+        <div style="margin-left: 20px;">
+            <h5>
+                <a class="heading" >Mono</a></h5>
+            <div style="margin-left: 20px;">
+                <p>
+                    Fixes in both Mono and NAntContrib now allow NAntContrib
+                    to be used in Mono (both Windows and Linux).
+                </p>
+            </div>
+        </div>
+        <div style="margin-left: 20px;">
+            <h5>
+                <a class="heading" >.NET Framework 3.5</a></h5>
+            <div style="margin-left: 20px;">
+                <p>
+                    Updated build file to allow NAntContrib to be built against
+                    .NET Framework 3.5 and Mono 3.5 Profile.
+                </p>
+            </div>
+        </div>
+        <h4>Installation</h4>
+        <div style="margin-left: 20px;">
+            <h5>
+                <a class="heading" >Templates</a></h5>
+            <div style="margin-left: 20px;">
+                <p>
+                    The templates used by the <code><a href="help/tasks/msi.html">&lt;msi&gt;</a></code>
+                    and <code><a href="help/tasks/msm.html">&lt;msm&gt;</a></code> takes are now embedded
+                    in the NAntContrib assembly, and no longer need to be installed separately.
+                </p>
+            </div>
+        </div>
         <h2>0.85 (October 15, 2006)</h2>
         <h3>Changes</h3>
         <h4>Tasks</h4>
