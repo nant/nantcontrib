@@ -16,7 +16,7 @@ For example:
 
 <project name="NAntContrib" default"test">
     <target name="test">
-        <loadtasks assembly="c:/nantcontrib-0.85/bin/NAnt.Contrib.Tasks.dll" />
+        <loadtasks assembly="c:/nantcontrib-0.86/bin/NAnt.Contrib.Tasks.dll" />
         ...
     </target>
 </project>
@@ -35,7 +35,7 @@ For example:
 </project>
 
 This example assumes you've registered an environment variable named "NANTCONTRIB_DIR", holding the 
-path to NAntContrib (eg. c:\nantcontrib-0.85).
+path to NAntContrib (eg. c:\nantcontrib-0.86).
 
 2. Copy the content of the NAntContrib bin directory to the NAnt directory
 
@@ -55,18 +55,20 @@ You should eventually end up with the following directory structure:
         extensions\
             common\
                 neutral\
-                    NAnt.Contrib.Tasks.dll
-                    NAnt.Contrib.Tasks.pdb (not available for releases)
-                    NAnt.Contrib.Tasks.xml
+                    NAntContrib\
+                        NAnt.Contrib.Tasks.dll
+                        NAnt.Contrib.Tasks.pdb (not available for releases)
+                        NAnt.Contrib.Tasks.xml
         lib\
             common\
                 neutral\
-                    CollectionGen.dll
-                    Interop.MsmMergeTypeLib.dll
-                    Interop.StarTeam.dll
-                    Interop.WindowsInstaller.dll
-                    SLiNgshoT.Core.dll
-                    SourceSafe.Interop.dll
+                    NAntContrib\
+                        CollectionGen.dll
+                        Interop.MsmMergeTypeLib.dll
+                        Interop.StarTeam.dll
+                        Interop.WindowsInstaller.dll
+                        SLiNgshoT.Core.dll
+                        SourceSafe.Interop.dll
 
 Note: you might have to manually create the directories.
 
@@ -87,7 +89,7 @@ For example:
     >
             <task-assemblies>
             ...
-            <include name="c:/nantcontrib-0.85/bin/NAnt.Contrib.Tasks.dll" />
+            <include name="c:/nantcontrib-0.86/bin/NAnt.Contrib.Tasks.dll" />
             ...
                 </task-assemblies>
         ....
@@ -103,13 +105,14 @@ How to build.
 -------------
 To build NAntContrib, the following procedure should be followed:
 
+
 1. Download and extract a binary distribution of NAnt from http://nant.sourceforge.net
 
 2. Change to the NAntContrib directory
 
 3. Run NAntContrib.build using the version of NAnt that you downloaded
 
-    eg.  c:\NAnt-0.85\bin\NAnt.exe -D:nant.dir=c:\NAnt -f:NAntContrib.build
+    eg.  c:\NAnt-0.86\bin\NAnt.exe -D:nant.dir=c:\NAnt -f:NAntContrib.build
 
 Note: 
 
