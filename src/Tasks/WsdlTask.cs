@@ -48,23 +48,23 @@ namespace NAnt.Contrib.Tasks {
         
         #region Private Instance Fields
         
-        private StringBuilder _argumentBuilder = null;
-        private string _path = null;
-        private bool _nologo = false;
-        private string _language = null;
-        private bool _forserver = false;
-        private string _namespace = null;
-        private string _outfile = null;
-        private string _protocol = null;
-        private string _username = null;
-        private string _password = null;
-        private string _domain = null;
-        private string _proxy = null;
-        private string _proxyusername = null;
-        private string _proxypassword = null;
-        private string _proxydomain = null;
-        private string _urlkey = null;
-        private string _baseurl = null;
+        private StringBuilder _argumentBuilder;
+        private string _path;
+        private bool _nologo;
+        private string _language;
+        private bool _forserver;
+        private string _namespace;
+        private string _outfile;
+        private string _protocol;
+        private string _username;
+        private string _password;
+        private string _domain;
+        private string _proxy;
+        private string _proxyusername;
+        private string _proxypassword;
+        private string _proxydomain;
+        private string _urlkey;
+        private string _baseurl;
         
         #endregion Private Instance Fields
         
@@ -203,6 +203,22 @@ namespace NAnt.Contrib.Tasks {
         #endregion Public Instance Properties
 
         #region Override implementation of ExternalProgramBase
+
+        /// <summary>
+        /// Gets a value indiciating whether the external program is a managed
+        /// application which should be executed using a runtime engine, if 
+        /// configured. 
+        /// </summary>
+        /// <value>
+        /// <see langword="ManagedExecutionMode.Auto" />.
+        /// </value>
+        /// <remarks>
+        /// Modifying this property has no effect.
+        /// </remarks>
+        public override ManagedExecution Managed {
+            get { return ManagedExecution.Auto; }
+            set { }
+        }
 
         /// <summary>
         /// Gets the command-line arguments for the external program.

@@ -160,6 +160,22 @@ namespace NAnt.Contrib.Tasks {
             get { return "gacutil"; }
         }
 
+        /// <summary>
+        /// Gets a value indiciating whether the external program is a managed
+        /// application which should be executed using a runtime engine, if 
+        /// configured. 
+        /// </summary>
+        /// <value>
+        /// <see langword="ManagedExecutionMode.Auto" />.
+        /// </value>
+        /// <remarks>
+        /// Modifying this property has no effect.
+        /// </remarks>
+        public override ManagedExecution Managed {
+            get { return ManagedExecution.Auto; }
+            set { }
+        }
+
         public override string ProgramArguments {
             get {
                 // suppresses display of the logo banner

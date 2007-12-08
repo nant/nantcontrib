@@ -29,6 +29,8 @@ using System.Text;
 using NAnt.Core;
 using NAnt.Core.Tasks;
 using NAnt.Core.Attributes;
+using NAnt.Core.Types;
+
 using NAnt.Contrib.Types;
 
 namespace NAnt.Contrib.Tasks {
@@ -121,6 +123,22 @@ namespace NAnt.Contrib.Tasks {
         /// Constructs and initialises an instance of <c>GacTask</c>.
         /// </summary>
         public GacTaskBase() {
+        }
+
+        /// <summary>
+        /// Gets a value indiciating whether the external program is a managed
+        /// application which should be executed using a runtime engine, if 
+        /// configured. 
+        /// </summary>
+        /// <value>
+        /// <see langword="ManagedExecutionMode.Auto" />.
+        /// </value>
+        /// <remarks>
+        /// Modifying this property has no effect.
+        /// </remarks>
+        public override ManagedExecution Managed {
+            get { return ManagedExecution.Auto; }
+            set { }
         }
 
         /// <summary>
