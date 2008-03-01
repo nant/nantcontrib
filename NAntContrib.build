@@ -571,14 +571,20 @@
     <target name="package" depends="package-src, package-bin" description="Creates a binary and source distribution package." />
 
     <target name="install" depends="build">
+        <!-- by default install to base directory of running NAnt -->
+        <if test="${not property::exists('prefix')}">
+            <property name="prefix" value="${nant::get-base-directory()}" />
+        </if>
+
         <!-- install NAntContrib extension assembly -->
-        <copy todir="${nant::get-base-directory()}/extensions/common/neutral/NAntContrib" overwrite="true">
+        <copy todir="${prefix}/extensions/common/neutral/NAntContrib" overwrite="true">
             <fileset basedir="${build.dir}/bin">
                 <include name="NAnt.Contrib.Tasks.*" />
             </fileset>
         </copy>
+
         <!-- install third-party & support assemblies -->
-        <copy todir="${nant::get-base-directory()}/lib/common/neutral/NAntContrib" overwrite="true">
+        <copy todir="${prefix}/lib/common/neutral/NAntContrib" overwrite="true">
             <fileset basedir="${build.dir}/bin">
                 <include name="CollectionGen.dll" />
                 <include name="Interop.MsmMergeTypeLib.dll" />
