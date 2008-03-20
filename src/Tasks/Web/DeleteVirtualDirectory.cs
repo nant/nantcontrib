@@ -66,11 +66,15 @@ namespace NAnt.Contrib.Tasks.Web {
             this.CheckIISSettings();
 
             //make sure we dont delete the serverinstance ROOT
-            if(this.VirtualDirectory.Length == 0) {
+            if (this.VirtualDirectory.Length == 0)
                 throw new BuildException("The root of a web site can not be deleted",Location);
-            }
+
+            // skip further processing if virtual directory no longer exists
+            if (!DirectoryEntryExists(this.ServerPath + this.VdirPath))
+                return;
+
             try {
-                DirectoryEntry vdir = new DirectoryEntry(this.ServerPath+this.VdirPath);
+                DirectoryEntry vdir = new DirectoryEntry(this.ServerPath + this.VdirPath);
                 vdir.Parent.Children.Remove(vdir);
             } catch (Exception ex) {
                 throw new BuildException(string.Format(CultureInfo.InvariantCulture,
