@@ -157,7 +157,7 @@ namespace NAnt.Contrib.Tasks.Web {
                     PoolName, Server);
             } catch (Exception ex) {
                 throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                    "Failed {0} application pool \"{1}\" on \"{1}\".",
+                    "Failed {0} application pool \"{1}\" on \"{2}\".",
                     GetActionInProgress(), PoolName, Server), Location, ex);
             }
         }
