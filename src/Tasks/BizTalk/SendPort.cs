@@ -33,7 +33,7 @@ namespace NAnt.Contrib.Tasks.BizTalk {
     /// </summary>
     /// <example>
     ///   <para>
-    ///   Starts the &quot;UmeHttpSendPort&quot; port on server 
+    ///   Starts the &quot;UmeHttpSendPort&quot; send port on server 
     ///   &quot;SV-ARD-EAI&quot;.
     ///   </para>
     ///   <code>
@@ -44,7 +44,8 @@ namespace NAnt.Contrib.Tasks.BizTalk {
     /// </example>
     /// <example>
     ///   <para>
-    ///   Unenlists the &quot;UmeHttpSendPort&quot; on server &quot;SV-ARD-EAI&quot;.
+    ///   Unenlists the &quot;UmeHttpSendPort&quot; send port on server
+    ///   &quot;SV-ARD-EAI&quot;.
     ///   </para>
     ///   <code>
     ///     <![CDATA[
@@ -252,9 +253,9 @@ namespace NAnt.Contrib.Tasks.BizTalk {
                 case SendPortAction.Enlist:
                     return "enlisting";
                 case SendPortAction.UnEnlist:
-                    return "Unenlisted";
+                    return "unenlisting";
                 default:
-                    return "stopped";
+                    return "stopping";
             }
         }
 
