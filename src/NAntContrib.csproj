@@ -374,6 +374,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Tasks\BizTalk\ReceiveLocation.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Tasks\BizTalk\Reset.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
