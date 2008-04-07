@@ -98,15 +98,15 @@ namespace NAnt.Contrib.Tasks.Web {
             set { _server = StringUtils.ConvertEmptyToNull(value); }
         }
 
-		/// <summary>
-		/// The name of the application pool on which to perform the action.
-		/// </summary>
+        /// <summary>
+        /// The name of the application pool on which to perform the action.
+        /// </summary>
         [TaskAttribute("pool", Required=true)]
         public string PoolName {
             get { return _poolName; }
             set { _poolName = StringUtils.ConvertEmptyToNull(value); }
         }
-					
+
         /// <summary>
         /// The action that should be performed on the application pool.
         /// </summary>
@@ -140,7 +140,7 @@ namespace NAnt.Contrib.Tasks.Web {
                         PoolName, Server);
                     pool.InvokeMethod("Stop", new object[0]);
                 }
-						
+
                 if (Action == ApplicationPoolAction.Start || Action == ApplicationPoolAction.Restart) {
                     Log(Level.Verbose, "Starting \"{0}\" on \"{1}\"...",
                         PoolName, Server);
