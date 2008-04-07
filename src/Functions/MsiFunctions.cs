@@ -31,19 +31,19 @@ using NAnt.Core.Util;
 
 namespace NAnt.Contrib.Functions {
     /// <summary>
-    /// Allow information on Windows Installer databases and products to be
+    /// Allows information on Windows Installer databases and products to be
     /// retrieved.
     /// </summary>
     [FunctionSet("msi", "Windows Installer")]
     public class MsiFunctions : FunctionSetBase {
         #region Public Instance Constructors
-        
+
         public MsiFunctions(Project project, PropertyDictionary properties) : base(project, properties) { }
-        
+
         #endregion Public Instance Constructors
 
         #region Public Static Methods
-        
+
         /// <summary>
         /// Returns the product code of the specified Windows Installer
         /// database.
@@ -52,30 +52,35 @@ namespace NAnt.Contrib.Functions {
         /// <returns>
         /// The product code of the specified Windows Installer database.
         /// </returns>
-        /// <remarks>
-        /// For the machineName parameter, you can use "." or a zero-length
-        /// <see cref="string" /> to represent the local computer.
-        /// </remarks>
+        /// <exception cref="FileNotFoundException">The specified installer database does not exist.</exception>
+        /// <exception cref="ArgumentException">
+        ///   <para>
+        ///   The installer database could not be opened.
+        ///   </para>
+        ///   <para>-or-</para>
+        ///   <para>
+        ///   The product code property is not available in the installer
+        ///   database.
+        ///   </para>
+        /// </exception>
         /// <example>
         ///   <para>
-        ///   The following example starts the "World Wide Web Publishing"
-        ///   service if it's installed on the local computer.
+        ///   Retrieves the product code of a given installer database, and
+        ///   fails the build if the product is not installed.
         ///   </para>
         ///   <code>
         ///     <![CDATA[
-        /// <if test="${service::is-installed('World Wide Web Publishing', '.')}">
-        ///     <servicecontroller action="Start" service="World Wide Web Publishing" />
-        /// </if>
+        /// <property name="office.productcode" value=${msi::get-product-code('Office.msi')}" />
+        /// <fail unless="${msi::is-installed(office.productcode)}">Please install Office first.</fail>
         ///     ]]>
         ///   </code>
         /// </example>
-        /// 
         [Function("get-product-code")]
         public string GetProductCode(string databasePath) {
             string fullDBPath = Project.GetFullPath(databasePath);
 
             if (!File.Exists(fullDBPath))
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture,
+                throw new FileNotFoundException(string.Format(CultureInfo.InvariantCulture,
                     "Database '{0}' does not exist.", fullDBPath));
 
             Installer installer = CreateInstaller();
@@ -84,7 +89,7 @@ namespace NAnt.Contrib.Functions {
             try {
                 database = installer.OpenDatabase(fullDBPath, MsiOpenDatabaseMode.msiOpenDatabaseModeDirect);
             } catch (Exception ex) {
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture,
+                throw new ArgumentException (string.Format(CultureInfo.InvariantCulture,
                     "Database '{0}' could not be opened.", fullDBPath), ex);
             }
 
@@ -106,11 +111,33 @@ namespace NAnt.Contrib.Functions {
                 view = null;
                 database = null;
 
+                // force garbage collection to ensure database is released
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
             }
         }
 
+        /// <summary>
+        /// Returns a value indicating whether a product with the specified
+        /// <c>product code</c> is installed.
+        /// </summary>
+        /// <param name="productCode">The product code of the product to check.</param>
+        /// <returns>
+        /// <see langword="true" /> if a product with the specified product
+        /// code is installed; otherwise, <see langword="false" />.
+        /// </returns>
+        /// <example>
+        ///   <para>
+        ///   Retrieves the product code of a given installer database, and
+        ///   fails the build if the product is not installed.
+        ///   </para>
+        ///   <code>
+        ///     <![CDATA[
+        /// <property name="office.productcode" value=${msi::get-product-code('Office.msi')}" />
+        /// <fail unless="${msi::is-installed(office.productcode)}">Please install Office first.</fail>
+        ///     ]]>
+        ///   </code>
+        /// </example>
         [Function("is-installed")]
         public static bool IsInstalled(string productCode) {
             if (productCode == null)
