@@ -59,11 +59,11 @@ namespace NAnt.Contrib.Tasks.Web {
     [TaskName("deliisdir")]
     public class DeleteVirtualDirectory : WebBase {
         protected override void ExecuteTask() {
-            Log(Level.Info, "Deleting virtual directory '{0}' on '{1}' (website: {2}).", 
-                this.VirtualDirectory, this.Server, this.Website);
-
             // ensure IIS is available on specified host and port
             this.CheckIISSettings();
+
+            Log(Level.Info, "Deleting virtual directory '{0}' on '{1}' (website: {2}).", 
+                this.VirtualDirectory, this.Server, this.Website);
 
             //make sure we dont delete the serverinstance ROOT
             if (this.VirtualDirectory.Length == 0)

@@ -1025,12 +1025,12 @@ namespace NAnt.Contrib.Tasks.Web {
         #region Override implementation of Task
 
         protected override void ExecuteTask() {
+            // ensure IIS is available on specified host and port
+            this.CheckIISSettings();
+
             Log(Level.Info, "Creating/modifying virtual directory '{0}' on"
                 + " '{1}' (website: {2}).", this.VirtualDirectory, this.Server,
                 this.Website);
-
-            // ensure IIS is available on specified host and port
-            this.CheckIISSettings();
 
             try {
                 DirectoryEntry vdir = 
