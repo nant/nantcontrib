@@ -260,6 +260,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Tasks\LoadPropertiesTask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Tasks\MgmtClassGenTask.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
