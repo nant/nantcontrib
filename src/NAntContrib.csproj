@@ -150,6 +150,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Functions\FileFunctions.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Functions\FileSetFunctions.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

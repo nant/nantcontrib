@@ -18,65 +18,59 @@
 //
 
 using System;
-using System.Collections;
+using System.Globalization;
 using System.IO;
-using System.Reflection;
 using System.Text;
 using System.Security.Cryptography;
-using NAnt.Core.Attributes;
-using NAnt.Core;
 
-namespace NAnt.Contrib.Util
-{ 
+namespace NAnt.Contrib.Util { 
+    /// <summary>
+    /// Helper class to calculate checksums
+    /// of files.
+    /// </summary>
+    internal class ChecksumHelper {
+        private HashAlgorithm _provider;
 
-   /// <summary>
-   /// Helper class to calculate checksums
-   /// of files.
-   /// </summary>
-   internal class ChecksumHelper 
-   {
-      private HashAlgorithm _provider;
+        /// <summary>
+        /// Create a new instance
+        /// </summary>
+        /// <param name="providerName">Name of hash algorithm to use</param>
+        /// <exception cref="ArgumentException">The specified hash algorithm does not exist.</exception>
+        public ChecksumHelper(string providerName) {
+            _provider = HashAlgorithm.Create(providerName);
+            if (_provider == null)
+                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture,
+                    "Hash algorithm '{0}' does not exist.", providerName));
+        }
 
-      /// <summary>
-      /// Create a new instance
-      /// </summary>
-      /// <param name="providerName">Name of hash algorithm to use</param>
-      public ChecksumHelper(string providerName)
-      {
-         _provider = HashAlgorithm.Create(providerName);
-      }
+        /// <summary>
+        /// Calculates a checksum for a given file
+        /// and returns it in a hex string
+        /// </summary>
+        /// <param name="filename">name of the input file</param>
+        /// <returns>hex checksum string</returns>
+        public string CalculateChecksum(string filename) {
+            byte[] checksum;
 
-      /// <summary>
-      /// Calculates a checksum for a given file
-      /// and returns it in a hex string
-      /// </summary>
-      /// <param name="filename">name of the input file</param>
-      /// <returns>hex checksum string</returns>
-      public string CalculateChecksum(string filename)
-      {
-         FileStream file = File.OpenRead(filename);
-         byte[] checksum = _provider.ComputeHash(file);
-         file.Close();
+            using (FileStream file = File.OpenRead(filename)) {
+                checksum = _provider.ComputeHash(file);
+            }
 
-         return ChecksumToString(checksum);
-      }
+            return ChecksumToString(checksum);
+        }
 
-
-      /// <summary>
-      /// Converts a checksum value (a byte array)
-      /// into a Hex-formatted string.
-      /// </summary>
-      /// <param name="checksum">Checksum value to convert</param>
-      /// <returns>Hexified string value</returns>
-      public string ChecksumToString(byte[] checksum)
-      {
-         StringBuilder str = new StringBuilder("");
-         for ( int i=0; i < checksum.Length; i++ ) {
-            str.Append(string.Format("{0:x2}", checksum[i]));
-         }
-         return str.ToString();
-      }
-
-   } // class ChecksumHelper
-
-} // namespace NAnt.Contrib.Util
+        /// <summary>
+        /// Converts a checksum value (a byte array)
+        /// into a Hex-formatted string.
+        /// </summary>
+        /// <param name="checksum">Checksum value to convert</param>
+        /// <returns>Hexified string value</returns>
+        public string ChecksumToString(byte[] checksum) {
+            StringBuilder str = new StringBuilder("");
+            for ( int i=0; i < checksum.Length; i++ ) {
+                str.Append(string.Format("{0:x2}", checksum[i]));
+            }
+            return str.ToString();
+        }
+    }
+}
