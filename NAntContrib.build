@@ -253,7 +253,7 @@
                 <include name="bin/NAnt.DotNetTasks.dll" />
                 <include name="bin/NAnt.Win32Tasks.dll" />
                 <include name="bin/log4net.dll" />
-                <include name="${nunit.dir}/nunit.framework.dll" />
+                <include name="${nant::scan-probing-paths('nunit.framework.dll')}" />
             </fileset>
         </copy>
         <!-- compile the test assembly -->
@@ -273,7 +273,7 @@
             </sources>
             <references>
                 <include name="${nant.dir}/bin/NAnt.Core.dll" />
-                <include name="${nunit.dir}/nunit.framework.dll" />
+                <include name="${nant::scan-probing-paths('nunit.framework.dll')}" />
                 <include name="${build.dir}/bin/${project.FormalName}.Tasks.dll" />
                 <include name="${build.dir}/bin/SourceSafe.Interop.dll" />
                 <include name="System.Data.dll" />
@@ -613,48 +613,41 @@
         <property name="current.build.defines" value="${build.defines}NET,NET_1_0" dynamic="true" />
         <property name="link.sdkdoc.version" value="SDK_v1_0" />
         <property name="link.sdkdoc.web" value="true" />
-        <property name="nunit.dir" value="${nant.dir}/bin/lib/net/1.0" />
     </target>
     <target name="set-net-1.1-framework-configuration">
         <property name="nant.settings.currentframework" value="net-1.1" />
         <property name="current.build.defines" value="${build.defines}NET,NET_1_0,NET_1_1,ONLY_NET_1_1" dynamic="true" />
         <property name="link.sdkdoc.version" value="SDK_v1_1" />
         <property name="link.sdkdoc.web" value="true" />
-        <property name="nunit.dir" value="${nant.dir}/bin/lib/net/1.1" />
     </target>
     <target name="set-net-2.0-framework-configuration">
         <property name="nant.settings.currentframework" value="net-2.0" />
         <property name="current.build.defines" value="${build.defines}NET,NET_1_0,NET_1_1,NET_2_0,ONLY_NET_2_0" dynamic="true" />
         <property name="link.sdkdoc.version" value="SDK_v1_1" />
         <property name="link.sdkdoc.web" value="true" />
-        <property name="nunit.dir" value="${nant.dir}/bin/lib/net/2.0" />
     </target>
     <target name="set-net-3.5-framework-configuration">
         <property name="nant.settings.currentframework" value="net-3.5" />
         <property name="current.build.defines" value="${build.defines}NET,NET_1_0,NET_1_1,NET_2_0,NET_3_5,ONLY_NET_3_5" dynamic="true" />
         <property name="link.sdkdoc.version" value="SDK_v1_1" />
         <property name="link.sdkdoc.web" value="true" />
-        <property name="nunit.dir" value="${nant.dir}/bin/lib/net/2.0" />
     </target>
     <target name="set-mono-1.0-framework-configuration">
         <property name="nant.settings.currentframework" value="mono-1.0" />
         <property name="current.build.defines" value="${build.defines}MONO,NET_1_0,NET_1_1,ONLY_NET_1_1" dynamic="true" />
         <property name="link.sdkdoc.version" value="SDK_v1_1" />
         <property name="link.sdkdoc.web" value="true" />
-        <property name="nunit.dir" value="${nant.dir}/bin/lib/mono/1.0" />
     </target>
     <target name="set-mono-2.0-framework-configuration">
         <property name="nant.settings.currentframework" value="mono-2.0" />
         <property name="current.build.defines" value="${build.defines}MONO,NET_1_0,NET_1_1,NET_2_0,ONLY_NET_2_0" dynamic="true" />
         <property name="link.sdkdoc.version" value="SDK_v1_1" />
         <property name="link.sdkdoc.web" value="true" />
-        <property name="nunit.dir" value="${nant.dir}/bin/lib/mono/2.0" />
     </target>
     <target name="set-mono-3.5-framework-configuration">
         <property name="nant.settings.currentframework" value="mono-3.5" />
         <property name="current.build.defines" value="${build.defines}MONO,NET_1_0,NET_1_1,NET_2_0,NET_3_5,ONLY_NET_3_5" dynamic="true" />
         <property name="link.sdkdoc.version" value="SDK_v1_1" />
         <property name="link.sdkdoc.web" value="true" />
-        <property name="nunit.dir" value="${nant.dir}/bin/lib/mono/2.0" />
     </target>
 </project>
