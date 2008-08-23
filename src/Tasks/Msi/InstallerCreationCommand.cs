@@ -2886,17 +2886,6 @@ namespace NAnt.Contrib.Tasks.Msi {
             LoadSummaryInformation(database);
         }
 
-        private void CopyFile(string source, string dest) {
-            try {
-                File.Copy(source, dest, true);
-                File.SetAttributes(dest, System.IO.FileAttributes.Normal);
-            } catch (IOException ex) {
-                throw new BuildException(string.Format(CultureInfo.InvariantCulture, 
-                    "File in use or cannot be copied to output ({0} -> {1}).", 
-                    source, dest), Location, ex);
-            }
-        }
-
         private string GetDestinationPath() {
             return Path.Combine(Project.BaseDirectory, Path.Combine(msi.sourcedir, msi.output));
         }
@@ -2913,14 +2902,6 @@ namespace NAnt.Contrib.Tasks.Msi {
                     fs.Flush();
                 }
                 s.Close();
-            }
-        }
-
-        private string TemplateFolder {
-            get {
-                // The directory where the Tasks dll resides is used for templates as well
-                Module tasksModule = Assembly.GetExecutingAssembly().GetModule("NAnt.Contrib.Tasks.dll");
-                return Path.GetDirectoryName(tasksModule.FullyQualifiedName);
             }
         }
     }
