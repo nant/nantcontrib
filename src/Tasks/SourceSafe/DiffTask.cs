@@ -22,6 +22,7 @@
 #endregion
 
 using System;
+using System.IO;
 using System.Xml;
 
 using SourceSafeTypeLib;
@@ -50,8 +51,8 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
     /// </example>
     [TaskName("vssdiff")]
     public class DiffTask : BaseTask {
-        string _label = "";
-        string _outputFile = "";
+        string _label = string.Empty;
+        FileInfo _outputFile;
         XmlDocument _outputDoc;
 
         /// <summary>
@@ -67,7 +68,7 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         /// The output file to generate (xml)
         /// </summary>
         [TaskAttribute("outputfile", Required=true)]
-        public string OutputFile {
+        public FileInfo OutputFile {
             get { return _outputFile; }
             set { _outputFile = value; }
         }
@@ -75,13 +76,13 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
         protected override void ExecuteTask() {
             Open();
             try {
-                Log(Level.Info, LogPrefix + "Examining: " + this.Path );
+                Log(Level.Info, LogPrefix + "Examining: " + this.Path);
 
                 //Setup the XmlOutput File
                 _outputDoc = new XmlDocument();
                 XmlElement root = _outputDoc.CreateElement("vssdiff");
                 XmlAttribute attrib = _outputDoc.CreateAttribute ("label");
-                attrib.Value = _label;
+                attrib.Value = Label;
                 root.Attributes.Append (attrib);
                 attrib = _outputDoc.CreateAttribute ("generated");
                 attrib.Value = System.DateTime.Now.ToString();
@@ -94,10 +95,9 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
 
                 //Start the recursive search
                 ProjectDiff(this.Path);
-                _outputDoc.Save(_outputFile);
-            }
-            catch (Exception e) {
-                throw new BuildException("diff failed", Location, e);
+                _outputDoc.Save(OutputFile.FullName);
+            } catch (Exception ex) {
+                throw new BuildException("diff failed", Location, ex);
             }
 
             Log(Level.Info, LogPrefix + "Diff File generated: " + _outputFile);
@@ -108,7 +108,6 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
                 Log(Level.Info, LogPrefix + "Processing item " + ssItem.Name );
             }
             bool addVersion = true;
-            int labeledVersion = 0;
             foreach (IVSSVersion version in ssItem.get_Versions(0)) {
                 // VSS returns the versions in descending order, meaning the
                 // most recent versions appear first.
@@ -116,15 +115,14 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
 
                 // We found our version so stop adding versions to our list
                 if (action.StartsWith ("Labeled '" + _label + "'")) {
-                    labeledVersion = version.VersionNumber;
                     addVersion = false;
                     //This is a bit annoying, it would be more efficient to break
                     //out of the loop here but VSS throws an exception !%?!
                     //http://tinyurl.com/nmct
                     //break;
                 }
-                if (addVersion == true) {
-                    // Only add versions that have been added,created or checked in.  Ignore label actions.
+                if (addVersion) {
+                    // Only add versions that have been added, created or checked in.  Ignore label actions.
                     if( (action.StartsWith("Add")) || (action.StartsWith("Create")) || (action.StartsWith("Check") )) {
                         if (this.Verbose) {
                             Log(Level.Info, LogPrefix + "Adding: " + version.VSSItem.Name);
@@ -173,11 +171,10 @@ namespace NAnt.Contrib.Tasks.SourceSafe {
             IVSSItem ssProj = this.Database.get_VSSItem(Project,false);
             IVSSItems ssSubItems = ssProj.get_Items(false);
             foreach (IVSSItem subItem in ssSubItems) {
-                if (subItem.Type == 0)     {
+                if (subItem.Type == 0) {
                     //Type=0 is a Project
                     ProjectDiff(Project + "/" + subItem.Name);
-                }
-                else {
+                } else {
                     ItemDiff(subItem);
                 }
             }

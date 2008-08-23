@@ -236,11 +236,13 @@ namespace NAnt.Contrib.Tasks.Msi {
             const int TypicalInstallLevel = 3;
             const int NonTypicalInstallLevel = 4;
 
-            int featureInstallLevel = ( Feature.typical ? TypicalInstallLevel : NonTypicalInstallLevel );
+            int featureInstallLevel = Feature.typical ? TypicalInstallLevel
+                : NonTypicalInstallLevel;
 
             // Insert the Feature
-            featureTable.InsertRecord( Feature.name, ParentFeature, Feature.title, Feature.description, Feature.display, 
-                (Feature.typical ? TypicalInstallLevel : NonTypicalInstallLevel ), GetFeatureDirectory(Feature), Feature.attr);
+            featureTable.InsertRecord(Feature.name, ParentFeature, Feature.title,
+                Feature.description, Feature.display, featureInstallLevel,
+                GetFeatureDirectory(Feature), Feature.attr);
 
             Log(Level.Verbose, "\t" + Feature.name);
 
@@ -338,7 +340,7 @@ namespace NAnt.Contrib.Tasks.Msi {
                 // Merge module(s) assigned to a specific feature
                 foreach (MSIMerge merge in msi.mergemodules) {
                     // Get each merge module file name assigned to this feature
-                    NAntFileSet modules = merge.modules;
+                    //NAntFileSet modules = merge.modules;
 
                     FileSet mergeSet = new FileSet();
                     mergeSet.Parent = this;
