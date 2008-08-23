@@ -180,7 +180,6 @@
             TO-DO : remove this "hack" once support for explicit manifest resource
             names is in place.
         -->
-        <property name="targeting.mono" value="${framework::get-family(framework::get-target-framework())=='mono'}" />
         <copy file="${src.dir}/Tasks/Msi/MsiTask.xsd" tofile="${build.dir}/schema/Msi/NAnt.Contrib.Schemas.Msi" />
         <csc target="library" warnaserror="${build.warnaserror}" debug="${build.debug}"
              define="${current.build.defines}"
@@ -197,12 +196,8 @@
                 <include name="${src.dir}/**/*.cs" />
                 <include name="${build.dir}/schema/**/*.cs" />
 
-                <!-- bug 80959 -->
-                <exclude name="${src.dir}/Tasks/Msi/*.cs" if="${targeting.mono}" />
-                <!-- Required MS SharePoint -->
+                <!-- Requires MS SharePoint -->
                 <exclude name="${src.dir}/Tasks/SharePoint/*.cs" />
-                <!-- bug 80959 -->
-                <exclude name="${src.dir}/Tasks/SourceSafe/*.cs" if="${targeting.mono}" />
             </sources>
             <references>
                 <include name="${nant.dir}/bin/NAnt.Core.dll" />
