@@ -36,18 +36,49 @@ namespace NAnt.Contrib.Tests.Tasks {
                     <project>
                         <choose>
                             <when test=""false"">
+                                <patternset id=""when1.sources"">
+                                    <include name=""**/*.cs"" />
+                                    <exclude name=""**/*Test*"" />
+                                </patternset>
+                                <copy todir=""."">
+                                    <fileset>
+                                        <patternset refid=""when1.sources"" />
+                                    </fileset>
+                                </copy>
                                 <property name=""when1"" value=""executed"" />
                             </when>
                             <when test=""true"">
-                                <property name=""when2"" value=""executed"" />
+                                <property name=""when2"" value=""a"" />
+                                <patternset id=""when2.sources"">
+                                    <include name=""**/*.cs"" />
+                                    <exclude name=""**/*Test*"" />
+                                </patternset>
+                                <property name=""when2"" value=""${when2}b"" />
+                                <property name=""when2"" value=""${when2}c"" if=""${true == false}"" />
+                                <copy todir=""."">
+                                    <fileset>
+                                        <patternset refid=""when2.sources"" />
+                                    </fileset>
+                                </copy>
+                                <property name=""when2"" value=""${when2}d"" />
                             </when>
                             <otherwise>
+                                <patternset id=""otherwise.sources"">
+                                    <include name=""**/*.cs"" />
+                                    <exclude name=""**/*Test*"" />
+                                </patternset>
+                                <copy todir=""."">
+                                    <fileset>
+                                        <patternset refid=""otherwise.sources"" />
+                                    </fileset>
+                                </copy>
                                 <property name=""otherwise"" value=""executed"" />
                             </otherwise>
                         </choose>
                         <fail if=""${property::exists('when1')}"">#1</fail>
                         <fail unless=""${property::exists('when2')}"">#2</fail>
-                        <fail if=""${property::exists('otherwise')}"">#3</fail>
+                        <fail unless=""${when2=='abd'}"">#3</fail>
+                        <fail if=""${property::exists('otherwise')}"">#4</fail>
                     </project>";
             RunBuild(_xml);
         }
@@ -249,7 +280,7 @@ namespace NAnt.Contrib.Tests.Tasks {
 
         [Test]
         [ExpectedException(typeof(TestBuildException))]
-        public void Test_InvalidTasks() {
+        public void Test_InvalidExtension() {
             const string _xml = @"
                     <project>
                         <choose>

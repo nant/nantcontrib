@@ -43,10 +43,41 @@
         </table>
         <h1>
             <span class="N">N</span><span class="Ant">Ant</span>Contrib Release Notes</h1>
-        <h2>0.86-beta1 (December 8, 2007)</h2>
+        <h2>0.86-beta2 (TBD)</h2>
+        <h3>Bug fixes</h3>
+        <h4>Tasks</h4>
+        <h4>Functions</h4>
+        <div style="margin-left: 20px;">
+            <h5><a class="heading" href="help/tasks/choose.html">choose</a></h5>
+            <div style="margin-left: 20px;">
+                <p>
+                    Global types can now be defined in either the <span class="xmltext">&lt;</span><span class="xmlelement">when</span><span class="xmltext">&gt;</span>
+                    or <span class="xmltext">&lt;</span><span class="xmlelement">otherwise</span><span class="xmltext">&gt;</span>
+                    elements.
+                </p>
+                <pre class="code">
+<span class="xmltext">&lt;</span><span class="xmlelement">choose</span><span class="xmltext">&gt;</span>
+    <span class="xmltext">&lt;</span><span class="xmlelement">when</span> <span class="xmlattribute">test</span><span class="xmltext">="${build.config == 'Debug'}"&gt;</span>
+        <span class="xmltext">&lt;</span><span class="xmlelement">patternset</span> <span class="xmlattribute">id</span><span class="xmltext">="sources"&gt;</span>
+            <span class="xmltext">&lt;</span><span class="xmlelement">include</span> <span class="xmlattribute">name</span><span class="xmltext">="**/*.cs" /&gt;</span>
+        <span class="xmltext">&lt;/</span><span class="xmlelement">patternset</span><span class="xmltext">&gt;</span>
+    <span class="xmltext">&lt;/</span><span class="xmlelement">when</span><span class="xmltext">&gt;</span>
+    <span class="xmltext">&lt;</span><span class="xmlelement">when</span> <span class="xmlattribute">test</span><span class="xmltext">="${build.config == 'Release'}"&gt;</span>
+        <span class="xmltext">&lt;</span><span class="xmlelement">patternset</span> <span class="xmlattribute">id</span><span class="xmltext">="sources"&gt;</span>
+            <span class="xmltext">&lt;</span><span class="xmlelement">include</span> <span class="xmlattribute">name</span><span class="xmltext">="**/*.cs" /&gt;</span>
+            <span class="xmltext">&lt;</span><span class="xmlelement">exclude</span> <span class="xmlattribute">name</span><span class="xmltext">="**/Instrumentation/*.cs" /&gt;</span>
+        <span class="xmltext">&lt;/</span><span class="xmlelement">patternset</span><span class="xmltext">&gt;</span>
+    <span class="xmltext">&lt;/</span><span class="xmlelement">when</span><span class="xmltext">&gt;</span>
+    <span class="xmltext">&lt;</span><span class="xmlelement">otherwise</span><span class="xmltext">&gt;</span>
+        <span class="xmltext">&lt;</span><span class="xmlelement">fail</span><span class="xmltext">&gt;</span>Build configuration '${build.config}' is not supported!<span class="xmltext">&lt;/</span><span class="xmlelement">fail</span><span class="xmltext">&gt;</span>
+    <span class="xmltext">&lt;/</span><span class="xmlelement">otherwise</span><span class="xmltext">&gt;</span>
+<span class="xmltext">&lt;/</span><span class="xmlelement">choose</span><span class="xmltext">&gt;</span>
+                </pre>
+            </div>
+        </div>
         <h3>Additions</h3>
-         <h4>Functions</h4>
-         <div style="margin-left: 20px;">
+        <h4>Functions</h4>
+        <div style="margin-left: 20px;">
             <h5><a class="heading" href="help/functions/index.html">Windows Installer functions</a></h5>
             <div style="margin-left: 20px;">
                 <p>

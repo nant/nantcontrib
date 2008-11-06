@@ -20,6 +20,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Specialized;
 using System.Globalization;
 using System.Xml;
 
@@ -30,8 +31,8 @@ using NAnt.Core.Util;
 namespace NAnt.Contrib.Tasks {
     /// <summary>
     ///   <para>
-    ///   Executes an alternate set of tasks depending on conditions that are
-    ///   individually set on each group of tasks.
+    ///   Executes an alternate set of task or type definition depending on
+    ///   conditions that are individually set on each group.
     ///   </para>
     /// </summary>
     /// <remarks>
@@ -69,6 +70,32 @@ namespace NAnt.Contrib.Tasks {
     ///     <when test="${build.config == 'Release'}">
     ///         <!-- compile app in release configuration -->
     ///         ...
+    ///     </when>
+    ///     <otherwise>
+    ///         <fail>Build configuration '${build.config}' is not supported!</fail>
+    ///     </otherwise>
+    /// </choose>
+    ///     ]]>
+    ///   </code>
+    /// </example>
+    /// <example>
+    ///   <para>
+    ///   Define a <c>sources</c> patternset holding an alternate set of patterns
+    ///   depending on the configuration being built.
+    ///   </para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <choose>
+    ///     <when test="${build.config == 'Debug'}">
+    ///         <patternset id="sources">
+    ///             <include name="**/*.cs" />
+    ///         </patternset>
+    ///     </when>
+    ///     <when test="${build.config == 'Release'}">
+    ///         <patternset id="sources">
+    ///             <include name="**/*.cs" />
+    ///             <exclude name="**/Instrumentation/*.cs" />
+    ///         </patternset>
     ///     </when>
     ///     <otherwise>
     ///         <fail>Build configuration '${build.config}' is not supported!</fail>
@@ -203,6 +230,12 @@ namespace NAnt.Contrib.Tasks {
     /// Executes embedded tasks in the order in which they are defined.
     /// </summary>
     public class NestedTaskContainer : Element {
+        #region Private Instance Fields
+
+        private StringCollection _subXMLElements;
+
+        #endregion Private Instance Fields
+
         #region Override implementation of Element
 
         /// <summary>
@@ -240,17 +273,57 @@ namespace NAnt.Contrib.Tasks {
                     continue;
                 }
                 
-                Task task = CreateChildTask(childNode);
-                // for now, we should assume null tasks are because of incomplete metadata about the XML.
-                if (task != null) {
-                    task.Parent = this;
-                    task.Execute();
+                // ignore any private xml elements (by def. this includes any property with a BuildElementAttribute (name).
+                if (IsPrivateXmlElement(childNode)) {
+                    continue;
+                }
+
+                if (TypeFactory.TaskBuilders.Contains(childNode.Name)) {
+                    // create task instance
+                    Task task = CreateChildTask(childNode);
+                    // for now, we should assume null tasks are because of 
+                    // incomplete metadata about the XML
+                    if (task != null) {
+                        task.Parent = this;
+                        // execute task
+                        task.Execute();
+                    }
+                } else if (TypeFactory.DataTypeBuilders.Contains(childNode.Name)) {
+                    // we are an datatype declaration
+                    DataTypeBase dataType = CreateChildDataTypeBase(childNode);
+
+                    Log(Level.Debug, "Adding a {0} reference with id '{1}'.", childNode.Name, dataType.ID);
+                    if (!Project.DataTypeReferences.Contains(dataType.ID)) {
+                        Project.DataTypeReferences.Add(dataType.ID, dataType);
+                    } else {
+                        Project.DataTypeReferences[dataType.ID] = dataType; // overwrite with the new reference.
+                    }
+                } else {
+                    throw new BuildException(string.Format(CultureInfo.InvariantCulture, 
+                        ResourceUtils.GetString("NA1071"), childNode.Name), 
+                        Project.GetLocation(childNode));
                 }
             }
         }
 
         protected virtual Task CreateChildTask(XmlNode node) {
             return Project.CreateTask(node);
+        }
+
+        protected virtual DataTypeBase CreateChildDataTypeBase(XmlNode node) {
+            return Project.CreateDataTypeBase(node);
+        }
+        
+        protected virtual bool IsPrivateXmlElement(XmlNode node) {
+            return (_subXMLElements != null && _subXMLElements.Contains(node.Name));
+        }
+
+        protected virtual void AddPrivateXmlElementName(string name) {
+            if (_subXMLElements == null)
+                _subXMLElements = new StringCollection();
+
+            if (!_subXMLElements.Contains(name))
+                _subXMLElements.Add(name);
         }
 
         #endregion Protected Instance Methods
