@@ -2232,6 +2232,20 @@ namespace NAnt.Contrib.Tasks.Msi {
                     cabarcTask.Log(Level.Warning, output);
                 }
                 
+                string path = Environment.GetEnvironmentVariable ("PATH");
+                if (path != null) {
+                    Console.WriteLine ("PATH=" + path);
+                    PathScanner scanner = new PathScanner ();
+                    scanner.Add ("cabarc.exe");
+                    StringCollection files = scanner.Scan ();
+                    if (files.Count > 0) {
+                        foreach (string file in files)
+                            Console.WriteLine ("FILE=" + file);
+                    } else {
+                            Console.WriteLine ("NOT FOUND IN PATH!");
+                    }
+                }
+
                 // signal error
                 throw new BuildException("Error creating cab file.", Location, ex);
             } finally {
