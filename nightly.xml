@@ -11,14 +11,14 @@
     <!-- setup property that holds partial path to be used by scp -->
     <property name="serverpart" value="${sf.net.ssh.user},${project::get-name()}@${sf.net.ssh.server}:${sf.net.web.path}" />
 
-    <target name="nightly" depends="set-net-1.1-framework-configuration,check-nant-dir">
+    <target name="nightly" depends="set-net-1.0-framework-configuration,check-nant-dir">
         <exec program="${nant.exe}">
             <arg value="-buildfile:nightly.xml" />
             <arg value="-D:nant.dir=${nant.dir}" />
             <arg value="-t:${framework::get-target-framework()}" />
         </exec>
     </target>
-    <target name="nightly-self" depends="set-net-1.1-framework-configuration, package, deploy-sf" />
+    <target name="nightly-self" depends="set-net-1.0-framework-configuration, package, deploy-sf" />
     <!-- deploy content to sourceforge -->
     <target name="deploy-sf" depends="deploy-distributions-sf,deploy-doc-sf,deploy-web-sf">
         <!-- remove existing symlink, if it exists -->
@@ -33,7 +33,7 @@
         </exec>
     </target>
     <!-- copy the zipped nighly build to sourceforge -->
-    <target name="deploy-distributions-sf" depends="set-net-1.1-framework-configuration,package,create-shell" description="Updates SF.Net site with new release build of tasks">
+    <target name="deploy-distributions-sf" depends="set-net-1.0-framework-configuration,package,create-shell" description="Updates SF.Net site with new release build of tasks">
         <!-- determine filename of source distribution package on sf.net -->
         <property name="deploy.zip.src" value="${project.name}-src.zip" />
         <!-- determine filename of binary distribution package on sf.net -->
@@ -66,7 +66,7 @@
         </exec>
     </target>
     <!-- copy online docs (manual) to sourceforge -->
-    <target name="deploy-doc-sf" depends="set-net-1.1-framework-configuration,package-doc,create-shell">
+    <target name="deploy-doc-sf" depends="set-net-1.0-framework-configuration,package-doc,create-shell">
         <!-- make sure the directory tree exists -->
         <exec program="ssh">
             <arg line="${sf.net.ssh.user},${project::get-name()}@${sf.net.ssh.server}" />
@@ -95,7 +95,7 @@
         </exec>
     </target>
     <!-- copy website to sourceforge -->
-    <target name="deploy-web-sf" depends="set-net-1.1-framework-configuration,package,create-shell">
+    <target name="deploy-web-sf" depends="set-net-1.0-framework-configuration,package,create-shell">
         <!-- make sure the directory tree exists -->
         <exec program="ssh">
             <arg line="${sf.net.ssh.user},${project::get-name()}@${sf.net.ssh.server}" />
