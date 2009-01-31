@@ -32,7 +32,7 @@ namespace NAnt.Contrib.Tests.Tasks {
     public class ChooseTaskTest : BuildTestBase {
         [Test]
         public void Test_ConditionalExecution1() {
-            const string _xml = @"
+            string _xml = @"
                     <project>
                         <choose>
                             <when test=""false"">
@@ -85,7 +85,7 @@ namespace NAnt.Contrib.Tests.Tasks {
 
         [Test]
         public void Test_ConditionalExecution2() {
-            const string _xml = @"
+            string _xml = @"
                     <project>
                         <choose>
                             <when test=""true"">
@@ -103,7 +103,7 @@ namespace NAnt.Contrib.Tests.Tasks {
 
         [Test]
         public void Test_ConditionalExecution3() {
-            const string _xml = @"
+            string _xml = @"
                     <project>
                         <choose>
                             <when test=""false"">
@@ -121,7 +121,7 @@ namespace NAnt.Contrib.Tests.Tasks {
 
         [Test]
         public void Test_Fallback() {
-            const string _xml = @"
+            string _xml = @"
                     <project>
                         <choose>
                             <when test=""false"">
@@ -140,7 +140,7 @@ namespace NAnt.Contrib.Tests.Tasks {
         [Test]
         [ExpectedException(typeof(TestBuildException))]
         public void Test_ChildOrder1() {
-            const string _xml = @"
+            string _xml = @"
                     <project>
                         <choose>
                             <when test=""false"">
@@ -160,7 +160,7 @@ namespace NAnt.Contrib.Tests.Tasks {
         [Test]
         [ExpectedException(typeof(TestBuildException))]
         public void Test_ChildOrder2() {
-            const string _xml = @"
+            string _xml = @"
                     <project>
                         <choose>
                             <otherwise>
@@ -176,7 +176,7 @@ namespace NAnt.Contrib.Tests.Tasks {
 
         [Test]
         public void Test_EmptyWhenChild() {
-            const string _xml = @"
+            string _xml = @"
                     <project>
                         <choose>
                             <when test=""true"" />
@@ -187,7 +187,7 @@ namespace NAnt.Contrib.Tests.Tasks {
 
         [Test]
         public void Test_EmptyOtherwiseChild() {
-            const string _xml = @"
+            string _xml = @"
                     <project>
                         <choose>
                             <when test=""false"" />
@@ -200,7 +200,7 @@ namespace NAnt.Contrib.Tests.Tasks {
         [Test]
         [ExpectedException(typeof(TestBuildException))]
         public void Test_MissingWhenChild1() {
-            const string _xml = @"
+            string _xml = @"
                     <project>
                         <choose />
                     </project>";
@@ -210,7 +210,7 @@ namespace NAnt.Contrib.Tests.Tasks {
         [Test]
         [ExpectedException(typeof(TestBuildException))]
         public void Test_MissingWhenChild2() {
-            const string _xml = @"
+            string _xml = @"
                     <project>
                         <choose>
                             <otherwise>
@@ -224,7 +224,7 @@ namespace NAnt.Contrib.Tests.Tasks {
         [Test]
         [ExpectedException(typeof(TestBuildException))]
         public void Test_InvalidWhenCondition() {
-            const string _xml = @"
+            string _xml = @"
                     <project>
                         <choose>
                             <when test=""whatever"">
@@ -238,7 +238,7 @@ namespace NAnt.Contrib.Tests.Tasks {
         [Test]
         [ExpectedException(typeof(TestBuildException))]
         public void Test_MissingWhenCondition() {
-            const string _xml = @"
+            string _xml = @"
                     <project>
                         <choose>
                             <when>
@@ -252,7 +252,7 @@ namespace NAnt.Contrib.Tests.Tasks {
         [Test]
         [ExpectedException(typeof(TestBuildException))]
         public void Test_EmptyWhenCondition() {
-            const string _xml = @"
+            string _xml = @"
                     <project>
                         <choose>
                             <when test="""">
@@ -266,7 +266,7 @@ namespace NAnt.Contrib.Tests.Tasks {
         [Test]
         [ExpectedException(typeof(TestBuildException))]
         public void Test_InvalidChild() {
-            const string _xml = @"
+            string _xml = @"
                     <project>
                         <choose>
                             <when test=""true"">
@@ -281,7 +281,7 @@ namespace NAnt.Contrib.Tests.Tasks {
         [Test]
         [ExpectedException(typeof(TestBuildException))]
         public void Test_InvalidExtension() {
-            const string _xml = @"
+            string _xml = @"
                     <project>
                         <choose>
                             <when test=""true"">
@@ -295,7 +295,7 @@ namespace NAnt.Contrib.Tests.Tasks {
         [Test]
         [ExpectedException(typeof(TestBuildException))]
         public void Test_InvalidWhenParameter() {
-            const string _xml = @"
+            string _xml = @"
                     <project>
                         <choose>
                             <when test=""true"" if=""true"">
@@ -309,7 +309,7 @@ namespace NAnt.Contrib.Tests.Tasks {
         [Test]
         [ExpectedException(typeof(TestBuildException))]
         public void Test_InvalidOtherwiseParameter() {
-            const string _xml = @"
+            string _xml = @"
                     <project>
                         <choose>
                             <when test=""true"">
@@ -325,7 +325,7 @@ namespace NAnt.Contrib.Tests.Tasks {
 
         [Test]
         public void Test_FailOnError_False() {
-            const string _xml = @"
+            string _xml = @"
                     <project>
                         <choose failonerror=""false"">
                             <when test=""true"">
@@ -339,7 +339,7 @@ namespace NAnt.Contrib.Tests.Tasks {
         [Test]
         [ExpectedException(typeof(TestBuildException))]
         public void Test_FailOnError_True() {
-            const string _xml = @"
+            string _xml = @"
                     <project>
                         <choose>
                             <when test=""true"">
