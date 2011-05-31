@@ -30,24 +30,27 @@ namespace Tests.NAnt.Contrib.Functions {
         #region Public Instance Methods
 
         [Test]
-        public void GetChecksum() {
-            string buildFragment1 =
+        public void GetChecksum_MD5() {
+            string buildFragment =
                 "<project>" +
                 "   <echo file=\"checksum.input\">test input file</echo>" +
                 "   <property name=\"checksum\" value=\"${file::get-checksum('checksum.input','MD5')}\" />" +
-                "   <fail unless=\"${checksum == '91ddb9a8a8fc8f96c182b2b7e8c65f52'}\">${checksum}</fail>" +
+                "   <fail unless=\"${checksum == '5de15b57ef72b6ee1784b6f941a4e1be'}\">${checksum}</fail>" +
                 "</project>";
 
-            RunBuild(buildFragment1);
+            RunBuild(buildFragment);
+        }
 
-            string buildFragment2 =
+        [Test]
+        public void GetChecksum_SHA1() {
+            string buildFragment =
                 "<project>" +
                 "   <echo file=\"checksum.input\">test input file</echo>" +
                 "   <property name=\"checksum\" value=\"${file::get-checksum('checksum.input','sha1')}\" />" +
-                "   <fail unless=\"${checksum == '124a5468603f36e91980bb345aff00308267fc7e'}\">${checksum}</fail>" +
+                "   <fail unless=\"${checksum == '033f8ec76d9c63a9e8c6baab4298c3b88819eeaa'}\">${checksum}</fail>" +
                 "</project>";
 
-            RunBuild(buildFragment2);
+            RunBuild(buildFragment);
         }
 
         [Test]
