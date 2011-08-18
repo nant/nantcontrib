@@ -157,14 +157,20 @@ namespace NAnt.Contrib.Tasks {
                         // expand properties in context of current project for non-dynamic properties
                         if (!property.Dynamic) {
                             val = Project.ExpandProperties(property.Value, Location);
-                        } else { 
+                        } else {
                             val = property.Value;
                         }
                         writer.WriteLine("/property:\"{0}\"=\"{1}\"", property.PropertyName, val);
                     }
 
                     if (Target != null) {
-                        writer.WriteLine("/target:\"{0}\"", Target);
+                        string[] targets = Target.Split(';');
+                        for (int i = 0; i < targets.Length; i++) {
+                            if (targets[i].Contains(" ")) {
+                                targets[i] = String.Format("\"{0}\"", targets[i]);
+                            }
+                        }
+                        writer.WriteLine("/target:{0}", String.Join(";",targets));
                     }
 
                     if (NoAutoResponse) {
@@ -179,7 +185,7 @@ namespace NAnt.Contrib.Tasks {
                 }
                 base.ExecuteTask();
             } catch (Exception ex) {
-                throw new BuildException ("Failed to start MSBuild.", Location, ex);
+                throw new BuildException("Failed to start MSBuild.", Location, ex);
             } finally {
                 // make sure we delete response file even if an exception is thrown
                 File.Delete(_responseFileName);
