@@ -72,6 +72,7 @@ namespace NAnt.Contrib.Tasks {
         private FileInfo _errorFile;
         private bool _checkReferences = true;
         private string _conditionals = null;
+        private string _compiledProperty = "vb6.compiled";
 
         #endregion Private Instance Fields
 
@@ -129,6 +130,24 @@ namespace NAnt.Contrib.Tasks {
         public string Conditionals {
             get { return _conditionals; }
             set { _conditionals = value; }
+        }
+
+        /// <summary>
+        /// <para>
+        /// The name of a property in which will be set to <see langword="true" /> 
+        /// if compilation was done without errors (default: "vb6.compiled")
+        /// </para>
+        /// <para>
+        /// This is especially used for touching the compilation files if
+        /// vb6 autoincrement is set to true to avoid recompilation without any 
+        /// other changes.
+        /// </para>
+        /// </summary>
+        [TaskAttribute("compiledproperty")]
+        [StringValidator(AllowEmpty=false)]
+        public string CompiledProperty {
+            get { return _compiledProperty; }
+            set { _compiledProperty = value; }
         }
 
         #endregion Public Instance Properties
@@ -192,6 +211,10 @@ namespace NAnt.Contrib.Tasks {
         /// </summary>
         protected override void ExecuteTask() { 
             Log(Level.Info, "Building project '{0}'.", ProjectFile.FullName);
+            if (CompiledProperty != null) {
+                Properties[CompiledProperty] = "false";
+            }
+
             if (NeedsCompiling()) {
                 //Using a stringbuilder vs. StreamWriter since this program will 
                 // not accept response files.
@@ -218,6 +241,9 @@ namespace NAnt.Contrib.Tasks {
 
                 // call base class to do the work
                 base.ExecuteTask();
+                if (CompiledProperty != null) {
+                    Properties[CompiledProperty] = "true";
+                }
             }
         }
 
@@ -403,8 +429,16 @@ namespace NAnt.Contrib.Tasks {
                     }
                 }
                 regKey.Close();
-            }       
- 
+            }
+            
+            if (tlbFile != null ) {
+                int lastBackslash = tlbFile.LastIndexOf(@"\");
+                int lastDot = tlbFile.LastIndexOf('.');
+                if (lastBackslash > lastDot) {
+                    return tlbFile.Substring(0, lastBackslash);
+                }
+            }
+
             return tlbFile;
         }
 
