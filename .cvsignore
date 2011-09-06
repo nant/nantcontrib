@@ -1,2 +1,7 @@
 build
 NAntRelease
+
+.hg
+.hgignore
+.git
+.gitignore
