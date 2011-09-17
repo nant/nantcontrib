@@ -16,7 +16,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // Brian Nantz (bcnantz@juno.com)
-// Gert Driesen (gert.driesen@ardatis.com)
+// Gert Driesen (drieseng@users.sourceforge.net)
 // Rutger Dijkstra (R.M.Dijkstra@eyetoeye.nl)
 // Payton Byrd (payton@paytonbyrd.com)
 
