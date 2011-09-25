@@ -62,6 +62,17 @@ namespace NAnt.Contrib.Tasks {
     ///     ]]>
     ///   </code>
     /// </example>
+    /// <example>
+    ///   <para>
+    ///   Check compiled property "vb6.compiled"
+    ///   </para>
+    ///   <code>
+    ///     <![CDATA[
+    /// <echo message="Compiled sucessfully" if="${vb6.compiled}" />
+    /// <echo message="Compilation not needed" if="${not vb6.compiled}" />
+    ///     ]]>
+    ///   </code>    
+    /// </example>
     [TaskName("vb6")]
     public class Vb6Task : ExternalProgramBase {
         #region Private Instance Fields
@@ -133,15 +144,11 @@ namespace NAnt.Contrib.Tasks {
         }
 
         /// <summary>
-        /// <para>
         /// The name of a property in which will be set to <see langword="true" /> 
-        /// if compilation was done without errors (default: "vb6.compiled")
-        /// </para>
-        /// <para>
-        /// This is especially used for touching the compilation files if
+        /// if compilation was needed and done without errors (default: "vb6.compiled")
+        /// This can be used for touching the compilation files if
         /// vb6 autoincrement is set to true to avoid recompilation without any 
         /// other changes.
-        /// </para>
         /// </summary>
         [TaskAttribute("compiledproperty")]
         [StringValidator(AllowEmpty=false)]
