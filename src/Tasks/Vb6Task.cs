@@ -509,9 +509,11 @@ namespace NAnt.Contrib.Tasks {
                                 sources.Includes.Add(match.Groups["filename"].Value);
                             }
                             break;
+                        case "Designer":
                         case "Form":
                         case "UserControl":
                         case "PropertyPage":
+                        case "ResFile32":
                             // This is a form, control, or property page source file - add the file name to the sources fileset
                             // The entry is of the form "Form=Form1.frm"
                             sources.Includes.Add(keyValue);
