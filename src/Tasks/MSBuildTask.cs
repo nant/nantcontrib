@@ -166,7 +166,7 @@ namespace NAnt.Contrib.Tasks {
                     if (Target != null) {
                         string[] targets = Target.Split(';');
                         for (int i = 0; i < targets.Length; i++) {
-                            if (targets[i].IndexOf(" ") >= 0) {
+                            if (targets[i].IndexOf(" ") != -1) {
                                 targets[i] = String.Format("\"{0}\"", targets[i]);
                             }
                         }
