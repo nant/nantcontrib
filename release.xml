@@ -3,12 +3,14 @@
     <!-- set base uri for linking to NAnt help -->
     <property name="nant.base.uri" value="http://nant.sourceforge.net/help/" />
     <!-- set name of sourceforge project server -->
-    <property name="sf.net.ssh.server" value="shell1.sourceforge.net" />
-    <property name="sf.net.web.path" value="/home/groups/n/na/nantcontrib/htdocs" />
+    <property name="sf.net.ssh.server" value="shell.sourceforge.net" />
+    <property name="sf.net.web.path" value="/home/project-web/nantcontrib/htdocs" />
+    <property name="sf.net.ssh.user" value="${environment::get-user-name()}" unless="${property::exists('sf.net.ssh.user')}" />
+    <property name="sf.connection" value="${sf.net.ssh.user},${project::get-name()}@${sf.net.ssh.server}" />
     <!-- include master build file -->
     <include buildfile="nantcontrib.build" />
     <!-- setup property that holds partial path to be used by scp -->
-    <property name="serverpart" value="${environment::get-user-name() + '@' + sf.net.ssh.server + ':' + sf.net.web.path}" />
+    <property name="serverpart" value="${sf.connection + ':' + sf.net.web.path}" />
     <!-- perform a 'release' package and upload to sf.net -->
     <target name="build-release-self" depends="deploy-sf" description="Perform a 'release' package and uploads to sf.net" />
     <!-- perform a 'release' package and upload to sf.net -->
