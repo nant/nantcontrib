@@ -56,3 +56,11 @@ test-results/
 *.dat
 *.orig
 *.rej
+
+# NUnit2Report specific files
+Compagny-Argos-Frame-Report
+Compagny-Argos-NoFrame-Report
+NUnit-Frame-Report
+NUnit-NoFrame-Report
+Mock-Frame-Report
+Mock-NoFrame-Report
