@@ -1,51 +1,45 @@
-Microsoft Visual Studio Solution File, Format Version 8.00
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NAntContrib", "NAntContrib.csproj", "{CFBA0DE3-2B01-4C75-B615-4ACBA502F71C}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NAntContrib.Tests", "..\Tests\NAntContrib.Tests.csproj", "{5BC8567C-D3DA-4835-94CB-CA496FB335DE}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NAntContrib.Tests", "..\tests\NAntContrib.Tests.csproj", "{5BC8567C-D3DA-4835-94CB-CA496FB335DE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SLiNgshoT.Core", "..\Tools\SLiNgshoT\SLiNgshoT.Core\SLiNgshoT.Core.csproj", "{3F533CCA-9C8F-4D84-8C1A-1F6D89CB5912}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SLiNgshoT", "..\Tools\SLiNgshoT\SLiNgshoT\SLiNgshoT.csproj", "{7B7D512B-FDF9-4F39-9FA2-6986D76F6C13}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
 EndProject
-Global
-	GlobalSection(SolutionConfiguration) = preSolution
-		Debug = Debug
-		Release = Release
-	EndGlobalSection
-	GlobalSection(ProjectConfiguration) = postSolution
-		{CFBA0DE3-2B01-4C75-B615-4ACBA502F71C}.Debug.ActiveCfg = Debug|.NET
-		{CFBA0DE3-2B01-4C75-B615-4ACBA502F71C}.Debug.Build.0 = Debug|.NET
-		{CFBA0DE3-2B01-4C75-B615-4ACBA502F71C}.Release.ActiveCfg = Release|.NET
-		{CFBA0DE3-2B01-4C75-B615-4ACBA502F71C}.Release.Build.0 = Release|.NET
-		{5BC8567C-D3DA-4835-94CB-CA496FB335DE}.Debug.ActiveCfg = Debug|.NET
-		{5BC8567C-D3DA-4835-94CB-CA496FB335DE}.Debug.Build.0 = Debug|.NET
-		{5BC8567C-D3DA-4835-94CB-CA496FB335DE}.Release.ActiveCfg = Debug|.NET
-		{5BC8567C-D3DA-4835-94CB-CA496FB335DE}.Release.Build.0 = Debug|.NET
-		{3F533CCA-9C8F-4D84-8C1A-1F6D89CB5912}.Debug.ActiveCfg = Debug|.NET
-		{3F533CCA-9C8F-4D84-8C1A-1F6D89CB5912}.Debug.Build.0 = Debug|.NET
-		{3F533CCA-9C8F-4D84-8C1A-1F6D89CB5912}.Release.ActiveCfg = Release|.NET
-		{3F533CCA-9C8F-4D84-8C1A-1F6D89CB5912}.Release.Build.0 = Release|.NET
-		{7B7D512B-FDF9-4F39-9FA2-6986D76F6C13}.Debug.ActiveCfg = Debug|.NET
-		{7B7D512B-FDF9-4F39-9FA2-6986D76F6C13}.Debug.Build.0 = Debug|.NET
-		{7B7D512B-FDF9-4F39-9FA2-6986D76F6C13}.Release.ActiveCfg = Release|.NET
-		{7B7D512B-FDF9-4F39-9FA2-6986D76F6C13}.Release.Build.0 = Release|.NET
-	EndGlobalSection
-	GlobalSection(SolutionItems) = postSolution
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6B988ED8-FFCD-4FA9-A324-1F2E06A916AB}"
+	ProjectSection(SolutionItems) = preProject
 		..\NAntContrib.build = ..\NAntContrib.build
 		..\NAntContribInstall.include = ..\NAntContribInstall.include
 		..\Tools\SLiNgshoT\SLiNgshoT.build = ..\Tools\SLiNgshoT\SLiNgshoT.build
 		..\Tools\SLiNgshoT\SLiNgshoTInstall.include = ..\Tools\SLiNgshoT\SLiNgshoTInstall.include
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CFBA0DE3-2B01-4C75-B615-4ACBA502F71C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFBA0DE3-2B01-4C75-B615-4ACBA502F71C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFBA0DE3-2B01-4C75-B615-4ACBA502F71C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFBA0DE3-2B01-4C75-B615-4ACBA502F71C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BC8567C-D3DA-4835-94CB-CA496FB335DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BC8567C-D3DA-4835-94CB-CA496FB335DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BC8567C-D3DA-4835-94CB-CA496FB335DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BC8567C-D3DA-4835-94CB-CA496FB335DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F533CCA-9C8F-4D84-8C1A-1F6D89CB5912}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F533CCA-9C8F-4D84-8C1A-1F6D89CB5912}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F533CCA-9C8F-4D84-8C1A-1F6D89CB5912}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F533CCA-9C8F-4D84-8C1A-1F6D89CB5912}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B7D512B-FDF9-4F39-9FA2-6986D76F6C13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B7D512B-FDF9-4F39-9FA2-6986D76F6C13}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B7D512B-FDF9-4F39-9FA2-6986D76F6C13}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B7D512B-FDF9-4F39-9FA2-6986D76F6C13}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(ExtensibilityAddIns) = postSolution
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
