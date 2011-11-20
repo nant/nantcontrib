@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
@@ -7,17 +7,14 @@
     <ProjectGuid>{CFBA0DE3-2B01-4C75-B615-4ACBA502F71C}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ApplicationIcon />
     <AssemblyKeyContainerName />
     <AssemblyName>NAntContrib</AssemblyName>
-    <AssemblyOriginatorKeyFile />
     <DefaultClientScript>JScript</DefaultClientScript>
     <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
     <DefaultTargetSchema>IE50</DefaultTargetSchema>
     <DelaySign>false</DelaySign>
     <OutputType>Library</OutputType>
     <RootNamespace>NAnt.Contrib</RootNamespace>
-    <StartupObject />
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
@@ -40,10 +37,8 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\build\</OutputPath>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <OutputPath>..\build\Debug</OutputPath>
     <BaseAddress>285212672</BaseAddress>
-    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <ConfigurationOverrideFile />
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DocumentationFile />
@@ -52,17 +47,14 @@
     <Optimize>false</Optimize>
     <RegisterForComInterop>false</RegisterForComInterop>
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
     <DebugType>full</DebugType>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>bin\Release\</OutputPath>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <OutputPath>..\build\Release</OutputPath>
     <BaseAddress>285212672</BaseAddress>
-    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <ConfigurationOverrideFile />
     <DefineConstants>TRACE</DefineConstants>
     <DocumentationFile />
@@ -71,7 +63,6 @@
     <Optimize>true</Optimize>
     <RegisterForComInterop>false</RegisterForComInterop>
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
     <DebugType>pdbonly</DebugType>
     <ErrorReport>prompt</ErrorReport>
@@ -81,7 +72,6 @@
     <ProjectReference Include="..\Tools\SLiNgshoT\SLiNgshoT.Core\SLiNgshoT.Core.csproj">
       <Name>SLiNgshoT.Core</Name>
       <Project>{3F533CCA-9C8F-4D84-8C1A-1F6D89CB5912}</Project>
-      <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
     </ProjectReference>
     <Reference Include="CollectionGen">
       <Name>CollectionGen</Name>
