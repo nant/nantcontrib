@@ -2153,22 +2153,22 @@ namespace NAnt.Contrib.Tasks.Msi {
             }
 
             SummaryInfo summaryInfo = database.GetSummaryInformation();
-            if (!StringUtils.IsNullOrEmpty(title)) {
+            if (!String.IsNullOrEmpty(title)) {
                 summaryInfo.set_Property(2, title);
             }
-            if (!StringUtils.IsNullOrEmpty(subject)) {
+            if (!String.IsNullOrEmpty(subject)) {
                 summaryInfo.set_Property(3, subject);
             }
-            if (!StringUtils.IsNullOrEmpty(author)) {
+            if (!String.IsNullOrEmpty(author)) {
                 summaryInfo.set_Property(4, author);
             }
-            if (!StringUtils.IsNullOrEmpty(keywords)) {
+            if (!String.IsNullOrEmpty(keywords)) {
                 summaryInfo.set_Property(5, keywords);
             }
-            if (!StringUtils.IsNullOrEmpty(comments)) {
+            if (!String.IsNullOrEmpty(comments)) {
                 summaryInfo.set_Property(6, comments);
             }
-            if (!StringUtils.IsNullOrEmpty(template)) {
+            if (!String.IsNullOrEmpty(template)) {
                 summaryInfo.set_Property(7, template);
             }
 
@@ -2177,7 +2177,7 @@ namespace NAnt.Contrib.Tasks.Msi {
             summaryInfo.set_Property(14, 200);
             summaryInfo.set_Property(15, 2);
 
-            if (!StringUtils.IsNullOrEmpty(creatingApplication)) {
+            if (!String.IsNullOrEmpty(creatingApplication)) {
                 summaryInfo.set_Property(18, creatingApplication);
             }
 

@@ -127,7 +127,7 @@ namespace NAnt.Contrib.Tasks {
                     current_line++;
 
                     // skip empty lines and comments
-                    if (StringUtils.IsNullOrEmpty(line) || line.StartsWith ("#")) {
+                    if (String.IsNullOrEmpty(line) || line.StartsWith ("#")) {
                         line = sr.ReadLine ();
                         continue;
                     }

@@ -18,6 +18,7 @@
 //
 // Author: James Geurts (jgeurts@users.sourceforge.net)
 
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -298,7 +299,7 @@ namespace NAnt.Contrib.Tasks {
                 _programArguments.Append("/c ");
             }
 
-            if (!StringUtils.IsNullOrEmpty(ConsoleXslFilename)) {
+            if (!String.IsNullOrEmpty(ConsoleXslFilename)) {
                 _programArguments.AppendFormat("/cXsl:\"{0}\" ", ConsoleXslFilename);
             }
 
@@ -314,22 +315,22 @@ namespace NAnt.Contrib.Tasks {
                 _programArguments.AppendFormat("/i:\"{0}\" ", filename);
             }
 
-            if (!StringUtils.IsNullOrEmpty(AnalysisReportFilename) || FailOnAnalysisError) {
-                if (StringUtils.IsNullOrEmpty(AnalysisReportFilename)) {
+            if (!String.IsNullOrEmpty(AnalysisReportFilename) || FailOnAnalysisError) {
+                if (String.IsNullOrEmpty(AnalysisReportFilename)) {
                     AnalysisReportFilename = Path.GetTempFileName();
                 }
                 _programArguments.AppendFormat("/o:\"{0}\" ", AnalysisReportFilename);
             }
 
-            if (!StringUtils.IsNullOrEmpty(OutputXslFilename)) {
+            if (!String.IsNullOrEmpty(OutputXslFilename)) {
                 _programArguments.AppendFormat("/oXsl:\"{0}\" ", OutputXslFilename);
             }
 
-            if (!StringUtils.IsNullOrEmpty(PlatformDirectory)) {
+            if (!String.IsNullOrEmpty(PlatformDirectory)) {
                 _programArguments.AppendFormat("/plat:\"{0}\" ", PlatformDirectory);
             }
 
-            if (!StringUtils.IsNullOrEmpty(ProjectFile)) {
+            if (!String.IsNullOrEmpty(ProjectFile)) {
                 _programArguments.AppendFormat("/p:\"{0}\" ", ProjectFile);
             }
 
@@ -341,7 +342,7 @@ namespace NAnt.Contrib.Tasks {
                 _programArguments.Append("/s ");
             }
 
-            if (!StringUtils.IsNullOrEmpty(TypeList)) {
+            if (!String.IsNullOrEmpty(TypeList)) {
                 _programArguments.AppendFormat("/t:{0} ", TypeList);
             }
 
