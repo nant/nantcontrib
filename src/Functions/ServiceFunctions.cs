@@ -237,7 +237,7 @@ namespace NAnt.Contrib.Functions {
         #region Private Static Methods
 
         private static ServiceController GetServiceController(string service, string machineName) {
-            if (StringUtils.IsNullOrEmpty(machineName)) {
+            if (String.IsNullOrEmpty(machineName)) {
                 machineName = ".";
             }
             

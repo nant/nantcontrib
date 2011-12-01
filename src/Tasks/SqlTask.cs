@@ -306,7 +306,7 @@ namespace NAnt.Contrib.Tasks {
         /// </summary>
         protected override void Initialize() {
             _embeddedSqlStatements = ((XmlElement) XmlNode).InnerText;
-            if (Source == null && StringUtils.IsNullOrEmpty(_embeddedSqlStatements)) {
+            if (Source == null && String.IsNullOrEmpty(_embeddedSqlStatements)) {
                 throw new BuildException("No source file or statements have been specified.", 
                     Location);
             }
