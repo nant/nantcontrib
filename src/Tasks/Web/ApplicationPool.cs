@@ -119,10 +119,17 @@ namespace NAnt.Contrib.Tasks.Web {
         #endregion Public Instance Properties
 
         #region Private Instance Properties
+        private ConnectionOptions ConnectionOptions {
+            get {
+                ConnectionOptions options = new ConnectionOptions();
+                options.Authentication = AuthenticationLevel.PacketPrivacy;
+                return options;
+            }
+        }
 
         private ManagementScope Scope {
             get {
-                return new ManagementScope(String.Format(@"\\{0}\root\MicrosoftIISv2", Server));
+                return new ManagementScope(String.Format(@"\\{0}\root\MicrosoftIISv2", Server), ConnectionOptions);
             }
         }
 
