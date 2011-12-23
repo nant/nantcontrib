@@ -122,7 +122,7 @@ namespace NAnt.Contrib.Tasks.Web {
 
         private ManagementScope Scope {
             get {
-                return new ManagementScope (@"\\" + Server + "\\root\\MicrosoftIISv2");
+                return new ManagementScope(String.Format(@"\\{0}\root\MicrosoftIISv2", Server));
             }
         }
 
@@ -132,32 +132,32 @@ namespace NAnt.Contrib.Tasks.Web {
 
         protected override void ExecuteTask() {
             try {
-                ManagementPath path = new ManagementPath("IIsApplicationPool='W3SVC/AppPools/" + PoolName + "'");
+                ManagementPath path = new ManagementPath(String.Format("IIsApplicationPool='W3SVC/AppPools/{0}'", PoolName));
                 ManagementObject pool = new ManagementObject(Scope, path, null);
 
                 if (Action == ApplicationPoolAction.Stop || Action == ApplicationPoolAction.Restart) {
-                    Log(Level.Verbose, "Stopping \"{0}\" on \"{1}\"...",
+                    Log(Level.Verbose, "Stopping '{0}' on '{1}'...",
                         PoolName, Server);
                     pool.InvokeMethod("Stop", new object[0]);
                 }
 
                 if (Action == ApplicationPoolAction.Start || Action == ApplicationPoolAction.Restart) {
-                    Log(Level.Verbose, "Starting \"{0}\" on \"{1}\"...",
+                    Log(Level.Verbose, "Starting '{0}' on '{1}'...",
                         PoolName, Server);
                     pool.InvokeMethod("Start", new object[0]);
                 }
 
                 if (Action == ApplicationPoolAction.Recycle) {
-                    Log(Level.Verbose, "Recycling \"{0}\" on \"{1}\"...",
+                    Log(Level.Verbose, "Recycling '{0}' on '{1}'...",
                         PoolName, Server);
                     pool.InvokeMethod("Recycle", new object[0]);
                 }
 
-                Log(Level.Info, "{0} \"{1}\" on \"{2}\"", GetActionFinish(),
+                Log(Level.Info, "{0} '{1}' on '{2}'", GetActionFinish(),
                     PoolName, Server);
             } catch (Exception ex) {
                 throw new BuildException(string.Format(CultureInfo.InvariantCulture,
-                    "Failed {0} application pool \"{1}\" on \"{2}\".",
+                    "Failed {0} application pool '{1}' on '{2}'.",
                     GetActionInProgress(), PoolName, Server), Location, ex);
             }
         }
