@@ -699,6 +699,7 @@
     <None Include="Tasks\Msi\MsiTask.xsx">
       <DependentUpon>MsiTask.xsd</DependentUpon>
     </None>
+    <Compile Include="Functions\ArrayFunctions.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
