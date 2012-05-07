@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 <project name="nantcontrib" default="build-release">
+    <!-- import necessary sourceforge.net ssh configurations -->
+    <include buildfile="etc/shellconfig.xml" />
     <!-- set base uri for linking to NAnt help -->
     <property name="nant.base.uri" value="http://nant.sourceforge.net/help/" />
     <!-- include master build file -->
