@@ -1,16 +1,11 @@
 <?xml version="1.0"?>
-<project name="nant" default="build-release">
+<project name="nantcontrib" default="build-release">
+    <!-- import necessary sourceforge.net ssh configurations -->
+    <include buildfile="etc/shellconfig.xml" />
     <!-- set base uri for linking to NAnt help -->
     <property name="nant.base.uri" value="http://nant.sourceforge.net/help/" />
-    <!-- set name of sourceforge project server -->
-    <property name="sf.net.ssh.server" value="shell.sourceforge.net" />
-    <property name="sf.net.web.path" value="/home/project-web/nantcontrib/htdocs" />
-    <property name="sf.net.ssh.user" value="${environment::get-user-name()}" unless="${property::exists('sf.net.ssh.user')}" />
-    <property name="sf.connection" value="${sf.net.ssh.user},${project::get-name()}@${sf.net.ssh.server}" />
     <!-- include master build file -->
     <include buildfile="nantcontrib.build" />
-    <!-- setup property that holds partial path to be used by scp -->
-    <property name="serverpart" value="${sf.connection + ':' + sf.net.web.path}" />
     <!-- perform a 'release' package and upload to sf.net -->
     <target name="build-release-self" depends="deploy-sf" description="Perform a 'release' package and uploads to sf.net" />
     <!-- perform a 'release' package and upload to sf.net -->
@@ -26,7 +21,7 @@
         </exec>
     </target>
     <!-- deploy content to sourceforge -->
-    <target name="deploy-sf" depends="deploy-releasenotes-sf, deploy-doc-sf, deploy-web-sf">
+    <target name="deploy-sf" depends="deploy-releasenotes-sf, deploy-doc-sf">
         <!-- remove existing symlink, if it exists -->
         <exec program="ssh" failonerror="false">
             <arg value="${sf.net.ssh.server}" />
@@ -45,11 +40,39 @@
         <!-- make sure group is set right -->
         <exec program="ssh">
             <arg value="${sf.net.ssh.server}" />
-            <arg value="chgrp -R nantcontrib ${sf.net.web.path}/release/latest" />
+            <arg value="chgrp -R ${project::get-name()} ${sf.net.web.path}/release/latest" />
+        </exec>
+        <!-- Now put the files in the Sourceforge File Manager -->
+        <exec program="ssh">
+            <arg value="${sf.net.ssh.server}" />
+            <arg value="mkdir --mode=775 -p ${sf.net.release.path}/${project.version.full}" />
+        </exec>
+        <exec program="scp" workingdir="${path::get-directory-name(project.zip-path.src)}">
+            <arg value="${path::get-file-name(project.zip-path.src)}" />
+            <arg value="${sf.connection}:${sf.net.release.path}/${project.version.full}" />
+        </exec>
+        <exec program="scp" workingdir="${path::get-directory-name(project.zip-path.bin)}">
+            <arg value="${path::get-file-name(project.zip-path.bin)}" />
+            <arg value="${sf.connection}:${sf.net.release.path}/${project.version.full}" />
+        </exec>
+        <!-- copy the gzipped tar doc distribution to sourceforge -->
+        <exec workingdir="${path::get-directory-name(project.gzip-path.doc)}" program="scp">
+            <arg value="${path::get-file-name(project.gzip-path.doc)}" />
+            <arg value="${sf.connection}:${sf.net.release.path}/${project.version.full}/${project.name}-${project.version.full}-doc.tar.gz" />
+        </exec>
+        <!-- make sure permissions are set right -->
+        <exec program="ssh">
+            <arg value="${sf.net.ssh.server}" />
+            <arg value="chmod -R 775 ${sf.net.release.path}/${project.version.full}" />
+        </exec>
+        <!-- make sure group is set right -->
+        <exec program="ssh">
+            <arg value="${sf.net.ssh.server}" />
+            <arg value="chgrp -R ${project::get-name()} ${sf.net.release.path}/${project.version.full}" />
         </exec>
     </target>
     <!-- copy the release notes and license to sourceforge -->
-    <target name="deploy-releasenotes-sf" depends="set-${framework::get-target-framework()}-framework-configuration, release, package">
+    <target name="deploy-releasenotes-sf" depends="set-${framework::get-target-framework()}-framework-configuration, release, package, create-shell">
         <!-- make sure the directory tree exists -->
         <exec program="ssh">
             <arg value="${sf.net.ssh.server}" />
@@ -74,7 +97,7 @@
         </exec>
     </target>
     <!-- copy online docs (manual) to sourceforge -->
-    <target name="deploy-doc-sf" depends="set-${framework::get-target-framework()}-framework-configuration, release, package-doc">
+    <target name="deploy-doc-sf" depends="set-${framework::get-target-framework()}-framework-configuration, release, package-doc, create-shell">
         <!-- make sure the directory tree exists -->
         <exec program="ssh">
             <arg value="${sf.net.ssh.server}" />
@@ -103,7 +126,7 @@
         </exec>
     </target>
     <!-- copy website to sourceforge -->
-    <target name="deploy-web-sf" depends="set-${framework::get-target-framework()}-framework-configuration, release">
+    <target name="deploy-web-sf" depends="set-${framework::get-target-framework()}-framework-configuration, release, create-shell">
         <!-- make sure the directory tree exists -->
         <exec program="ssh">
             <arg value="${sf.net.ssh.server}" />
