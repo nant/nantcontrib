@@ -116,9 +116,6 @@
     <Compile Include="Tasks\ChangeDirectoryTest.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Tasks\ChooseTaskTests.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Tasks\CodeStatsTaskTest.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -132,9 +129,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Tasks\SourceSafe\MockVssItems.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Tasks\TryCatchTaskTest.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Tasks\VersionTaskTest.cs">
