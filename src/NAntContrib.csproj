@@ -196,9 +196,6 @@
     <Compile Include="Tasks\ChecksumTask.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Tasks\ChooseTask.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Tasks\ClearCase\Base.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -575,9 +572,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Tasks\Svn\SvnUpdateTask.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Tasks\TryCatchTask.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Tasks\TypedCollectionTask.cs">
