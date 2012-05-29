@@ -316,7 +316,7 @@
         <xsl:for-each select="//test-suite[(child::results/test-case)]">
             <xsl:sort select="@name"/>
             <!-- create an anchor to this class name -->
-            <a name="#{generate-id(@name)}"></a>
+            <a name="{generate-id(@name)}"></a>
             <h3>TestSuite <xsl:value-of select="@name"/></h3>
 
             <table border="0" cellpadding="1" cellspacing="1" width="95%">
