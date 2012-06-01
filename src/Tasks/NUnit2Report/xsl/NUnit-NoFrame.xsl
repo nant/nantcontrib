@@ -33,18 +33,24 @@
             span.covered {
                 background: #00df00; 
                 border:#9c9c9c 1px solid;
+                height: 1em;
+                display: inline-block;
             }
             span.uncovered {
                 background: #df0000; 
                 border-top:#9c9c9c 1px solid;
                 border-bottom:#9c9c9c 1px solid;
                 border-right:#9c9c9c 1px solid;
-                }
+                height: 1em;
+                display: inline-block;
+            }
             span.ignored {
                 background: #ffff00;
                 border-top:#9c9c9c 1px solid;
                 border-bottom:#9c9c9c 1px solid;
                 border-right:#9c9c9c 1px solid;
+                height: 1em;
+                display: inline-block;
             }
 
             td {
