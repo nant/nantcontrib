@@ -10,12 +10,12 @@ using System.Reflection;
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: AssemblyConfigurationAttribute("rc1")]
+[assembly: AssemblyConfigurationAttribute("release")]
 [assembly: AssemblyCompanyAttribute("http://nantcontrib.sourceforge.net")]
 [assembly: AssemblyProductAttribute("NAntContrib")]
 [assembly: AssemblyCopyrightAttribute("Copyright (C) 2001-2012 Gerry Shaw")]
 [assembly: AssemblyTrademarkAttribute("")]
 [assembly: AssemblyCultureAttribute("")]
-[assembly: AssemblyVersionAttribute("0.92.4526.0")]
+[assembly: AssemblyVersionAttribute("0.92.4543.0")]
 [assembly: AssemblyInformationalVersionAttribute("0.92")]
 
