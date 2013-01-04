@@ -72,17 +72,29 @@ namespace NAnt.Contrib.Tasks.Web {
                     foreach (string propertyName in newVirDir.Properties.PropertyNames) {
                         object propertyValue = newVirDir.Properties[propertyName].Value;
 
-                        if (propertyValue.GetType().IsArray) {
-                            Log(Level.Info, propertyName + ":");
-
-                            Array propertyValues = (Array) propertyValue;
-                            foreach (object value in propertyValues) {
-                                Log(Level.Info, '\t' + value.ToString());
-                            }
-                        } else {
-                            Log(Level.Info, propertyName + ": " 
-                                + newVirDir.Properties[propertyName].Value.ToString());
+                        if (propertyValue == null)
+                        {
+                            Log(Level.Info, propertyName + ":  Null");
                         }
+                        else
+                        {
+                            if (propertyValue.GetType().IsArray)
+                            {
+                                Log(Level.Info, propertyName + ":");
+
+                                Array propertyValues = (Array)propertyValue;
+                                foreach (object value in propertyValues)
+                                {
+                                    Log(Level.Info, '\t' + value.ToString());
+                                }
+                            }
+                            else
+                            {
+                                Log(Level.Info, propertyName + ": "
+                                    + newVirDir.Properties[propertyName].Value.ToString());
+                            }
+                        }
+                        
                     }
                 } else {
                     Log(Level.Info, "AccessExecute: " + newVirDir.Properties["AccessExecute"].Value.ToString());
