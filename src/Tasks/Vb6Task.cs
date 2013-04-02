@@ -516,7 +516,7 @@ namespace NAnt.Contrib.Tasks {
                         case "ResFile32":
                             // This is a form, control, or property page source file - add the file name to the sources fileset
                             // The entry is of the form "Form=Form1.frm"
-                            sources.Includes.Add(keyValue);
+                            sources.Includes.Add(keyValue.Trim('"'));
                             break;
                         case "Object":
                         case "Reference":
