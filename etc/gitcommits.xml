@@ -10,7 +10,7 @@
     </if>
     
     <!-- Address that the emails should be sent from -->
-    <property name="from.address" value="nantcontrib-commits@nant-project.org"/>
+    <property name="from.address" value="nantcontrib-commits@nantcontrib.sourceforge.net"/>
     <!-- Address that the emails should be sent to -->
     <property name="to.address" value="nantcontrib-cvs@lists.sourceforge.net"/>
     
