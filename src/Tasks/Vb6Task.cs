@@ -182,7 +182,9 @@ namespace NAnt.Contrib.Tasks {
                 } else {
                     try {
                         // check registry for VB6 install dir
-                        RegistryKey vbKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\VisualStudio\6.0\Setup\Microsoft Visual Basic");
+                        const string x86Vb6RegistryPath = @"SOFTWARE\Microsoft\VisualStudio\6.0\Setup\Microsoft Visual Basic";
+                        const string x64Vb6RegistryPath = @"SOFTWARE\Wow6432Node\Microsoft\VisualStudio\6.0\Setup\Microsoft Visual Basic";
+                        RegistryKey vbKey = Registry.LocalMachine.OpenSubKey(x86Vb6RegistryPath) ?? Registry.LocalMachine.OpenSubKey(x64Vb6RegistryPath);
                         if (vbKey != null) {
                             string productDir = vbKey.GetValue("ProductDir") as string;
                             if (productDir != null) {
