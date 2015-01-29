@@ -200,6 +200,7 @@
 
                 <!-- Requires MS SharePoint -->
                 <exclude name="${src.dir}/Tasks/SharePoint/*.cs" />
+                <exclude name="${src.dir}/Tasks/SourceSafe/*.cs" if="${framework::get-family(framework::get-target-framework()) == 'mono'}" />
             </sources>
             <references>
                 <include name="${nant.dir}/bin/NAnt.Core.dll" />
